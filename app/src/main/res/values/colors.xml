@@ -3,4 +3,18 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+    <!-- Main Color -->
+    <color name="colorOrange">#FF7300</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#222222</color>
+    <color name="colorLightGray">#EEF3F5</color>
+    <!-- Sub Color -->
+    <color name="colorLightBlueGreen">#19C5B7</color>
+    <color name="colorLightOrange">#FFA400</color>
+    <color name="colorDarkBrown">#898581</color>
+    <color name="colorLightBrown">#C8C0B7</color>
+    <color name="colorGray">#DFE6E5</color>
+    <!-- Accent Color -->
+    <color name="colorRed">#FF4242</color>
+    <color name="colorGreen">#16C300</color>
 </resources>
