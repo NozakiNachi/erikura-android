@@ -16,11 +16,25 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+        buildConfigField("String", "SERVER_BASE_URL", '"' + properties.getProperty("server.base_url") + '"')
+        // FIXME: geocoding 用のURL
+        // FIMXE: google map のAPIキー設定
+
     }
     buildTypes {
+        debug {
+        }
+        staging {
+            buildConfigField("String", "SERVER_BASE_URL", "\"https://dev-app.erikura.net\"")
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField("String", "SERVER_BASE_URL", "\"https://app.erikura.net\"")
         }
     }
     dataBinding {
