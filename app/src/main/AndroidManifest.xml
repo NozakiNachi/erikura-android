@@ -16,9 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
         android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name=".presenters.activities.RegisterEmailActivity"></activity>
-        <activity android:name=".presenters.activities.LoginActivity" />
-        <activity android:name=".presenters.activities.StartActivity">
+        <activity android:name=".presenters.activities.RegisterEmailActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".presenters.activities.LoginActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".presenters.activities.StartActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
