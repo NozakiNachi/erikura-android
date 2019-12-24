@@ -6,6 +6,17 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
+// MEMO: Google Fit API を使うために、OAuth IDの登録を行う
+// 1. 以下のURLに移動し、アプリケーションを登録する
+//    https://console.developers.google.com/flows/enableapi?apiid=fitness
+// 2. OAuth クライアント IDを作成します
+//    - アプリケーションの種類: android
+//    - 名前: テスト用には適当な名前を設定
+//    - フィンガープリント： 以下の手順で取得
+//      * keytool -keystore ~/.android/debug.keystore -list -v
+//      * SHA-1 の値をコピー
+//    - パッケージ名: AndroidManifest.xml より
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -20,10 +31,10 @@ android {
         def properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
+        // MEMO: http でアクセスするためには res/xml/network_security_config.html にドメインを追加してください
         buildConfigField("String", "SERVER_BASE_URL", '"' + properties.getProperty("server.base_url") + '"')
         // FIXME: geocoding 用のURL
         // FIMXE: google map のAPIキー設定
-
     }
     buildTypes {
         debug {
@@ -63,6 +74,10 @@ dependencies {
     def lifecycle_version = "2.2.0-rc03"
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     kapt "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
+
+    // Google Fit
+    implementation 'com.google.android.gms:play-services-fitness:18.0.0'
+    implementation 'com.google.android.gms:play-services-auth:17.0.0'
 
     // Dagger
     def dagger_version = "2.25.3"

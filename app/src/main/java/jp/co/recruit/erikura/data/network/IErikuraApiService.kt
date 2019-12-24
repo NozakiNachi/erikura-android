@@ -135,8 +135,11 @@ interface IErikuraApiService {
 
 data class Response<BODY>(
     var body: BODY,
-    var errors: List<String>
-)
+    var errors: List<String>? = null
+) {
+    // エラーが存在するかを判定します
+    val hasError: Boolean get() = !(this.errors?.isEmpty() ?: true)
+}
 
 data class IdResponse(
     var id: Int

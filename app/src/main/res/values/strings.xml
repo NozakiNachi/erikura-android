@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">erikura-android</string>
+
+    <string name="common_captions_apiError">エラーが発生しました。</string>
+
+    <string name="common_messages_apiError">APIの実行に失敗しました。\n時間をおいて再実施をお願いいたします。</string>
+
+    <string name="common_buttons_close">閉じる</string>
 </resources>
