@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.co.recruit.erikura">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /><!-- 精細な位置情報(GPS) -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /><!-- おおよその位置情報(ネットワーク基地局) -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 完全なネットワークアクセス -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><!-- SDカードアクセス -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 精細な位置情報(GPS) -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- おおよその位置情報(ネットワーク基地局) -->
+    <uses-permission android:name="android.permission.INTERNET" />              <!-- 完全なネットワークアクセス -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- SDカードアクセス -->
 
     <application
         android:name=".ErikuraApplication"
@@ -16,7 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme.Launcher"
         android:networkSecurityConfig="@xml/network_security_config">
-
+        <activity android:name=".presenters.activities.RegisterEmailActivity"></activity>
+        <activity android:name=".presenters.activities.LoginActivity" />
         <activity android:name=".presenters.activities.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,7 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
