@@ -71,34 +71,7 @@ class StartActivity : AppCompatActivity() {
         tv.setOnClickListener {
             // 地図画面へ遷移
         }
-    }
-}
 
-
-
-class StartActivity : AppCompatActivity() {
-    private val REQUEST_OAUTH_REQUEST_CODE = 1
-
-    private val fitnessOptions: GoogleSignInOptionsExtension
-        get() =
-            FitnessOptions.builder()
-                .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_HEIGHT_SUMMARY, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.AGGREGATE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.TYPE_STEP_COUNT_CADENCE, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
-                .addDataType(DataType.TYPE_HEIGHT, FitnessOptions.ACCESS_READ)
-                .build()
-
-    fun hasGoogleFitPermissions(): Boolean {
-        return GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start)
 
         if (!hasGoogleFitPermissions()) {
             // 権限のリクエスト
@@ -118,6 +91,25 @@ class StartActivity : AppCompatActivity() {
             Log.d("DEBUG", "ログイン成功")
 //            Api(this).displayErrorAlert(listOf("ログインに成功しました。"), caption = "成功！！！")
         }
+    }
+
+
+    private val REQUEST_OAUTH_REQUEST_CODE = 1
+
+    private val fitnessOptions: GoogleSignInOptionsExtension
+        get() =
+            FitnessOptions.builder()
+                .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.AGGREGATE_HEIGHT_SUMMARY, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.AGGREGATE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_STEP_COUNT_CADENCE, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
+                .addDataType(DataType.TYPE_HEIGHT, FitnessOptions.ACCESS_READ)
+                .build()
+
+    fun hasGoogleFitPermissions(): Boolean {
+        return GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
