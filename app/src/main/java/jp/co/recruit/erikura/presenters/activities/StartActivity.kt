@@ -91,6 +91,21 @@ class StartActivity : AppCompatActivity() {
 //        }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // ビデオの設定
+        val v: VideoView = findViewById(R.id.v)
+        v.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
+        v.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // ビデオの設定
+        val v: VideoView = findViewById(R.id.v)
+        v.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
+        v.pause()
+    }
 
     private val REQUEST_OAUTH_REQUEST_CODE = 1
 
