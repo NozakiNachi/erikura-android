@@ -6,4 +6,18 @@
     <string name="common_messages_apiError">APIの実行に失敗しました。\n時間をおいて再実施をお願いいたします。</string>
 
     <string name="common_buttons_close">閉じる</string>
+
+    <string name="login_caption">ログイン</string>
+    <string name="login_autoLogin">次回から自動ログインする</string>
+    <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
+    <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
+
+    <!-- 入力フィールドのラベル -->
+    <string name="email">メールアドレス</string>
+    <string name="password">パスワード</string>
+    <string name="login">ログイン</string>
+
+    <!-- プレースホルダ -->
+    <string name="email_hint">sample@erikura.net</string>
+    <string name="password_hint">パスワード</string>
 </resources>

@@ -4,17 +4,17 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <!-- Main Color -->
-    <color name="colorOrange">#FF7300</color>
-    <color name="colorWhite">#FFFFFF</color>
-    <color name="colorBlack">#222222</color>
-    <color name="colorLightGray">#EEF3F5</color>
+    <color name="colorOrange">#FF7300</color>           <!-- pumpkinOrange -->
+    <color name="colorWhite">#FFFFFF</color>            <!-- white -->
+    <color name="colorBlack">#222222</color>            <!-- blackTwo -->
+    <color name="colorLightGray">#EEF3F5</color>        <!-- paleGrey -->
     <!-- Sub Color -->
-    <color name="colorLightBlueGreen">#19C5B7</color>
-    <color name="colorLightOrange">#FFA400</color>
-    <color name="colorDarkBrown">#898581</color>
-    <color name="colorLightBrown">#C8C0B7</color>
-    <color name="colorGray">#DFE6E5</color>
+    <color name="colorLightBlueGreen">#19C5B7</color>   <!-- topaz -->
+    <color name="colorLightOrange">#FFA400</color>      <!-- orangeYellow -->
+    <color name="colorDarkBrown">#898581</color>        <!-- warmGrey -->
+    <color name="colorLightBrown">#C8C0B7</color>       <!-- pinkishGrey -->
+    <color name="colorGray">#DFE6E5</color>             <!-- silver -->
     <!-- Accent Color -->
-    <color name="colorRed">#FF4242</color>
-    <color name="colorGreen">#16C300</color>
+    <color name="colorRed">#FF4242</color>              <!-- coral -->
+    <color name="colorGreen">#16C300</color>            <!-- vibrantGreen -->
 </resources>
