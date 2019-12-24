@@ -29,9 +29,7 @@ import jp.co.recruit.erikura.data.network.Api
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-
 class StartActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
@@ -73,24 +71,24 @@ class StartActivity : AppCompatActivity() {
         }
 
 
-        if (!hasGoogleFitPermissions()) {
-            // 権限のリクエスト
-            GoogleSignIn.requestPermissions(
-                this,
-                REQUEST_OAUTH_REQUEST_CODE,
-                GoogleSignIn.getLastSignedInAccount(this),
-                fitnessOptions
-            )
-        }
-        else {
-            // データ取得の開始
-            startFitnessSubscription()
-        }
-
-        Api(this).login("user003@example.com", "pass0000") {
-            Log.d("DEBUG", "ログイン成功")
-//            Api(this).displayErrorAlert(listOf("ログインに成功しました。"), caption = "成功！！！")
-        }
+//        if (!hasGoogleFitPermissions()) {
+//            // 権限のリクエスト
+//            GoogleSignIn.requestPermissions(
+//                this,
+//                REQUEST_OAUTH_REQUEST_CODE,
+//                GoogleSignIn.getLastSignedInAccount(this),
+//                fitnessOptions
+//            )
+//        }
+//        else {
+//            // データ取得の開始
+//            startFitnessSubscription()
+//        }
+//
+//        Api(this).login("user003@example.com", "pass0000") {
+//            Log.d("DEBUG", "ログイン成功")
+////            Api(this).displayErrorAlert(listOf("ログインに成功しました。"), caption = "成功！！！")
+//        }
     }
 
 
