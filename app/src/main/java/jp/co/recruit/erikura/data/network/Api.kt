@@ -8,6 +8,7 @@ import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.presenters.activities.SendEmailEventHandlers
 
 class Api(var activity: AppCompatActivity) {
     companion object {
@@ -48,6 +49,32 @@ class Api(var activity: AppCompatActivity) {
                         val session = UserSession(userId = it.body.userId, token = it.body.accessToken)
                         userSession = session
                         activity.runOnUiThread { onComplete(session) }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
+    fun registerEmail(email: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (id: Int) -> Unit) {
+        erikuraApiService.registerEmail(RegisterEmailRequest(email = email))
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val id = it.body.id
+                        activity.runOnUiThread { onComplete(id) }
                     }
                 },
                 onError = { throwable ->
