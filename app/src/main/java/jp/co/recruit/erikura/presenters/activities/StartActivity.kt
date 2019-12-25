@@ -14,6 +14,7 @@ import android.text.method.MovementMethod
 import android.text.Html
 import android.util.Log
 import android.widget.Toast
+import androidx.core.text.HtmlCompat
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInOptionsExtension
@@ -66,7 +67,7 @@ class StartActivity : AppCompatActivity() {
         val mMethod: MovementMethod = LinkMovementMethod.getInstance()
         tv.movementMethod = mMethod
         val url = "http://www.google.co.jp"
-        val link = Html.fromHtml("<a href=\"$url\">スキップして近くの仕事を探す</a>")
+        val link = HtmlCompat.fromHtml("<a href=\"$url\">スキップして近くの仕事を探す</a>", HtmlCompat.FROM_HTML_MODE_COMPACT)
         tv.text = link
         tv.setOnClickListener {
             // 地図画面へ遷移

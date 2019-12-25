@@ -98,8 +98,7 @@
                     android:layout_marginTop="40dp"
                     android:layout_gravity="center"
                     android:textSize="14dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/topaz"
+                    style="@style/linkText"
                     android:text="@string/login_remindPassword"
                     />
 
@@ -110,8 +109,7 @@
                     android:layout_marginBottom="40dp"
                     android:layout_gravity="center"
                     android:textSize="14dp"
-                    android:textStyle="bold"
-                    android:textColor="@color/topaz"
+                    style="@style/linkText"
                     android:text="@string/login_mailUnreachable"
                     />
             </LinearLayout>
