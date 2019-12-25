@@ -45,7 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="297dp"
                     app:layout_constraintTop_toBottomOf="@id/v"
-                    android:background="@color/colorGray">
+                    android:background="@color/silver">
                 </View>
 
             </LinearLayout>
@@ -82,7 +82,7 @@
                     android:textSize="16dp"
                     android:textStyle="bold"
                     android:gravity="center"
-                    android:textColorLink="@color/colorLightBlueGreen" />
+                    android:textColorLink="@color/topaz" />
 
             </LinearLayout>
 
