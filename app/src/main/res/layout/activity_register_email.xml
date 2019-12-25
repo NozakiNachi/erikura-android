@@ -65,7 +65,8 @@
                     android:layout_marginRight="20dp"
                     android:textSize="14dp"
                     android:lineSpacingExtra="10dp"
-                    android:textColor="@color/colorBlack"
+                    android:textColor="@color/colorAccent"
+                    android:background="#fff1f1"
                     />
 
                 <TextView

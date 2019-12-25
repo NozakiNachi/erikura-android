@@ -57,6 +57,7 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        validate()
     }
 
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -64,12 +65,14 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
     }
 
     override fun afterTextChanged(s: Editable?) {
+        validate()
     }
 
     private fun validate(){
         var valid = true
         if (valid && TextUtils.isEmpty(viewModel.email.value)) {
             valid = false
+            errorText.isInvisible = true
         }else if(valid && !(android.util.Patterns.EMAIL_ADDRESS.matcher(viewModel.email.value ?:"").matches())) {
             valid = false
             errorText.isInvisible = false
