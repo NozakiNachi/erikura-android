@@ -1,9 +1,16 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isInvisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,10 +19,14 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterEmailBinding
 
-class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
+class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextWatcher {
     private val viewModel: RegisterEmailViewModel by lazy {
         ViewModelProvider(this).get(RegisterEmailViewModel::class.java)
     }
+
+    lateinit var button: Button
+    lateinit var editText: EditText
+    lateinit var errorText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -25,6 +36,15 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
         val binding: ActivityRegisterEmailBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_email)
         binding.viewModel = viewModel
         binding.handlers = this
+
+        button = findViewById(R.id.registerEmail_button)
+        button.isEnabled = false
+
+        editText = findViewById(R.id.registerEmail_editText)
+        editText.addTextChangedListener(this)
+
+        errorText = findViewById(R.id.registerEmail_errorTextView)
+        errorText.isInvisible = true
     }
 
     override fun onClickSendEmail(view: View) {
@@ -34,6 +54,32 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
             Log.v("DEBUG", "仮登録メール送信： userId=${it}")
             // FIXME: 仮登録完了画面へ遷移
         }
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        validate()
+    }
+
+    override fun afterTextChanged(s: Editable?) {
+    }
+
+    private fun validate(){
+        var valid = true
+        if (valid && TextUtils.isEmpty(viewModel.email.value)) {
+            valid = false
+        }else if(valid && !(android.util.Patterns.EMAIL_ADDRESS.matcher(viewModel.email.value ?:"").matches())) {
+            valid = false
+            errorText.isInvisible = false
+            errorText.text = "メールアドレスの形式が正しくありません。"
+        }else {
+            valid = true
+            errorText.isInvisible = true
+
+        }
+        button.isEnabled = valid
     }
 }
 
