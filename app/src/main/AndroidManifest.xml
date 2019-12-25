@@ -23,7 +23,7 @@
 
         <activity
             android:name=".presenters.activities.LoginActivity"
-            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait"/>
 
         <activity

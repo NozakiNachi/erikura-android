@@ -11,6 +11,8 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
+
+        <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
     </style>
 
     <style name="AppTheme.Launcher">
@@ -22,8 +24,7 @@
     <style name="titleLabel">
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
-        <item name="android:textColor">@color/colorBlack</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/blackTwo</item>
         <item name="android:textSize">22dp</item>
     </style>
 
@@ -31,8 +32,7 @@
     <style name="fieldLabel">
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
-        <item name="android:textColor">@color/colorBlack</item>
-        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">@color/blackTwo</item>
         <item name="android:textSize">16dp</item>
     </style>
 
@@ -54,9 +54,10 @@
 
     <!-- チェックボックス: android:theme で指定する -->
     <style name="erikuraCheckbox">
-        <item name="android:colorControlNormal">@color/colorGray</item>
-        <item name="android:colorControlActivated">@color/colorLightBlueGreen</item>
-        <item name="android:colorBackground">@color/colorWhite</item>
+<!--        <item name="android:colorControlNormal">@color/colorGray</item>-->
+<!--        <item name="android:colorControlActivated">@color/colorLightBlueGreen</item>-->
+<!--        <item name="android:colorBackground">@color/colorWhite</item>-->
+        <item name="android:button">@drawable/erikura_checkbox</item>
     </style>
 
     <!-- プライマリボタン -->
@@ -64,8 +65,9 @@
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:background">@drawable/primary_button</item>
-        <item name="android:textColor">@color/colorWhite</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">20dp</item>
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -74,8 +76,9 @@
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:background">@drawable/secondary_button</item>
-        <item name="android:textColor">@color/colorOrange</item>
+        <item name="android:textColor">@color/pumpkinOrange</item>
         <item name="android:textSize">20dp</item>
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>
     </style>
 </resources>
