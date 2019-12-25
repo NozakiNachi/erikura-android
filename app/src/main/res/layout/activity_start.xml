@@ -61,12 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginBottom="10dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/primary_button"
-                    android:textColor="@color/colorWhite"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
+                    style="@style/primaryButton"
                     android:text="会員登録（無料）" />
 
                 <Button
@@ -74,12 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginBottom="20dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@drawable/secondary_button"
-                    android:textColor="@color/colorOrange"
-                    android:textSize="20dp"
-                    android:textStyle="bold"
+                    style="@style/secondaryButton"
                     android:text="ログイン" />
 
                 <TextView
