@@ -30,19 +30,21 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class StartActivity : AppCompatActivity() {
+    lateinit var video: VideoView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
         // ビデオの設定
-        val v: VideoView = findViewById(R.id.v)
-        v.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
-        v.start()
+        video = findViewById(R.id.v)
+        video.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
+        video.start()
         // ループ再生処理
-        v.setOnCompletionListener {
-            v.seekTo(0)
-            v.start()
+        video.setOnCompletionListener {
+            video.seekTo(0)
+            video.start()
         }
 
         // 会員登録ボタンの設定
@@ -91,20 +93,15 @@ class StartActivity : AppCompatActivity() {
 //        }
     }
 
-    override fun onStart() {
-        super.onStart()
-        // ビデオの設定
-        val v: VideoView = findViewById(R.id.v)
-        v.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
-        v.resume()
+    override fun onResume() {
+        super.onResume()
+        video.resume()
+        video.start()
     }
 
     override fun onPause() {
         super.onPause()
-        // ビデオの設定
-        val v: VideoView = findViewById(R.id.v)
-        v.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
-        v.pause()
+        video.stopPlayback()
     }
 
     private val REQUEST_OAUTH_REQUEST_CODE = 1
