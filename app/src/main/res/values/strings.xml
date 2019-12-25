@@ -11,13 +11,21 @@
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
     <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
+    <string name="registerEmail_caption">メールアドレスを教えてください。</string>
+    <string name="registerEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
+    <string name="registerEmail_agree"><a href="">利用規約</a>、<a href="">プライバシーポリシー</a>に同意して</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
     <string name="login">ログイン</string>
 
+    <!-- ボタンのラベル -->
+    <string name="register">会員登録（無料）</string>
+    <string name="send_email">仮登録メールを送信</string>
+
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
+    <string name="register_email_hint">例）sample@erikura.net</string>
     <string name="password_hint">パスワード</string>
 </resources>
