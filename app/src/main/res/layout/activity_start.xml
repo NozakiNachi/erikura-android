@@ -62,7 +62,7 @@
                     android:layout_height="70dp"
                     android:layout_marginBottom="10dp"
                     style="@style/primaryButton"
-                    android:text="会員登録（無料）" />
+                    android:text="@string/register" />
 
                 <Button
                     android:id="@+id/loginButton"
@@ -70,7 +70,7 @@
                     android:layout_height="70dp"
                     android:layout_marginBottom="20dp"
                     style="@style/secondaryButton"
-                    android:text="ログイン" />
+                    android:text="@string/login" />
 
                 <TextView
                     android:id="@+id/textView"
