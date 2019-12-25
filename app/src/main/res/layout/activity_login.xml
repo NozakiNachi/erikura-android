@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     style="@style/textField"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:inputType="textEmailAddress"
                     android:text="@={view_model.email}"
                     android:hint="" />
@@ -65,13 +65,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     style="@style/passwordField"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:inputType="textPassword"
                     android:text="@={view_model.password}"
                     android:hint=""/>
 
                 <CheckBox
                     android:theme="@style/erikuraCheckbox"
+                    android:button="@drawable/erikura_checkbox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/login_autoLogin"
@@ -79,6 +80,7 @@
                     android:textSize="13dp"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
+                    android:paddingLeft="10dp"
                     />
 
                 <Button
