@@ -13,7 +13,10 @@
     <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
     <string name="registerEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
-    <string name="registerEmail_agree"><a href="">利用規約</a>、<a href="">プライバシーポリシー</a>に同意して</string>
+    <string name="registerEmail_terms_of_service"><a href="">利用規約</a></string>
+    <string name="registerEmail_comma">、</string>
+    <string name="registerEmail_privacy_policy"><a href="">プライバシーポリシー</a></string>
+    <string name="registerEmail_agree">に同意して</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>

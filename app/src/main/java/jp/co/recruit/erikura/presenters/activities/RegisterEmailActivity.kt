@@ -1,5 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -16,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterEmailBinding
@@ -57,6 +60,24 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
             Log.v("DEBUG", "仮登録メール送信： userId=${it}")
             // FIXME: 仮登録完了画面へ遷移
         }
+    }
+
+    override fun onClickTermsOfService(view: View) {
+        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
+        val intent = Intent(this, WebViewActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(termsOfServiceURLString)
+        }
+        startActivity(intent)
+    }
+
+    override fun onClickPrivacyPolicy(view: View) {
+        val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + "/pdf/privacy_policy.pdf"
+        val intent = Intent(this, WebViewActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(privacyPolicyURLString)
+        }
+        startActivity(intent)
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -104,4 +125,6 @@ class RegisterEmailViewModel: ViewModel() {
 
 interface SendEmailEventHandlers {
     fun onClickSendEmail(view: View)
+    fun onClickTermsOfService(view: View)
+    fun onClickPrivacyPolicy(view: View)
 }
