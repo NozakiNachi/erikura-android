@@ -68,6 +68,15 @@
         <item name="android:inputType">textPassword</item>
     </style>
 
+    <!-- エラーフィールド -->
+    <style name="errorField">
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:background">#fff1f1</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
     <!-- チェックボックス: android:theme で指定する -->
     <style name="erikuraCheckbox">
 <!--        <item name="android:colorControlNormal">@color/colorGray</item>-->
