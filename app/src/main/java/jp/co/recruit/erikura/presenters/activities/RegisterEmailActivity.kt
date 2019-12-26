@@ -6,6 +6,7 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -27,6 +28,7 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
     lateinit var button: Button
     lateinit var editText: EditText
     lateinit var errorText: TextView
+    lateinit var mlp: ViewGroup.MarginLayoutParams
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -45,6 +47,7 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
 
         errorText = findViewById(R.id.registerEmail_errorTextView)
         errorText.isInvisible = true
+        mlp = errorText.layoutParams as ViewGroup.MarginLayoutParams
     }
 
     override fun onClickSendEmail(view: View) {
@@ -70,18 +73,27 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
 
     private fun validate(){
         var valid = true
+        // バリデーションの設定
         if (valid && TextUtils.isEmpty(viewModel.email.value)) {
             valid = false
             errorText.isInvisible = true
+            errorText.text = ""
+            errorText.textSize = 0f
+            mlp.topMargin = 0
         }else if(valid && !(android.util.Patterns.EMAIL_ADDRESS.matcher(viewModel.email.value ?:"").matches())) {
             valid = false
             errorText.isInvisible = false
-            errorText.text = "メールアドレスの形式が正しくありません。"
+            errorText.text = getString(R.string.email_format_error)
+            errorText.textSize = 14.0f
+            mlp.topMargin = 10
         }else {
             valid = true
             errorText.isInvisible = true
-
+            errorText.text = ""
+            errorText.textSize = 0f
+            mlp.topMargin = 0
         }
+        errorText.layoutParams = mlp
         button.isEnabled = valid
     }
 }
