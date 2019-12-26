@@ -4,71 +4,81 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
-    
-    <ScrollView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fillViewport="true"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="187dp"
-                android:layout_height="77dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="60dp"
-                app:srcCompat="@drawable/splash" />
-
-            <VideoView
-                android:id="@+id/v"
-                android:layout_width="match_parent"
-                android:layout_height="412dp"
-                android:layout_marginTop="50dp" />
+            android:layout_height="match_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_weight="1"
+            android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:background="@color/silver"
                 android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/registerButton"
-                    style="@style/primaryButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="@string/register" />
+                <ImageView
+                    android:layout_width="187dp"
+                    android:layout_height="77dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="60dp"
+                    app:srcCompat="@drawable/splash" />
 
-                <Button
-                    android:id="@+id/loginButton"
-                    style="@style/secondaryButton"
+                <VideoView
+                    android:id="@+id/v"
                     android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    android:layout_marginBottom="20dp"
-                    android:text="@string/login" />
+                    android:layout_height="412dp"
+                    android:layout_marginTop="50dp" />
 
-                <TextView
-                    android:id="@+id/textView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="60dp"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textSize="16dp"
-                    style="@style/linkText"
-                    android:textStyle="bold" />
+                    android:layout_gravity="bottom"
+                    android:background="@color/silver"
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/registerButton"
+                        style="@style/primaryButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/register" />
+
+                    <Button
+                        android:id="@+id/loginButton"
+                        style="@style/secondaryButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginBottom="20dp"
+                        android:text="@string/login" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="60dp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:textSize="16dp"
+                        style="@style/linkText"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-        </LinearLayout>
+        </ScrollView>
 
-    </ScrollView>
+    </LinearLayout>
+
 </layout>
 
