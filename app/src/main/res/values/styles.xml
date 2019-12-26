@@ -26,6 +26,7 @@
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:textColor">@color/blackTwo</item>
         <item name="android:textSize">22dp</item>
+        <item name="android:lineSpacingExtra">10dp</item>
     </style>
 
     <style name="linkText">
@@ -33,6 +34,14 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/topaz</item>
         <item name="android:textColorLink">@color/topaz</item>
+    </style>
+
+    <style name="smallCaption">
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:textColor">@color/blackTwo</item>
+        <item name="android:textSize">12dp</item>
+        <item name="android:lineSpacingExtra">10dp</item>
     </style>
 
     <!-- フィールドラベル -->

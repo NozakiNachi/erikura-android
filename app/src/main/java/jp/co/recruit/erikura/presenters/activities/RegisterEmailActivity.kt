@@ -58,7 +58,8 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
         // 仮登録APIの実行
         Api(this).registerEmail(viewModel.email.value ?:"") {
             Log.v("DEBUG", "仮登録メール送信： userId=${it}")
-            // FIXME: 仮登録完了画面へ遷移
+            val intent: Intent = Intent(this@RegisterEmailActivity, RegisterEmailFinishedActivity::class.java)
+            startActivity(intent)
         }
     }
 

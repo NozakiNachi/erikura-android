@@ -17,6 +17,11 @@
     <string name="registerEmail_comma">、</string>
     <string name="registerEmail_privacy_policy"><a href="">プライバシーポリシー</a></string>
     <string name="registerEmail_agree">に同意して</string>
+    <string name="registerEmailFinished_registerUnfinished">まだ会員登録は\n完了しておりません</string>
+    <string name="registerEmailFinished_sendEmail">ご入力いただいたメールアドレス宛に確認メールをお送りしました。</string>
+    <string name="registerEmailFinished_clickEmailLink">お届けしたメール内の\nURLをクリックして\n会員登録を続けてください。</string>
+    <string name="registerEmailFinished_limit">※メールに記載された登録URLの有効期限は6時間です。\n有効期限が切れた場合は再度新規会員登録を実施してください。</string>
+    <string name="registerEmailFinished_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>

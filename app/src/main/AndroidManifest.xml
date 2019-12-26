@@ -16,9 +16,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.WebViewActivity"
-            android:screenOrientation="portrait"
-            ></activity>
+        <activity android:name=".presenters.activities.RegisterEmailFinishedActivity"></activity>
+        <activity
+            android:name=".presenters.activities.WebViewActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".presenters.activities.RegisterEmailActivity"
             android:screenOrientation="portrait" />
