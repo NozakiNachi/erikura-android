@@ -47,7 +47,6 @@
                     android:text="@string/email" />
 
                 <EditText
-                    android:id="@+id/registerEmail_editText"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     style="@style/textField"
@@ -57,7 +56,6 @@
                     android:hint="@string/register_email_hint" />
 
                 <TextView
-                    android:id="@+id/registerEmail_errorTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -118,7 +116,6 @@
             </LinearLayout>
 
                 <Button
-                    android:id="@+id/registerEmail_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
