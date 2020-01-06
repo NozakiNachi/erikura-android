@@ -22,6 +22,8 @@
     <string name="registerEmailFinished_clickEmailLink">お届けしたメール内の\nURLをクリックして\n会員登録を続けてください。</string>
     <string name="registerEmailFinished_limit">※メールに記載された登録URLの有効期限は6時間です。\n有効期限が切れた場合は再度新規会員登録を実施してください。</string>
     <string name="registerEmailFinished_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
+    <string name="registerPassword_caption">パスワードを入力してください。</string>
+    <string name="registerPassword_notice">※6文字以上の半角英数で入力してください。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -34,9 +36,11 @@
     <!-- ボタンのラベル -->
     <string name="register">会員登録（無料）</string>
     <string name="send_email">仮登録メールを送信</string>
+    <string name="next">次へ</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
     <string name="register_email_hint">例）sample@erikura.net</string>
     <string name="password_hint">パスワード</string>
+    <string name="register_password_hint">6文字以上の半角英数</string>
 </resources>
