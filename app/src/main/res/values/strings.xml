@@ -7,6 +7,10 @@
 
     <string name="common_buttons_close">閉じる</string>
 
+    <!-- スタート画面 -->
+    <string name="start_startWithoutLogin"><a href="">スキップして近くの仕事を探す</a></string>
+
+    <!-- ログイン画面 -->
     <string name="login_caption">ログイン</string>
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
@@ -39,4 +43,5 @@
     <string name="email_hint">sample@erikura.net</string>
     <string name="register_email_hint">例）sample@erikura.net</string>
     <string name="password_hint">パスワード</string>
+    <string name="title_activity_map_view">Map</string>
 </resources>

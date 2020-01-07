@@ -7,8 +7,11 @@ import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.presenters.activities.SendEmailEventHandlers
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
 class Api(var activity: AppCompatActivity) {
     companion object {
@@ -17,6 +20,8 @@ class Api(var activity: AppCompatActivity) {
         val erikuraApiService: IErikuraApiService get() {
             return ErikuraApplication.instance.erikuraComponent.erikuraApiService()
         }
+
+        val isLogin: Boolean get() = (userSession != null)
     }
 
 // FIXME: 送信中のリクエストのキャンセルってどうするのか？
@@ -75,6 +80,43 @@ class Api(var activity: AppCompatActivity) {
                     else {
                         val id = it.body.id
                         activity.runOnUiThread { onComplete(id) }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
+    fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
+        erikuraApiService.searchJob(
+            period = query.period.value,
+            latitude = query.latitude ?: MapViewActivity.defaultLatLng.latitude,
+            longitude = query.longitude ?: MapViewActivity.defaultLatLng.longitude,
+            sortBy = query.sortBy.value,
+            minimumReward = query.minimumReward,
+            maximumReward = query.maximumReward,
+            minimumWorkingTime = query.minimumWorkingTime,
+            maximumWorkingTime = query.maximumWorkingTime,
+            jobKind = query.jobKind?.id)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val jobs = it.body.jobs
+                        activity.runOnUiThread {
+                            onComplete(jobs)
+                        }
                     }
                 },
                 onError = { throwable ->

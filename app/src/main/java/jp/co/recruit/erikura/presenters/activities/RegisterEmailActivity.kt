@@ -36,7 +36,6 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers, TextW
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register_email)
 
         val binding: ActivityRegisterEmailBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_email)
         binding.viewModel = viewModel

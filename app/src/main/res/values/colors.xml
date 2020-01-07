@@ -6,6 +6,7 @@
     <!-- Main Color -->
     <color name="pumpkinOrange">#FF7300</color>           <!-- pumpkinOrange -->
     <color name="white">#FFFFFF</color>            <!-- white -->
+    <color name="black">#1b1b1b</color>            <!-- blackTwo -->
     <color name="blackTwo">#222222</color>            <!-- blackTwo -->
     <color name="paleGrey">#EEF3F5</color>        <!-- paleGrey -->
     <!-- Sub Color -->
@@ -17,4 +18,5 @@
     <!-- Accent Color -->
     <color name="coral">#FF4242</color>              <!-- coral -->
     <color name="vibrantGreen">#16C300</color>            <!-- vibrantGreen -->
+    <color name="waterBlue">#1086dd</color>
 </resources>
