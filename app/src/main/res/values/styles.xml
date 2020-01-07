@@ -122,7 +122,7 @@
     <style name="nextButton" parent="Widget.AppCompat.Button.Borderless">
         <item name="android:layout_marginRight">20dp</item>
         <item name="android:background">#00000000</item>
-        <item name="android:textColor">@color/topaz</item>
+        <item name="android:textColor">@drawable/next_button_text</item>
         <item name="android:textSize">22dp</item>
         <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>

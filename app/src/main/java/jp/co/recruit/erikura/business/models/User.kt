@@ -1,7 +1,7 @@
 package jp.co.recruit.erikura.business.models
 
 data class User(
-    var id: Int?,
+    var id: Int? = 0,
     var email: String? = null,
     var firstName: String? = null,
     var lastName: String? = null,

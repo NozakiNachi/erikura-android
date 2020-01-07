@@ -24,7 +24,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="erikura" android:host="*" />
-                <data android:pathPrefix="/user/register/password" />
+                <data android:path="/user/register/password" />
             </intent-filter>
         </activity>
         <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" />
