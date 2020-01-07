@@ -17,7 +17,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.RegisterPasswordActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterPasswordActivity">
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="erikura" android:host="*" />
+                <data android:pathPrefix="/user/register/password" />
+            </intent-filter>
+        </activity>
         <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" />
         <activity
             android:name=".presenters.activities.WebViewActivity"
@@ -28,23 +37,15 @@
         <activity
             android:name=".presenters.activities.LoginActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize">
+        </activity>
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <!-- ディープリンクの設定 -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="erikura" android:host="" />
-                <data android:pathPrefix="/user/register/password" />
             </intent-filter>
         </activity>
     </application>
