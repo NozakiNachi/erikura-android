@@ -11,6 +11,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -49,7 +50,8 @@ class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandl
     override fun onClickNext(view: View) {
         Log.v("PASSWORD", viewModel.password.value ?: "")
         user.password = viewModel.password.value
-
+        val intent: Intent = Intent(this@RegisterPasswordActivity, RegisterNameActivity::class.java)
+        startActivity(intent)
     }
 }
 
@@ -74,11 +76,11 @@ class RegisterPasswordViewModel: ViewModel() {
             errorVisibility.value = 8
         }else if(valid && !(pattern.matcher(password.value).find())) {
             valid = false
-            errorMsg.value = "6文字以上の半角英数で入力してください。"
+            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
             errorVisibility.value = 0
         }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
             valid = false
-            errorMsg.value = "英字、数字をそれぞれ1文字上入力してください。"
+            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
             errorVisibility.value = 0
         } else {
             valid = true
