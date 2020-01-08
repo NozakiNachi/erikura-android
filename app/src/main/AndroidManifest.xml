@@ -2,15 +2,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="jp.co.recruit.erikura">
-
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
          Google Maps Android API v2, but you must specify either coarse or fine
          location permissions for the 'MyLocation' functionality.
     -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
-    <!-- 精細な位置情報(GPS) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 精細な位置情報(GPS) -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- おおよその位置情報(ネットワーク基地局) -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 完全なネットワークアクセス -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -24,7 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".presenters.activities.RegisterBirthdayActivity"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -36,13 +33,12 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
 
         <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" />
-        <activity android:name=".presenters.activities.RegisterNameActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterNameActivity" />
         <activity android:name=".presenters.activities.RegisterPasswordActivity">
 
             <!-- ディープリンクの設定 -->
@@ -67,9 +63,7 @@
         <activity
             android:name=".presenters.activities.LoginActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
-
-        <!-- スタート画面 -->
+            android:windowSoftInputMode="adjustResize" /> <!-- スタート画面 -->
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
@@ -79,14 +73,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- ============================================================ -->
+        </activity> <!-- ============================================================ -->
         <!-- 案件検索関連 -->
         <activity
             android:name=".presenters.activities.job.MapViewActivity"
-            android:label="@string/title_activity_map_view"></activity>
-
+            android:label="@string/title_activity_map_view" />
     </application>
 
 </manifest>
