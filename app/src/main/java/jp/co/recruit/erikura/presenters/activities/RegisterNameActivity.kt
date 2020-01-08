@@ -30,7 +30,7 @@ class RegisterNameActivity : AppCompatActivity(), RegisterNameEventHandlers {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_register_name)
-        
+
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
 
