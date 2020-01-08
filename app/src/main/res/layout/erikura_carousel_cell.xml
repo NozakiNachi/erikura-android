@@ -1,171 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
-    
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/erikura_carousel_cell_timelimit_pane"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:background="@drawable/erikura_carousel_knob"
-        android:elevation="4dp">
-        <TextView
-            android:id="@+id/erikura_carousel_cell_timelimit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="作業終了まで1日と27時間"
-            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-            android:textColor="@color/coral"
-            android:textSize="12dp"
-            android:firstBaselineToTopHeight="0dp"
-            android:lastBaselineToBottomHeight="0dp"
-            android:includeFontPadding="false"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="4dp"
-            />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/erikura_carousel_cell_detail_pane"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/erikura_carousel_body"
-        android:elevation="4dp">
-        
-        <TextView
-            android:id="@+id/erikura_carousel_cell_title"
+        android:orientation="vertical"
+        >
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/erikura_carousel_cell_timelimit_pane"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@drawable/erikura_carousel_knob"
+            android:elevation="4dp">
+            <TextView
+                android:id="@+id/erikura_carousel_cell_timelimit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="作業終了まで1日と27時間"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                android:textColor="@color/coral"
+                android:textSize="12dp"
+                android:firstBaselineToTopHeight="0dp"
+                android:lastBaselineToBottomHeight="0dp"
+                android:includeFontPadding="false"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="4dp"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/erikura_carousel_cell_detail_pane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-            android:textSize="16dp"
-            android:firstBaselineToTopHeight="0dp"
-            android:lastBaselineToBottomHeight="0dp"
-            android:includeFontPadding="false"
-            android:textColor="@color/black"
-            android:text="【簡易清掃】マンション・アパート"
-            />
-        
-        <ImageView
-            android:id="@+id/erikura_carousel_cell_image"
-            android:layout_width="77dp"
-            android:layout_height="52dp"
-            app:layout_constraintTop_toBottomOf="@id/erikura_carousel_cell_title"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="15dp"
-            android:background="@color/blackTwo"
-            />
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/erikura_carousel_cell_title"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="102dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="10dp"
-            android:padding="0dp"
-            android:orientation="vertical"
-            >
+            android:background="@drawable/erikura_carousel_body"
+            android:elevation="4dp">
+
+            <TextView
+                android:id="@+id/erikura_carousel_cell_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="10dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                android:textSize="16dp"
+                android:firstBaselineToTopHeight="0dp"
+                android:lastBaselineToBottomHeight="0dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/black"
+                android:text="【簡易清掃】マンション・アパート"
+                android:maxLines="1"
+                android:ellipsize="end"
+                />
+
+            <ImageView
+                android:id="@+id/erikura_carousel_cell_image"
+                android:layout_width="77dp"
+                android:layout_height="52dp"
+                app:layout_constraintTop_toBottomOf="@id/erikura_carousel_cell_title"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="15dp"
+                android:background="@color/blackTwo"
+                />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_margin="0dp"
-                android:padding="0dp">
+                app:layout_constraintTop_toBottomOf="@id/erikura_carousel_cell_title"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="8dp"
+                android:layout_marginLeft="102dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginBottom="10dp"
+                android:padding="0dp"
+                android:orientation="vertical"
+                >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_margin="0dp"
+                    android:padding="0dp">
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:src="@drawable/ic_clock_2x"
-                    />
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/ic_clock_2x"
+                        />
+
+                    <TextView
+                        android:id="@+id/erikura_carousel_cell_working_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="20分"
+                        android:textSize="18dp"
+                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/black"
+                        android:gravity="center"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+
+                    <ImageView
+                        android:layout_width="10dp"
+                        android:layout_height="16dp"
+                        android:layout_marginLeft="24dp"
+                        android:layout_marginTop="2dp"
+                        android:layout_marginBottom="2dp"
+                        android:src="@drawable/yen"
+                        />
+
+                    <TextView
+                        android:id="@+id/erikura_carousel_cell_reward"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="500円"
+                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                        android:textSize="18dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:layout_marginLeft="5dp"
+                        android:textColor="@color/black"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/erikura_carousel_cell_working_time"
+                    android:id="@+id/erikura_carousel_cell_working_finish_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="20分"
-                    android:textSize="18dp"
+                    android:layout_marginTop="9dp"
                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                    android:layout_marginLeft="5dp"
-                    android:textColor="@color/black"
-                    android:gravity="center"
+                    android:textSize="12dp"
                     android:firstBaselineToTopHeight="0dp"
                     android:lastBaselineToBottomHeight="0dp"
                     android:includeFontPadding="false"
-                    />
-
-                <ImageView
-                    android:layout_width="10dp"
-                    android:layout_height="16dp"
-                    android:layout_marginLeft="24dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginBottom="2dp"
-                    android:src="@drawable/yen"
+                    android:textColor="@color/black"
+                    android:text="〜 2019/12/10 00:00"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     />
 
                 <TextView
-                    android:id="@+id/erikura_carousel_cell_reward"
+                    android:id="@+id/erikura_carousel_cell_working_place"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="500円"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                    android:textSize="18dp"
+                    android:textSize="12dp"
                     android:firstBaselineToTopHeight="0dp"
                     android:lastBaselineToBottomHeight="0dp"
                     android:includeFontPadding="false"
-                    android:layout_marginLeft="5dp"
                     android:textColor="@color/black"
+                    android:text="東京都狛江市猪方1-8-3"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     />
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/erikura_carousel_cell_working_finish_at"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="9dp"
-                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                android:textSize="12dp"
-                android:firstBaselineToTopHeight="0dp"
-                android:lastBaselineToBottomHeight="0dp"
-                android:includeFontPadding="false"
-                android:textColor="@color/black"
-                android:text="〜 2019/12/10 00:00"
-                />
-
-            <TextView
-                android:id="@+id/erikura_carousel_cell_working_place"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="10dp"
-                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                android:textSize="12dp"
-                android:firstBaselineToTopHeight="0dp"
-                android:lastBaselineToBottomHeight="0dp"
-                android:includeFontPadding="false"
-                android:textColor="@color/black"
-                android:text="東京都狛江市猪方1-8-3"
-                />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
-
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</layout>
