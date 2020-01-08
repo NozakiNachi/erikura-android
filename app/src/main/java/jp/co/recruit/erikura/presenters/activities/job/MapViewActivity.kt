@@ -96,17 +96,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             jobs.first().let {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), defaultZoom))
             }
-
             val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-            carouselView.setHasFixedSize(true)
-            val layoutManager = LinearLayoutManager(this)
-            layoutManager.orientation = LinearLayoutManager.HORIZONTAL
-            carouselView.layoutManager = layoutManager
-            carouselView.adapter = ErikuraCarouselAdaptor(jobs)
-            carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
-
-            val snapHelper = LinearSnapHelper()
-            snapHelper.attachToRecyclerView(carouselView)
+            if (carouselView.adapter is ErikuraCarouselAdaptor) {
+                var adapter = carouselView.adapter as ErikuraCarouselAdaptor
+                adapter.data = jobs
+                adapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -127,6 +122,14 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
+        carouselView.setHasFixedSize(true)
+        carouselView.adapter = ErikuraCarouselAdaptor(listOf())
+        carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
+
+        val snapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(carouselView)
 
         // Client の準備
         fusedClient = LocationServices.getFusedLocationProviderClient(this)
@@ -311,7 +314,7 @@ class ErikuraCarouselViewHolder(itemView: View): RecyclerView.ViewHolder(itemVie
     }
 }
 
-class ErikuraCarouselAdaptor(val data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+class ErikuraCarouselAdaptor(var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
         val v: View = LayoutInflater.from(parent.context).inflate(R.layout.erikura_carousel_cell, parent, false)
         return ErikuraCarouselViewHolder(v)
