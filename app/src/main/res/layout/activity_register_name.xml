@@ -5,9 +5,11 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.RegisterNameViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.activities.RegisterNameEventHandlers" />
@@ -21,97 +23,94 @@
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:background="@color/white"
+            android:fillViewport="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:background="@color/white"
-            android:fillViewport="true">
-            <FrameLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" >
+            app:layout_constraintTop_toTopOf="parent">
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="190dp"
-                    android:background="@color/paleGrey">
-
-                </View>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/paleGrey"
                     android:orientation="vertical">
-
                     <Button
+                        style="@style/nextButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="right"
                         android:layout_marginTop="60dp"
                         android:layout_marginRight="20dp"
-                        android:layout_gravity="right"
-                        style="@style/nextButton"
                         android:enabled="@{viewModel.isNextButtonEnabled()}"
-                        android:onClick="@{handlers::onClickNext}"
-                        />
+                        android:onClick="@{handlers::onClickNext}" />
 
                     <TextView
+                        style="@style/titleLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
-                        style="@style/titleLabel"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/registerName_caption" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/fieldLabel"
-                        android:layout_marginTop="40dp"
-                        android:text="@string/lastName" />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="62dp"
-                        style="@style/textField"
-                        android:layout_marginTop="10dp"
-                        android:text="@={viewModel.lastName}"
-                        android:hint="@string/register_last_name_hint" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:visibility="@{viewModel.lastNameErrorVisibility}"
-                        style="@style/errorField"
-                        android:text="@={viewModel.lastNameErrorMsg}"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        style="@style/fieldLabel"
-                        android:layout_marginTop="40dp"
-                        android:text="@string/firstName" />
-
-                    <EditText
-                        android:layout_width="match_parent"
-                        android:layout_height="62dp"
-                        style="@style/textField"
-                        android:layout_marginTop="10dp"
-                        android:text="@={viewModel.firstName}"
-                        android:hint="@string/register_first_name_hint" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:visibility="@{viewModel.firstNameErrorVisibility}"
-                        style="@style/errorField"
-                        android:text="@={viewModel.firstNameErrorMsg}"
-                        />
-
                 </LinearLayout>
 
-            </FrameLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_triangle"/>
+
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/lastName" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_last_name_hint"
+                    android:text="@={viewModel.lastName}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.lastNameErrorMsg}"
+                    android:visibility="@{viewModel.lastNameErrorVisibility}" />
+
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/firstName" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_first_name_hint"
+                    android:text="@={viewModel.firstName}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.firstNameErrorMsg}"
+                    android:visibility="@{viewModel.firstNameErrorVisibility}" />
+
+            </LinearLayout>
         </ScrollView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
