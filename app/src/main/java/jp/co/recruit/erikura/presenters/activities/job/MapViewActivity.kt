@@ -2,14 +2,13 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.content.Context
 import android.content.pm.PackageManager
-import android.content.res.Resources
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.format.DateUtils
 import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,15 +16,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.Px
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.*
@@ -35,17 +31,25 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import io.reactivex.Observable
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.JobKind
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
 import jp.co.recruit.erikura.databinding.ErikuraCarouselCellBinding
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import org.apache.commons.io.IOUtils
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
 import java.text.SimpleDateFormat
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
@@ -127,7 +131,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
         val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
         carouselView.setHasFixedSize(true)
-        carouselView.adapter = ErikuraCarouselAdaptor(listOf())
+        carouselView.adapter = ErikuraCarouselAdaptor(this, listOf())
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         if (carouselView.adapter is ErikuraCarouselAdaptor) {
             var adapter = carouselView.adapter as ErikuraCarouselAdaptor
@@ -232,7 +236,7 @@ interface MapViewEventHandlers {
 //    fun onClickUnreachLink(view: View)
 }
 
-class ErikuraCarouselViewHolder(val binding: ErikuraCarouselCellBinding): RecyclerView.ViewHolder(binding.root) {
+class ErikuraCarouselViewHolder(val activity: AppCompatActivity, val binding: ErikuraCarouselCellBinding): RecyclerView.ViewHolder(binding.root) {
     var timeLimit: TextView = itemView.findViewById(R.id.erikura_carousel_cell_timelimit)
     var title: TextView = itemView.findViewById(R.id.erikura_carousel_cell_title)
     var image: ImageView = itemView.findViewById(R.id.erikura_carousel_cell_image)
@@ -327,16 +331,25 @@ class ErikuraCarouselViewHolder(val binding: ErikuraCarouselCellBinding): Recycl
         val sd = SimpleDateFormat("YYYY/MM/dd HH:mm")
         workingFinishAt.text = "〜" + sd.format(job.workingFinishAt)
         workingPlace.text = job.workingPlace
+
+        // ダウンロード
+        job.thumbnailUrl?.let {
+            Api(activity).downloadResource(URL(it), createTempFile()) { file ->
+                // 画像読み込み
+                val bitmap = BitmapFactory.decodeFile(file.path)
+                image.setImageBitmap(bitmap)
+            }
+        }
     }
 }
 
-class ErikuraCarouselAdaptor(var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+class ErikuraCarouselAdaptor(val activity: AppCompatActivity, var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
     var onClickListner: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding: ErikuraCarouselCellBinding = ErikuraCarouselCellBinding.inflate(layoutInflater, parent, false)
-        return ErikuraCarouselViewHolder(binding)
+        return ErikuraCarouselViewHolder(activity, binding)
     }
 
     override fun onBindViewHolder(holder: ErikuraCarouselViewHolder, position: Int) {
