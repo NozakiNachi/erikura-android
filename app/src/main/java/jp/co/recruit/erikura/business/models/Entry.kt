@@ -25,7 +25,6 @@ data class Entry(
     var createdAt: Date,
     var owner: Boolean = false
 ) {
-    // isStarted
-    // isFinished
-    //
+    val isStarted: Boolean get() = (startedAt != null)
+    val isFinished: Boolean get() = (finishedAt != null)
 }

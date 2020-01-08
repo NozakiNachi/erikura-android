@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
@@ -13,6 +12,7 @@
         <item name="android:windowContentOverlay">@null</item>
 
         <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
+
     </style>
 
     <style name="AppTheme.Launcher">

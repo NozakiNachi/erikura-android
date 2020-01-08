@@ -7,6 +7,10 @@
 
     <string name="common_buttons_close">閉じる</string>
 
+    <!-- スタート画面 -->
+    <string name="start_startWithoutLogin"><a href="">スキップして近くの仕事を探す</a></string>
+
+    <!-- ログイン画面 -->
     <string name="login_caption">ログイン</string>
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
@@ -52,4 +56,5 @@
     <string name="register_password_hint">6文字以上の半角英数</string>
     <string name="register_last_name_hint">例）田中</string>
     <string name="register_first_name_hint">例）太郎</string>
+    <string name="title_activity_map_view">Map</string>
 </resources>
