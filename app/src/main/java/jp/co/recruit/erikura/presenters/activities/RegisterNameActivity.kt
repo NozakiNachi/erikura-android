@@ -64,34 +64,8 @@ class RegisterNameViewModel: ViewModel() {
 
     private fun isValid(): Boolean {
         var valid = true
-
-        if (valid && (lastName.value?.isBlank() ?:true || firstName.value?.isBlank() ?:true)) {
-            valid = false
-            lastNameErrorMsg.value = ""
-            lastNameErrorVisibility.value = 8
-        } else if (valid && !(lastName.value?.length ?: 0 < 30)) {
-            valid = false
-            lastNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
-            lastNameErrorVisibility.value = 0
-        } else {
-            valid = true
-            lastNameErrorMsg.value = ""
-            lastNameErrorVisibility.value = 8
-        }
-
-        if (valid && firstName.value?.isBlank() ?:true) {
-            valid = false
-            firstNameErrorMsg.value = ""
-            firstNameErrorVisibility.value = 8
-        } else if (valid && !(firstName.value?.length ?: 0 < 30)) {
-            valid = false
-            firstNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
-            firstNameErrorVisibility.value = 0
-        } else {
-            valid = true
-            firstNameErrorMsg.value = ""
-            firstNameErrorVisibility.value = 8
-        }
+        valid = isValidFirstName() && valid
+        valid = isValidLastName() && valid
 
         return valid
     }
