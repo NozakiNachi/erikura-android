@@ -24,14 +24,15 @@ class RegisterNameActivity : AppCompatActivity(), RegisterNameEventHandlers {
         ViewModelProvider(this).get(RegisterNameViewModel::class.java)
     }
 
-    val user: User = User()
+    var user: User = User()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_register_name)
-
-        // FIXME: 前画面からユーザ情報を受け取る
+        
+        // ユーザ情報を受け取る
+        user = intent.getParcelableExtra("user")
 
         val binding: ActivityRegisterNameBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_name)
         binding.lifecycleOwner = this

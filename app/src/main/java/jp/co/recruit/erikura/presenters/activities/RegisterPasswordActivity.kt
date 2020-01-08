@@ -51,7 +51,7 @@ class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandl
         Log.v("PASSWORD", viewModel.password.value ?: "")
         user.password = viewModel.password.value
         val intent: Intent = Intent(this@RegisterPasswordActivity, RegisterNameActivity::class.java)
-        // FIXME: ユーザ情報を渡す
+        intent.putExtra("user", user)
         startActivity(intent)
     }
 }
