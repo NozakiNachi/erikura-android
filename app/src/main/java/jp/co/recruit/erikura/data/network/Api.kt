@@ -130,6 +130,32 @@ class Api(var activity: AppCompatActivity) {
             )
     }
 
+    fun registerConfirm(confirmationToken: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (id: Int) -> Unit) {
+        erikuraApiService.registerConfirm(ConfirmationTokenRequest(confirmationToken = confirmationToken))
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val id = it.body.id
+                        activity.runOnUiThread { onComplete(id) }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
     fun displayErrorAlert(messages: List<String>? = null, caption: String? = null) {
         activity.runOnUiThread {
             val alertDialog = AlertDialog.Builder(activity)

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="jp.co.recruit.erikura">
 
     <!--
@@ -41,6 +42,22 @@
             android:value="@integer/google_play_services_version"/>
 
         <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" />
+        <activity android:name=".presenters.activities.RegisterNameActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterPasswordActivity">
+
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:path="/user/register/password" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".presenters.activities.WebViewActivity"
             android:screenOrientation="portrait" />

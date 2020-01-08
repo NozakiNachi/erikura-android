@@ -47,7 +47,6 @@
                     android:text="@string/email" />
 
                 <EditText
-                    android:id="@+id/registerEmail_editText"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     style="@style/textField"
@@ -57,16 +56,14 @@
                     android:hint="@string/register_email_hint" />
 
                 <TextView
-                    android:id="@+id/registerEmail_errorTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:textSize="0dp"
-                    android:textColor="@color/colorAccent"
-                    android:background="#fff1f1"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{view_model.errorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={view_model.errorMsg}"
                     />
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -119,13 +116,13 @@
             </LinearLayout>
 
                 <Button
-                    android:id="@+id/registerEmail_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
                     style="@style/primaryButton"
                     android:text="@string/send_email"
-                    android:onClick="@{handlers.onClickSendEmail}"
+                    android:enabled="@{view_model.isRegisterEmailButtonEnabled()}"
+                    android:onClick="@{handlers::onClickSendEmail}"
                     />
 
 
