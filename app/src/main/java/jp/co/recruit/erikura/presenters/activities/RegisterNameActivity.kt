@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,10 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterNameBinding
-import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
-import java.util.regex.Pattern
 
 class RegisterNameActivity : AppCompatActivity(), RegisterNameEventHandlers {
     private val viewModel: RegisterNameViewModel by lazy {
@@ -30,7 +26,7 @@ class RegisterNameActivity : AppCompatActivity(), RegisterNameEventHandlers {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_register_name)
-        
+
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
 
@@ -44,9 +40,12 @@ class RegisterNameActivity : AppCompatActivity(), RegisterNameEventHandlers {
 
     override fun onClickNext(view: View) {
         Log.v("LastName", viewModel.lastName.value ?: "")
-        user.password = viewModel.lastName.value
+        user.lastName = viewModel.lastName.value
         Log.v("FirstName", viewModel.firstName.value ?: "")
-        user.password = viewModel.firstName.value
+        user.firstName = viewModel.firstName.value
+        val intent: Intent = Intent(this@RegisterNameActivity, RegisterBirthdayActivity::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
     }
 }
 
