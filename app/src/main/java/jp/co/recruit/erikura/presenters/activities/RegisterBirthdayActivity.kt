@@ -58,6 +58,9 @@ class RegisterBirthdayActivity : AppCompatActivity(), RegisterBirthdayEventHandl
     override fun onClickNext(view: View) {
         Log.v("BIRTHDAY", viewModel.birthday.value ?: "")
         user.dateOfBirth = viewModel.birthday.value
+        val intent: Intent = Intent(this@RegisterBirthdayActivity, RegisterGenderActivity::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
     }
 
     override fun onClickEditView(view: View) {
