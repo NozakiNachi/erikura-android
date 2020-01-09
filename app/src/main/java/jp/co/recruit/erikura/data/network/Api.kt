@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.data.network
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
@@ -12,6 +13,12 @@ import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.presenters.activities.SendEmailEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import okhttp3.Request
+import okhttp3.Response
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.IOException
+import java.net.URL
 
 class Api(var activity: AppCompatActivity) {
     companion object {
@@ -151,6 +158,48 @@ class Api(var activity: AppCompatActivity) {
                         (onError ?: { msgs -> displayErrorAlert(msgs) })(
                             listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
                         )
+                    }
+                }
+            )
+    }
+
+    fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+        // OkHttp3 クライアントを作成します
+        val client = ErikuraApiServiceBuilder().httpBuilder.build()
+        val observable: Observable<Response> = Observable.create {
+            try {
+                val request = Request.Builder().url(url).get().build()
+                val response = client.newCall(request).execute()
+                it.onNext(response)
+                it.onComplete()
+            }
+            catch (e: IOException) {
+                Log.e("Error in downloading resource", e.message, e)
+                it.onError(e)
+            }
+        }
+
+        observable.subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = { response ->
+                    if (response.isSuccessful) {
+                        response.body?.let { body ->
+                            destination.outputStream().use { os ->
+                                IOUtils.copy(body.byteStream(), os)
+                            }
+                        }
+                        onComplete(destination)
+                    }
+                    else {
+                        onError?.let {
+                            it(listOf("Download Error"))
+                        }
+                    }
+                },
+                onError = { e ->
+                    Log.e("Download Error", e.message, e)
+                    onError?.let {
+                        it(listOf(e.message ?: "Download Error"))
                     }
                 }
             )
