@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -17,11 +16,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import java.util.*
 import jp.co.recruit.erikura.databinding.ActivityRegisterBirthdayBinding
-
-
-
-
-
 
 class RegisterBirthdayActivity : AppCompatActivity(), RegisterBirthdayEventHandlers {
     private val viewModel: RegisterBirthdayViewModel by lazy {
@@ -37,7 +31,8 @@ class RegisterBirthdayActivity : AppCompatActivity(), RegisterBirthdayEventHandl
             calender.set(Calendar.MONTH, monthOfYear)
             calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            viewModel.birthday.value = String.format("%d / %02d / %02d", year, monthOfYear+1, dayOfMonth)
+            viewModel.birthday.value =
+                String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,32 +43,41 @@ class RegisterBirthdayActivity : AppCompatActivity(), RegisterBirthdayEventHandl
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
 
-        val binding: ActivityRegisterBirthdayBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_birthday)
+        val binding: ActivityRegisterBirthdayBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_register_birthday)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
 
         calender.set(Calendar.YEAR, 1980)
-        calender.set(Calendar.MONTH, 1-1)
+        calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
-        viewModel.birthday.value = String.format("%d / %02d / %02d", 1980, 1, 1)
+        viewModel.birthday.value = String.format("%d/%02d/%02d", 1980, 1, 1)
     }
 
     override fun onClickNext(view: View) {
-
+        Log.v("BIRTHDAY", viewModel.birthday.value ?: "")
+        user.dateOfBirth = viewModel.birthday.value
     }
 
     override fun onClickEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
-        DatePickerDialog(
+        val dpd = DatePickerDialog(
             this@RegisterBirthdayActivity, date, calender
                 .get(Calendar.YEAR), calender.get(Calendar.MONTH),
             calender.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        )
+
+        val dp = dpd.datePicker
+        val maxDate: Calendar = Calendar.getInstance()
+        maxDate.add(Calendar.YEAR, -18)
+        dp.maxDate = maxDate.timeInMillis
+
+        dpd.show()
     }
 }
 
-class RegisterBirthdayViewModel: ViewModel(){
+class RegisterBirthdayViewModel : ViewModel() {
     val birthday: MutableLiveData<String> = MutableLiveData()
 }
 
