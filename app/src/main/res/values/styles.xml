@@ -68,6 +68,14 @@
         <item name="android:inputType">textPassword</item>
     </style>
 
+    <!-- セレクトボックス -->
+    <style name="selectField" parent="textField">
+        <item name="android:drawableRight">@drawable/arrow_under</item>
+        <item name="android:drawablePadding">22dp</item>
+        <item name="android:clickable">true</item>
+        <item name="android:editable">false</item>
+    </style>
+
     <!-- エラーフィールド -->
     <style name="errorField">
         <item name="android:layout_marginLeft">20dp</item>

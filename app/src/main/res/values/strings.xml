@@ -29,6 +29,8 @@
     <string name="registerPassword_caption">パスワードを入力してください。</string>
     <string name="registerPassword_notice">※6文字以上の半角英数で入力してください。</string>
     <string name="registerName_caption">お名前を教えてください。</string>
+    <string name="registerBirthday_caption">生年月日を教えてください。</string>
+    <string name="registerBirthday_notice">※エリクラは18歳未満の方はご利用できません。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -36,6 +38,7 @@
     <string name="login">ログイン</string>
     <string name="lastName">姓</string>
     <string name="firstName">名</string>
+    <string name="birthday">生年月日</string>
 
     <!-- 入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
