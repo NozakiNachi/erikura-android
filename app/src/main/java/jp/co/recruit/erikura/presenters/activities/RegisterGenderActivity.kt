@@ -7,15 +7,12 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.databinding.ActivityRegisterGenderBinding
 
 class RegisterGenderActivity : AppCompatActivity(), RegisterGenderEventHandlers {
 
@@ -24,10 +21,14 @@ class RegisterGenderActivity : AppCompatActivity(), RegisterGenderEventHandlers 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register_gender)
+        //setContentView(R.layout.activity_register_gender)
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
+
+        val binding: ActivityRegisterGenderBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_gender)
+        binding.lifecycleOwner = this
+        binding.handlers = this
     }
 
     override fun onClickMale(view: View) {
@@ -43,7 +44,9 @@ class RegisterGenderActivity : AppCompatActivity(), RegisterGenderEventHandlers 
     }
 
     fun moveToNext(user: User) {
-
+        val intent: Intent = Intent(this@RegisterGenderActivity, RegisterAddressActivity::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
     }
 }
 

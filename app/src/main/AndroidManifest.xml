@@ -21,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.RegisterGenderActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterAddressActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterGenderActivity" />
         <activity android:name=".presenters.activities.RegisterBirthdayActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
