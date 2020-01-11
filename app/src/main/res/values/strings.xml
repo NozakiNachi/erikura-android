@@ -32,6 +32,8 @@
     <string name="registerBirthday_caption">生年月日を教えてください。</string>
     <string name="registerBirthday_notice">※エリクラは18歳未満の方はご利用できません。</string>
     <string name="registerGender_caption">性別を教えてください。</string>
+    <string name="registerAddress_caption">ご住所を教えてください。</string>
+    <string name="registerAddress_notice">※ハイフンは不要です。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -40,6 +42,10 @@
     <string name="lastName">姓</string>
     <string name="firstName">名</string>
     <string name="birthday">生年月日</string>
+    <string name="postalCode">郵便番号</string>
+    <string name="prefecture">都道府県</string>
+    <string name="city">ご住所</string>
+    <string name="street">番地以降</string>
 
     <!-- 入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
@@ -47,6 +53,10 @@
     <string name="password_pattern_error">英字、数字をそれぞれ1文字上入力してください。</string>
     <string name="last_name_count_error">姓は30文字以内で入力してください。</string>
     <string name="first_name_count_error">名は30文字以内で入力してください。</string>
+    <string name="postal_code_pattern_error">郵便番号はハイフンを含めずに入力してください。</string>
+    <string name="postal_code_count_error">郵便番号は7桁で入力してください。</string>
+    <string name="city_count_error">ご住所は20文字以内で入力してください。</string>
+    <string name="street_count_error">番地以降は100文字以内で入力してください。</string>
 
     <!-- ボタンのラベル -->
     <string name="register">会員登録（無料）</string>
@@ -63,4 +73,8 @@
     <string name="register_last_name_hint">例）田中</string>
     <string name="register_first_name_hint">例）太郎</string>
     <string name="title_activity_map_view">Map</string>
+    <string name="register_postal_code_hint">例）1010021</string>
+    <string name="register_prefecture_hint">選択してください</string>
+    <string name="register_city_hint">例）千代田区外神田</string>
+    <string name="register_street_hint">例）1-2-3</string>
 </resources>
