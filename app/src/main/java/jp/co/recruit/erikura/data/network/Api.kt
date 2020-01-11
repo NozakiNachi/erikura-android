@@ -163,6 +163,34 @@ class Api(var activity: AppCompatActivity) {
             )
     }
 
+    fun postalCode(postalCode: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (prefecture: String?, city: String?, street: String?) -> Unit) {
+        erikuraApiService.postalCode(postalCode)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val prefecture = it.body.prefecture
+                        val city = it.body.city
+                        val street = it.body.prefecture
+                        activity.runOnUiThread { onComplete(prefecture, city, street) }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
         // OkHttp3 クライアントを作成します
         val client = ErikuraApiServiceBuilder().httpBuilder.build()

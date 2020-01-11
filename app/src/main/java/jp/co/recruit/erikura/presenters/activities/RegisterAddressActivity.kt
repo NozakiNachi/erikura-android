@@ -58,6 +58,7 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
         user.street = viewModel.street.value
 
         // FIXME: 電話番号登録画面へ遷移
+
     }
 }
 
@@ -160,8 +161,10 @@ class RegisterAddressViewModel: ViewModel() {
         return valid
     }
 
-    private fun addressAutoComplement() {
-        
+    fun addressAutoComplement() {
+        /*Api(this).postalCode(postalCode.value ?: "") { prefecture, city, street ->
+
+        }*/
     }
 
 }
