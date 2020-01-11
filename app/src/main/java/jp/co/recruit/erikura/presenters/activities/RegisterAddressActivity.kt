@@ -18,12 +18,17 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterAddressBinding
 import java.util.regex.Pattern
 
+
+
+
+
 class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandlers {
     private val viewModel: RegisterAddressViewModel by lazy {
         ViewModelProvider(this).get(RegisterAddressViewModel::class.java)
     }
 
     var user: User = User()
+    val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -45,17 +50,14 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
     override fun onClickNext(view: View) {
         Log.v("POSTCODE", viewModel.postalCode.value ?: "")
         user.postCode = viewModel.postalCode.value
-        Log.v("PREFECTURE", viewModel.prefecture.value ?: "")
-        user.prefecture = viewModel.prefecture.value
+        Log.v("PREFECTURE", prefectureList.getString(viewModel.prefectureId.value ?: 0))
+        user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
         Log.v("CITY", viewModel.city.value ?: "")
         user.city = viewModel.city.value
         Log.v("STREET", viewModel.street.value ?: "")
         user.street = viewModel.street.value
-        // FIXME: 電話番号登録画面へ遷移
-    }
 
-    override fun onClickPrefecture(view: View) {
-        // FIXME: 住所選択セレクトボックスの表示
+        // FIXME: 電話番号登録画面へ遷移
     }
 }
 
@@ -63,7 +65,7 @@ class RegisterAddressViewModel: ViewModel() {
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeErrorMsg: MutableLiveData<String> = MutableLiveData()
     val postalCodeErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val prefecture: MutableLiveData<String> = MutableLiveData()
+    val prefectureId: MutableLiveData<Int> = MutableLiveData()
     val city: MutableLiveData<String> = MutableLiveData()
     val cityErrorMsg: MutableLiveData<String> = MutableLiveData()
     val cityErrorVisibility: MutableLiveData<Int> = MutableLiveData()
@@ -73,7 +75,7 @@ class RegisterAddressViewModel: ViewModel() {
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(postalCode) { result.value = isValid() }
-        result.addSource(prefecture) { result.value = isValid() }
+        result.addSource(prefectureId) { result.value = isValid() }
         result.addSource(city) { result.value = isValid() }
         result.addSource(street) { result.value = isValid() }
     }
@@ -108,15 +110,14 @@ class RegisterAddressViewModel: ViewModel() {
             valid = true
             postalCodeErrorMsg.value = ""
             postalCodeErrorVisibility.value = 8
+
         }
 
         return valid
     }
 
     private fun isValidPrefecture(): Boolean {
-        var valid = true
-
-        return valid
+        return !(prefectureId.value == 0)
     }
 
     private fun isValidCity(): Boolean {
@@ -159,9 +160,12 @@ class RegisterAddressViewModel: ViewModel() {
         return valid
     }
 
+    private fun addressAutoComplement() {
+        
+    }
+
 }
 
 interface RegisterAddressEventHandlers {
     fun onClickNext(view: View)
-    fun onClickPrefecture(view: View)
 }
