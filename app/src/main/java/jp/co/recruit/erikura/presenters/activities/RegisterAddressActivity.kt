@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -41,6 +43,10 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
         viewModel.postalCodeErrorVisibility.value = 8
         viewModel.cityErrorVisibility.value = 8
         viewModel.streetErrorVisibility.value = 8
+
+        val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
+        prefectureSpinner.isFocusable = true
+        prefectureSpinner.isFocusableInTouchMode = true
     }
 
     override fun onClickNext(view: View) {
@@ -60,11 +66,14 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
     }
 
     override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if(!hasFocus) {
+        if(!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
             Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
                 viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
                 viewModel.city.value = city
                 viewModel.street.value = street
+
+                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                streetEditText.requestFocus()
             }
         }
     }
