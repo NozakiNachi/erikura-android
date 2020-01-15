@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.RegisterAddressViewModel" />
+
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.RegisterAddressEventHandlers" />
+    </data>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/white"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/paleGrey"
+                    android:orientation="vertical">
+
+                    <Button
+                        style="@style/nextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginRight="20dp"
+                        android:enabled="@{viewModel.isNextButtonEnabled()}"
+                        android:onClick="@{handlers::onClickNext}" />
+
+                    <TextView
+                        style="@style/titleLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/registerAddress_caption" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_triangle" />
+
+                <!-- 郵便番号 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/postalCode" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_postal_code_hint"
+                    android:inputType="number"
+                    android:text="@={viewModel.postalCode}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.postalCodeErrorMsg}"
+                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+
+                <!-- 都道府県 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/prefecture" />
+
+                <Spinner
+                    style="@style/selectField"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:entries="@array/prefecture_list"
+                    android:spinnerMode="dialog"
+                    android:selectedItemPosition="@={viewModel.prefectureId}"/>
+
+                <!-- ご住所 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/city" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_city_hint"
+                    android:text="@={viewModel.city}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.cityErrorMsg}"
+                    android:visibility="@{viewModel.cityErrorVisibility}" />
+
+                <!-- 番地以降 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/street" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_street_hint"
+                    android:text="@={viewModel.street}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.streetErrorMsg}"
+                    android:visibility="@{viewModel.streetErrorVisibility}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+
+            </LinearLayout>
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

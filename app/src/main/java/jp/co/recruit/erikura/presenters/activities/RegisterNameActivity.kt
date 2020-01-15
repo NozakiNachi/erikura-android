@@ -77,7 +77,7 @@ class RegisterNameViewModel: ViewModel() {
             valid = false
             lastNameErrorMsg.value = ""
             lastNameErrorVisibility.value = 8
-        } else if (valid && !(lastName.value?.length ?: 0 < 30)) {
+        } else if (valid && !(lastName.value?.length ?: 0 <= 30)) {
             valid = false
             lastNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
             lastNameErrorVisibility.value = 0
@@ -97,7 +97,7 @@ class RegisterNameViewModel: ViewModel() {
             valid = false
             firstNameErrorMsg.value = ""
             firstNameErrorVisibility.value = 8
-        } else if (valid && !(firstName.value?.length ?: 0 < 30)) {
+        } else if (valid && !(firstName.value?.length ?: 0 <= 30)) {
             valid = false
             firstNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
             firstNameErrorVisibility.value = 0
