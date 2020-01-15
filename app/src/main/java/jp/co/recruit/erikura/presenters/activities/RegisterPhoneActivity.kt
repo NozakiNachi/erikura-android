@@ -43,7 +43,10 @@ class RegisterPhoneActivity : AppCompatActivity(), RegisterPhoneEventHandlers {
     override fun onClickNext(view: View) {
         Log.v("PHONE", viewModel.phone.value ?: "")
         user.phoneNumber = viewModel.phone.value
-        // FIXME: 職業選択画面へ遷移
+
+        val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
     }
 }
 
