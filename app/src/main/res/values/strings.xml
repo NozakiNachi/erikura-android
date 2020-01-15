@@ -36,6 +36,7 @@
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
     <string name="registerPhone_caption">電話番号を教えてください。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
+    <string name="registerJobStatus_caption">ご職業を教えてください。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -49,6 +50,14 @@
     <string name="city">ご住所</string>
     <string name="street">番地以降</string>
     <string name="phone">電話番号</string>
+    <string name="unemployed">無職</string>
+    <string name="homemaker">専業主婦</string>
+    <string name="freelancer">フリーランサー</string>
+    <string name="student">学生</string>
+    <string name="partTime">パート</string>
+    <string name="employee">会社員</string>
+    <string name="selfEmployed">自営業</string>
+    <string name="otherJob">その他</string>
 
     <!-- 入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
