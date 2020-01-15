@@ -82,5 +82,4 @@
             android:name=".presenters.activities.job.MapViewActivity"
             android:label="@string/title_activity_map_view" />
     </application>
-
 </manifest>

@@ -216,18 +216,24 @@ class Api(var activity: AppCompatActivity) {
                                 IOUtils.copy(body.byteStream(), os)
                             }
                         }
-                        onComplete(destination)
+                        activity.runOnUiThread{
+                            onComplete(destination)
+                        }
                     }
                     else {
-                        onError?.let {
-                            it(listOf("Download Error"))
+                        activity.runOnUiThread {
+                            onError?.let {
+                                it(listOf("Download Error"))
+                            }
                         }
                     }
                 },
                 onError = { e ->
                     Log.e("Download Error", e.message, e)
-                    onError?.let {
-                        it(listOf(e.message ?: "Download Error"))
+                    activity.runOnUiThread {
+                        onError?.let {
+                            it(listOf(e.message ?: "Download Error"))
+                        }
                     }
                 }
             )
