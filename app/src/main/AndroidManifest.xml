@@ -21,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.RegisterAddressActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterPhoneActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterAddressActivity" />
         <activity android:name=".presenters.activities.RegisterGenderActivity" />
         <activity android:name=".presenters.activities.RegisterBirthdayActivity" />
         <!--
