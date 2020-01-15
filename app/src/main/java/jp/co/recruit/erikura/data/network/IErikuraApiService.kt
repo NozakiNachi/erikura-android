@@ -101,7 +101,7 @@ interface IErikuraApiService {
     @PATCH("users/notification")
     fun updateNotificationSetting(@Body request: NotificationSetting): Observable<Response<UserIdResponse>>
 
-    @GET("utils/addresses")
+    @GET("utils/address")
     fun postalCode(@Query("postal_code") postalCode: String): Observable<Response<PostalCodeResponse>>
 
     @GET("utils/bank_information")

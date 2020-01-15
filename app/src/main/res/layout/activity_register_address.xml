@@ -80,7 +80,8 @@
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_postal_code_hint"
                     android:inputType="number"
-                    android:text="@={viewModel.postalCode}" />
+                    android:text="@={viewModel.postalCode}"
+                    android:onFocusChanged="@{handlers::onFocusChanged}"/>
 
                 <TextView
                     style="@style/errorField"
@@ -106,8 +107,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/prefecture_list"
                     android:spinnerMode="dialog"
-                    android:focusable="true"
-                    android:selectedItemPosition="@={viewModel.prefectureId}"/>
+                    android:selectedItemPosition="@={viewModel.prefectureId}" />
 
                 <!-- ご住所 -->
                 <TextView

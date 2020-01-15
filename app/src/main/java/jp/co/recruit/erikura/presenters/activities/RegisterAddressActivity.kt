@@ -22,6 +22,8 @@ import java.util.regex.Pattern
 
 
 
+
+
 class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandlers {
     private val viewModel: RegisterAddressViewModel by lazy {
         ViewModelProvider(this).get(RegisterAddressViewModel::class.java)
@@ -59,6 +61,25 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
 
         // FIXME: 電話番号登録画面へ遷移
 
+    }
+
+    override fun onFocusChanged(view: View, hasFocus: Boolean) {
+        if(!hasFocus) {
+            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                viewModel.city.value = city
+                viewModel.street.value = street
+            }
+        }
+    }
+
+    private fun getPrefectureId(prefecture: String): Int {
+        for (i in 0..47) {
+            if(prefectureList.getString(i).equals(prefecture)) {
+                return i
+            }
+        }
+        return 0
     }
 }
 
@@ -161,14 +182,9 @@ class RegisterAddressViewModel: ViewModel() {
         return valid
     }
 
-    fun addressAutoComplement() {
-        /*Api(this).postalCode(postalCode.value ?: "") { prefecture, city, street ->
-
-        }*/
-    }
-
 }
 
 interface RegisterAddressEventHandlers {
     fun onClickNext(view: View)
+    fun onFocusChanged(view: View, hasFocus: Boolean)
 }
