@@ -15,6 +15,7 @@
     </data>
     
     <FrameLayout
+        android:id="@+id/map_view_top_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -49,19 +50,20 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginLeft="20dp"
                 android:elevation="14dp"
+                android:onClick="@{handlers.onClickSearch}"
                 />
             <!-- 募集中のみチェックボックス -->
             <ImageButton
                 android:layout_width="66dp"
                 android:layout_height="66dp"
-                android:background="#00000000"
-                android:src="@drawable/before_open_2x"
+                android:background="@{viewModel.activeOnlyButtonBackground}"
                 android:scaleType="fitCenter"
                 android:padding="0dp"
                 map:layout_constraintTop_toTopOf="parent"
                 map:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="136dp"
                 android:layout_marginLeft="20dp"
+                android:onClick="@{handlers.onToggleActiveOnly}"
                 />
             <!-- この範囲で再検索ボタン -->
             <Button
@@ -73,6 +75,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 map:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="60dp"
+                android:onClick="@{handlers.onClickReSearch}"
                 />
             <!-- リストボタン -->
             <ImageButton
@@ -87,6 +90,7 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginRight="20dp"
                 android:elevation="4dp"
+                android:onClick="@{handlers.onClickList}"
                 />
             <!-- 現在地ボタン -->
             <ImageButton
@@ -101,6 +105,7 @@
                 android:layout_marginTop="136dp"
                 android:layout_marginRight="20dp"
                 android:elevation="4dp"
+                android:onClick="@{handlers.onClickCurrentLocation}"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -115,6 +120,7 @@
                 map:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="horizontal"
                 />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>

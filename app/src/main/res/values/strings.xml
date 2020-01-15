@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">erikura-android</string>
+    <string name="app_name">エリクラ</string>
 
     <string name="common_captions_apiError">エラーが発生しました。</string>
 
@@ -57,4 +57,7 @@
     <string name="register_last_name_hint">例）田中</string>
     <string name="register_first_name_hint">例）太郎</string>
     <string name="title_activity_map_view">Map</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
