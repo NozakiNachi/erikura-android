@@ -18,12 +18,6 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterAddressBinding
 import java.util.regex.Pattern
 
-
-
-
-
-
-
 class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandlers {
     private val viewModel: RegisterAddressViewModel by lazy {
         ViewModelProvider(this).get(RegisterAddressViewModel::class.java)
@@ -59,7 +53,9 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
         Log.v("STREET", viewModel.street.value ?: "")
         user.street = viewModel.street.value
 
-        // FIXME: 電話番号登録画面へ遷移
+        val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
 
     }
 

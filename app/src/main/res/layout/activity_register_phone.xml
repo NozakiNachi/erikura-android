@@ -78,7 +78,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.phone}"
                     android:hint="@string/register_phone_hint"
-                    android:inputType="phone"/>
+                    android:inputType="number"/>
 
                 <TextView
                     android:layout_width="wrap_content"
