@@ -41,7 +41,16 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
     }
 
     override fun onClickRegister(view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val list: MutableList<String> = mutableListOf()
+        if(viewModel.interestedSmartPhone.value ?: false){ list.add("smart_phone") }
+        if(viewModel.interestedCleaning.value ?: false){ list.add("cleaning") }
+        if(viewModel.interestedWalk.value ?: false){ list.add("walk") }
+        if(viewModel.interestedBicycle.value ?: false){ list.add("bicycle") }
+        if(viewModel.interestedCar.value ?: false){ list.add("car") }
+        user.wishWorks = list
+        Log.v("WISHWORK", list.toString())
+        // FIXME: ユーザ登録Apiの呼び出し
+        // FIXME: 登録完了画面へ遷移
     }
 
     override fun onClickTermsOfService(view: View) {
@@ -64,14 +73,22 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
 }
 
 class RegisterWishWorkViewModel: ViewModel() {
-    val isCheckedSmartPhone: MutableLiveData<Boolean> = MutableLiveData()
-    val isCheckedCleaning: MutableLiveData<Boolean> = MutableLiveData()
-    val isCheckedWalk: MutableLiveData<Boolean> = MutableLiveData()
-    val isCheckedBicycle: MutableLiveData<Boolean> = MutableLiveData()
-    val isCheckedCar: MutableLiveData<Boolean> = MutableLiveData()
+    val interestedSmartPhone: MutableLiveData<Boolean> = MutableLiveData()
+    val interestedCleaning: MutableLiveData<Boolean> = MutableLiveData()
+    val interestedWalk: MutableLiveData<Boolean> = MutableLiveData()
+    val interestedBicycle: MutableLiveData<Boolean> = MutableLiveData()
+    val interestedCar: MutableLiveData<Boolean> = MutableLiveData()
 
     val isRegisterButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.value = isCheckedSmartPhone.value ?:false || isCheckedCleaning.value ?:false || isCheckedWalk.value ?:false || isCheckedBicycle.value ?:false || isCheckedCar.value ?:false
+        result.addSource(interestedSmartPhone) {result.value = isValid()}
+        result.addSource(interestedCleaning) {result.value = isValid()}
+        result.addSource(interestedWalk) {result.value = isValid()}
+        result.addSource(interestedBicycle) {result.value = isValid()}
+        result.addSource(interestedCar) {result.value = isValid()}
+    }
+
+    private fun isValid(): Boolean {
+        return interestedSmartPhone.value ?:false || interestedCleaning.value ?:false || interestedWalk.value ?:false || interestedBicycle.value ?:false || interestedCar.value ?:false
     }
 }
 

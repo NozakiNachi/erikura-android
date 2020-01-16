@@ -60,7 +60,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/smartPhone"
-                    android:checked="@={viewModel.isCheckedSmartPhone()}"/>
+                    android:checked="@={viewModel.interestedSmartPhone}"/>
 
                 <CheckBox
                     android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/cleaning"
-                    android:checked="@={viewModel.isCheckedCleaning()}"/>
+                    android:checked="@={viewModel.interestedCleaning}"/>
 
                 <CheckBox
                     android:layout_width="match_parent"
@@ -80,7 +80,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/walk"
-                    android:checked="@={viewModel.isCheckedWalk()}"/>
+                    android:checked="@={viewModel.interestedWalk}"/>
 
                 <CheckBox
                     android:layout_width="match_parent"
@@ -90,7 +90,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/bicycle"
-                    android:checked="@={viewModel.isCheckedBicycle()}"/>
+                    android:checked="@={viewModel.interestedBicycle}"/>
 
                 <CheckBox
                     android:layout_width="match_parent"
@@ -99,7 +99,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/car"
-                    android:checked="@={viewModel.isCheckedCar()}"/>
+                    android:checked="@={viewModel.interestedCar}"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
