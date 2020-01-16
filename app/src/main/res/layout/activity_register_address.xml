@@ -80,7 +80,8 @@
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_postal_code_hint"
                     android:inputType="number"
-                    android:text="@={viewModel.postalCode}" />
+                    android:text="@={viewModel.postalCode}"
+                    android:onFocusChanged="@{handlers::onFocusChanged}"/>
 
                 <TextView
                     style="@style/errorField"
@@ -99,14 +100,15 @@
                     android:text="@string/prefecture" />
 
                 <Spinner
-                    style="@style/selectField"
+                    android:id="@+id/registerAddress_prefecture"
+                    style="@style/spinnerField"
                     android:layout_marginTop="10dp"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:entries="@array/prefecture_list"
                     android:spinnerMode="dialog"
-                    android:selectedItemPosition="@={viewModel.prefectureId}"/>
+                    android:selectedItemPosition="@={viewModel.prefectureId}" />
 
                 <!-- ご住所 -->
                 <TextView
@@ -141,6 +143,7 @@
                     android:text="@string/street" />
 
                 <EditText
+                    android:id="@+id/registerAddress_street"
                     style="@style/textField"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"

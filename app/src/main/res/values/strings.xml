@@ -34,6 +34,9 @@
     <string name="registerGender_caption">性別を教えてください。</string>
     <string name="registerAddress_caption">ご住所を教えてください。</string>
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
+    <string name="registerPhone_caption">電話番号を教えてください。</string>
+    <string name="registerPhone_notice">※ハイフンは不要です。</string>
+    <string name="registerJobStatus_caption">ご職業を教えてください。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -46,6 +49,15 @@
     <string name="prefecture">都道府県</string>
     <string name="city">ご住所</string>
     <string name="street">番地以降</string>
+    <string name="phone">電話番号</string>
+    <string name="unemployed">無職</string>
+    <string name="homemaker">専業主婦</string>
+    <string name="freelancer">フリーランサー</string>
+    <string name="student">学生</string>
+    <string name="partTime">パート</string>
+    <string name="employee">会社員</string>
+    <string name="selfEmployed">自営業</string>
+    <string name="otherJob">その他</string>
 
     <!-- 入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
@@ -57,6 +69,8 @@
     <string name="postal_code_count_error">郵便番号は7桁で入力してください。</string>
     <string name="city_count_error">ご住所は20文字以内で入力してください。</string>
     <string name="street_count_error">番地以降は100文字以内で入力してください。</string>
+    <string name="phone_pattern_error">電話番号はハイフンを含めずに入力してください。</string>
+    <string name="phone_count_error">電話番号は10桁、または11桁で入力してください。</string>
 
     <!-- ボタンのラベル -->
     <string name="register">会員登録（無料）</string>
@@ -77,6 +91,7 @@
     <string name="register_prefecture_hint">選択してください</string>
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
+    <string name="register_phone_hint">例）08046015529</string>
 
     <!-- 都道府県 -->
     <string-array name="prefecture_list">

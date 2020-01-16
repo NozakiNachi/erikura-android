@@ -21,7 +21,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.RegisterAddressActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterWishWorkActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterJobStatusActivity" />
+        <activity android:name=".presenters.activities.RegisterPhoneActivity" />
+        <activity android:name=".presenters.activities.RegisterAddressActivity" />
         <activity android:name=".presenters.activities.RegisterGenderActivity" />
         <activity android:name=".presenters.activities.RegisterBirthdayActivity" />
         <!--
@@ -81,4 +84,5 @@
             android:name=".presenters.activities.job.MapViewActivity"
             android:label="@string/title_activity_map_view" />
     </application>
+
 </manifest>

@@ -177,7 +177,7 @@ class Api(var activity: Activity) {
                     else {
                         val prefecture = it.body.prefecture
                         val city = it.body.city
-                        val street = it.body.prefecture
+                        val street = it.body.street
                         activity.runOnUiThread { onComplete(prefecture, city, street) }
                     }
                 },

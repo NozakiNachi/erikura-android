@@ -5,6 +5,8 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
+import android.widget.Spinner
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -17,10 +19,6 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterAddressBinding
 import java.util.regex.Pattern
-
-
-
-
 
 class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandlers {
     private val viewModel: RegisterAddressViewModel by lazy {
@@ -45,6 +43,10 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
         viewModel.postalCodeErrorVisibility.value = 8
         viewModel.cityErrorVisibility.value = 8
         viewModel.streetErrorVisibility.value = 8
+
+        val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
+        prefectureSpinner.isFocusable = true
+        prefectureSpinner.isFocusableInTouchMode = true
     }
 
     override fun onClickNext(view: View) {
@@ -57,8 +59,32 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
         Log.v("STREET", viewModel.street.value ?: "")
         user.street = viewModel.street.value
 
-        // FIXME: 電話番号登録画面へ遷移
+        val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
+        intent.putExtra("user", user)
+        startActivity(intent)
 
+    }
+
+    override fun onFocusChanged(view: View, hasFocus: Boolean) {
+        if(!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
+            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                viewModel.city.value = city
+                viewModel.street.value = street
+
+                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                streetEditText.requestFocus()
+            }
+        }
+    }
+
+    private fun getPrefectureId(prefecture: String): Int {
+        for (i in 0..47) {
+            if(prefectureList.getString(i).equals(prefecture)) {
+                return i
+            }
+        }
+        return 0
     }
 }
 
@@ -161,14 +187,9 @@ class RegisterAddressViewModel: ViewModel() {
         return valid
     }
 
-    fun addressAutoComplement() {
-        /*Api(this).postalCode(postalCode.value ?: "") { prefecture, city, street ->
-
-        }*/
-    }
-
 }
 
 interface RegisterAddressEventHandlers {
     fun onClickNext(view: View)
+    fun onFocusChanged(view: View, hasFocus: Boolean)
 }
