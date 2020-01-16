@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -51,7 +50,7 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
 
     override fun onClickNext(view: View) {
         Log.v("POSTCODE", viewModel.postalCode.value ?: "")
-        user.postCode = viewModel.postalCode.value
+        user.postcode = viewModel.postalCode.value
         Log.v("PREFECTURE", prefectureList.getString(viewModel.prefectureId.value ?: 0))
         user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
         Log.v("CITY", viewModel.city.value ?: "")

@@ -11,8 +11,8 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobQuery
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
-import jp.co.recruit.erikura.presenters.activities.SendEmailEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import okhttp3.Request
 import okhttp3.Response
@@ -179,6 +179,33 @@ class Api(var activity: Activity) {
                         val city = it.body.city
                         val street = it.body.street
                         activity.runOnUiThread { onComplete(prefecture, city, street) }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
+    fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
+        erikuraApiService.initialUpdateUser(user)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val session = UserSession(userId = it.body.userId, token = it.body.accessToken)
+                        userSession = session
+                        activity.runOnUiThread { onComplete(session) }
                     }
                 },
                 onError = { throwable ->

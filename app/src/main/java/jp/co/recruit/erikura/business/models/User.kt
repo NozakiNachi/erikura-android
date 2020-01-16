@@ -12,7 +12,7 @@ data class User(
     var password: String? = null,
     var dateOfBirth: String? = null,
     var gender: Gender? = null,
-    var postCode: String? = null,
+    var postcode: String? = null,
     var prefecture: String? = null,
     var city: String? = null,
     var street: String? = null,
