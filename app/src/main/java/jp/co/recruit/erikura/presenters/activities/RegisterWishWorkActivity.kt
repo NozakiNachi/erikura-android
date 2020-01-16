@@ -50,7 +50,10 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
         user.wishWorks = list
         Log.v("WISHWORK", list.toString())
         // FIXME: ユーザ登録Apiの呼び出し
-        // FIXME: 登録完了画面へ遷移
+        Api(this).initialUpdateUser(user) {
+            Log.v("DEBUG", "ユーザ登録： userId=${it}")
+            // FIXME: 登録完了画面へ遷移
+        }
     }
 
     override fun onClickTermsOfService(view: View) {

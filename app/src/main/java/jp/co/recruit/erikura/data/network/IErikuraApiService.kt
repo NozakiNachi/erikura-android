@@ -17,7 +17,7 @@ interface IErikuraApiService {
     @GET("users")
     fun user(): Observable<Response<User>>
 
-    @POST("users/initial_update")
+    @PATCH("users/initial_update")
     fun initialUpdateUser(@Body request: User): Observable<Response<InitialUpdateResponse>>
 
     @PATCH("users")
