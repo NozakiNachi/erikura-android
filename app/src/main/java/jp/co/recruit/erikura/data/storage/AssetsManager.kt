@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.data.storage
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
@@ -53,7 +54,7 @@ class AssetsManager {
         realm = Realm.getDefaultInstance()
     }
 
-    fun fetchImage(activity: AppCompatActivity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
         val asset = lookupAsset(url)
         if (asset != null) {
             val file = File(asset.path)
@@ -126,10 +127,10 @@ class AssetsManager {
     }
 
     fun downloadAsset(
-        activity: AppCompatActivity,
+        activity: Activity,
         urlString: String,
         type: Asset.AssetType = Asset.AssetType.Other,
-        downloadHandler: ((activity: AppCompatActivity, urlString: String, type: Asset.AssetType, onComplete: (asset: Asset) -> Unit) -> Unit)? = null,
+        downloadHandler: ((activity: Activity, urlString: String, type: Asset.AssetType, onComplete: (asset: Asset) -> Unit) -> Unit)? = null,
         onComplete: CompletionCallback
     ){
         synchronized(lock) {
@@ -158,7 +159,7 @@ class AssetsManager {
     }
 
     fun downloadAssetImpl(
-        activity: AppCompatActivity,
+        activity: Activity,
         urlString: String,
         type: Asset.AssetType = Asset.AssetType.Other,
         onComplete: CompletionCallback

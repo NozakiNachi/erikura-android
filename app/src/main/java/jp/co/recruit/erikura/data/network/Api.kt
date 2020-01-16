@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.data.network
 
+import android.app.Activity
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +21,7 @@ import java.io.File
 import java.io.IOException
 import java.net.URL
 
-class Api(var activity: AppCompatActivity) {
+class Api(var activity: Activity) {
     companion object {
         var userSession: UserSession? = null
 

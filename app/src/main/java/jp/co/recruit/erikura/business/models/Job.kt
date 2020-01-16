@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.business.models
 
+import com.google.android.gms.maps.model.LatLng
 import java.util.*
 
 enum class JobStatus {
@@ -57,7 +58,7 @@ data class Job(
     /** 期限切れ、もしくは応募済みかを判定します */
     val isPastOrInactive: Boolean get() = (isPast || isEntried)
     /** 募集期間が過ぎたタスクか? */
-    val isPast: Boolean get() = (Date() < this.workingFinishAt)
+    val isPast: Boolean get() = (Date() > this.workingFinishAt)
     /** 募集期間前のタスクか? */
     val isFuture: Boolean get() = (Date() < this.workingStartAt)
     /** 作業期間切れのタスクか? */
@@ -121,4 +122,6 @@ data class Job(
             else -> true            // 上記以外のケースは編集可能
         }
     }
+
+    val latLng: LatLng get() = LatLng(latitude, longitude)
 }

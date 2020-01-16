@@ -4,98 +4,102 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.job.JobListItemViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        >
-
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp">
+        <!-- 残り時間、距離 -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/erikura_carousel_cell_timelimit_pane"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:background="@drawable/erikura_carousel_knob"
-            android:elevation="4dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
             <TextView
-                android:id="@+id/erikura_carousel_cell_timelimit"
+                android:id="@+id/job_list_item_timelimit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="作業終了まで1日と27時間"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:text="@{viewModel.timeLimit}"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                android:textColor="@color/coral"
+                android:textColor="@{viewModel.textColor}"
                 android:textSize="12dp"
                 android:firstBaselineToTopHeight="0dp"
                 android:lastBaselineToBottomHeight="0dp"
                 android:includeFontPadding="false"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="0dp"
                 />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/erikura_carousel_cell_detail_pane"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/erikura_carousel_body"
-            android:elevation="4dp">
-
             <TextView
-                android:id="@+id/erikura_carousel_cell_title"
-                android:layout_width="match_parent"
+                android:id="@+id/job_list_item_distance"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="10dp"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
+                android:text="@{viewModel.distance}"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                android:textSize="16dp"
+                android:textColor="@color/warmGrey"
+                android:textSize="12dp"
                 android:firstBaselineToTopHeight="0dp"
                 android:lastBaselineToBottomHeight="0dp"
                 android:includeFontPadding="false"
-                android:textColor="@color/black"
-                android:text="【簡易清掃】マンション・アパート"
-                android:maxLines="1"
-                android:ellipsize="end"
+                android:layout_marginLeft="0dp"
                 />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/job_list_item_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+            android:textSize="16dp"
+            android:firstBaselineToTopHeight="0dp"
+            android:lastBaselineToBottomHeight="0dp"
+            android:includeFontPadding="false"
+            android:textColor="@color/black"
+            android:text="@{viewModel.job.title}"
+            android:maxLines="1"
+            android:ellipsize="end"
+            />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
 
             <ImageView
-                android:id="@+id/erikura_carousel_cell_image"
+                android:id="@+id/job_list_item_image"
                 android:layout_width="77dp"
                 android:layout_height="52dp"
-                app:layout_constraintTop_toBottomOf="@id/erikura_carousel_cell_title"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="8dp"
-                android:layout_marginLeft="15dp"
+                android:layout_marginLeft="0dp"
+                app:bitmap="@{viewModel.image}"
                 />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/erikura_carousel_cell_title"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
-                android:layout_marginTop="8dp"
-                android:layout_marginLeft="102dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginBottom="10dp"
-                android:padding="0dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginLeft="87dp"
                 android:orientation="vertical"
                 >
+
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_margin="0dp"
-                    android:padding="0dp">
-
+                    >
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
@@ -105,10 +109,10 @@
                         />
 
                     <TextView
-                        android:id="@+id/erikura_carousel_cell_working_time"
+                        android:id="@+id/carousel_cell_working_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="20分"
+                        android:text="@{viewModel.workingTime}"
                         android:textSize="18dp"
                         android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                         android:layout_marginLeft="5dp"
@@ -131,10 +135,10 @@
                         />
 
                     <TextView
-                        android:id="@+id/erikura_carousel_cell_reward"
+                        android:id="@+id/carousel_cell_reward"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="500円"
+                        android:text="@{viewModel.reward}"
                         android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                         android:textSize="18dp"
                         android:firstBaselineToTopHeight="0dp"
@@ -145,10 +149,11 @@
                         android:maxLines="1"
                         android:ellipsize="end"
                         />
+
                 </LinearLayout>
 
                 <TextView
-                    android:id="@+id/erikura_carousel_cell_working_finish_at"
+                    android:id="@+id/carousel_cell_working_finish_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="9dp"
@@ -158,24 +163,23 @@
                     android:lastBaselineToBottomHeight="0dp"
                     android:includeFontPadding="false"
                     android:textColor="@color/black"
-                    android:text="〜 2019/12/10 00:00"
+                    android:text="@{viewModel.workingFinishAt}"
                     android:maxLines="1"
                     android:ellipsize="end"
                     />
 
                 <TextView
-                    android:id="@+id/erikura_carousel_cell_working_place"
+                    android:id="@+id/carousel_cell_working_place"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                     android:textSize="12dp"
                     android:firstBaselineToTopHeight="0dp"
                     android:lastBaselineToBottomHeight="0dp"
                     android:includeFontPadding="false"
                     android:textColor="@color/black"
-                    android:text="東京都狛江市猪方1-8-3"
+                    android:text="@{viewModel.job.workingPlace}"
                     android:maxLines="1"
                     android:ellipsize="end"
                     />

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -48,7 +49,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
-import jp.co.recruit.erikura.databinding.ErikuraCarouselCellBinding
+import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
 import jp.co.recruit.erikura.databinding.FragmentMarkerBinding
 import jp.co.recruit.erikura.presenters.view_models.MarkerViewModel
 import java.io.FileOutputStream
@@ -90,15 +91,33 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
     private lateinit var carouselView: RecyclerView
 
+    private fun summarizeJobsByLocation(jobs: List<Job>): Map<LatLng, List<Job>> {
+        val jobsByLocation = HashMap<LatLng, MutableList<Job>>()
+        jobs.forEach { job ->
+            val latLng = job.latLng
+            if (!jobsByLocation.containsKey(latLng)) {
+                jobsByLocation.put(latLng, mutableListOf(job))
+            }
+            else {
+                val list = jobsByLocation[latLng] ?: mutableListOf()
+                list.add(job)
+            }
+        }
+        return jobsByLocation
+    }
+
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query) { jobs ->
             Log.d("JOBS: ", jobs.toString())
             viewModel.jobs.value = jobs
+            viewModel.jobsByLocation.value = summarizeJobsByLocation(jobs)
+            // マーカー所の情報をクリアします
             viewModel.markerMap.clear()
+            viewModel.activeMaker = null
+            // マーカーを地図から削除します
+            mMap.clear()
 
             jobs.forEachIndexed { i, job ->
-                // FIXME: マーカー画像のキャッシュの仕組みを作成
-                // FIXME: マーカーがタップされた場合の処理の実装
                 val erikuraMarker = ErikuraMarkerView.build(this, mMap, job) { marker ->
                     // 表示順
                     marker.zIndex = ErikuraMarkerView.BASE_ZINDEX - i
@@ -125,6 +144,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                     viewModel.activeMaker = erikuraMarker
                 }
             }
+            // FIXME: 先頭ではなく最も近いマーカにする
             jobs.first().let {
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), defaultZoom))
             }
@@ -160,16 +180,14 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val adapter = ErikuraCarouselAdaptor(this, listOf())
         adapter.onClickListner = object: ErikuraCarouselAdaptor.OnClickListener {
             override fun onClick(job: Job) {
-                // FIXME: 同一地点に複数の案件があれば案件選択モーダルを表示する
-                // FIXME: 同一地点に案件がなければ、案件詳細画面に遷移する
-                Log.v("ErikuraCarouselCel", "Click: ${job.toString()}")
+                onClickCarouselItem(job)
             }
         }
 
         carouselView = findViewById(R.id.map_view_carousel)
         carouselView.setHasFixedSize(true)
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
-        carouselView.adapter = ErikuraCarouselAdaptor(this, listOf())
+        carouselView.adapter = adapter
 
         carouselView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -190,9 +208,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                     Log.v("VISIBLE JOB: ", job.toString())
 
                     this@MapViewActivity.runOnUiThread{
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(
-                            LatLng(job.latitude, job.longitude)
-                        ))
+                        mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
 
                         viewModel.activeMaker = viewModel.markerMap[job.id]
                     }
@@ -331,12 +347,28 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     override fun onClickCurrentLocation(view: View) {
         mMap.animateCamera(CameraUpdateFactory.newLatLng(this.latLng))
     }
+
+    // カルーセルクリック時の処理
+    override fun onClickCarouselItem(job: Job) {
+        Log.v("ErikuraCarouselCel", "Click: ${job.toString()}")
+
+        val jobsOnLocation = viewModel.jobsByLocation.value?.get(job.latLng) ?: listOf()
+        if (jobsOnLocation.size > 1) {
+            // FIXME: 案件選択モーダルを表示する
+            val dialog = JobSelectDialogFragment(jobsOnLocation)
+            dialog.show(supportFragmentManager, "JobSelector")
+        }
+        else {
+            // FIXME: 案件詳細画面に遷移する
+        }
+    }
 }
 
 class MapViewViewModel: ViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
 
     val jobs: MutableLiveData<List<Job>> = MutableLiveData()
+    val jobsByLocation: MutableLiveData<Map<LatLng, List<Job>>> = MutableLiveData()
     val markerMap: MutableMap<Int, ErikuraMarkerView> = HashMap()
     val periodType: MutableLiveData<PeriodType> = MutableLiveData()
 
@@ -391,16 +423,18 @@ interface MapViewEventHandlers {
     fun onToggleActiveOnly(view: View)
     fun onClickList(view: View)
     fun onClickCurrentLocation(view: View)
+
+    fun onClickCarouselItem(job: Job)
 }
 
-class ErikuraCarouselViewHolder(private val activity: AppCompatActivity, val binding: ErikuraCarouselCellBinding): RecyclerView.ViewHolder(binding.root) {
-    var timeLimit: TextView = itemView.findViewById(R.id.erikura_carousel_cell_timelimit)
-    var title: TextView = itemView.findViewById(R.id.erikura_carousel_cell_title)
-    var image: ImageView = itemView.findViewById(R.id.erikura_carousel_cell_image)
-    var reward: TextView = itemView.findViewById(R.id.erikura_carousel_cell_reward)
-    var workingTime: TextView = itemView.findViewById(R.id.erikura_carousel_cell_working_time)
-    var workingFinishAt: TextView = itemView.findViewById(R.id.erikura_carousel_cell_working_finish_at)
-    var workingPlace: TextView = itemView.findViewById(R.id.erikura_carousel_cell_working_place)
+class ErikuraCarouselViewHolder(private val activity: Activity, val binding: FragmentCarouselItemBinding): RecyclerView.ViewHolder(binding.root) {
+    var timeLimit: TextView = itemView.findViewById(R.id.carousel_cell_timelimit)
+    var title: TextView = itemView.findViewById(R.id.carousel_cell_title)
+    var image: ImageView = itemView.findViewById(R.id.carousel_cell_image)
+    var reward: TextView = itemView.findViewById(R.id.carousel_cell_reward)
+    var workingTime: TextView = itemView.findViewById(R.id.carousel_cell_working_time)
+    var workingFinishAt: TextView = itemView.findViewById(R.id.carousel_cell_working_finish_at)
+    var workingPlace: TextView = itemView.findViewById(R.id.carousel_cell_working_place)
 
     fun setup(context: Context, job: Job) {
         // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
@@ -502,12 +536,12 @@ class ErikuraCarouselViewHolder(private val activity: AppCompatActivity, val bin
     }
 }
 
-class ErikuraCarouselAdaptor(val activity: AppCompatActivity, var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+class ErikuraCarouselAdaptor(val activity: Activity, var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
     var onClickListner: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: ErikuraCarouselCellBinding = ErikuraCarouselCellBinding.inflate(layoutInflater, parent, false)
+        val binding: FragmentCarouselItemBinding = FragmentCarouselItemBinding.inflate(layoutInflater, parent, false)
 
         return ErikuraCarouselViewHolder(activity, binding)
     }
@@ -542,8 +576,8 @@ class ErikuraCarouselCellDecoration: RecyclerView.ItemDecoration() {
         state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
-        outRect.left = view.resources.getDimensionPixelSize(R.dimen.erikura_carousel_cell_spacing)
-        outRect.right = view.resources.getDimensionPixelSize(R.dimen.erikura_carousel_cell_spacing)
+        outRect.left = view.resources.getDimensionPixelSize(R.dimen.carousel_cell_spacing)
+        outRect.right = view.resources.getDimensionPixelSize(R.dimen.carousel_cell_spacing)
     }
 }
 
@@ -591,13 +625,13 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
             marker = map.addMarker(
                 MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                    .position(LatLng(job.latitude, job.longitude))
+                    .position(job.latLng)
             )
             marker
         } ?: run {
             marker = map.addMarker(
                 MarkerOptions()
-                    .position(LatLng(job.latitude, job.longitude))
+                    .position(job.latLng)
             ).also {
                 marker = it
                 updateMarkerIcon()
@@ -631,7 +665,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
         binding.viewModel = markerViewModel
 
         val build: () -> Unit = {
-            val downloadHandler: (AppCompatActivity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, urlString, type, onComplete ->
+            val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, urlString, type, onComplete ->
                 binding.executePendingBindings()
 
                 val markerView = binding.root

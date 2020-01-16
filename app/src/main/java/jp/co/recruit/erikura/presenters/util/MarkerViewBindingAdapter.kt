@@ -5,7 +5,7 @@ import android.widget.ImageView
 import androidx.databinding.BindingAdapter
 
 object MarkerViewIconBindingAdapter {
-    @BindingAdapter("android:iconBitmap")
+    @BindingAdapter("app:bitmap")
     @JvmStatic
     fun loadImage(view: ImageView, bitmap: Bitmap?) {
         bitmap?.let {

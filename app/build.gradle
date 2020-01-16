@@ -109,6 +109,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'commons-io:commons-io:2.6'
     implementation 'commons-lang:commons-lang:2.6'
+    implementation 'com.google.maps.android:android-maps-utils:0.6.2'
 }
 
 androidExtensions {
