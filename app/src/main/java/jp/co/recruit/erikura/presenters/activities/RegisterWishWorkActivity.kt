@@ -17,7 +17,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
-import java.util.regex.Pattern
 
 class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandlers {
     private val viewModel: RegisterWishWorkViewModel by lazy {
@@ -49,10 +48,12 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
         if(viewModel.interestedCar.value ?: false){ list.add("car") }
         user.wishWorks = list
         Log.v("WISHWORK", list.toString())
-        // FIXME: ユーザ登録Apiの呼び出し
+        // ユーザ登録Apiの呼び出し
         Api(this).initialUpdateUser(user) {
             Log.v("DEBUG", "ユーザ登録： userId=${it}")
-            // FIXME: 登録完了画面へ遷移
+            // 登録完了画面へ遷移
+            val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
+            startActivity(intent)
         }
     }
 

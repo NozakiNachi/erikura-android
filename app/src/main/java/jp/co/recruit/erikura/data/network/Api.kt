@@ -191,7 +191,7 @@ class Api(var activity: AppCompatActivity) {
             )
     }
 
-    fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (id: Int) -> Unit)  {
+    fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
         erikuraApiService.initialUpdateUser(user)
             .subscribeOn(Schedulers.io())
             .subscribeBy(
@@ -202,8 +202,9 @@ class Api(var activity: AppCompatActivity) {
                         }
                     }
                     else {
-                        val id = it.body.userId
-                        activity.runOnUiThread { onComplete(id) }
+                        val session = UserSession(userId = it.body.userId, token = it.body.accessToken)
+                        userSession = session
+                        activity.runOnUiThread { onComplete(session) }
                     }
                 },
                 onError = { throwable ->
