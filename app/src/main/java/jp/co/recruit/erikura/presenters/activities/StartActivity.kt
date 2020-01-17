@@ -19,6 +19,12 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
+        // エラーメッセージを受け取る
+        val errorMessages = intent.getStringArrayExtra("errorMessages")
+        if(errorMessages != null){
+            Api(this).displayErrorAlert(errorMessages.asList())
+        }
+
         val binding: ActivityStartBinding = DataBindingUtil.setContentView(this, R.layout.activity_start)
         binding.lifecycleOwner = this
         binding.handlers = this
