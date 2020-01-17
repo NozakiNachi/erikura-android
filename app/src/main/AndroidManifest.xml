@@ -21,7 +21,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.RegisterFinishedActivity"></activity>
+        <activity android:name=".presenters.activities.job.JobDetailsActivity"></activity>
+        <activity android:name=".presenters.activities.RegisterFinishedActivity" />
         <activity android:name=".presenters.activities.RegisterWishWorkActivity" />
         <activity android:name=".presenters.activities.RegisterJobStatusActivity" />
         <activity android:name=".presenters.activities.RegisterPhoneActivity" />

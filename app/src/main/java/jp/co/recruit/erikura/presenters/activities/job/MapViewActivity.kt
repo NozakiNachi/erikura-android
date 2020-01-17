@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -360,6 +361,11 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
         else {
             // FIXME: 案件詳細画面に遷移する
+            val jobDetailsActivity = JobDetailsActivity()
+            jobDetailsActivity.job.value = job
+            val intent= Intent(this, jobDetailsActivity::class.java)
+
+            startActivity(intent)
         }
     }
 }
