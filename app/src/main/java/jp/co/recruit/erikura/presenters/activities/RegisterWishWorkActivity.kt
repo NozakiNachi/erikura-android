@@ -18,6 +18,8 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
 
+
+
 class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandlers {
     private val viewModel: RegisterWishWorkViewModel by lazy {
         ViewModelProvider(this).get(RegisterWishWorkViewModel::class.java)
@@ -53,6 +55,7 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
             Log.v("DEBUG", "ユーザ登録： userId=${it}")
             // 登録完了画面へ遷移
             val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
     }
