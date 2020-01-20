@@ -18,6 +18,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
 import java.util.regex.Pattern
 
+
 class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandlers {
     private val viewModel: RegisterPasswordViewModel by lazy {
         ViewModelProvider(this).get(RegisterPasswordViewModel::class.java)
@@ -40,10 +41,19 @@ class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandl
         val uri: Uri? = intent.data
         val confirmationToken: String? = uri?.getQueryParameter("confirmation_token")
         // ワーカ仮登録の確認
-        Api(this).registerConfirm(confirmationToken ?:"") {
+        Api(this).registerConfirm(confirmationToken ?:"", onError = {
+            Log.v("DEBUG", "ユーザ仮登録確認失敗")
+            // スタート画面へ遷移する
+            val intent = Intent(this, StartActivity::class.java)
+            if(it != null) {
+                val array = it.toTypedArray()
+                intent.putExtra("errorMessages", array)
+            }
+            startActivity(intent)
+            finish()
+        }) {
             Log.v("DEBUG", "仮登録確認： userId=${it}")
             user.confirmationToken = confirmationToken
-            // FIXME: エラーがあるときはスタート画面へ遷移する
         }
     }
 
