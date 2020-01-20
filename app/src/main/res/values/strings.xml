@@ -164,4 +164,7 @@
     <string name="sort_working_finish_at_asc">納期までの時間(短い)</string>
     <string name="sort_working_finish_at_desc">納期までの時間(長い)</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

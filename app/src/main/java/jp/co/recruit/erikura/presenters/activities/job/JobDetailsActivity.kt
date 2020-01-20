@@ -21,7 +21,7 @@ import jp.co.recruit.erikura.presenters.fragments.NomalJobDetailsFragment
 import java.util.*
 
 
-class JobDetailsActivity : AppCompatActivity(), NomalJobDetailsFragment.OnFragmentInteractionListener {
+class JobDetailsActivity : AppCompatActivity() {
     private val viewModel: JobDetailsViewModel by lazy {
         ViewModelProvider(this).get(JobDetailsViewModel::class.java)
     }
@@ -77,10 +77,6 @@ class JobDetailsActivity : AppCompatActivity(), NomalJobDetailsFragment.OnFragme
         transaction.add(R.id.job_details, fragment)
         transaction.commit()
 
-    }
-
-    override fun onFragmentInteraction(uri: Uri) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
 
