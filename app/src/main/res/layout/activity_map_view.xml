@@ -49,7 +49,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="60dp"
                 android:layout_marginLeft="20dp"
-                android:elevation="14dp"
+                android:elevation="4dp"
                 android:onClick="@{handlers.onClickSearch}"
                 />
             <!-- 募集中のみチェックボックス -->
@@ -63,6 +63,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="136dp"
                 android:layout_marginLeft="20dp"
+                android:elevation="4dp"
                 android:onClick="@{handlers.onToggleActiveOnly}"
                 />
             <!-- この範囲で再検索ボタン -->
@@ -75,6 +76,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 map:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="60dp"
+                android:elevation="4dp"
                 android:onClick="@{handlers.onClickReSearch}"
                 />
             <!-- リストボタン -->

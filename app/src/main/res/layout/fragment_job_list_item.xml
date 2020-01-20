@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.job.JobListItemViewModel" />
+            type="jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel" />
     </data>
 
     <LinearLayout

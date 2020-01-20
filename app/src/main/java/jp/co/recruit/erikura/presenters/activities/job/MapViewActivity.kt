@@ -1,29 +1,12 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.location.Location
 import android.os.Bundle
-import android.os.Looper
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.RelativeSizeSpan
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.view.drawToBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -32,31 +15,22 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobQuery
-import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.Asset
-import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
-import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
-import jp.co.recruit.erikura.databinding.FragmentMarkerBinding
-import jp.co.recruit.erikura.presenters.view_models.MarkerViewModel
-import java.io.FileOutputStream
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.HashMap
+import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
+import jp.co.recruit.erikura.presenters.util.LocationManager
 
 class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
@@ -69,27 +43,11 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         ViewModelProvider(this).get(MapViewViewModel::class.java)
     }
 
+    val locationManager: LocationManager = ErikuraApplication.locationManager
+
     private lateinit var mMap: GoogleMap
-    private lateinit var fusedClient: FusedLocationProviderClient
-    private lateinit var clientSettings: SettingsClient
-    private var latLng: LatLng? = null
-        set(value) {
-            val isFirst: Boolean = (field == null)
-            field = value
-            if (isFirst) {
-                field?.let {
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                        LatLng(it.latitude, it.longitude), defaultZoom
-                    ))
-                    val query = JobQuery(
-                        latitude = latLng?.latitude,
-                        longitude = latLng?.longitude
-                    )
-                    fetchJobs(query)
-                }
-            }
-        }
     private lateinit var carouselView: RecyclerView
+    private var firstFetchRequested: Boolean = false
 
     private fun summarizeJobsByLocation(jobs: List<Job>): Map<LatLng, List<Job>> {
         val jobsByLocation = HashMap<LatLng, MutableList<Job>>()
@@ -149,21 +107,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), defaultZoom))
             }
             val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-            if (carouselView.adapter is ErikuraCarouselAdaptor) {
-                var adapter = carouselView.adapter as ErikuraCarouselAdaptor
+            if (carouselView.adapter is ErikuraCarouselAdapter) {
+                var adapter = carouselView.adapter as ErikuraCarouselAdapter
                 adapter.data = jobs
                 adapter.notifyDataSetChanged()
-            }
-        }
-    }
-
-    private val locCallback = object: LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult?) {
-            super.onLocationResult(locationResult)
-            // 自己位置の結果を取得して、地図を移動します
-            locationResult?.let {
-                val loc: Location = it.lastLocation
-                this@MapViewActivity.latLng = LatLng(loc.latitude, loc.longitude)
             }
         }
     }
@@ -177,8 +124,8 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
         Realm.init(this)
 
-        val adapter = ErikuraCarouselAdaptor(this, listOf())
-        adapter.onClickListner = object: ErikuraCarouselAdaptor.OnClickListener {
+        val adapter = ErikuraCarouselAdapter(this, listOf())
+        adapter.onClickListner = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
             }
@@ -197,7 +144,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
-                val adapter = recyclerView.adapter as ErikuraCarouselAdaptor
+                val adapter = recyclerView.adapter as ErikuraCarouselAdapter
 
                 val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
@@ -219,58 +166,40 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(carouselView)
 
-        // Client の準備
-        fusedClient = LocationServices.getFusedLocationProviderClient(this)
-        clientSettings = LocationServices.getSettingsClient(this)
-
-        // パーミッションの確認 & 要求
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // FIXME: onRequestPermissionsResult での対応は？
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
-        }
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.jobs_map_view_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        startWatchLocation()
-    }
+        if (!locationManager.checkPermission(this)) {
+            locationManager.requestPermission(this)
+        }
 
-    private fun startWatchLocation() {
-        // 位置リクエストの作成
-        val locRequest: LocationRequest = LocationRequest()
-        locRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER)
-            .setInterval(5000)
-            .setFastestInterval(1000)
-        // 位置情報に関する設定リクエスト情報を作成
-        val locationSettingsRequest: LocationSettingsRequest = LocationSettingsRequest.Builder()
-            .addLocationRequest(locRequest)
-            .build()
+        locationManager.latLng?.let {
+            firstFetchRequested = true
+            val query = viewModel.query(it)
+            fetchJobs(query)
+        }
 
-        clientSettings.checkLocationSettings(locationSettingsRequest)
-            .addOnSuccessListener { locationSettingsResponse ->
-                if (ActivityCompat.checkSelfPermission(this@MapViewActivity, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return@addOnSuccessListener
-                }
-
-                fusedClient.requestLocationUpdates(locRequest, locCallback, Looper.myLooper())
-            }
-            .addOnFailureListener { e ->
-                // FIXME: GPSが有効になっていない場合の対応など
-                //        https://qiita.com/nbkn/items/41b3dd5a86be6e2b57bf
-                Log.d("MapView: Error", e.message, e)
-            }
     }
 
     override fun onPause() {
         super.onPause()
-        fusedClient.removeLocationUpdates(locCallback)
+        locationManager.stop()
+        locationManager.clearLocationUpdateCallback()
     }
 
     override fun onResume() {
         super.onResume()
-        startWatchLocation()
+        locationManager.start(this)
+        locationManager.addLocationUpdateCallback {
+            if (!firstFetchRequested) {
+                mMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
+                firstFetchRequested = true
+                val query = viewModel.query(it)
+                fetchJobs(query)
+            }
+        }
     }
 
     /**
@@ -284,7 +213,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng ?: defaultLatLng, defaultZoom))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLng ?: defaultLatLng, defaultZoom))
 
         try {
             val styleOptions = MapStyleOptions.loadRawResourceStyle(this, R.raw.style)
@@ -340,12 +269,14 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     }
 
     override fun onClickList(view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val intent = Intent(this, ListViewActivity::class.java)
+        // FIXME: リストとマップを行ったり来たりする場合の振る舞いを確認
+        startActivity(intent)
     }
 
     // 現在地に戻る
     override fun onClickCurrentLocation(view: View) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(this.latLng))
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationManager.latLng))
     }
 
     // カルーセルクリック時の処理
@@ -425,290 +356,4 @@ interface MapViewEventHandlers {
     fun onClickCurrentLocation(view: View)
 
     fun onClickCarouselItem(job: Job)
-}
-
-class ErikuraCarouselViewHolder(private val activity: Activity, val binding: FragmentCarouselItemBinding): RecyclerView.ViewHolder(binding.root) {
-    var timeLimit: TextView = itemView.findViewById(R.id.carousel_cell_timelimit)
-    var title: TextView = itemView.findViewById(R.id.carousel_cell_title)
-    var image: ImageView = itemView.findViewById(R.id.carousel_cell_image)
-    var reward: TextView = itemView.findViewById(R.id.carousel_cell_reward)
-    var workingTime: TextView = itemView.findViewById(R.id.carousel_cell_working_time)
-    var workingFinishAt: TextView = itemView.findViewById(R.id.carousel_cell_working_finish_at)
-    var workingPlace: TextView = itemView.findViewById(R.id.carousel_cell_working_place)
-
-    fun setup(context: Context, job: Job) {
-        // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
-        // 作業実施中: working 状態の場合, green, 12pt
-        // 実施済み(未報告): finished の場合, green, 12pt
-        // 作業報告済み: reported の場合, gray, 12pt
-        // 募集開始までn日とn時間: 開始前(now < working_start_at)、
-        // 作業終了までn日とn時間
-        if (job.isPastOrInactive) {
-            timeLimit.setTextColor(ContextCompat.getColor(context, R.color.warmGrey))
-            timeLimit.text = "受付終了"     // FIXME: リソース化
-        }
-        else if (job.isFuture) {
-            timeLimit.setTextColor(ContextCompat.getColor(context, R.color.waterBlue))
-            val now = Date()
-            val diff = job.workingStartAt.time - now.time
-            val diffHours = diff / (60 * 60 * 1000)
-            val diffDays = diffHours / 24
-            val diffRestHours = diffHours % 24
-
-            val sb = SpannableStringBuilder()
-            sb.append("募集開始まで")
-            if (diffDays > 0) {
-                val start = sb.length
-                sb.append(diffDays.toString())
-                sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                sb.append("日")
-            }
-            if (diffDays > 0 && diffRestHours > 0) {
-                sb.append("と")
-            }
-            if (diffRestHours > 0) {
-                val start = sb.length
-                sb.append(diffRestHours.toString())
-                sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                sb.append("時間")
-            }
-            timeLimit.text = sb
-        }
-        when(job.status) {
-            JobStatus.Working -> {
-                timeLimit.setTextColor(ContextCompat.getColor(context, R.color.vibrantGreen))
-                timeLimit.text = "作業実施中"
-            }
-            JobStatus.Finished -> {
-                timeLimit.setTextColor(ContextCompat.getColor(context, R.color.vibrantGreen))
-                timeLimit.text = "実施済み(未報告)"
-            }
-            JobStatus.Reported -> {
-                timeLimit.setTextColor(ContextCompat.getColor(context, R.color.warmGrey))
-                timeLimit.text = "作業報告済み"
-            }
-            else -> {
-                timeLimit.setTextColor(ContextCompat.getColor(context, R.color.coral))
-                val now = Date()
-                val diff = job.workingFinishAt.time - now.time
-                val diffHours = diff / (60 * 60 * 1000)
-                val diffDays = diffHours / 24
-                val diffRestHours = diffHours % 24
-
-                val sb = SpannableStringBuilder()
-                sb.append("作業終了まで")
-                if (diffDays > 0) {
-                    val start = sb.length
-                    sb.append(diffDays.toString())
-                    sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    sb.append("日")
-                }
-                if (diffDays > 0 && diffRestHours > 0) {
-                    sb.append("と")
-                }
-                if (diffRestHours > 0) {
-                    val start = sb.length
-                    sb.append(diffRestHours.toString())
-                    sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    sb.append("時間")
-                }
-                timeLimit.text = sb
-            }
-        }
-
-        title.text = job.title
-        reward.text = job.fee.toString() + "円"
-        workingTime.text = job.workingTime.toString() + "分"
-        val sd = SimpleDateFormat("YYYY/MM/dd HH:mm")
-        workingFinishAt.text = "〜" + sd.format(job.workingFinishAt)
-        workingPlace.text = job.workingPlace
-
-        // ダウンロード
-        job.thumbnailUrl?.let { url ->
-            val assetsManager = ErikuraApplication.instance.erikuraComponent.assetsManager()
-
-            assetsManager.fetchImage(activity, url) { bitmap ->
-                activity.runOnUiThread {
-                    image.setImageBitmap(bitmap)
-                }
-            }
-        }
-    }
-}
-
-class ErikuraCarouselAdaptor(val activity: Activity, var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
-    var onClickListner: OnClickListener? = null
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
-        val layoutInflater = LayoutInflater.from(parent.context)
-        val binding: FragmentCarouselItemBinding = FragmentCarouselItemBinding.inflate(layoutInflater, parent, false)
-
-        return ErikuraCarouselViewHolder(activity, binding)
-    }
-
-    override fun onBindViewHolder(holder: ErikuraCarouselViewHolder, position: Int) {
-        val job = data[position]
-
-        holder.title.text = job.title
-        holder.setup(ErikuraApplication.instance.applicationContext, job)
-
-        holder.binding.root.setOnClickListener {
-            onClickListner?.apply {
-                onClick(job)
-            }
-        }
-    }
-
-    override fun getItemCount(): Int {
-        return data.size
-    }
-
-    interface OnClickListener {
-        fun onClick(job: Job)
-    }
-}
-
-class ErikuraCarouselCellDecoration: RecyclerView.ItemDecoration() {
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
-        super.getItemOffsets(outRect, view, parent, state)
-        outRect.left = view.resources.getDimensionPixelSize(R.dimen.carousel_cell_spacing)
-        outRect.right = view.resources.getDimensionPixelSize(R.dimen.carousel_cell_spacing)
-    }
-}
-
-// マーカーの作成が終わった場合に呼び出されるコールバック
-typealias MarkerSetupCallback = (Marker) -> Unit
-
-class ErikuraMarkerView(private val activity: AppCompatActivity, private val map: GoogleMap, private val job: Job) {
-    companion object {
-        const val BASE_ZINDEX: Float            = 5000f
-        const val ACTIVE_ZINDEX_OFFSET: Float   = 10000f
-        const val BOOST_ZINDEX_OFFSET: Float    = 1000f
-        const val WANTED_ZINDEX_OFFSET: Float   = 2000f
-        const val SOON_ZINDEX_OFFSET: Float     = -1000f
-        const val FUTURE_ZINDEX_OFFSET: Float   = -2000f
-        const val ENTRIED_ZINDEX_OFFSET: Float  = -6000f
-
-        val assetsManager: AssetsManager get() = ErikuraApplication.instance.erikuraComponent.assetsManager()
-
-        fun build(activity: AppCompatActivity, map: GoogleMap, job: Job, callback: MarkerSetupCallback?): ErikuraMarkerView {
-            val markerView = ErikuraMarkerView(activity, map, job)
-            callback?.invoke(markerView.marker)
-            return markerView
-        }
-    }
-
-    private val markerViewModel: MarkerViewModel = MarkerViewModel(job)
-    lateinit var marker: Marker
-
-    var active: Boolean
-        get() = markerViewModel.active.value ?: false
-        set(value) {
-            markerViewModel.active.value = value
-            updateMarkerIcon()
-        }
-
-    init {
-        buildMarker()
-    }
-
-    private fun buildMarker(): Marker {
-        val markerUrl = markerViewModel.markerUrl
-
-        return assetsManager.lookupAsset(markerUrl)?.let {
-            val bitmap = BitmapFactory.decodeFile(it.path)
-            marker = map.addMarker(
-                MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                    .position(job.latLng)
-            )
-            marker
-        } ?: run {
-            marker = map.addMarker(
-                MarkerOptions()
-                    .position(job.latLng)
-            ).also {
-                marker = it
-                updateMarkerIcon()
-            }
-            marker
-        }
-    }
-
-    private fun updateMarkerIcon() {
-        val markerUrl = markerViewModel.markerUrl
-
-        return assetsManager.lookupAsset(markerUrl)?.let {
-            activity.run {
-                val bitmap = BitmapFactory.decodeFile(it.path)
-                marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-            }
-        } ?: run {
-            buildMarkerImage() {
-                activity.run {
-                    val bitmap = BitmapFactory.decodeFile(it.path)
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
-                }
-            }
-        }
-    }
-
-    private fun buildMarkerImage(callback: (Asset) -> Unit) {
-        val markerUrl: String = markerViewModel.markerUrl
-        val binding = FragmentMarkerBinding.inflate(activity.layoutInflater, null, false)
-        binding.lifecycleOwner = activity
-        binding.viewModel = markerViewModel
-
-        val build: () -> Unit = {
-            val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, urlString, type, onComplete ->
-                binding.executePendingBindings()
-
-                val markerView = binding.root
-                markerView.measure(
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                )
-                markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
-
-                val markerImage = markerView.drawToBitmap(Bitmap.Config.ARGB_8888)
-
-                val dest = assetsManager.generateDownloadFile()
-                try {
-                    FileOutputStream(dest).use { out ->
-                        markerImage.compress(Bitmap.CompressFormat.PNG, 100, out)
-                        out.flush()
-                    }
-
-                    assetsManager.removeExpiredCache(type)
-                    assetsManager.realm.executeTransaction { realm ->
-                        val asset = realm.createObject(Asset::class.java, markerUrl)
-                        asset.path = dest.path
-                        asset.lastAccessedAt = Date()
-                        asset.type = type
-                        onComplete(asset)
-                    }
-                } catch (e: IOException) {
-                    Log.e("Error", e.message, e)
-                    // FIXME: エラー処理として何をするべきか?
-                }
-            }
-            assetsManager.downloadAsset(activity, markerUrl, Asset.AssetType.Marker, downloadHandler) { asset ->
-                callback(asset)
-            }
-        }
-
-        markerViewModel.iconUrl?.also { url ->
-            assetsManager.fetchImage(activity, url.toString(), Asset.AssetType.Marker) { icon ->
-                markerViewModel.icon.value = icon
-                build()
-            }
-        } ?: run{
-            build()
-        }
-    }
 }

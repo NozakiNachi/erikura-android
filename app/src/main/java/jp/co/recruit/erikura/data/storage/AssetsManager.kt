@@ -14,10 +14,12 @@ import jp.co.recruit.erikura.data.network.Api
 import java.io.File
 import java.net.URL
 import java.util.*
+import javax.inject.Singleton
 import kotlin.collections.HashMap
 
 typealias CompletionCallback = (Asset) -> Unit
 
+@Singleton
 class AssetsManager {
     companion object {
         const val schemaVersion: Long = 1

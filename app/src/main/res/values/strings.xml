@@ -153,4 +153,14 @@
         <item>鹿児島県</item>
         <item>沖縄県</item>
     </string-array>
+
+
+    <string name="sort_distance_asc">検索場所からの距離(近い)</string>
+    <string name="sort_distance_desc">検索場所からの距離(遠い)</string>
+    <string name="sort_fee_asc">報酬(安い)</string>
+    <string name="sort_fee_desc">報酬(高い)</string>
+    <string name="sort_working_time_asc">作業時間(短い)</string>
+    <string name="sort_working_time_desc">作業時間(長い)</string>
+    <string name="sort_working_finish_at_asc">納期までの時間(短い)</string>
+    <string name="sort_working_finish_at_desc">納期までの時間(長い)</string>
 </resources>
