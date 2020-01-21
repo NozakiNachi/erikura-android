@@ -8,8 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
 
-class ThumbnailImageFragment : Fragment() {
+class ThumbnailImageFragment(val job: Job?) : Fragment() {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_thumbnail_image, container, false)
+    }
 }
 
 
