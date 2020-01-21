@@ -17,7 +17,7 @@ class ThumbnailImageFragment(val bitmap: Bitmap) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        container!!.findViewById<ImageView>(R.id.thumbnailImage_image).setImageBitmap(bitmap)
+        //container!!.findViewById<ImageView>(R.id.thumbnailImage_image).setImageBitmap(bitmap)
         return inflater.inflate(R.layout.fragment_thumbnail_image, container, false)
     }
 }

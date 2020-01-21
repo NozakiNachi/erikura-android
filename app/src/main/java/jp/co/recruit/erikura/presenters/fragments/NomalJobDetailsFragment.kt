@@ -45,7 +45,7 @@ class NomalJobDetailsFragment(private val activity: Activity, val job: Job?) : F
         val thumbnailImage = ThumbnailImageFragment(bitmapImage)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
+        transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         transaction.commit()
     }
 
