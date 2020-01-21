@@ -5,9 +5,9 @@
     android:layout_height="match_parent"
     tools:context=".presenters.fragments.ThumbnailImageFragment">
 
-    <View
+    <ImageView
+        android:id="@+id/thumbnailImage_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/splash"/>
+        android:layout_height="match_parent" />
 
 </FrameLayout>
