@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -292,11 +293,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             dialog.show(supportFragmentManager, "JobSelector")
         }
         else {
-            // FIXME: 案件詳細画面に遷移する
-            val jobDetailsActivity = JobDetailsActivity()
-            jobDetailsActivity.job.value = job
-            val intent= Intent(this, jobDetailsActivity::class.java)
-
+            val intent= Intent(this, JobDetailsActivity::class.java)
             startActivity(intent)
         }
     }
