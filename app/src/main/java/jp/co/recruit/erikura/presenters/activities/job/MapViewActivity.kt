@@ -105,7 +105,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             }
             // FIXME: 先頭ではなく最も近いマーカにする
             jobs.first().let {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude, it.longitude), defaultZoom))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude?: 0.0, it.longitude?: 0.0), defaultZoom))
             }
             val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
             if (carouselView.adapter is ErikuraCarouselAdapter) {
@@ -302,6 +302,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
         else {
             val intent= Intent(this, JobDetailsActivity::class.java)
+            intent.putExtra("job", job)
             startActivity(intent)
         }
     }

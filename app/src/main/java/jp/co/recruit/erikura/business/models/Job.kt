@@ -1,6 +1,9 @@
 package jp.co.recruit.erikura.business.models
 
+import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 import java.util.*
 
 enum class JobStatus {
@@ -20,35 +23,36 @@ enum class JobStatus {
     Future,
 }
 
+@Parcelize
 data class Job(
-    var id: Int,
-    var placeId: Int,
-    var place: Place,
-    var title: String?,
-    var workingStartAt: Date,
-    var workingFinishAt: Date,
-    var fee: Int,
-    var workingTime: Int,
-    var workingPlace: String,
-    var summary: String,
-    var tools: String,
-    var entryQuestion: String?,
-    var latitude: Double,
-    var longitude: Double,
-    var thumbnailUrl: String?,
-    var manualUrl: String?,
-    var modelReportUrl: String?,
+    var id: Int=0,
+    var placeId: Int = 0,
+    var place: @RawValue Place? = null,
+    var title: String? = null,
+    var workingStartAt: Date? = null,
+    var workingFinishAt: Date? = null,
+    var fee: Int = 0,
+    var workingTime: Int = 0,
+    var workingPlace: String? = null,
+    var summary: String? = null,
+    var tools: String? = null,
+    var entryQuestion: String? = null,
+    var latitude: Double? = null,
+    var longitude: Double? = null,
+    var thumbnailUrl: String? = null,
+    var manualUrl: String? = null,
+    var modelReportUrl: String? = null,
     var wanted: Boolean = false,
     var boost: Boolean = false,
-    var distance: Int?,
-    var jobKind: JobKind,
-    var entryId: Int?,
-    var entry: Entry?,
-    var reportId: Int?,
-    var report: Report?,
+    var distance: Int? = 0,
+    var jobKind: @RawValue JobKind? = null,
+    var entryId: Int? = 0,
+    var entry: @RawValue Entry? = null,
+    var reportId: Int? = 0,
+    var report: @RawValue Report? = null,
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf()
-) {
+): Parcelable {
 
     // isReportCreatable
     // isReportEditable
@@ -81,7 +85,7 @@ data class Job(
     val isRejected: Boolean get() = (report?.isRejected ?: false)
     /** 募集直前(24時間以内)のタスクか */
     val isStartSoon: Boolean get() {
-        return isFuture && ((Date().time - this.workingStartAt.time) < (24 * 60 * 60 * 1000))
+        return isFuture && ((Date().time - this.workingStartAt!!.time) < (24 * 60 * 60 * 1000))
     }
 
     /** 案件の状態を取得します */
@@ -123,5 +127,5 @@ data class Job(
         }
     }
 
-    val latLng: LatLng get() = LatLng(latitude, longitude)
+    val latLng: LatLng get() = LatLng(latitude?: 0.0, longitude?: 0.0)
 }
