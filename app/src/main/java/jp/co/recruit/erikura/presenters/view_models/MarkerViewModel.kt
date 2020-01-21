@@ -21,10 +21,10 @@ class MarkerViewModel(private val job: Job): ViewModel() {
     val isDisabled: Boolean get() = job.isEntried || job.isFuture
     val iconUrl: URL? get () {
         if (isDisabled) {
-            return job.jobKind.inactiveIconUrl
+            return job.jobKind?.inactiveIconUrl
         }
         else {
-            return job.jobKind.activeIconUrl
+            return job.jobKind?.activeIconUrl
         }
     }
 
@@ -46,7 +46,8 @@ class MarkerViewModel(private val job: Job): ViewModel() {
     }
     val soonVisibility: Int get() {
         val now = Date()
-        if (job.workingStartAt > now && (job.workingStartAt.time - now.time) < (24 * 60 * 60 * 1000)) {
+        val workingStartAt = job.workingStartAt ?: now
+        if (workingStartAt > now && (workingStartAt.time - now.time) < (24 * 60 * 60 * 1000)) {
             return View.VISIBLE
         }
         else {
@@ -110,7 +111,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
     }
 
     val markerUrl: String get() {
-        val iconPath = job.jobKind.activeIconUrl?.path ?: "EMPTY_PATH"
+        val iconPath = job.jobKind?.activeIconUrl?.path ?: "EMPTY_PATH"
         if (job.isStartSoon) {
             return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active}/${job.isFuture}/comingSoon/${iconPath}/"
         } else if (job.isFuture) {

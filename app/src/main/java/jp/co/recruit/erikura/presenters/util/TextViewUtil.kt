@@ -35,7 +35,8 @@ object TextViewUtil {
                     )
                 )
                 val now = Date()
-                val diff = job.workingStartAt.time - now.time
+                val workingStartAt = job.workingStartAt ?: now
+                val diff = workingStartAt.time - now.time
                 val diffHours = diff / (60 * 60 * 1000)
                 val diffDays = diffHours / 24
                 val diffRestHours = diffHours % 24
@@ -101,7 +102,8 @@ object TextViewUtil {
                         )
                     )
                     val now = Date()
-                    val diff = job.workingFinishAt.time - now.time
+                    val workingFinishAt = job.workingFinishAt ?: now
+                    val diff = workingFinishAt.time - now.time
                     val diffHours = diff / (60 * 60 * 1000)
                     val diffDays = diffHours / 24
                     val diffRestHours = diffHours % 24
