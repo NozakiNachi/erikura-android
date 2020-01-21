@@ -3,6 +3,7 @@
     <dimen name="carousel_cell_spacing">5dp</dimen>
     <dimen name="carousel_padding">30dp</dimen>
 
+    <dimen name="condition_margin">10dp</dimen>
 
     <dimen name="job_list_item_margin">20dp</dimen>
 </resources>

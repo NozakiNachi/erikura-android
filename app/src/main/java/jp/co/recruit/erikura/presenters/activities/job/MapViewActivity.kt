@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -26,6 +25,7 @@ import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.JobKind
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.data.network.Api
@@ -306,6 +306,12 @@ class MapViewViewModel: ViewModel() {
     val jobsByLocation: MutableLiveData<Map<LatLng, List<Job>>> = MutableLiveData()
     val markerMap: MutableMap<Int, ErikuraMarkerView> = HashMap()
     val periodType: MutableLiveData<PeriodType> = MutableLiveData()
+    val keyword: MutableLiveData<String> = MutableLiveData()
+    val minimumReward: MutableLiveData<Int> = MutableLiveData()
+    val maximumReward: MutableLiveData<Int> = MutableLiveData()
+    val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
+    val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
+    val jobKind: MutableLiveData<JobKind> = MutableLiveData()
 
     var activeMaker: ErikuraMarkerView? = null
         set(value) {
@@ -320,12 +326,6 @@ class MapViewViewModel: ViewModel() {
             }
         }
 
-//    val keyword: MutableLiveData<String> = MutableLiveData()
-//    val minimumReward: MutableLiveData<Int> = MutableLiveData()
-//    val maximumReward: MutableLiveData<Int> = MutableLiveData()
-//    val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
-//    val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
-//    val jobKind: MutableLiveData<JobKind> = MutableLiveData()
 
     val activeOnlyButtonBackground = MediatorLiveData<Drawable>().also { result ->
         result.addSource(periodType) {
@@ -335,6 +335,32 @@ class MapViewViewModel: ViewModel() {
                 else -> resources.getDrawable(R.drawable.before_open_2x, null)
             }
         }
+    }
+
+    val conditions: List<String> get() {
+        val conditions = ArrayList<String>()
+
+        // 場所
+        conditions.add(keyword.value ?: "現在地周辺")
+        // 金額
+        // FIXME: 上限なし、下限なしの対応
+        if (minimumReward.value != null || maximumReward.value != null) {
+            val minReward = minimumReward.value?.let { String.format("%,d円", it) } ?: ""
+            val maxReward = maximumReward.value?.let { String.format("%,d円", it) } ?: ""
+            conditions.add("${minReward} 〜 ${maxReward}")
+        }
+        // 作業時間
+        // FIXME: 上限なし、下限なしの対応
+        if (minimumWorkingTime.value != null || maximumWorkingTime.value != null) {
+            val minWorkTime = minimumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
+            val maxWorkTime = maximumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
+            conditions.add("${minWorkTime} 〜 ${maxWorkTime}")
+        }
+        // 業種
+        jobKind.value?.also {
+            conditions.add(it.name)
+        }
+        return conditions
     }
 
     init {

@@ -3,6 +3,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:erikura="http://app.erikura.net/erikura"
     android:orientation="vertical">
 
     <data>
@@ -52,6 +53,7 @@
                 android:elevation="4dp"
                 android:onClick="@{handlers.onClickSearch}"
                 />
+
             <!-- 募集中のみチェックボックス -->
             <ImageButton
                 android:layout_width="66dp"
@@ -108,6 +110,20 @@
                 android:layout_marginRight="20dp"
                 android:elevation="4dp"
                 android:onClick="@{handlers.onClickCurrentLocation}"
+                />
+
+            <!-- 検索バー -->
+            <jp.co.recruit.erikura.presenters.fragments.SearchBarView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                map:layout_constraintTop_toTopOf="parent"
+                map:layout_constraintLeft_toLeftOf="parent"
+                map:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="60dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="96dp"
+                android:elevation="4dp"
+                erikura:conditions="@{viewModel.conditions}"
                 />
 
             <androidx.recyclerview.widget.RecyclerView

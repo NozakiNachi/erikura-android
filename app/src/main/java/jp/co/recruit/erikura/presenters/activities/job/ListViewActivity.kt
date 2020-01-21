@@ -19,10 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.JobQuery
-import jp.co.recruit.erikura.business.models.PeriodType
-import jp.co.recruit.erikura.business.models.SortType
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
 
@@ -71,8 +68,20 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
                 }
             }
         }
-        futureJobsAdapter = JobListAdapter(this, listOf(), null)
-        pastJobsAdapter = JobListAdapter(this, listOf(), null)
+        futureJobsAdapter = JobListAdapter(this, listOf(), null).also {
+            it.onClickListner =  object: JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    onJobSelected(job)
+                }
+            }
+        }
+        pastJobsAdapter = JobListAdapter(this, listOf(), null).also {
+            it.onClickListner =  object: JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    onJobSelected(job)
+                }
+            }
+        }
 
         val activeJobList: RecyclerView = findViewById(R.id.list_view_active_job_list)
         activeJobList.setHasFixedSize(true)
@@ -158,7 +167,7 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     fun onJobSelected(job: Job) {
         // FIXME: 案件詳細画面に遷移する
         val jobDetailsActivity = JobDetailsActivity()
-        jobDetailsActivity.job.value = job
+//        jobDetailsActivity.job.value = job
         val intent= Intent(this, jobDetailsActivity::class.java)
 
         startActivity(intent)
@@ -192,6 +201,12 @@ class ListViewViewModel : ViewModel() {
     var pastJobs: List<Job> = listOf()
     val periodType: MutableLiveData<PeriodType> = MutableLiveData()
     val sortType: MutableLiveData<SortType> = MutableLiveData()
+    val keyword: MutableLiveData<String> = MutableLiveData()
+    val minimumReward: MutableLiveData<Int> = MutableLiveData()
+    val maximumReward: MutableLiveData<Int> = MutableLiveData()
+    val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
+    val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
+    val jobKind: MutableLiveData<JobKind> = MutableLiveData()
 
     val sortTypes = SortType.values()
     val sortLabels: List<String> = sortTypes.map { ErikuraApplication.applicationContext.getString(it.resourceId) }
@@ -208,6 +223,32 @@ class ListViewViewModel : ViewModel() {
                 else -> resources.getDrawable(R.drawable.before_open_2x, null)
             }
         }
+    }
+
+    val conditions: List<String> get() {
+        val conditions = ArrayList<String>()
+
+        // 場所
+        conditions.add(keyword.value ?: "現在地周辺")
+        // 金額
+        // FIXME: 上限なし、下限なしの対応
+        if (minimumReward.value != null || maximumReward.value != null) {
+            val minReward = minimumReward.value?.let { String.format("%,d円", it) } ?: ""
+            val maxReward = maximumReward.value?.let { String.format("%,d円", it) } ?: ""
+            conditions.add("${minReward} 〜 ${maxReward}")
+        }
+        // 作業時間
+        // FIXME: 上限なし、下限なしの対応
+        if (minimumWorkingTime.value != null || maximumWorkingTime.value != null) {
+            val minWorkTime = minimumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
+            val maxWorkTime = maximumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
+            conditions.add("${minWorkTime} 〜 ${maxWorkTime}")
+        }
+        // 業種
+        jobKind.value?.also {
+            conditions.add(it.name)
+        }
+        return conditions
     }
 
     init {
