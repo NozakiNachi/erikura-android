@@ -86,6 +86,8 @@ interface JobSelectDialogHandler {
 }
 
 class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>, var currentPosition: LatLng?) : RecyclerView.Adapter<JobListHolder>() {
+    var onClickListner: OnClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobListHolder {
         val binding = DataBindingUtil.inflate<FragmentJobListItemBinding>(
             LayoutInflater.from(parent.context),
@@ -104,6 +106,16 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
     override fun onBindViewHolder(holder: JobListHolder, position: Int) {
         holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition)
         holder.binding.lifecycleOwner = activity
+
+        holder.binding.root.setOnClickListener {
+            onClickListner?.apply {
+                onClick(jobs[position])
+            }
+        }
+    }
+
+    interface OnClickListener {
+        fun onClick(job: Job)
     }
 }
 
