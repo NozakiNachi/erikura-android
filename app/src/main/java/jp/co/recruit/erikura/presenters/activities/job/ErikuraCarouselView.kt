@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import TextViewUtil
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
@@ -43,20 +44,16 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
     )
 
     fun setup(context: Context, job: Job) {
-        // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
-        // 作業実施中: working 状態の場合, green, 12pt
-        // 実施済み(未報告): finished の場合, green, 12pt
-        // 作業報告済み: reported の場合, gray, 12pt
-        // 募集開始までn日とn時間: 開始前(now < working_start_at)、
-        // 作業終了までn日とn時間
-        if (job.isPastOrInactive) {
+
+        TextViewUtil.setupTimeLabel(timeLimit, context, job)
+        /*if (job.isPastOrInactive) {
             timeLimit.setTextColor(
                 ContextCompat.getColor(
                     context,
                     R.color.warmGrey
                 )
             )
-            timeLimit.text = "受付終了"     // FIXME: リソース化
+            timeLimit.text = "受付終了"
         }
         else if (job.isFuture) {
             timeLimit.setTextColor(
@@ -162,7 +159,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
                 }
                 timeLimit.text = sb
             }
-        }
+        }*/
 
         title.text = job.title
         reward.text = job.fee.toString() + "円"
