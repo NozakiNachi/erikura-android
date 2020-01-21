@@ -271,8 +271,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     override fun onClickList(view: View) {
         val intent = Intent(this, ListViewActivity::class.java)
-        // FIXME: リストとマップを行ったり来たりする場合の振る舞いを確認
+        // FIXME: 検索条件の引き継ぎについて検討する
         startActivity(intent)
+        // 地図画面は閉じておきます
+        finish()
     }
 
     // 現在地に戻る

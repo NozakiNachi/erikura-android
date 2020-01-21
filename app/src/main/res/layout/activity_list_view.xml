@@ -8,6 +8,9 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.job.ListViewViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.job.ListViewHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,7 +36,7 @@
                     android:background="@color/paleGrey">
 
                     <Spinner
-                        android:id="@+id/list_View_sort_spinner"
+                        android:id="@+id/list_view_sort_spinner"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintLeft_toLeftOf="parent"
                         app:layout_constraintRight_toRightOf="parent"
@@ -44,8 +47,9 @@
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentTop="true"
-                        android:entries="@{viewModel.sortLabels}"
                         android:spinnerMode="dialog"
+                        android:entries="@{viewModel.sortLabels}"
+                        android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onItemSelected(parent, view, position, id)}}"
                          />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -54,59 +58,74 @@
                     android:layout_height="30dp"
                     android:background="@drawable/background_triangle" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    android:firstBaselineToTopHeight="0dp"
-                    android:lastBaselineToBottomHeight="0dp"
-                    android:includeFontPadding="false"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:text="募集中の仕事"
-                    />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/list_view_active_job_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    />
+                    android:visibility="@{viewModel.activeListVisible}"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:text="募集中の仕事"
+                        />
 
-                <TextView
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/list_view_active_job_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        />
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                    android:textColor="@color/black"
-                    android:textSize="20dp"
-                    android:firstBaselineToTopHeight="0dp"
-                    android:lastBaselineToBottomHeight="0dp"
-                    android:includeFontPadding="false"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:text="募集予定の仕事"
-                    />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/list_view_future_job_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
-                    android:padding="20dp"
-                    />
+                    android:visibility="@{viewModel.futureListVisible}"
+                    >
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                        android:textColor="@color/black"
+                        android:textSize="20dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:text="募集予定の仕事"
+                        />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/list_view_future_job_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        />
+                </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:background="@color/paleGrey"
+                    android:visibility="@{viewModel.pastListVisible}"
                     >
                     <TextView
                         android:layout_width="match_parent"
@@ -148,13 +167,13 @@
             android:layout_marginTop="60dp"
             android:layout_marginLeft="20dp"
             android:elevation="4dp"
+            android:onClick="@{handlers.onClickSearchBar}"
             />
         <!-- 募集中のみチェックボックス -->
         <ImageButton
             android:layout_width="66dp"
             android:layout_height="66dp"
-            android:background="#00000000"
-            android:src="@drawable/before_open_2x"
+            android:background="@{viewModel.activeOnlyButtonBackground}"
             android:scaleType="fitCenter"
             android:padding="0dp"
             app:layout_constraintTop_toTopOf="parent"
@@ -162,8 +181,9 @@
             android:layout_marginTop="136dp"
             android:layout_marginLeft="20dp"
             android:elevation="4dp"
+            android:onClick="@{handlers.onToggleActiveOnly}"
             />
-        <!-- リストボタン -->
+        <!-- 地図ボタン -->
         <ImageButton
             android:layout_width="66dp"
             android:layout_height="66dp"
@@ -176,6 +196,7 @@
             android:layout_marginTop="60dp"
             android:layout_marginRight="20dp"
             android:elevation="4dp"
+            android:onClick="@{handlers.onClickMap}"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
