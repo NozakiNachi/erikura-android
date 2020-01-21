@@ -224,6 +224,13 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             Log.e("ERROR", e.message, e)
         }
 
+        mMap.setOnCameraMoveStartedListener {
+            // FIXME：初期状態のカメラ移動後であることを担保する
+            viewModel.reSearchButtonVisible.value = View.VISIBLE
+            viewModel.currentLocationButtonVisible.value = View.VISIBLE
+            viewModel.searchBarVisible.value = View.GONE
+        }
+
         mMap.setOnMarkerClickListener { marker ->
             val index: Int = marker.tag as Int
             val jobs = viewModel.jobs.value ?: listOf()
@@ -248,11 +255,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     }
 
     override fun onClickSearch(view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        viewModel.searchBarVisible.value = View.VISIBLE
     }
 
     override fun onClickSearchBar(view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val intent = Intent(this, SearchJobActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -312,6 +320,13 @@ class MapViewViewModel: ViewModel() {
     val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
     val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
     val jobKind: MutableLiveData<JobKind> = MutableLiveData()
+
+    // FIXME: 初期状態では検索バーは表示し、なにか操作が行われたら非表示とする
+    val searchBarVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    // FIXME: 初期状態では非表示、位置を変更すると表示される
+    var reSearchButtonVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    // FIXME: 現在位置から変更された場合に表示される
+    var currentLocationButtonVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     var activeMaker: ErikuraMarkerView? = null
         set(value) {

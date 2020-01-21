@@ -80,6 +80,7 @@
                 android:layout_marginTop="60dp"
                 android:elevation="4dp"
                 android:onClick="@{handlers.onClickReSearch}"
+                android:visibility="@{viewModel.reSearchButtonVisible}"
                 />
             <!-- リストボタン -->
             <ImageButton
@@ -110,6 +111,7 @@
                 android:layout_marginRight="20dp"
                 android:elevation="4dp"
                 android:onClick="@{handlers.onClickCurrentLocation}"
+                android:visibility="@{viewModel.currentLocationButtonVisible}"
                 />
 
             <!-- 検索バー -->
@@ -124,6 +126,8 @@
                 android:layout_marginRight="96dp"
                 android:elevation="4dp"
                 erikura:conditions="@{viewModel.conditions}"
+                android:visibility="@{viewModel.searchBarVisible}"
+                android:onClick="@{handlers.onClickSearchBar}"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -138,7 +142,6 @@
                 map:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:orientation="horizontal"
                 />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </FrameLayout>
 </layout>

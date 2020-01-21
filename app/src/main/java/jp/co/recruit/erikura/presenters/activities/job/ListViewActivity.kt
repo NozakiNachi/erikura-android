@@ -134,8 +134,13 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
         locationManager.start(this)
     }
 
+    override fun onClickSearch(view: View) {
+        viewModel.searchBarVisible.value = View.VISIBLE
+    }
+
     override fun onClickSearchBar(view: View) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val intent = Intent(this, SearchJobActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onClickMap(view: View) {
@@ -180,6 +185,16 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
             fetchJobs(query)
         }
     }
+
+    override fun onScrollChange(
+        v: View,
+        scrollX: Int,
+        scrollY: Int,
+        oldScrollX: Int,
+        oldScrollY: Int
+    ) {
+        viewModel.searchBarVisible.value = View.GONE
+    }
 }
 
 class ListViewViewModel : ViewModel() {
@@ -214,6 +229,8 @@ class ListViewViewModel : ViewModel() {
     val activeListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val futureListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val pastListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+
+    val searchBarVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     val activeOnlyButtonBackground = MediatorLiveData<Drawable>().also { result ->
         result.addSource(periodType) {
@@ -264,11 +281,16 @@ class ListViewViewModel : ViewModel() {
         )
         return query
     }
+
+
 }
 
 interface ListViewHandlers {
+    fun onClickSearch(view: View)
     fun onClickSearchBar(view: View)
     fun onToggleActiveOnly(view: View)
     fun onClickMap(view: View)
     fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+
+    fun onScrollChange(v: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int)
 }

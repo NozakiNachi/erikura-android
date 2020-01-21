@@ -3,13 +3,12 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.RelativeLayout
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.FragmentSearchBarBinding
@@ -34,6 +33,29 @@ class SearchBarView : RelativeLayout {
         conditionsView.setHasFixedSize(true)
         conditionsView.adapter = adapter
         conditionsView.addItemDecoration(SearchBarConditionItemDecorator())
+
+        val tapGestureDetector = GestureDetector(context, object: GestureDetector.SimpleOnGestureListener() {
+            override fun onDoubleTap(e: MotionEvent?): Boolean {
+                return true
+            }
+
+            override fun onSingleTapUp(e: MotionEvent?): Boolean {
+                this@SearchBarView.callOnClick()
+                return true
+            }
+        })
+        conditionsView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                return true
+            }
+
+            override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {
+                tapGestureDetector.onTouchEvent(e)
+            }
+
+            override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+            }
+        })
     }
 
     companion object {
