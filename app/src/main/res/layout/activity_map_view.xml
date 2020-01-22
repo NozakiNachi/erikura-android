@@ -50,7 +50,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="60dp"
                 android:layout_marginLeft="20dp"
-                android:elevation="4dp"
+                android:elevation="@dimen/default_elevation"
                 android:onClick="@{handlers.onClickSearch}"
                 />
 
@@ -65,7 +65,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 android:layout_marginTop="136dp"
                 android:layout_marginLeft="20dp"
-                android:elevation="4dp"
+                android:elevation="@dimen/default_elevation"
                 android:onClick="@{handlers.onToggleActiveOnly}"
                 />
             <!-- この範囲で再検索ボタン -->
@@ -78,7 +78,7 @@
                 map:layout_constraintLeft_toLeftOf="parent"
                 map:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="60dp"
-                android:elevation="4dp"
+                android:elevation="@dimen/default_elevation"
                 android:onClick="@{handlers.onClickReSearch}"
                 android:visibility="@{viewModel.reSearchButtonVisible}"
                 />
@@ -94,7 +94,7 @@
                 map:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="60dp"
                 android:layout_marginRight="20dp"
-                android:elevation="4dp"
+                android:elevation="@dimen/default_elevation"
                 android:onClick="@{handlers.onClickList}"
                 />
             <!-- 現在地ボタン -->
@@ -109,7 +109,7 @@
                 map:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="136dp"
                 android:layout_marginRight="20dp"
-                android:elevation="4dp"
+                android:elevation="@dimen/default_elevation"
                 android:onClick="@{handlers.onClickCurrentLocation}"
                 android:visibility="@{viewModel.currentLocationButtonVisible}"
                 />
@@ -124,7 +124,7 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="96dp"
-                android:elevation="4dp"
+                android:elevation="@dimen/default_elevation"
                 erikura:conditions="@{viewModel.conditions}"
                 android:visibility="@{viewModel.searchBarVisible}"
                 android:onClick="@{handlers.onClickSearchBar}"
