@@ -22,7 +22,7 @@
                 android:layout_height="wrap_content"
                 tools:context=".presenters.activities.job.SearchJobActivity">
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/search_job_text_field"
                     android:layout_width="match_parent"
                     android:layout_height="66dp"

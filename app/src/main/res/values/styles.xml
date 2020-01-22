@@ -161,4 +161,10 @@
         <item name="android:textStyle">bold</item>
         <item name="android:text">次へ</item>
     </style>
+
+    <!-- 履歴ポップアップ -->
+    <style name="historyPopupListViewStyle">
+        <item name="android:divider">@color/silver</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
 </resources>
