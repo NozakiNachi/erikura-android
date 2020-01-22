@@ -1,7 +1,5 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,13 +8,12 @@ import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentJobInfoViewBinding
+import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 
 
-
-class JobInfoViewFragment(val job: Job?) : Fragment() {
+class JobInfoViewFragment(val job: Job?) : Fragment(), JobInfoViewFragmentEventHandlers {
     private val viewModel: JobInfoViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobInfoViewFragmentViewModel::class.java)
     }
@@ -29,9 +26,14 @@ class JobInfoViewFragment(val job: Job?) : Fragment() {
         val binding = FragmentJobInfoViewBinding.inflate(inflater, container, false)
         viewModel.setup(job)
         binding.viewModel = viewModel
+        binding.handler = this
         return binding.root
     }
 
+    override fun onClickTitle(view: View) {
+        val dialog = JobTitleDialogFragment(job?.title ?: "")
+        dialog.show(childFragmentManager, "JobTitle")
+    }
 }
 
 class JobInfoViewFragmentViewModel: ViewModel() {
@@ -47,4 +49,8 @@ class JobInfoViewFragmentViewModel: ViewModel() {
             fee.value = "${feeStr}円"
         }
     }
+}
+
+interface JobInfoViewFragmentEventHandlers {
+    fun onClickTitle(view: View)
 }
