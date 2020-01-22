@@ -22,7 +22,6 @@ typealias CompletionCallback = (Asset) -> Unit
 @Singleton
 class AssetsManager {
     companion object {
-        const val schemaVersion: Long = 1
         val maxAssets: Map<Asset.AssetType, Int> =
             mapOf(
                 Pair(Asset.AssetType.Marker, 50000),
@@ -37,24 +36,7 @@ class AssetsManager {
 
     private val lock = java.lang.Object()
     private val completionCallbackMap: MutableMap<String, MutableList<CompletionCallback>> = HashMap()
-    val realm: Realm
-
-    init {
-        // 初期化処理
-        Realm.init(ErikuraApplication.instance.applicationContext)
-
-        val realmConfig = RealmConfiguration.Builder()
-            .schemaVersion(schemaVersion)
-            .migration { realm, oldVersion, newVersion ->
-                if (oldVersion < 1) {
-
-                }
-            }
-            .deleteRealmIfMigrationNeeded()
-            .build()
-        Realm.setDefaultConfiguration(realmConfig)
-        realm = Realm.getDefaultInstance()
-    }
+    val realm: Realm = ErikuraApplication.realm
 
     fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
         val asset = lookupAsset(url)

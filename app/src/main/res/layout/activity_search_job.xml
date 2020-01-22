@@ -3,7 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
-
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.job.SearchJobViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.job.SearchJobHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -34,6 +39,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:elevation="@dimen/default_elevation"
+                    android:text="@={viewModel.keyword}"
                     />
 
                 <Button
@@ -45,7 +51,8 @@
                     android:layout_marginRight="20dp"
                     style="@style/tertiaryButton"
                     android:text="絞り込み検索"
-                    android:visibility="visible"
+                    android:visibility="@{viewModel.detailButtonVisibility}"
+                    android:onClick="@{handlers.onClickDetailButton}"
                     />
 
                 <LinearLayout
@@ -61,7 +68,7 @@
                     android:divider="@drawable/condition_divider"
                     android:dividerPadding="0dp"
                     android:showDividers="middle|beginning|end"
-                    android:visibility="gone"
+                    android:visibility="@{viewModel.detailConditionsVisibility}"
                     >
                     
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -224,6 +231,8 @@
             android:layout_marginBottom="20dp"
             style="@style/primaryButton"
             android:text="検索"
+            android:enabled="@{viewModel.isSearchButtonEnabled}"
+            android:onClick="@{handlers.onClickSearchButton}"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
