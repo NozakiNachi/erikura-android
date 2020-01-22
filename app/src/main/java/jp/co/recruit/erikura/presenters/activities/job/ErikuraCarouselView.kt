@@ -1,26 +1,20 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import TextViewUtil
+import JobUtil
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.RelativeSizeSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
 import java.text.SimpleDateFormat
-import java.util.*
 
 class ErikuraCarouselViewHolder(private val activity: Activity, val binding: FragmentCarouselItemBinding): RecyclerView.ViewHolder(binding.root) {
     var timeLimit: TextView = itemView.findViewById(
@@ -45,7 +39,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
 
     fun setup(context: Context, job: Job) {
 
-        TextViewUtil.setupTimeLabel(timeLimit, context, job)
+        JobUtil.setupTimeLabel(timeLimit, context, job)
         /*if (job.isPastOrInactive) {
             timeLimit.setTextColor(
                 ContextCompat.getColor(
