@@ -170,11 +170,8 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     }
 
     fun onJobSelected(job: Job) {
-        // FIXME: 案件詳細画面に遷移する
-        val jobDetailsActivity = JobDetailsActivity()
-//        jobDetailsActivity.job.value = job
-        val intent= Intent(this, jobDetailsActivity::class.java)
-
+        val intent= Intent(this, JobDetailsActivity::class.java)
+        intent.putExtra("job", job)
         startActivity(intent)
     }
 
