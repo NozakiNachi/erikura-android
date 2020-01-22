@@ -1,6 +1,8 @@
 package jp.co.recruit.erikura.business.models
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 enum class PlaceJobType(val value: String) {
     @SerializedName("active")
@@ -11,14 +13,15 @@ enum class PlaceJobType(val value: String) {
     PAST("past")
 }
 
+@Parcelize
 data class Place(
-    var id: Int,
-    var workingBuilding: String?,
-    var workingPlace: String?,
-    var workingPlaceShort: String?,
-    var latitude: Double?,
-    var longitude: Double?,
-    var thumbnailUrl: String?,
+    var id: Int = 0,
+    var workingBuilding: String? = null,
+    var workingPlace: String?= null,
+    var workingPlaceShort: String?= null,
+    var latitude: Double?= null,
+    var longitude: Double?= null,
+    var thumbnailUrl: String?= null,
     var hasEntries: Boolean = false,
-    var jobs: Map<PlaceJobType, List<Job>>
-)
+    var jobs: Map<PlaceJobType, List<Job>> = mapOf()
+): Parcelable

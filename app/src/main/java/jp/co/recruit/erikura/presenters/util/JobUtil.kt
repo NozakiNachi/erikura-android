@@ -9,7 +9,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
 import java.util.*
 
-object TextViewUtil {
+object JobUtil {
     fun setupTimeLabel(textView: TextView, context: Context, job: Job?) {
         // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
         // 作業実施中: working 状態の場合, green, 12pt

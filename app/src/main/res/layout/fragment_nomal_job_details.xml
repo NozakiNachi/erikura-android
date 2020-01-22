@@ -50,6 +50,7 @@
                     <!-- 簡易表示 -->
                     <FrameLayout
                         android:id="@+id/jobDetails_jobInfoViewFragment"
+                        android:background="@drawable/job_info_view_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-10dp"
