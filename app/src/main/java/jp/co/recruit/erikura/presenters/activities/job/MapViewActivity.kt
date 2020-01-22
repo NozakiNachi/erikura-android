@@ -374,7 +374,7 @@ class MapViewViewModel: ViewModel() {
         }
         // 業種
         jobKind.value?.also {
-            conditions.add(it.name)
+            conditions.add(it.name?: "")
         }
         return conditions
     }

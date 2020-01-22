@@ -45,7 +45,7 @@ data class Job(
     var wanted: Boolean = false,
     var boost: Boolean = false,
     var distance: Int? = 0,
-    var jobKind: @RawValue JobKind? = null,
+    var jobKind: JobKind? = null,
     var entryId: Int? = 0,
     var entry: @RawValue Entry? = null,
     var reportId: Int? = 0,
