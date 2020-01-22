@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
+import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
 class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     private val locationManager = ErikuraApplication.locationManager
@@ -194,7 +195,7 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     }
 }
 
-class ListViewViewModel : ViewModel() {
+class ListViewViewModel : BaseJobQueryViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
 
     var jobs: List<Job> = listOf()
@@ -211,14 +212,6 @@ class ListViewViewModel : ViewModel() {
     var activeJobs: List<Job> = listOf()
     var futureJobs: List<Job> = listOf()
     var pastJobs: List<Job> = listOf()
-    val periodType: MutableLiveData<PeriodType> = MutableLiveData()
-    val sortType: MutableLiveData<SortType> = MutableLiveData()
-    val keyword: MutableLiveData<String> = MutableLiveData()
-    val minimumReward: MutableLiveData<Int> = MutableLiveData()
-    val maximumReward: MutableLiveData<Int> = MutableLiveData()
-    val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
-    val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
-    val jobKind: MutableLiveData<JobKind> = MutableLiveData()
 
     val sortTypes = SortType.values()
     val sortLabels: List<String> = sortTypes.map { ErikuraApplication.applicationContext.getString(it.resourceId) }
@@ -267,19 +260,8 @@ class ListViewViewModel : ViewModel() {
 
     init {
         periodType.value = PeriodType.ALL
+        sortType.value = SortType.DISTANCE_ASC
     }
-
-    fun query(latLng: LatLng): JobQuery {
-        val query = JobQuery(
-            latitude = latLng.latitude,
-            longitude = latLng.longitude,
-            period = this.periodType.value ?: PeriodType.ALL,
-            sortBy = this.sortType.value ?: SortType.DISTANCE_ASC
-        )
-        return query
-    }
-
-
 }
 
 interface ListViewHandlers {

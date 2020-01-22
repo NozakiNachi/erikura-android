@@ -1,6 +1,8 @@
 package jp.co.recruit.erikura.business.models
 
+import android.os.Parcelable
 import jp.co.recruit.erikura.R
+import kotlinx.android.parcel.Parcelize
 
 //var keyword: String?            // キーワード: 地図画面などでの表示用
 //var latitude: Double?           // 緯度
@@ -34,9 +36,10 @@ enum class SortType(val value: String, val resourceId: Int) {
     // 納期までの時間(短い順)
     WORKING_FINISH_AT_ASC("jobs.working_finish_at asc", R.string.sort_working_finish_at_asc),
     // 納期までの時間(長い順)
-    WORKING_FINSIH_AT_DESC("jobs.working_finish_at desc", R.string.sort_working_finish_at_desc)
+    WORKING_FINISH_AT_DESC("jobs.working_finish_at desc", R.string.sort_working_finish_at_desc)
 }
 
+@Parcelize
 data class JobQuery(
     var keyword: String? = null,
     var latitude: Double? = null,
@@ -48,4 +51,8 @@ data class JobQuery(
     var jobKind: JobKind? = null,
     var period: PeriodType = PeriodType.ALL,
     var sortBy: SortType = SortType.DISTANCE_ASC
-)
+) : Parcelable {
+    companion object {
+        const val CURRENT_LOCATION = "現在地周辺"
+    }
+}

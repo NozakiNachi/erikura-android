@@ -1,6 +1,8 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,17 +16,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.realm.Realm
 import io.realm.Sort
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.SearchHistory
 import jp.co.recruit.erikura.databinding.ActivitySearchJobBinding
+import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import java.util.*
-
 
 class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
     private val realm: Realm get() = ErikuraApplication.realm
@@ -64,7 +66,6 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
         return realm.where(SearchHistory::class.java).sort("lastUpdatedAt", Sort.DESCENDING).limit(limit.toLong()).findAll()
     }
 
-
     fun addHistoryItem(keyword: String) {
         // 検索履歴を保存します
         realm.executeTransaction { realm ->
@@ -84,27 +85,31 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
     override fun onClickSearchButton(view: View) {
         Log.v("KEYWORD: ", viewModel.keyword.value)
 
-        val keyword = viewModel.keyword.value ?: ""
-        if (keyword != "現在地周辺") {
+        viewModel.normalizedKeyword?.also { keyword ->
             Api(this).geocode(keyword) { latLng ->
                 addHistoryItem(keyword)
-                // FIXME: 検索処理、地図・リスト画面への遷移
                 Log.v("検索", latLng.toString())
+
+                val intent = Intent()
+                intent.putExtra(MapViewActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             }
-        }
-        else {
+        } ?: run {
             val locationManager = ErikuraApplication.locationManager
             locationManager.latLng?.let { latLng ->
-                // FIXME: 検索処理、地図・リスト画面への遷移
                 Log.v("検索", latLng.toString())
+
+                val intent = Intent()
+                intent.putExtra(MapViewActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
+                setResult(Activity.RESULT_OK, intent)
+                finish()
             }
         }
     }
 }
 
-class SearchJobViewModel: ViewModel() {
-    val keyword: MutableLiveData<String> = MutableLiveData()
-
+class SearchJobViewModel: BaseJobQueryViewModel() {
     val detailButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val detailConditionsVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
@@ -145,7 +150,7 @@ sealed class SearchHistoryItem {
         return name
     }
 
-    object CurrentLocation: SearchHistoryItem("現在地周辺", iconCurrentLocation)
+    object CurrentLocation: SearchHistoryItem(JobQuery.CURRENT_LOCATION, iconCurrentLocation)
     class Item(name: String): SearchHistoryItem(name, iconHistory)
 }
 
