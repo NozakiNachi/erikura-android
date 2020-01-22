@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
-import jp.co.recruit.erikura.presenters.fragments.NomalJobDetailsFragment
+import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 
 
 class JobDetailsActivity : AppCompatActivity() {
@@ -26,26 +26,26 @@ class JobDetailsActivity : AppCompatActivity() {
         if(job != null){
             when(job.status) {
                 JobStatus.Normal -> {
-                    fragment = NomalJobDetailsFragment(this, job = job)
+                    fragment = NormalJobDetailsFragment(this, job = job)
                 }
                 JobStatus.Applied -> {
                     // FIXME: 応募済み画面
-                    fragment = NomalJobDetailsFragment(this, job = job)
+                    fragment = NormalJobDetailsFragment(this, job = job)
                 }
                 JobStatus.Working -> {
                     // FIXME: 作業中画面
-                    fragment = NomalJobDetailsFragment(this, job = job)
+                    fragment = NormalJobDetailsFragment(this, job = job)
                 }
                 JobStatus.Finished -> {
                     // FIXME: 作業完了画面
-                    fragment = NomalJobDetailsFragment(this, job = job)
+                    fragment = NormalJobDetailsFragment(this, job = job)
                 }
                 JobStatus.Reported -> {
                     // FIXME: 作業報告済み画面
-                    fragment = NomalJobDetailsFragment(this, job = job)
+                    fragment = NormalJobDetailsFragment(this, job = job)
                 }
                 else -> {
-                    fragment = NomalJobDetailsFragment(this, job = job)
+                    fragment = NormalJobDetailsFragment(this, job = job)
                 }
             }
 

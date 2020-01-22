@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragmentViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".presenters.fragments.NomalJobDetailsFragment">
+        tools:context=".presenters.fragments.NormalJobDetailsFragment">
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -35,7 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:background="@color/silver">
+                    android:background="@{viewModel.bitmapDrawable}">
 
                     <!-- 時間表示ラベル -->
                     <FrameLayout
@@ -63,7 +64,12 @@
                         android:layout_height="188dp"
                         android:layout_gravity="center"
                         android:layout_marginTop="20dp"
-                        android:layout_marginBottom="40dp" />
+                        android:layout_marginBottom="10dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/background_triangle_reverse"/>
 
                 </LinearLayout>
             </LinearLayout>
