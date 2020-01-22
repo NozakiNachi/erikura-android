@@ -27,7 +27,7 @@ enum class JobStatus {
 data class Job(
     var id: Int=0,
     var placeId: Int = 0,
-    var place: @RawValue Place? = null,
+    var place: Place? = null,
     var title: String? = null,
     var workingStartAt: Date? = null,
     var workingFinishAt: Date? = null,
