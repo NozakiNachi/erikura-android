@@ -15,30 +15,56 @@
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
     <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
+    
+    <!-- 仮登録画面 -->
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
     <string name="registerEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
     <string name="registerEmail_terms_of_service"><a href="">利用規約</a></string>
     <string name="registerEmail_comma">、</string>
     <string name="registerEmail_privacy_policy"><a href="">プライバシーポリシー</a></string>
     <string name="registerEmail_agree">に同意して</string>
+
+    <!-- 仮登録完了画面 -->
     <string name="registerEmailFinished_registerUnfinished">まだ会員登録は\n完了しておりません</string>
     <string name="registerEmailFinished_sendEmail">ご入力いただいたメールアドレス宛に確認メールをお送りしました。</string>
     <string name="registerEmailFinished_clickEmailLink">お届けしたメール内の\nURLをクリックして\n会員登録を続けてください。</string>
     <string name="registerEmailFinished_limit">※メールに記載された登録URLの有効期限は6時間です。\n有効期限が切れた場合は再度新規会員登録を実施してください。</string>
     <string name="registerEmailFinished_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
+
+    <!-- パスワード登録画面 -->
     <string name="registerPassword_caption">パスワードを入力してください。</string>
     <string name="registerPassword_notice">※6文字以上の半角英数で入力してください。</string>
+
+    <!-- 名前登録画面 -->
     <string name="registerName_caption">お名前を教えてください。</string>
+
+    <!-- 生年月日登録画面 -->
     <string name="registerBirthday_caption">生年月日を教えてください。</string>
     <string name="registerBirthday_notice">※エリクラは18歳未満の方はご利用できません。</string>
+
+    <!-- 性別登録画面 -->
     <string name="registerGender_caption">性別を教えてください。</string>
+
+    <!-- 住所登録画面 -->
     <string name="registerAddress_caption">ご住所を教えてください。</string>
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
+
+    <!-- 電話番号登録画面 -->
     <string name="registerPhone_caption">電話番号を教えてください。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
+
+    <!-- 職業登録画面 -->
     <string name="registerJobStatus_caption">ご職業を教えてください。</string>
+
+    <!-- 希望する仕事登録画面 -->
     <string name="registerWishWork_caption">どんなお仕事がやってみたいか教えてください。（複数回答可）</string>
+
+    <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
+    
+    <!-- 案件詳細画面 -->
+    <string name="jobDetails_workingTime">作業時間（目安）</string>
+    <string name="jobDetails_fee">報酬</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
