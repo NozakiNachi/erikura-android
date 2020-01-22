@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".presenters.fragments.ThumbnailImageFragment">
-
-    <ImageView
-        android:id="@+id/thumbnailImage_image"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ThumbnailImageFragmentViewModel" />
+    </data>
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.ThumbnailImageFragment">
 
-</FrameLayout>
+        <ImageView
+            android:id="@+id/thumbnailImage_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:bitmap="@{viewModel.bitmap}"/>
+
+    </FrameLayout>
+</layout>

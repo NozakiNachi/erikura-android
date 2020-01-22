@@ -15,8 +15,6 @@ import jp.co.recruit.erikura.databinding.FragmentNomalJobDetailsBinding
 
 class NomalJobDetailsFragment(private val activity: Activity, val job: Job?) : Fragment() {
 
-    lateinit var bitmapImage: Bitmap
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -28,13 +26,14 @@ class NomalJobDetailsFragment(private val activity: Activity, val job: Job?) : F
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         val transaction = childFragmentManager.beginTransaction()
         val timeLabel = TimeLabelFragment(job)
         val jobInfoView = JobInfoViewFragment(job)
-        //val thumbnailImage = ThumbnailImageFragment(bitmapImage)
+        val thumbnailImage = ThumbnailImageFragment(activity, job)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
+        transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         transaction.commit()
     }
 
