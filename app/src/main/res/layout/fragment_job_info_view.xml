@@ -25,11 +25,13 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="54dp"
+                android:layout_height="wrap_content"
                 android:textSize="22dp"
                 android:textColor="@color/black"
                 android:text="@{viewModel.title}"
                 android:onClick="@{handler::onClickTitle}"
+                android:lineSpacingExtra="10dp"
+                android:maxLines="2"
                 android:ellipsize="end"/>
 
             <LinearLayout
