@@ -65,6 +65,17 @@
     <!-- 案件詳細画面 -->
     <string name="jobDetails_workingTime">作業時間（目安）</string>
     <string name="jobDetails_fee">報酬</string>
+    <string name="jobDetails_applyFlow"><a href="">応募後の流れを確認</a></string>
+
+    <!-- 応募後の流れ確認モーダル -->
+    <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
+    <string name="applyFlowDialog_step1">マニュアルをチェックする</string>
+    <string name="applyFlowDialog_step1Explain">作業内容に加え、「持ち物」「報告箇所」を必ず確認しましょう。</string>
+    <string name="applyFlowDialog_step2">24時間以内に作業する</string>
+    <string name="applyFlowDialog_step2Explain">実際に現地に行き作業を実施し、作業報告まで行いましょう。\n注意１：24時間以内に「作業報告まで実施」してください。\n注意２：時間内に作業できない場合は「速やかにキャンセル」してください。</string>
+    <string name="applyFlowDialog_step3">作業報告をする</string>
+    <string name="applyFlowDialog_step3Explain">作業箇所の写真を撮影し、コメントを添えて、作業報告をしましょう。</string>
+    <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="handler"
+            type="jp.co.recruit.erikura.presenters.fragments.ApplyFlowLinkFragmentEventHandlers" />
+    </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.ApplyFlowLinkFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:background="@drawable/ic_help_2x" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:textSize="14dp"
+                style="@style/linkText"
+                android:text="@string/jobDetails_applyFlow"
+                android:onClick="@{handler::onClickApplyFlowLink}"
+                />
+
+        </LinearLayout>
+
+    </FrameLayout>
+</layout>
