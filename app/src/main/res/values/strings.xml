@@ -71,6 +71,7 @@
     <string name="jobDetails_summary">仕事概要</string>
     <string name="jobDetails_summaryTitles">報告箇所</string>
     <string name="jobDetails_workingPlace">場所</string>
+    <string name="jobDetails_workingPlaceLink"><a href="">この場所の仕事全て</a></string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -130,6 +131,7 @@
     <string name="register">会員登録</string>
     <string name="go">進む</string>
     <string name="showManual">マニュアルを表示</string>
+    <string name="openMap">　地図アプリで開く</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

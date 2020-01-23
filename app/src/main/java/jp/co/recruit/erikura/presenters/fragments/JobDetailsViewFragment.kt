@@ -37,6 +37,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
     val workingPlace: MutableLiveData<String> = MutableLiveData()
+    val workingBuilding: MutableLiveData<String> = MutableLiveData()
 
     fun setup(job: Job?){
         if (job != null) {
@@ -54,7 +55,8 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             }
 
             summaryTitles.value = summaryTitleStr
-            workingPlace.value = "${job.place?.workingPlace}\n${job.place?.workingBuilding}}"
+            workingPlace.value = job.place?.workingPlace
+            workingBuilding.value = job.place?.workingBuilding
         }
     }
 
