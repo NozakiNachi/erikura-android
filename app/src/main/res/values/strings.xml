@@ -15,7 +15,7 @@
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
     <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
-    
+
     <!-- 仮登録画面 -->
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
     <string name="registerEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
@@ -61,7 +61,7 @@
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
-    
+
     <!-- 案件詳細画面 -->
     <string name="jobDetails_workingTime">作業時間（目安）</string>
     <string name="jobDetails_fee">報酬</string>
@@ -113,6 +113,7 @@
     <string name="car">車で通勤する仕事</string>
     <string name="register">会員登録</string>
     <string name="go">進む</string>
+    <string name="showManual">マニュアルを表示</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
