@@ -113,6 +113,7 @@
         <item name="android:textSize">20dp</item>
         <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
     <!-- セカンダリボタン -->
@@ -124,6 +125,7 @@
         <item name="android:textSize">20dp</item>
         <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
     <!-- ターシャリーボタン -->
@@ -135,6 +137,7 @@
         <item name="android:textSize">16dp</item>
         <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
     <!-- チェックボックス付きボタン -->
@@ -157,5 +160,11 @@
         <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
         <item name="android:textStyle">bold</item>
         <item name="android:text">次へ</item>
+    </style>
+
+    <!-- 履歴ポップアップ -->
+    <style name="historyPopupListViewStyle">
+        <item name="android:divider">@color/silver</item>
+        <item name="android:dividerHeight">1dp</item>
     </style>
 </resources>

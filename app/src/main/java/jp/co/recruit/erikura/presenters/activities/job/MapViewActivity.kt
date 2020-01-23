@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -32,9 +33,13 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
 class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
+        val REQUEST_SEARCH_CONDITIONS = 1
+        val EXTRA_SEARCH_CONDITIONS = "jp.co.recruit.erikura.job.SearchJobActivity.SEARCH_CONDITIONS"
+
         // デフォルト位置情報
         val defaultLatLng = LatLng(35.658322, 139.70163)
         val defaultZoom = 15.0f
@@ -249,6 +254,22 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                REQUEST_SEARCH_CONDITIONS -> {
+                    // 検索条件を受け取る
+                    data?.getParcelableExtra<JobQuery>(EXTRA_SEARCH_CONDITIONS)?.let { query ->
+                        // FIXME：viewModel への反映
+                        fetchJobs(query)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onClickReSearch(view: View) {
         val position = mMap.cameraPosition
         fetchJobs(viewModel.query(position.target))
@@ -260,7 +281,9 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
-        startActivity(intent)
+        // FIXME: 緯度経度については要検討
+        intent.putExtra(EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLng ?: defaultLatLng))
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -308,19 +331,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     }
 }
 
-class MapViewViewModel: ViewModel() {
+class MapViewViewModel: BaseJobQueryViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
 
     val jobs: MutableLiveData<List<Job>> = MutableLiveData()
     val jobsByLocation: MutableLiveData<Map<LatLng, List<Job>>> = MutableLiveData()
     val markerMap: MutableMap<Int, ErikuraMarkerView> = HashMap()
-    val periodType: MutableLiveData<PeriodType> = MutableLiveData()
-    val keyword: MutableLiveData<String> = MutableLiveData()
-    val minimumReward: MutableLiveData<Int> = MutableLiveData()
-    val maximumReward: MutableLiveData<Int> = MutableLiveData()
-    val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
-    val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
-    val jobKind: MutableLiveData<JobKind> = MutableLiveData()
 
     // FIXME: 初期状態では検索バーは表示し、なにか操作が行われたら非表示とする
     val searchBarVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -381,15 +397,6 @@ class MapViewViewModel: ViewModel() {
 
     init {
         periodType.value = PeriodType.ALL
-    }
-
-    fun query(latLng: LatLng): JobQuery {
-        val query = JobQuery(
-            latitude = latLng.latitude,
-            longitude = latLng.longitude,
-            period = this.periodType.value ?: PeriodType.ALL
-        )
-        return query
     }
 }
 

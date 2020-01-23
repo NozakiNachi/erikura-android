@@ -4,9 +4,11 @@ import android.app.Activity
 import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -27,6 +29,9 @@ class Api(var activity: Activity) {
 
         val erikuraApiService: IErikuraApiService get() {
             return ErikuraApplication.instance.erikuraComponent.erikuraApiService()
+        }
+        val googleMapApiService: IGoogleMapApiService get() {
+            return ErikuraApplication.instance.erikuraComponent.googleMapApiService()
         }
 
         val isLogin: Boolean get() = (userSession != null)
@@ -266,6 +271,39 @@ class Api(var activity: Activity) {
                 }
             )
     }
+
+    fun geocode(keyword: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: LatLng) -> Unit) {
+        googleMapApiService.geocode(BuildConfig.GEOCODING_API_KEY, keyword)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = { response ->
+                    when(response.status) {
+                        GeocodingResponse.Status.OK -> {
+                            val location = response.results.first()?.geometry?.location
+                            activity.runOnUiThread {
+                                onComplete(LatLng(location.lat, location.lng))
+                            }
+                        }
+                        GeocodingResponse.Status.ZERO_RESULTS -> {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(listOf("検索ワードに合致する住所・駅名が見つかりませんでした。"))
+                        }
+                        else -> {
+                            Log.v("Geocoding error:", response.status.name)
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(listOf("キーワードでの検索に失敗しました"))
+                        }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: "キーワードでの検索に失敗しました")
+                        )
+                    }
+                }
+            )
+    }
+
 
     fun displayErrorAlert(messages: List<String>? = null, caption: String? = null) {
         activity.runOnUiThread {
