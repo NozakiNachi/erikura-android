@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -25,6 +26,10 @@ import jp.co.recruit.erikura.databinding.ActivityListViewBinding
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
 class ListViewActivity : AppCompatActivity(), ListViewHandlers {
+    companion object {
+        val REQUEST_SEARCH_CONDITIONS = 1
+    }
+
     private val locationManager = ErikuraApplication.locationManager
     private var firstFetchRequested: Boolean = false
     private lateinit var activeJobsAdapter: JobListAdapter
@@ -135,13 +140,33 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
         locationManager.start(this)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            when(requestCode) {
+                REQUEST_SEARCH_CONDITIONS -> {
+                    // 検索条件を受け取る
+                    data?.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
+                        // 検索条件を viewModel へ反映します
+                        viewModel.apply(query)
+                        // 案件の検索処理を実施します
+                        fetchJobs(query)
+                    }
+                }
+            }
+        }
+    }
+
     override fun onClickSearch(view: View) {
         viewModel.searchBarVisible.value = View.VISIBLE
     }
 
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
-        startActivity(intent)
+        // FIXME: 緯度経度については要検討
+        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLng ?: locationManager.defaultLatLng))
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 
     override fun onClickMap(view: View) {
@@ -230,32 +255,6 @@ class ListViewViewModel : BaseJobQueryViewModel() {
                 else -> resources.getDrawable(R.drawable.before_open_2x, null)
             }
         }
-    }
-
-    val conditions: List<String> get() {
-        val conditions = ArrayList<String>()
-
-        // 場所
-        conditions.add(keyword.value ?: "現在地周辺")
-        // 金額
-        // FIXME: 上限なし、下限なしの対応
-        if (minimumReward.value != null || maximumReward.value != null) {
-            val minReward = minimumReward.value?.let { String.format("%,d円", it) } ?: ""
-            val maxReward = maximumReward.value?.let { String.format("%,d円", it) } ?: ""
-            conditions.add("${minReward} 〜 ${maxReward}")
-        }
-        // 作業時間
-        // FIXME: 上限なし、下限なしの対応
-        if (minimumWorkingTime.value != null || maximumWorkingTime.value != null) {
-            val minWorkTime = minimumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
-            val maxWorkTime = maximumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
-            conditions.add("${minWorkTime} 〜 ${maxWorkTime}")
-        }
-        // 業種
-        jobKind.value?.also {
-            conditions.add(it.name?: "")
-        }
-        return conditions
     }
 
     init {

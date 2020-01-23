@@ -29,6 +29,10 @@ import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import java.util.*
 
 class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
+    companion object {
+        val EXTRA_SEARCH_CONDITIONS = "jp.co.recruit.erikura.job.SearchJobActivity.SEARCH_CONDITIONS"
+    }
+
     private val realm: Realm get() = ErikuraApplication.realm
     private val viewModel: SearchJobViewModel by lazy {
         ViewModelProvider(this).get(SearchJobViewModel::class.java)
@@ -91,7 +95,7 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
                 Log.v("検索", latLng.toString())
 
                 val intent = Intent()
-                intent.putExtra(MapViewActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
+                intent.putExtra(EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }
@@ -101,7 +105,7 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
                 Log.v("検索", latLng.toString())
 
                 val intent = Intent()
-                intent.putExtra(MapViewActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
+                intent.putExtra(EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }
