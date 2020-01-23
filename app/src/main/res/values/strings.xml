@@ -66,6 +66,11 @@
     <string name="jobDetails_workingTime">作業時間（目安）</string>
     <string name="jobDetails_fee">報酬</string>
     <string name="jobDetails_applyFlow"><a href="">応募後の流れを確認</a></string>
+    <string name="jobDetails_limit">納期</string>
+    <string name="jobDetails_tool">持ち物</string>
+    <string name="jobDetails_summary">仕事概要</string>
+    <string name="jobDetails_summaryTitles">報告箇所</string>
+    <string name="jobDetails_workingPlace">場所</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>

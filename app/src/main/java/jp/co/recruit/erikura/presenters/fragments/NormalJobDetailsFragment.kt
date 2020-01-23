@@ -41,11 +41,13 @@ class NormalJobDetailsFragment(private val activity: Activity, val job: Job?) : 
         val thumbnailImage = ThumbnailImageFragment(activity, job)
         val manualButton = ManualButtonFragment(job)
         val applyFlowLink = ApplyFlowLinkFragment()
+        val jobDetailsView = JobDetailsViewFragment(job)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         transaction.add(R.id.jobDetails_manualButtonFragment, manualButton, "manualButton")
         transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink, "applyFlowLink")
+        transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
         transaction.commit()
     }
 
