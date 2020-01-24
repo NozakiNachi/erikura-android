@@ -19,8 +19,6 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentJobDetailsViewBinding
-import retrofit2.http.Url
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
