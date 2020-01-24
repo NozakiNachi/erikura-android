@@ -44,6 +44,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         val applyFlowLink = ApplyFlowLinkFragment()
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
+        val applyFlowView = ApplyFlowViewFragment()
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
@@ -51,6 +52,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink, "applyFlowLink")
         transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
         transaction.add(R.id.jobDetails_mapViewFragment, mapView, "mapView")
+        transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView, "applyFlowView")
         transaction.commit()
     }
 
