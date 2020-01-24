@@ -7,6 +7,9 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.JobDetailsViewFragmentViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.JobDetailsViewFragmentEventHandlers" />
     </data>
     <FrameLayout
         android:layout_width="match_parent"
@@ -190,7 +193,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="44dp"
                         android:layout_marginTop="20dp"
-                        style="@style/openMapButton">
+                        android:text="@{viewModel.openMapButtonText}"
+                        android:textAllCaps="false"
+                        style="@style/openMapButton"
+                        android:onClick="@{handlers::onClickOpenMap}">
                     </Button>
                 </LinearLayout>
             </LinearLayout>
