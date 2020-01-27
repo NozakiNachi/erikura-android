@@ -71,7 +71,7 @@
     <string name="jobDetails_summary">仕事概要</string>
     <string name="jobDetails_summaryTitles">報告箇所</string>
     <string name="jobDetails_workingPlace">場所</string>
-    <string name="jobDetails_workingPlaceLink"><a href="">この場所の仕事全て</a></string>
+    <string name="jobDetails_workingPlaceLink">この場所の仕事全て</string>
     <string name="jobDetails_applyFlowCaption">応募後の流れ</string>
 
     <!-- 応募後の流れ確認モーダル -->
