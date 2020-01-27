@@ -33,4 +33,8 @@ data class JobKind(
             return URL(activeIconUrl, arrayOf(path, url.query).filterNotNull().joinToString("?"))
         }
     }
+
+    override fun toString(): String {
+        return name ?: super.toString()
+    }
 }

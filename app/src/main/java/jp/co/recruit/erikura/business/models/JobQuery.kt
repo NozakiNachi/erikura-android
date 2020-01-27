@@ -54,5 +54,10 @@ data class JobQuery(
 ) : Parcelable {
     companion object {
         const val CURRENT_LOCATION = "現在地周辺"
+
+        const val MIN_REWARD = 0
+        const val MAX_REWARD = 999999999
+        const val MIN_WORKING_TIME = 0
+        const val MAX_WORKING_TIME = 999999999
     }
 }

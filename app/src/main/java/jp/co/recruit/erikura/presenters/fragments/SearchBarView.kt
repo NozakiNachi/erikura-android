@@ -5,33 +5,23 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.*
 import android.widget.RelativeLayout
-import android.widget.SearchView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.MutableLiveData
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.JobQuery
-import jp.co.recruit.erikura.databinding.FragmentSearchBarBinding
 import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionItemBinding
 import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionLabelBinding
-import jp.co.recruit.erikura.presenters.activities.job.SearchJobActivity
-import jp.co.recruit.erikura.presenters.activities.job.SearchJobViewModel
 
 class SearchBarView : RelativeLayout {
-    private var adapter: SearchBarConditionsAdapter
+    var adapter: SearchBarConditionsAdapter
     private var conditionsView: RecyclerView
 
     constructor(context: Context) : this(context, null)
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val binding: FragmentSearchBarBinding = DataBindingUtil.inflate(
-            LayoutInflater.from(context),
-            R.layout.fragment_search_bar,
-            this, true)
-        // FIXME: binding へのデータの紐付けはどうするべきか？
+        LayoutInflater.from(context).inflate(R.layout.fragment_search_bar, this, true)
 
         adapter = SearchBarConditionsAdapter(listOf(JobQuery.CURRENT_LOCATION))
         conditionsView = findViewById(R.id.search_bar_conditions)
@@ -62,14 +52,14 @@ class SearchBarView : RelativeLayout {
             }
         })
     }
+}
 
-    companion object {
-        @BindingAdapter("conditions")
-        @JvmStatic
-        fun setConditions(view: SearchBarView, conditions: List<String>?) {
-            view.adapter.conditions = conditions ?: listOf(JobQuery.CURRENT_LOCATION)
-            view.adapter.notifyDataSetChanged()
-        }
+object SearchBarViewAdapter {
+    @BindingAdapter("conditions")
+    @JvmStatic
+    fun setConditions(view: SearchBarView, conditions: List<String>?) {
+        view.adapter.conditions = conditions ?: listOf(JobQuery.CURRENT_LOCATION)
+        view.adapter.notifyDataSetChanged()
     }
 }
 

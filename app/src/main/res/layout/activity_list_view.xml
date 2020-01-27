@@ -24,7 +24,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:fillViewport="true"
-            android:onScrollChange="@{handlers.onScrollChange}"
+            android:onScrollChange="@{handlers::onScrollChange}"
             >
             
             <LinearLayout
@@ -169,7 +169,7 @@
             android:layout_marginTop="60dp"
             android:layout_marginLeft="20dp"
             android:elevation="@dimen/default_elevation"
-            android:onClick="@{handlers.onClickSearch}"
+            android:onClick="@{handlers::onClickSearch}"
             />
         <!-- 募集中のみチェックボックス -->
         <ImageButton
@@ -183,7 +183,7 @@
             android:layout_marginTop="136dp"
             android:layout_marginLeft="20dp"
             android:elevation="@dimen/default_elevation"
-            android:onClick="@{handlers.onToggleActiveOnly}"
+            android:onClick="@{handlers::onToggleActiveOnly}"
             />
         <!-- 地図ボタン -->
         <ImageButton
@@ -198,7 +198,7 @@
             android:layout_marginTop="60dp"
             android:layout_marginRight="20dp"
             android:elevation="@dimen/default_elevation"
-            android:onClick="@{handlers.onClickMap}"
+            android:onClick="@{handlers::onClickMap}"
             />
 
         <!-- 検索バー -->
@@ -214,7 +214,7 @@
             android:elevation="@dimen/default_elevation"
             erikura:conditions="@{viewModel.conditions}"
             android:visibility="@{viewModel.searchBarVisible}"
-            android:onClick="@{handlers.onClickSearchBar}"
+            android:onClick="@{handlers::onClickSearchBar}"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

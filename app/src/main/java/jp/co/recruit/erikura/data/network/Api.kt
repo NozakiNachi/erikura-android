@@ -11,10 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.JobQuery
-import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import okhttp3.Request
 import okhttp3.Response
@@ -130,6 +127,32 @@ class Api(var activity: Activity) {
                         activity.runOnUiThread {
                             onComplete(jobs)
                         }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
+    fun jobKinds(onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (jobKinds: List<JobKind>) -> Unit) {
+        erikuraApiService.jobKinds()
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val jobKinds = it.body
+                        activity.runOnUiThread { onComplete(jobKinds) }
                     }
                 },
                 onError = { throwable ->

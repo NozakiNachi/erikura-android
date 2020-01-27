@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.job.MinMaxPickerDialogViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.job.MinMaxPickerDialogHandlers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <jp.co.recruit.erikura.presenters.activities.job.ItemPicker
+            android:id="@+id/min_max_picker_min_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:layout_marginRight="10dp"
+            android:descendantFocusability="blocksDescendants"
+            items="@{viewModel.minValues}"
+            value="@={viewModel.minItemIndex}"
+            />
+
+        <jp.co.recruit.erikura.presenters.activities.job.ItemPicker
+            android:id="@+id/min_max_picker_max_picker"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            android:descendantFocusability="blocksDescendants"
+            items="@{viewModel.maxValues}"
+            value="@={viewModel.maxItemIndex}"
+            />
+    </LinearLayout>
+</layout>
