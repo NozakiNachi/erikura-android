@@ -27,6 +27,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        container?.removeAllViews()
         val binding = FragmentNormalJobDetailsBinding.inflate(inflater, container, false)
         viewModel.setup(activity, job)
         binding.viewModel = viewModel

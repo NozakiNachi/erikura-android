@@ -15,7 +15,6 @@ class JobDetailsActivity : AppCompatActivity() {
 
     var job: Job = Job()
     var fragment = Fragment()
-    val transaction = supportFragmentManager.beginTransaction()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -37,16 +36,14 @@ class JobDetailsActivity : AppCompatActivity() {
             // jobの再取得
             Api(this).reloadJob(job) {
                 it.toString()
+                job = it
                 refreshContents()
             }
         }
     }
 
     private fun refreshContents() {
-        // fragmentの破棄
-        if (fragment != null ) {
-            transaction.remove(fragment)
-        }
+        val transaction = supportFragmentManager.beginTransaction()
         // fragmentの作成
         // jobのステータスで挿しこむフラグメントを変更します
         if(job != null){
@@ -76,9 +73,8 @@ class JobDetailsActivity : AppCompatActivity() {
             }
 
         }
-        // fragmentの追加
-        transaction.add(R.id.job_details, fragment)
-        // FIXME: 非同期処理の中で呼んでいるため?IllegalStateExceptionで落ちる
+        // fragmentの更新
+        transaction.replace(R.id.job_details, fragment)
         transaction.commit()
     }
 }
