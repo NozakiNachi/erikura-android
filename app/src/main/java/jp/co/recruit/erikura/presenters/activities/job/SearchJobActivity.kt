@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.PointerIcon
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
@@ -126,11 +125,11 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
         val fragment = MinMaxPickerDialogFragment(
             viewModel.minimumWorkingTimeItems.value ?: listOf(),
             viewModel.maximumWorkingTimeItems.value ?: listOf(),
-            viewModel.minimumWorkingTimeItem.value,
-            viewModel.maximumWorkingTimeItem.value
-        ) { min: PickerItem<Int>, max: PickerItem<Int> ->
-            viewModel.minimumWorkingTimeItem.value = min
-            viewModel.maximumWorkingTimeItem.value = max
+            viewModel.minimumWorkingTime.value,
+            viewModel.maximumWorkingTime.value
+        ) { min: Int, max: Int ->
+            viewModel.minimumWorkingTime.value = min
+            viewModel.maximumWorkingTime.value = max
         }
         // FIXME: 作業時間の最大、最小などどのバインディング
         fragment.show(supportFragmentManager, "workingTimePicker")
@@ -140,11 +139,11 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
         val fragment = MinMaxPickerDialogFragment(
             viewModel.minimumRewardItems.value ?: listOf(),
             viewModel.maximumRewardItems.value ?: listOf(),
-            viewModel.minimumRewardItem.value,
-            viewModel.maximumRewardItem.value
-        ) { min: PickerItem<Int>, max: PickerItem<Int> ->
-            viewModel.minimumRewardItem.value = min
-            viewModel.maximumRewardItem.value = max
+            viewModel.minimumReward.value,
+            viewModel.maximumReward.value
+        ) { min: Int, max: Int ->
+            viewModel.minimumReward.value = min
+            viewModel.maximumReward.value = max
         }
         // FIXME: 報酬の最大、最小などとのバインディング
         fragment.show(supportFragmentManager, "rewordPicker")
@@ -168,11 +167,6 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
     val minimumRewardItems: MutableLiveData<List<PickerItem<Int>>> = MutableLiveData()
     val maximumRewardItems: MutableLiveData<List<PickerItem<Int>>> = MutableLiveData()
 
-    val minimumWorkingTimeItem: MutableLiveData<PickerItem<Int>> = MutableLiveData()
-    val maximumWorkingTimeItem: MutableLiveData<PickerItem<Int>> = MutableLiveData()
-    val minimumRewardItem: MutableLiveData<PickerItem<Int>> = MutableLiveData()
-    val maximumRewardItem: MutableLiveData<PickerItem<Int>> = MutableLiveData()
-
     val jobKindsItems = MediatorLiveData<List<JobKindItem>>().also { result ->
         result.addSource(jobKinds) {
             val items = mutableListOf<JobKindItem>(JobKindItem.Nothing)
@@ -182,13 +176,13 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
     }
 
     val rewardLabel = MediatorLiveData<String>().also { result ->
-        result.addSource(minimumRewardItem) { result.value = formatRewardText() }
-        result.addSource(maximumRewardItem) { result.value = formatRewardText() }
+        result.addSource(minimumReward) { result.value = formatRewardText() }
+        result.addSource(maximumReward) { result.value = formatRewardText() }
     }
 
     val workingTimeLabel = MediatorLiveData<String>().also { result ->
-        result.addSource(minimumWorkingTimeItem) { result.value = formatWorkingTimeText() }
-        result.addSource(maximumWorkingTimeItem) { result.value = formatWorkingTimeText() }
+        result.addSource(minimumWorkingTime) { result.value = formatWorkingTimeText() }
+        result.addSource(maximumWorkingTime) { result.value = formatWorkingTimeText() }
     }
 
     val isSearchButtonEnabled = MediatorLiveData<Boolean>().also { result ->
@@ -198,28 +192,20 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
     var workingTimes: List<Int> = listOf()
         set(value) {
             field = value
-            minimumWorkingTimeItems.value =
-                listOf(PickerItem("下限なし", JobQuery.MIN_WORKING_TIME)) +
-                        workingTimes.map{ PickerItem(String.format("%,d分", it), it) }
-            maximumWorkingTimeItems.value =
-                workingTimes.map{ PickerItem(String.format("%,d分", it), it) } +
-                        listOf(PickerItem("上限なし", JobQuery.MAX_WORKING_TIME))
-
-            minimumWorkingTimeItem.value = minimumWorkingTimeItems.value?.first()!! // 下限なしは必ず存在するので !! を付与
-            maximumWorkingTimeItem.value = maximumWorkingTimeItems.value?.last()!!  // 上限なしは必ず存在するので !! を付与
+            minimumWorkingTimeItems.value = (listOf(JobQuery.MIN_WORKING_TIME) + value).filterNotNull().map {
+                Log.v("TEST", "${formatWorkingTime(it)}, ${it}")
+                PickerItem(formatWorkingTime(it), it)
+            }
+            maximumWorkingTimeItems.value = (value + listOf(JobQuery.MAX_WORKING_TIME)).filterNotNull().map {
+                Log.v("TEST", "${formatWorkingTime(it)}, ${it}")
+                PickerItem(formatWorkingTime(it), it)
+            }
         }
     var rewards: List<Int> = listOf()
         set(value) {
             field = value
-            minimumRewardItems.value =
-                listOf(PickerItem("下限なし", JobQuery.MIN_REWARD)) +
-                        rewards.map{ PickerItem(String.format("%,d円", it), it) }
-            maximumRewardItems.value =
-                rewards.map{ PickerItem(String.format("%,d円", it), it) } +
-                        listOf(PickerItem("上限なし", JobQuery.MAX_REWARD))
-
-            minimumRewardItem.value = minimumRewardItems.value?.first()!! // 下限なしは必ず存在するので !! を付与
-            maximumRewardItem.value = maximumRewardItems.value?.last()!!  // 上限なしは必ず存在するので !! を付与
+            minimumRewardItems.value = (listOf(JobQuery.MIN_REWARD) + value).map { PickerItem(formatReward(it), it) }
+            maximumRewardItems.value = (value + listOf(JobQuery.MAX_REWARD)).map { PickerItem(formatReward(it), it) }
         }
 
     init {
@@ -227,6 +213,9 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
         this.workingTimes = listOf(1, 5, 10, 15, 20, 25, 30, 45, 60, 75, 90, 105, 120, 180, 240, 300, 360, 420, 480)
         // FIXME: APIでの報酬の取得
         this.rewards = listOf(1, 5, 10, 50, 100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000)
+
+        this.workingTimeLabel.value = formatWorkingTimeText()
+        this.rewardLabel.value = formatRewardText()
     }
 
     fun isValid(): Boolean {
@@ -240,16 +229,40 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
 
     fun formatWorkingTimeText(): String {
         return arrayOf(
-            minimumWorkingTimeItem.value?.label ?: "",
-            maximumWorkingTimeItem.value?.label ?: ""
+            minimumWorkingTime.value?.let { formatWorkingTime(it) } ?: "下限なし",
+            maximumWorkingTime.value?.let { formatWorkingTime(it) } ?: "上限なし"
         ).joinToString(" 〜 ")
     }
 
     fun formatRewardText(): String {
         return arrayOf(
-            minimumRewardItem.value?.label ?: "",
-            maximumRewardItem.value?.label ?: ""
+            minimumReward.value?.let { formatReward(it) } ?: "下限なし",
+            maximumReward.value?.let { formatReward(it) } ?: "上限なし"
         ).joinToString(" 〜 ")
+    }
+
+    private fun formatWorkingTime(value: Int): String {
+        if (value == JobQuery.MIN_WORKING_TIME) {
+            return "下限なし"
+        }
+        else if (value == JobQuery.MAX_WORKING_TIME) {
+            return "上限なし"
+        }
+        else {
+            return String.format("%,d分", value)
+        }
+    }
+
+    private fun formatReward(value: Int): String {
+        if (value == JobQuery.MIN_REWARD) {
+            return "下限なし"
+        }
+        else if (value == JobQuery.MAX_REWARD) {
+            return "上限なし"
+        }
+        else {
+            return String.format("%,d円", value)
+        }
     }
 }
 
@@ -314,9 +327,9 @@ sealed class JobKindItem(val label: String, val value: JobKind?) {
 class MinMaxPickerDialogFragment<T>(
     val minValues: List<PickerItem<T>>,
     val maxValues: List<PickerItem<T>>,
-    val minItem: PickerItem<T>?,
-    val maxItem: PickerItem<T>?,
-    val onComplete: (min: PickerItem<T>, max: PickerItem<T>) -> Unit
+    val min: T?,
+    val max: T?,
+    val onComplete: (min: T, max: T) -> Unit
 ): DialogFragment(), MinMaxPickerDialogHandlers {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
@@ -331,8 +344,16 @@ class MinMaxPickerDialogFragment<T>(
         binding.lifecycleOwner = this
 
         // 初期値を選択します
-        minItem?.let { viewModel.minItemIndex.value = minValues.indexOf(it) }
-        maxItem?.let { viewModel.maxItemIndex.value = maxValues.indexOf(it) }
+        min?.let { minValue ->
+            viewModel.minItemIndex.value = Math.max(minValues.indexOfFirst { item ->
+                item.value == minValue
+            }, 0)
+        }
+        max?.let { maxValue ->
+            viewModel.maxItemIndex.value = Math.min(maxValues.indexOfFirst { item ->
+                item.value == maxValue
+            }, maxValues.size - 1)
+        }
 
         builder
             .setView(binding.root)
@@ -341,7 +362,7 @@ class MinMaxPickerDialogFragment<T>(
                 val max: PickerItem<T> = viewModel.maxItem as PickerItem<T>
 
                 Log.v("MIN-MAX:", "min: ${min.toString()}, max: ${max.toString()}")
-                onComplete(min, max)
+                onComplete(min.value, max.value)
             }
             .setNegativeButton("Cancel", null)
         return builder.create()
