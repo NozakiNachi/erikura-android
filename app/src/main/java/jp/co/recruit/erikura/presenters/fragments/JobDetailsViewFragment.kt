@@ -29,6 +29,7 @@ import android.util.Log
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.bold
+import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 
 
 class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragmentEventHandlers {
@@ -50,6 +51,35 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         var tv = activity!!.findViewById<TextView>(R.id.jobDetailsView_placeLink)
+
+        var place = SpannableStringBuilder()
+        if(job != null) {
+            if ( (job.place?.hasEntries?: false) || (job.place?.workingPlaceShort.isNullOrBlank()) ) {
+                place.append(job.place?.workingPlace)
+                if(!(job.place?.workingBuilding.isNullOrBlank())) {
+                    place.append("\n${job.place?.workingBuilding}")
+                }
+            }else {
+                place.append(job.place?.workingPlaceShort)
+            }
+            place.append("　")
+            var start = place.length
+            place.bold { append(ErikuraApplication.instance.getString(R.string.jobDetails_workingPlaceLink)) }
+            var end = place.length
+            place.setSpan(object : ClickableSpan() {
+                override fun onClick(view: View) {
+                    // 場所詳細画面へ遷移
+                    Log.v("debug", "linkが押下された")
+                    val intent= Intent(activity, PlaceDetailActivity::class.java)
+                    intent.putExtra("place", place)
+                    intent.flags = Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+                    startActivity(intent)
+                }
+            }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            val tf = Typeface.create(ResourcesCompat.getFont(ErikuraApplication.instance.applicationContext, R.font.hirakakupron_w6_alphanbum_01), BOLD)
+            place.setSpan(tf, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+        tv.text = place
         tv.movementMethod = LinkMovementMethod.getInstance()
     }
 
@@ -67,7 +97,6 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
     val workingPlace: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
-    val workingBuilding: MutableLiveData<String> = MutableLiveData()
 
     val openMapButtonText: MutableLiveData<SpannableString> = MutableLiveData()
 
@@ -90,7 +119,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             }
             summaryTitles.value = summaryTitleStr
             // 場所
-            var place = SpannableStringBuilder()
+/*            var place = SpannableStringBuilder()
 
             if ( (job.place?.hasEntries?: false) || (job.place?.workingPlaceShort.isNullOrBlank()) ) {
                 place.append(job.place?.workingPlace)
@@ -108,11 +137,14 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
                 override fun onClick(view: View) {
                     // 場所詳細画面へ遷移
                     Log.v("debug", "linkが押下された")
+                    val intent= Intent(get, PlaceDetailActivity::class.java)
+                    intent.putExtra("place", place)
+                    startActivity(intent)
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             val tf = Typeface.create(ResourcesCompat.getFont(ErikuraApplication.instance.applicationContext, R.font.hirakakupron_w6_alphanbum_01), BOLD)
             place.setSpan(tf, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            workingPlace.value = place
+            workingPlace.value = place*/
         }
 
         val str = SpannableString(ErikuraApplication.instance.getString(R.string.openMap))
