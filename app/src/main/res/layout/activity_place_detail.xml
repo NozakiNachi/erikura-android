@@ -39,7 +39,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/silver"
+                        android:background="@{viewModel.bitmapDrawable}"
                         android:orientation="vertical">
                         <!-- 住所表示 -->
                         <FrameLayout
@@ -47,6 +47,7 @@
                             android:background="@drawable/background_dialog_body"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:elevation="@dimen/default_elevation"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
                             android:layout_marginTop="30dp" />
@@ -64,6 +65,14 @@
                             android:onClick="@{handlers::onClickOpenMap}" />
 
                         <!-- 建物画像 -->
+                        <ImageView
+                            android:layout_width="251dp"
+                            android:layout_height="188dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:visibility="@{viewModel.thumbnailVisibility}"
+                            app:bitmap="@{viewModel.bitmap}" />
 
                         <View
                             android:layout_width="match_parent"
