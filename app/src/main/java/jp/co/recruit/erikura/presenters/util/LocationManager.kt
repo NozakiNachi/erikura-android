@@ -20,10 +20,11 @@ class LocationManager {
 
         const val Interval: Long = 5000
         const val FastestInterval: Long = 1000
+
+        // 自己位置が取得できない場合のデフォルト値は渋谷駅
+        val defaultLatLng = LatLng(35.658322, 139.70163)
     }
 
-    val defaultLatLng =
-        LatLng(35.658322, 139.70163)
     private var fusedClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(
             ErikuraApplication.instance.applicationContext
@@ -33,6 +34,8 @@ class LocationManager {
             ErikuraApplication.instance.applicationContext
         )
     var latLng: LatLng? = null
+
+    val latLngOrDefault: LatLng get() = latLng ?: defaultLatLng
 
     private var locationUpdateCallbacks: MutableList<LocationUpdateCallback> = ArrayList()
 

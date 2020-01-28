@@ -11,11 +11,9 @@ import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.JobQuery
-import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.util.LocationManager
 import okhttp3.Request
 import okhttp3.Response
 import org.apache.commons.io.IOUtils
@@ -109,8 +107,8 @@ class Api(var activity: Activity) {
     fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         erikuraApiService.searchJob(
             period = query.period.value,
-            latitude = query.latitude ?: MapViewActivity.defaultLatLng.latitude,
-            longitude = query.longitude ?: MapViewActivity.defaultLatLng.longitude,
+            latitude = query.latitude ?: LocationManager.defaultLatLng.latitude,
+            longitude = query.longitude ?: LocationManager.defaultLatLng.longitude,
             sortBy = query.sortBy.value,
             minimumReward = query.minimumReward,
             maximumReward = query.maximumReward,
@@ -130,6 +128,32 @@ class Api(var activity: Activity) {
                         activity.runOnUiThread {
                             onComplete(jobs)
                         }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
+    fun jobKinds(onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (jobKinds: List<JobKind>) -> Unit) {
+        erikuraApiService.jobKinds()
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val jobKinds = it.body
+                        activity.runOnUiThread { onComplete(jobKinds) }
                     }
                 },
                 onError = { throwable ->
@@ -305,9 +329,11 @@ class Api(var activity: Activity) {
                 onNext = { response ->
                     when(response.status) {
                         GeocodingResponse.Status.OK -> {
-                            val location = response.results.first()?.geometry?.location
-                            activity.runOnUiThread {
-                                onComplete(LatLng(location.lat, location.lng))
+                            if (response.results.size > 0) {
+                                val location = response.results.first().geometry.location
+                                activity.runOnUiThread {
+                                    onComplete(LatLng(location.lat, location.lng))
+                                }
                             }
                         }
                         GeocodingResponse.Status.ZERO_RESULTS -> {
@@ -329,7 +355,6 @@ class Api(var activity: Activity) {
                 }
             )
     }
-
 
     fun displayErrorAlert(messages: List<String>? = null, caption: String? = null) {
         activity.runOnUiThread {

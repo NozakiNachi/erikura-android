@@ -51,7 +51,7 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginLeft="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers.onClickSearch}"
+                android:onClick="@{handlers::onClickSearch}"
                 />
 
             <!-- 募集中のみチェックボックス -->
@@ -66,7 +66,7 @@
                 android:layout_marginTop="136dp"
                 android:layout_marginLeft="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers.onToggleActiveOnly}"
+                android:onClick="@{handlers::onToggleActiveOnly}"
                 />
             <!-- この範囲で再検索ボタン -->
             <Button
@@ -79,7 +79,7 @@
                 map:layout_constraintRight_toRightOf="parent"
                 android:layout_marginTop="60dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers.onClickReSearch}"
+                android:onClick="@{handlers::onClickReSearch}"
                 android:visibility="@{viewModel.reSearchButtonVisible}"
                 />
             <!-- リストボタン -->
@@ -95,7 +95,7 @@
                 android:layout_marginTop="60dp"
                 android:layout_marginRight="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers.onClickList}"
+                android:onClick="@{handlers::onClickList}"
                 />
             <!-- 現在地ボタン -->
             <ImageButton
@@ -110,7 +110,7 @@
                 android:layout_marginTop="136dp"
                 android:layout_marginRight="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers.onClickCurrentLocation}"
+                android:onClick="@{handlers::onClickCurrentLocation}"
                 android:visibility="@{viewModel.currentLocationButtonVisible}"
                 />
 
@@ -127,7 +127,7 @@
                 android:elevation="@dimen/default_elevation"
                 erikura:conditions="@{viewModel.conditions}"
                 android:visibility="@{viewModel.searchBarVisible}"
-                android:onClick="@{handlers.onClickSearchBar}"
+                android:onClick="@{handlers::onClickSearchBar}"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
