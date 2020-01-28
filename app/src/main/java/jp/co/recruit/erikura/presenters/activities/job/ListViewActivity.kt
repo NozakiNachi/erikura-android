@@ -165,7 +165,7 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
         // FIXME: 緯度経度については要検討
-        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLng ?: locationManager.defaultLatLng))
+        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
         startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 

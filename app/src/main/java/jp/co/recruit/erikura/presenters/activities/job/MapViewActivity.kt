@@ -11,7 +11,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -26,7 +25,6 @@ import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.JobKind
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.data.network.Api
@@ -39,8 +37,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     companion object {
         val REQUEST_SEARCH_CONDITIONS = 1
 
-        // デフォルト位置情報
-        val defaultLatLng = LatLng(35.658322, 139.70163)
+        // デフォルトズーム
         val defaultZoom = 15.0f
     }
 
@@ -218,7 +215,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
      */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLng ?: defaultLatLng, defaultZoom))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom))
 
         try {
             val styleOptions = MapStyleOptions.loadRawResourceStyle(this, R.raw.style)
@@ -283,7 +280,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
         // FIXME: 緯度経度については要検討
-        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLng ?: defaultLatLng))
+        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
         startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 
