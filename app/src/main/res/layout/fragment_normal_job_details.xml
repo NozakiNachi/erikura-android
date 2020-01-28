@@ -30,7 +30,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-
                 <!-- 背景ブラー画像 -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -72,6 +71,43 @@
                         android:background="@drawable/background_triangle_reverse"/>
 
                 </LinearLayout>
+
+                <!-- マニュアル表示ボタン -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_manualButtonFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" />
+
+                <!-- 応募後の流れを確認 -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_applyFlowLinkFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
+                <!-- 案件詳細情報 -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_jobDetailsViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
+                <!-- 地図埋め込み -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_mapViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="20dp" />
+
+                <!-- 応募後の流れ -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_applyFlowViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="110dp"/>
+
             </LinearLayout>
 
 

@@ -140,6 +140,16 @@
         <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
+    <!-- 地図アプリを開くボタン -->
+    <style name="openMapButton">
+        <item name="android:background">@drawable/tertiary_button</item>
+        <item name="android:textColor">@color/tertiary_button_text</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:elevation">@dimen/default_elevation</item>
+    </style>
+
     <!-- チェックボックス付きボタン -->
     <style name="buttonWithCheckBox" parent="android:Widget.CompoundButton.CheckBox">
         <item name="android:layout_marginLeft">20dp</item>
