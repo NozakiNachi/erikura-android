@@ -21,8 +21,8 @@ class JobDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_details)
 
-        Log.v("DEBUG", job.toString())
         job = intent.getParcelableExtra("job")
+        Log.v("DEBUG", job.toString())
     }
 
 

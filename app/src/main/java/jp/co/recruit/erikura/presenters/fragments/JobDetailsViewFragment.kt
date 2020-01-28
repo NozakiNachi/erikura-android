@@ -69,9 +69,8 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
             place.setSpan(object : ClickableSpan() {
                 override fun onClick(view: View) {
                     // 場所詳細画面へ遷移
-                    Log.v("debug", "linkが押下された")
                     val intent= Intent(activity, PlaceDetailActivity::class.java)
-                    intent.putExtra("place", place)
+                    intent.putExtra("place", job.place)
                     intent.flags = Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
                     startActivity(intent)
                 }
