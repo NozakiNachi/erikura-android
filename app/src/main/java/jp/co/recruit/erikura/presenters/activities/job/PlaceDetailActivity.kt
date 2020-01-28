@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
+import jp.co.recruit.erikura.presenters.fragments.JobsListFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingPlaceViewFragment
 
 class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
@@ -52,7 +53,9 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
         viewModel.setupThumbnail(this, place)
         val transaction = supportFragmentManager.beginTransaction()
         val workingPlaceView = WorkingPlaceViewFragment(place)
+        val jobsList = JobsListFragment(place)
         transaction.replace(R.id.placeDetail_workingPlaceView, workingPlaceView)
+        transaction.replace(R.id.placeDetail_jobsList, jobsList)
         transaction.commit()
     }
 

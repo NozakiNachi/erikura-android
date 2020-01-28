@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.JobsListFragmentViewModel" />
+    </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.JobsListFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="@{viewModel.activeListVisible}"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="募集中の仕事"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/jobsList_activeJobs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="@{viewModel.futureListVisible}"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="募集予定の仕事"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/jobsList_futureJobs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/paleGrey"
+                android:visibility="@{viewModel.pastListVisible}"
+                >
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="募集終了した仕事"
+                    />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/jobsList_pastJobs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    />
+            </LinearLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+</layout>
