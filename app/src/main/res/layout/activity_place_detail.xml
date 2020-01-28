@@ -32,13 +32,26 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@color/silver"
                         android:orientation="vertical">
                         <!-- 住所表示 -->
+                        <FrameLayout
+                            android:id="@+id/placeDetail_workingPlaceView"
+                            android:background="@drawable/background_dialog_body"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginTop="30dp" />
 
                         <!-- 地図アプリで開く -->
 
                         <!-- 建物画像 -->
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:background="@drawable/background_triangle_reverse"/>
 
                     </LinearLayout>
                     <!-- 案件リスト -->
