@@ -20,6 +20,7 @@ class WorkingPlaceViewFragment(private val place: Place) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        container?.removeAllViews()
         val binding = FragmentWorkingPlaceViewBinding.inflate(inflater, container, false)
         viewModel.setup(place)
         binding.viewModel = viewModel

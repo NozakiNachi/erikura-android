@@ -274,6 +274,32 @@ class Api(var activity: Activity) {
             )
     }
 
+    fun place(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (place: Place) -> Unit){
+        erikuraApiService.place(placeId)
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = {
+                    if (it.hasError) {
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
+                        }
+                    }
+                    else {
+                        val place = it.body
+                        activity.runOnUiThread { onComplete(place) }
+                    }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    activity.runOnUiThread {
+                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
+                        )
+                    }
+                }
+            )
+    }
+
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
         // OkHttp3 クライアントを作成します
         val client = ErikuraApiServiceBuilder().httpBuilder.build()

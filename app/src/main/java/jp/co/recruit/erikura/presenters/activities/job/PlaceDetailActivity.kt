@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Place
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
 import jp.co.recruit.erikura.presenters.fragments.JobsListFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingPlaceViewFragment
@@ -50,19 +51,25 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
     override fun onResume() {
         super.onResume()
         viewModel.thumbnailVisibility.value = 8
-        viewModel.setupThumbnail(this, place)
-        val transaction = supportFragmentManager.beginTransaction()
-        val workingPlaceView = WorkingPlaceViewFragment(place)
-        val jobsList = JobsListFragment(place)
-        transaction.replace(R.id.placeDetail_workingPlaceView, workingPlaceView)
-        transaction.replace(R.id.placeDetail_jobsList, jobsList)
-        transaction.commit()
+        fetchPlace()
     }
 
     override fun onClickOpenMap(view: View) {
         val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${place.latitude?:0},${place.longitude?:0}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
         startActivity(intent)
+    }
+
+    private fun fetchPlace(){
+        Api(this).place(place.id) { place ->
+            viewModel.setupThumbnail(this, place)
+            val transaction = supportFragmentManager.beginTransaction()
+            val workingPlaceView = WorkingPlaceViewFragment(place)
+            val jobsList = JobsListFragment(place.jobs)
+            transaction.replace(R.id.placeDetail_workingPlaceView, workingPlaceView)
+            transaction.replace(R.id.placeDetail_jobsList, jobsList)
+            transaction.commit()
+        }
     }
 }
 
