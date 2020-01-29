@@ -82,6 +82,15 @@ interface IErikuraApiService {
     @GET("places/{placeId}")
     fun place(@Path("placeId") placeId: Int): Observable<ApiResponse<Place>>
 
+    @GET("place_favorites/show")
+    fun placeFavoriteShow(@Query("place_id") placeId: Int): Observable<Response<Boolean>>
+
+    @POST("place_favorites")
+    fun placeFavoriteCreate(@Body request: FavoriteRequest): Observable<Response<Boolean>>
+
+    @DELETE("place_favorites/destory")
+    fun placeFavoriteDelete(@Body request: FavoriteRequest): Observable<Response<Boolean>>
+
     @PATCH("reports")
     fun report(@Body request: ReportRequest): Observable<ApiResponse<ReportIdResponse>>
 
@@ -273,4 +282,8 @@ data class DeleteReportRequest(
 
 data class PushEndpointRequest(
     var ios_fcm_token: String
+)
+
+data class FavoriteRequest(
+    var placeId: Int
 )
