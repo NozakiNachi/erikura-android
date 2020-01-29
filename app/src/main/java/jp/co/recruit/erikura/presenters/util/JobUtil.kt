@@ -22,7 +22,7 @@ object JobUtil {
                 textView.setTextColor(
                     ContextCompat.getColor(
                         context,
-                        R.color.waterBlue
+                        R.color.pinkishGrey
                     )
                 )
                 textView.text = "受付終了"     // FIXME: リソース化
@@ -66,72 +66,74 @@ object JobUtil {
                 }
                 textView.text = sb
             }
-            when(job.status) {
-                JobStatus.Working -> {
-                    textView.setTextColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.vibrantGreen
+            else {
+                when(job.status) {
+                    JobStatus.Working -> {
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.vibrantGreen
+                            )
                         )
-                    )
-                    textView.text = "作業実施中"
-                }
-                JobStatus.Finished -> {
-                    textView.setTextColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.vibrantGreen
+                        textView.text = "作業実施中"
+                    }
+                    JobStatus.Finished -> {
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.vibrantGreen
+                            )
                         )
-                    )
-                    textView.text = "実施済み(未報告)"
-                }
-                JobStatus.Reported -> {
-                    textView.setTextColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.warmGrey
+                        textView.text = "実施済み(未報告)"
+                    }
+                    JobStatus.Reported -> {
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.warmGrey
+                            )
                         )
-                    )
-                    textView.text = "作業報告済み"
-                }
-                else -> {
-                    textView.setTextColor(
-                        ContextCompat.getColor(
-                            context,
-                            R.color.coral
+                        textView.text = "作業報告済み"
+                    }
+                    else -> {
+                        textView.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.coral
+                            )
                         )
-                    )
-                    val now = Date()
-                    val workingFinishAt = job.workingFinishAt ?: now
-                    val diff = workingFinishAt.time - now.time
-                    val diffHours = diff / (60 * 60 * 1000)
-                    val diffDays = diffHours / 24
-                    val diffRestHours = diffHours % 24
+                        val now = Date()
+                        val workingFinishAt = job.workingFinishAt ?: now
+                        val diff = workingFinishAt.time - now.time
+                        val diffHours = diff / (60 * 60 * 1000)
+                        val diffDays = diffHours / 24
+                        val diffRestHours = diffHours % 24
 
-                    val sb = SpannableStringBuilder()
-                    sb.append("作業終了まで")
-                    if (diffDays > 0) {
-                        val start = sb.length
-                        sb.append(diffDays.toString())
-                        sb.setSpan(
-                            RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        sb.append("日")
+                        val sb = SpannableStringBuilder()
+                        sb.append("作業終了まで")
+                        if (diffDays > 0) {
+                            val start = sb.length
+                            sb.append(diffDays.toString())
+                            sb.setSpan(
+                                RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                            sb.append("日")
+                        }
+                        if (diffDays > 0 && diffRestHours > 0) {
+                            sb.append("と")
+                        }
+                        if (diffRestHours > 0) {
+                            val start = sb.length
+                            sb.append(diffRestHours.toString())
+                            sb.setSpan(
+                                RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
+                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                            )
+                            sb.append("時間")
+                        }
+                        textView.text = sb
                     }
-                    if (diffDays > 0 && diffRestHours > 0) {
-                        sb.append("と")
-                    }
-                    if (diffRestHours > 0) {
-                        val start = sb.length
-                        sb.append(diffRestHours.toString())
-                        sb.setSpan(
-                            RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                        )
-                        sb.append("時間")
-                    }
-                    textView.text = sb
                 }
             }
         }else {
