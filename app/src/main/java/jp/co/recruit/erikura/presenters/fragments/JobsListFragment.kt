@@ -99,27 +99,6 @@ class JobsListFragment(private val jobs: Map<PlaceJobType, List<Job>>) : Fragmen
         startActivity(intent)
     }
 
-    fun fetchJobs() {
-/*        Api(activity!!).place(place.id) { place ->
-            viewModel.activeJobs = place.jobs[PlaceJobType.ACTIVE]?: listOf()
-            viewModel.futureJobs = place.jobs[PlaceJobType.FUTURE]?: listOf()
-            viewModel.pastJobs = place.jobs[PlaceJobType.PAST]?: listOf()
-
-            activeJobsAdapter.jobs = viewModel.activeJobs
-            activeJobsAdapter.notifyDataSetChanged()
-
-            futureJobsAdapter.jobs = viewModel.futureJobs
-            futureJobsAdapter.notifyDataSetChanged()
-
-            pastJobsAdapter.jobs = viewModel.pastJobs
-            pastJobsAdapter.notifyDataSetChanged()
-
-            Log.v("ACTIVE", viewModel.activeListVisible.value.toString())
-            Log.v("FUTURE", viewModel.futureListVisible.value.toString())
-            Log.v("PAST", viewModel.pastListVisible.value.toString())
-        }*/
-    }
-
 }
 
 class JobsListFragmentViewModel: ViewModel() {
