@@ -27,12 +27,14 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode
+import com.google.maps.android.SphericalUtil
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
@@ -41,84 +43,85 @@ import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
 class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
-        val REQUEST_SEARCH_CONDITIONS = 1
-
+        // SearchJob にわたすID
+        const val REQUEST_SEARCH_CONDITIONS = 1
         // デフォルトズーム
-        val defaultZoom = 15.0f
+        const val defaultZoom = 15.0f
     }
 
     private val viewModel: MapViewViewModel by lazy {
         ViewModelProvider(this).get(MapViewViewModel::class.java)
     }
 
-    val locationManager: LocationManager = ErikuraApplication.locationManager
+    private val locationManager: LocationManager = ErikuraApplication.locationManager
 
     private lateinit var mMap: GoogleMap
     private lateinit var carouselView: RecyclerView
     private var firstFetchRequested: Boolean = false
 
-    private fun summarizeJobsByLocation(jobs: List<Job>): Map<LatLng, List<Job>> {
-        val jobsByLocation = HashMap<LatLng, MutableList<Job>>()
-        jobs.forEach { job ->
-            val latLng = job.latLng
-            if (!jobsByLocation.containsKey(latLng)) {
-                jobsByLocation.put(latLng, mutableListOf(job))
-            }
-            else {
-                val list = jobsByLocation[latLng] ?: mutableListOf()
-                list.add(job)
-            }
-        }
-        return jobsByLocation
-    }
-
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query) { jobs ->
             Log.d("JOBS: ", jobs.toString())
             viewModel.jobs.value = jobs
-            viewModel.jobsByLocation.value = summarizeJobsByLocation(jobs)
+            viewModel.jobsByLocation.value = JobUtils.summarizeJobsByLocation(jobs)
             // マーカー所の情報をクリアします
             viewModel.markerMap.clear()
             viewModel.activeMaker = null
             // マーカーを地図から削除します
             mMap.clear()
 
-            jobs.forEachIndexed { i, job ->
-                val erikuraMarker = ErikuraMarkerView.build(this, mMap, job) { marker ->
-                    // 表示順
-                    marker.zIndex = ErikuraMarkerView.BASE_ZINDEX - i
-                    if (job.isStartSoon) {
-                        marker.zIndex += ErikuraMarkerView.SOON_ZINDEX_OFFSET
+            if (jobs.isNotEmpty()) {
+                // マーカーを作成します
+                jobs.forEachIndexed { i, job ->
+                    val erikuraMarker = ErikuraMarkerView.build(this, mMap, job) { marker ->
+                        // 表示順
+                        marker.zIndex = ErikuraMarkerView.BASE_ZINDEX - i
+                        if (job.isStartSoon) {
+                            marker.zIndex += ErikuraMarkerView.SOON_ZINDEX_OFFSET
+                        }
+                        else if (job.isFuture) {
+                            marker.zIndex += ErikuraMarkerView.FUTURE_ZINDEX_OFFSET
+                        }
+                        else if (job.isPastOrInactive) {
+                            marker.zIndex += ErikuraMarkerView.ENTRIED_ZINDEX_OFFSET
+                        }
+                        else if (job.boost) {
+                            marker.zIndex += ErikuraMarkerView.BOOST_ZINDEX_OFFSET
+                        }
+                        else if (job.wanted) {
+                            marker.zIndex += ErikuraMarkerView.WANTED_ZINDEX_OFFSET
+                        }
+                        // tag として index を保存しておきます
+                        marker.tag = i
                     }
-                    else if (job.isFuture) {
-                        marker.zIndex += ErikuraMarkerView.FUTURE_ZINDEX_OFFSET
+                    viewModel.markerMap.put(job.id, erikuraMarker)
+                    if ( i == 0 ) {
+                        viewModel.activeMaker = erikuraMarker
                     }
-                    else if (job.isPastOrInactive) {
-                        marker.zIndex += ErikuraMarkerView.ENTRIED_ZINDEX_OFFSET
-                    }
-                    else if (job.boost) {
-                        marker.zIndex += ErikuraMarkerView.BOOST_ZINDEX_OFFSET
-                    }
-                    else if (job.wanted) {
-                        marker.zIndex += ErikuraMarkerView.WANTED_ZINDEX_OFFSET
-                    }
-                    // tag として index を保存しておきます
-                    marker.tag = i
                 }
-                viewModel.markerMap.put(job.id, erikuraMarker)
-                if ( i == 0 ) {
-                    viewModel.activeMaker = erikuraMarker
+                // 下部のカルーセルの表示内容を更新します
+                val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
+                if (carouselView.adapter is ErikuraCarouselAdapter) {
+                    var adapter = carouselView.adapter as ErikuraCarouselAdapter
+                    adapter.data = jobs
+                    adapter.notifyDataSetChanged()
                 }
+
+                // 最も距離が近い案件を取得します
+                val nearest = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
+                // 最も近い案件に地図を移動します
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nearest.latLng, defaultZoom))
+                // カルーセルを最も近い案件に変更します
+                val nearestIndex: Int = (viewModel.markerMap[nearest.id]?.marker?.tag as Int) ?: 0
+                var layoutManager = carouselView.layoutManager as LinearLayoutManager
+                layoutManager.scrollToPosition(nearestIndex)
+
+                Log.v("Fetch Job", "Nearest: ${nearestIndex}, ${layoutManager.toString()}")
+                // FIXME: 移動完了時に、再検索ボタンなどの表示状態を変更したいが...
             }
-            // FIXME: 先頭ではなく最も近いマーカにする
-            jobs.first().let {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(it.latitude?: 0.0, it.longitude?: 0.0), defaultZoom))
-            }
-            val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-            if (carouselView.adapter is ErikuraCarouselAdapter) {
-                var adapter = carouselView.adapter as ErikuraCarouselAdapter
-                adapter.data = jobs
-                adapter.notifyDataSetChanged()
+            else {
+                // FIXME: 再検索処理などの実装
+                Toast.makeText(this, "案件が取得できませんでした", Toast.LENGTH_LONG).show()
             }
         }
     }

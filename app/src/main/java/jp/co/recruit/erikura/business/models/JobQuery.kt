@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.R
 import kotlinx.android.parcel.Parcelize
 
@@ -60,4 +61,6 @@ data class JobQuery(
         const val MIN_WORKING_TIME = 0
         const val MAX_WORKING_TIME = 999999999
     }
+
+    val latLng: LatLng get() = LatLng(latitude!!, longitude!!)
 }
