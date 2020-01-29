@@ -1,10 +1,12 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Dialog
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -62,11 +64,11 @@ class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectD
             window.attributes = lp
 
             val adapter = JobListAdapter(this@JobSelectDialogFragment.activity!!, jobs, null)
-//            adapter.onClickListner = object: ErikuraCarouselAdaptor.OnClickListener {
-//                override fun onClick(job: Job) {
-//                    // FIXME: 実装
-//                }
-//            }
+            adapter.onClickListner = object: JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    onClickCarouselItem(job)
+                }
+            }
 
             val recyclerView: RecyclerView = window.findViewById(R.id.job_select_dialog_recycler_view)
             recyclerView.setHasFixedSize(true)
@@ -74,6 +76,15 @@ class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectD
             recyclerView.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
             recyclerView.addItemDecoration(JobListItemDecorator())
         }
+    }
+
+    // カルーセルクリック時の処理
+    fun onClickCarouselItem(job: Job) {
+        Log.v("ErikuraCarouselCel", "Click: ${job.toString()}")
+
+        val intent= Intent(activity, JobDetailsActivity::class.java)
+        intent.putExtra("job", job)
+        startActivity(intent)
     }
 
     override fun onClickClose(view: View) {
