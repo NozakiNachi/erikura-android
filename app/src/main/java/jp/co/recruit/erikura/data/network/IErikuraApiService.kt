@@ -83,13 +83,13 @@ interface IErikuraApiService {
     fun place(@Path("placeId") placeId: Int): Observable<ApiResponse<Place>>
 
     @GET("place_favorites/show")
-    fun placeFavoriteShow(@Query("place_id") placeId: Int): Observable<Response<Boolean>>
+    fun placeFavoriteShow(@Query("place_id") placeId: Int): Observable<ApiResponse<Boolean>>
 
     @POST("place_favorites")
-    fun placeFavoriteCreate(@Body request: FavoriteRequest): Observable<Response<Boolean>>
+    fun placeFavoriteCreate(@Body request: FavoriteRequest): Observable<ApiResponse<Boolean>>
 
     @DELETE("place_favorites/destory")
-    fun placeFavoriteDelete(@Body request: FavoriteRequest): Observable<Response<Boolean>>
+    fun placeFavoriteDelete(@Body request: FavoriteRequest): Observable<ApiResponse<Boolean>>
 
     @PATCH("reports")
     fun report(@Body request: ReportRequest): Observable<ApiResponse<ReportIdResponse>>
