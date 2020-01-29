@@ -83,7 +83,11 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 
         if (Api.isLogin) {
             // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
-            startActivity(Intent(this, MapViewActivity::class.java))
+            Intent(this, MapViewActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+            }
+            finish()
             return
         }
     }

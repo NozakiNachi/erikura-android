@@ -2,8 +2,9 @@ package jp.co.recruit.erikura.data.network
 
 import android.app.Activity
 import android.util.Log
+import android.util.TypedValue
+import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.subscribeBy
@@ -12,7 +13,6 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import okhttp3.Request
 import okhttp3.Response
@@ -34,6 +34,8 @@ class Api(var activity: Activity) {
 
         val isLogin: Boolean get() = (userSession != null)
     }
+
+    private var progressAlert: AlertDialog? = null
 
 // FIXME: 送信中のリクエストのキャンセルってどうするのか？
 //    client.dispatcher().cancelAll()
@@ -105,7 +107,7 @@ class Api(var activity: Activity) {
     }
 
     fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
-        erikuraApiService.searchJob(
+        val observable = erikuraApiService.searchJob(
             period = query.period.value,
             latitude = query.latitude ?: LocationManager.defaultLatLng.latitude,
             longitude = query.longitude ?: LocationManager.defaultLatLng.longitude,
@@ -115,30 +117,11 @@ class Api(var activity: Activity) {
             minimumWorkingTime = query.minimumWorkingTime,
             maximumWorkingTime = query.maximumWorkingTime,
             jobKind = query.jobKind?.id)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val jobs = it.body.jobs
-                        activity.runOnUiThread {
-                            onComplete(jobs)
-                        }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+
+        executeObservable(observable, onError = onError) {
+            val jobs = it.jobs
+            onComplete(jobs)
+        }
     }
 
     fun jobKinds(onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (jobKinds: List<JobKind>) -> Unit) {
@@ -380,6 +363,60 @@ class Api(var activity: Activity) {
                     }
                 }
             )
+    }
+
+    fun <T> executeObservable(observable: Observable<jp.co.recruit.erikura.data.network.ApiResponse<T>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
+        val defaultError = defaultError ?: activity.getString(R.string.common_messages_apiError)
+        showProgressAlert()
+        observable
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onComplete = {
+                    activity.runOnUiThread{
+                        hideProgressAlert()
+                    }
+                },
+                onNext = { apiResponse: jp.co.recruit.erikura.data.network.ApiResponse<T> ->
+                    activity.runOnUiThread {
+                        if (apiResponse.hasError) {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(apiResponse.errors)
+                        }
+                        else {
+                            onComplete(apiResponse.body)
+                        }
+                    }
+                },
+                onError = { throwable ->
+                    activity.runOnUiThread{
+                        Log.v("ERROR", throwable.message, throwable)
+                        activity.runOnUiThread {
+                            (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                                listOf(throwable.message ?: defaultError)
+                            )
+                        }
+                    }
+                }
+            )
+    }
+
+    fun showProgressAlert() {
+        if (progressAlert == null) {
+            progressAlert = AlertDialog.Builder(activity).apply {
+                setView(LayoutInflater.from(activity).inflate(R.layout.dialog_progress, null, false))
+                setCancelable(false)
+            }.create()
+
+
+        }
+        val dm = activity.resources.displayMetrics
+        progressAlert?.show()
+        progressAlert?.window?.setLayout(
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
+    }
+
+    fun hideProgressAlert() {
+        progressAlert?.hide()
     }
 
     fun displayErrorAlert(messages: List<String>? = null, caption: String? = null) {

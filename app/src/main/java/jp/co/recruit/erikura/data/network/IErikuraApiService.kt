@@ -9,25 +9,25 @@ import java.util.*
 
 interface IErikuraApiService {
     @POST("users")
-    fun registerEmail(@Body request: RegisterEmailRequest): Observable<Response<IdResponse>>
+    fun registerEmail(@Body request: RegisterEmailRequest): Observable<ApiResponse<IdResponse>>
 
     @POST("users/confirm")
-    fun registerConfirm(@Body request: ConfirmationTokenRequest): Observable<Response<IdResponse>>
+    fun registerConfirm(@Body request: ConfirmationTokenRequest): Observable<ApiResponse<IdResponse>>
 
     @GET("users")
-    fun user(): Observable<Response<User>>
+    fun user(): Observable<ApiResponse<User>>
 
     @PATCH("users/initial_update")
-    fun initialUpdateUser(@Body request: User): Observable<Response<InitialUpdateResponse>>
+    fun initialUpdateUser(@Body request: User): Observable<ApiResponse<InitialUpdateResponse>>
 
     @PATCH("users")
-    fun updateUser(@Body request: User): Observable<Response<IdResponse>>
+    fun updateUser(@Body request: User): Observable<ApiResponse<IdResponse>>
 
     @POST("login")
-    fun login(@Body request: LoginRequest): Observable<Response<LoginResponse>>
+    fun login(@Body request: LoginRequest): Observable<ApiResponse<LoginResponse>>
 
     @DELETE("logout")
-    fun logout(): Observable<Response<ResultResponse>>
+    fun logout(): Observable<ApiResponse<ResultResponse>>
 
     @GET("jobs")
     fun searchJob(
@@ -40,90 +40,90 @@ interface IErikuraApiService {
         @Query("minimumReward") minimumReward: Int? = null,
         @Query("maximumReward") maximumReward: Int? = null,
         @Query("job_kind") jobKind: Int? = null
-    ): Observable<Response<JobsResponse>>
+    ): Observable<ApiResponse<JobsResponse>>
 
     @GET("reports")
-    fun reloadReport(@Query("job_id") jobId: Int): Observable<Response<Report>>
+    fun reloadReport(@Query("job_id") jobId: Int): Observable<ApiResponse<Report>>
 
     @GET("jobs/{jobId}")
-    fun reloadJob(@Path("jobId") jobId: Int): Observable<Response<Job>>
+    fun reloadJob(@Path("jobId") jobId: Int): Observable<ApiResponse<Job>>
 
     @GET("jobs/own")
     fun ownJobs(
         @Query("status") status: String,
         @Query("reported_at_from") reportedAtFrom: Date? = null,
         @Query("reported_at_to") reportedAtTo: Date? = null
-    ): Observable<Response<JobsResponse>>
+    ): Observable<ApiResponse<JobsResponse>>
 
     @GET("jobs/kind")
-    fun jobKinds(): Observable<Response<List<JobKind>>>
+    fun jobKinds(): Observable<ApiResponse<List<JobKind>>>
 
     @GET("jobs/recommended")
-    fun recommendedJobs(@Query("job_id") jobId: Int): Observable<Response<JobsResponse>>
+    fun recommendedJobs(@Query("job_id") jobId: Int): Observable<ApiResponse<JobsResponse>>
 
     @POST("entries")
-    fun entry(@Body request: EntryRequest): Observable<Response<EntryIdResponse>>
+    fun entry(@Body request: EntryRequest): Observable<ApiResponse<EntryIdResponse>>
 
     @GET("entries/cancellation_reasons")
-    fun cancelReasons(): Observable<Response<CancelReasonsResponse>>
+    fun cancelReasons(): Observable<ApiResponse<CancelReasonsResponse>>
 
     @DELETE("entires")
-    fun cancel(@Body request: CancelRequest): Observable<Response<EntryIdResponse>>
+    fun cancel(@Body request: CancelRequest): Observable<ApiResponse<EntryIdResponse>>
 
     @POST("entries/start")
-    fun startJob(@Body request: StartJobRequest): Observable<Response<EntryIdResponse>>
+    fun startJob(@Body request: StartJobRequest): Observable<ApiResponse<EntryIdResponse>>
 
     @POST("entries/finish")
-    fun stopJob(@Body request: StopJobRequest): Observable<Response<EntryIdResponse>>
+    fun stopJob(@Body request: StopJobRequest): Observable<ApiResponse<EntryIdResponse>>
 
     @PATCH("entries/abort")
-    fun abortJob(@Body request: AbortJobRequest): Observable<Response<EntryIdResponse>>
+    fun abortJob(@Body request: AbortJobRequest): Observable<ApiResponse<EntryIdResponse>>
 
     @GET("places/{placeId}")
-    fun place(@Path("placeId") placeId: Int): Observable<Response<Place>>
+    fun place(@Path("placeId") placeId: Int): Observable<ApiResponse<Place>>
 
     @PATCH("reports")
-    fun report(@Body request: ReportRequest): Observable<Response<ReportIdResponse>>
+    fun report(@Body request: ReportRequest): Observable<ApiResponse<ReportIdResponse>>
 
     // FIXME: download => OKHTTP で直接ダウンロードするのがいいのか
 
     @POST("reorts/image_upload")
-    fun imageUpload(@Part("photo") photo: RequestBody): Observable<Response<PhotoTokenResponse>>
+    fun imageUpload(@Part("photo") photo: RequestBody): Observable<ApiResponse<PhotoTokenResponse>>
 
     @DELETE("reports")
-    fun deleteReport(@Body request: DeleteReportRequest): Observable<Response<ReportIdResponse>>
+    fun deleteReport(@Body request: DeleteReportRequest): Observable<ApiResponse<ReportIdResponse>>
 
     // FIXME: geocoding
 
     @GET("informations")
-    fun informations(): Observable<Response<InformationResponse>>
+    fun informations(): Observable<ApiResponse<InformationResponse>>
 
     @GET("users/notification")
-    fun notificationSetting(): Observable<Response<NotificationSetting>>
+    fun notificationSetting(): Observable<ApiResponse<NotificationSetting>>
 
     @PATCH("users/notification")
-    fun updateNotificationSetting(@Body request: NotificationSetting): Observable<Response<UserIdResponse>>
+    fun updateNotificationSetting(@Body request: NotificationSetting): Observable<ApiResponse<UserIdResponse>>
 
     @GET("utils/address")
-    fun postalCode(@Query("postal_code") postalCode: String): Observable<Response<PostalCodeResponse>>
+    fun postalCode(@Query("postal_code") postalCode: String): Observable<ApiResponse<PostalCodeResponse>>
 
     @GET("utils/bank_information")
-    fun bank(@Query("keyword") keyword: String): Observable<Response<List<List<String>>>>
+    fun bank(@Query("keyword") keyword: String): Observable<ApiResponse<List<List<String>>>>
 
     @GET("utils/branch_information")
-    fun branch(@Query("keyword") keyword: String, @Query("bank_no") bankNo: String): Observable<Response<List<List<String>>>>
+    fun branch(@Query("keyword") keyword: String, @Query("bank_no") bankNo: String): Observable<ApiResponse<List<List<String>>>>
 
     @GET("users/payments")
-    fun payment(): Observable<Response<Payment>>
+    fun payment(): Observable<ApiResponse<Payment>>
 
     @POST("users/payments")
-    fun updatePayment(@Body request: Payment): Observable<Response<UserIdResponse>>
+    fun updatePayment(@Body request: Payment): Observable<ApiResponse<UserIdResponse>>
 
     @POST("users/push_endpoint")
-    fun pushEndpoint(@Body request: PushEndpointRequest): Observable<Response<ResultResponse>>
+    fun pushEndpoint(@Body request: PushEndpointRequest): Observable<ApiResponse<ResultResponse>>
 
     @GET("utils/client_version")
-    fun clientVersion(): Observable<Response<RequiredClientVersion>>
+    fun clientVersion(): Observable<ApiResponse<RequiredClientVersion>>
 
     // FIXME: erikuraConfig
 //    @GET("utils/erikura_config")
@@ -136,7 +136,7 @@ interface IErikuraApiService {
 //    })
 }
 
-data class Response<BODY>(
+data class ApiResponse<BODY>(
     var body: BODY,
     var errors: List<String>? = null
 ) {

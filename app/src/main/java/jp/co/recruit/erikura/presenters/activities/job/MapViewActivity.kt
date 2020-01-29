@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -18,10 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView
@@ -39,6 +37,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
 class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
@@ -55,6 +54,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     private val locationManager: LocationManager = ErikuraApplication.locationManager
 
+    /** GoogleMap のカメラ位置を移動中かを保持します (true は移動中) */
+    private var cameraMoving: Boolean = false
+    private var zoomInitialized: Boolean = false
+    private var displaySearchBar: Boolean = true
+    private var resetCameraPosition: Boolean = false
+
     private lateinit var mMap: GoogleMap
     private lateinit var carouselView: RecyclerView
     private var firstFetchRequested: Boolean = false
@@ -62,15 +67,25 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query) { jobs ->
             Log.d("JOBS: ", jobs.toString())
-            viewModel.jobs.value = jobs
-            viewModel.jobsByLocation.value = JobUtils.summarizeJobsByLocation(jobs)
-            // マーカー所の情報をクリアします
-            viewModel.markerMap.clear()
-            viewModel.activeMaker = null
-            // マーカーを地図から削除します
-            mMap.clear()
-
             if (jobs.isNotEmpty()) {
+                // viewModel の案件情報を更新します
+                viewModel.jobs.value = jobs
+                viewModel.jobsByLocation.value = JobUtils.summarizeJobsByLocation(jobs)
+
+                // マーカーの情報をクリアします
+                viewModel.markerMap.clear()
+                viewModel.activeMaker = null
+                // マーカーを地図から削除します
+                mMap.clear()
+
+                // カルーセルの更新を行います
+                val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
+                if (carouselView.adapter is ErikuraCarouselAdapter) {
+                    var adapter = carouselView.adapter as ErikuraCarouselAdapter
+                    adapter.data = jobs
+                    adapter.notifyDataSetChanged()
+                }
+
                 // マーカーを作成します
                 jobs.forEachIndexed { i, job ->
                     val erikuraMarker = ErikuraMarkerView.build(this, mMap, job) { marker ->
@@ -99,29 +114,34 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                         viewModel.activeMaker = erikuraMarker
                     }
                 }
-                // 下部のカルーセルの表示内容を更新します
-                val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-                if (carouselView.adapter is ErikuraCarouselAdapter) {
-                    var adapter = carouselView.adapter as ErikuraCarouselAdapter
-                    adapter.data = jobs
-                    adapter.notifyDataSetChanged()
-                }
 
                 // 最も距離が近い案件を取得します
                 val nearest = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
                 // 最も近い案件に地図を移動します
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(nearest.latLng, defaultZoom))
+                resetCameraPosition = true
+                val updateRequest: CameraUpdate = if (zoomInitialized)
+                    CameraUpdateFactory.newLatLng(nearest.latLng)
+                else
+                    CameraUpdateFactory.newLatLngZoom(nearest.latLng, defaultZoom)
+                mMap.animateCamera(updateRequest)
                 // カルーセルを最も近い案件に変更します
                 val nearestIndex: Int = (viewModel.markerMap[nearest.id]?.marker?.tag as Int) ?: 0
                 var layoutManager = carouselView.layoutManager as LinearLayoutManager
                 layoutManager.scrollToPosition(nearestIndex)
 
                 Log.v("Fetch Job", "Nearest: ${nearestIndex}, ${layoutManager.toString()}")
-                // FIXME: 移動完了時に、再検索ボタンなどの表示状態を変更したいが...
             }
             else {
-                // FIXME: 再検索処理などの実装
-                Toast.makeText(this, "案件が取得できませんでした", Toast.LENGTH_LONG).show()
+                MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します"))
+
+                // クリアした検索条件での再検索を行います
+                val query = JobQuery(
+                    latitude = locationManager.latLngOrDefault.latitude,
+                    longitude = locationManager.latLngOrDefault.longitude)
+                if (viewModel.query(locationManager.latLngOrDefault) != query) {
+                    viewModel.apply(query)
+                    fetchJobs(query)
+                }
             }
         }
     }
@@ -186,6 +206,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             .findFragmentById(R.id.jobs_map_view_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
+        // 各種ボタンの表示・非表示の切り替えを行います
+        viewModel.reSearchButtonVisible.value = View.GONE           // 初期表示ではこの地点で再検索ボタンを非表示とする
+        viewModel.searchBarVisible.value = View.VISIBLE             // 初期表示では検索条件バーを表示する
+
         if (!locationManager.checkPermission(this)) {
             locationManager.requestPermission(this)
         }
@@ -205,6 +229,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     override fun onResume() {
         super.onResume()
+
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested) {
@@ -216,19 +241,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom))
+        // ズームの初期設定を行っておきます
+        mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
 
+        // 地図上のアイコンをグレーにするためにスタイル設定を行います
         try {
             val styleOptions = MapStyleOptions.loadRawResourceStyle(this, R.raw.style)
             mMap.setMapStyle(styleOptions)
@@ -237,12 +255,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             Log.e("ERROR", e.message, e)
         }
 
-        mMap.setOnCameraMoveStartedListener {
-            // FIXME：初期状態のカメラ移動後であることを担保する
-            viewModel.reSearchButtonVisible.value = View.VISIBLE
-            viewModel.currentLocationButtonVisible.value = View.VISIBLE
-            viewModel.searchBarVisible.value = View.GONE
-        }
+        // カメラ移動に関するコールバックの登録
+        mMap.setOnCameraMoveStartedListener { onCameraMoveStarted(it) }
+        mMap.setOnCameraMoveCanceledListener { onCameraMoveCanceled() }
+        mMap.setOnCameraIdleListener { onCameraIdle() }
 
         mMap.setOnMarkerClickListener { marker ->
             val index: Int = marker.tag as Int
@@ -279,6 +295,49 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             }
         }
     }
+
+    fun onCameraMoveStarted(reason: Int) {
+        cameraMoving = true
+
+        // 案件取得によるカメラリセット以外の場合
+        if (!resetCameraPosition) {
+            // 再検索ボタンを表示
+            viewModel.reSearchButtonVisible.value = View.VISIBLE
+            // 検索バーを非表示
+            viewModel.searchBarVisible.value = View.GONE
+        }
+    }
+
+    fun onCameraMoveCanceled() {
+        cameraMoving = false
+    }
+
+    fun onCameraIdle() {
+        if (cameraMoving) {
+            zoomInitialized = true
+            cameraMoving = false
+            onCameraMoveFinished()
+        }
+    }
+
+    fun onCameraMoveFinished() {
+        cameraMoving = false
+
+        if (resetCameraPosition) {
+            // 検索バーの表示/非表示を設定します
+            if (displaySearchBar) {
+                viewModel.searchBarVisible.value = View.VISIBLE
+                // FIXME: displaySearchBar = false の場合の振る舞いを確認
+            }
+
+            // 再検索ボタンは非表示とします
+            viewModel.reSearchButtonVisible.value = View.GONE
+
+            displaySearchBar = false
+            resetCameraPosition = false
+        }
+    }
+
 
     override fun onClickReSearch(view: View) {
         val position = mMap.cameraPosition
@@ -370,8 +429,8 @@ class MapViewViewModel: BaseJobQueryViewModel() {
     val searchBarVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     // FIXME: 初期状態では非表示、位置を変更すると表示される
     var reSearchButtonVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    // FIXME: 現在位置から変更された場合に表示される
-    var currentLocationButtonVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    // 現在地ボタンの表示状態：常に表示される
+    var currentLocationButtonVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     var activeMaker: ErikuraMarkerView? = null
         set(value) {
