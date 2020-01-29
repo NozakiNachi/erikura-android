@@ -3,7 +3,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <data></data>
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.job.PlaceDetailViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.job.PlaceDetailEventHandlers" />
+    </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -32,16 +39,53 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:background="@{viewModel.bitmapDrawable}"
                         android:orientation="vertical">
                         <!-- 住所表示 -->
+                        <FrameLayout
+                            android:id="@+id/placeDetail_workingPlaceView"
+                            android:background="@drawable/background_dialog_body"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:elevation="@dimen/default_elevation"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginTop="30dp" />
 
                         <!-- 地図アプリで開く -->
+                        <Button
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:text="@{viewModel.openMapButtonText}"
+                            android:textAllCaps="false"
+                            style="@style/openMapButton"
+                            android:onClick="@{handlers::onClickOpenMap}" />
 
                         <!-- 建物画像 -->
+                        <ImageView
+                            android:layout_width="251dp"
+                            android:layout_height="188dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp"
+                            android:visibility="@{viewModel.thumbnailVisibility}"
+                            app:bitmap="@{viewModel.bitmap}" />
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:background="@drawable/background_triangle_reverse"/>
 
                     </LinearLayout>
                     <!-- 案件リスト -->
+                    <FrameLayout
+                        android:id="@+id/placeDetail_jobsList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="20dp"/>
 
                 </LinearLayout>
 
