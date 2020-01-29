@@ -14,208 +14,226 @@
             type="jp.co.recruit.erikura.presenters.activities.job.ListViewHandlers" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <androidx.core.widget.NestedScrollView
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:fillViewport="true"
-            android:onScrollChange="@{handlers::onScrollChange}"
-            >
-            
-            <LinearLayout
+            android:layout_above="@id/list_view_navigation">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:fillViewport="true"
+                android:onScrollChange="@{handlers::onScrollChange}"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="212dp"
+                        android:background="@color/paleGrey">
+
+                        <Spinner
+                            android:id="@+id/list_view_sort_spinner"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
+                            android:layout_marginTop="136dp"
+                            android:layout_marginLeft="102dp"
+                            android:layout_marginRight="20dp"
+                            style="@style/spinnerField"
+                            android:layout_alignParentStart="true"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentTop="true"
+                            android:spinnerMode="dialog"
+                            android:entries="@{viewModel.sortLabels}"
+                            android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onItemSelected(parent, view, position, id)}}"
+                             />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/background_triangle" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.activeListVisible}"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                            android:textColor="@color/black"
+                            android:textSize="20dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:text="募集中の仕事"
+                            />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/list_view_active_job_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.futureListVisible}"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                            android:textColor="@color/black"
+                            android:textSize="20dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:text="募集予定の仕事"
+                            />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/list_view_future_job_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/paleGrey"
+                        android:visibility="@{viewModel.pastListVisible}"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                            android:textColor="@color/black"
+                            android:textSize="20dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:text="募集終了した仕事"
+                            />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/list_view_past_job_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <!-- 検索条件ボタン -->
+            <ImageButton
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:background="#00000000"
+                android:src="@drawable/search_button_2x"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="60dp"
+                android:layout_marginLeft="20dp"
+                android:elevation="@dimen/default_elevation"
+                android:onClick="@{handlers::onClickSearch}"
+                />
+            <!-- 募集中のみチェックボックス -->
+            <ImageButton
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:background="@{viewModel.activeOnlyButtonBackground}"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_marginTop="136dp"
+                android:layout_marginLeft="20dp"
+                android:elevation="@dimen/default_elevation"
+                android:onClick="@{handlers::onToggleActiveOnly}"
+                />
+            <!-- 地図ボタン -->
+            <ImageButton
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:background="#00000000"
+                android:src="@drawable/map_2x"
+                android:scaleType="fitCenter"
+                android:padding="0dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="60dp"
+                android:layout_marginRight="20dp"
+                android:elevation="@dimen/default_elevation"
+                android:onClick="@{handlers::onClickMap}"
+                />
+
+            <!-- 検索バー -->
+            <jp.co.recruit.erikura.presenters.fragments.SearchBarView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginTop="60dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="96dp"
+                android:elevation="@dimen/default_elevation"
+                erikura:conditions="@{viewModel.conditions}"
+                android:visibility="@{viewModel.searchBarVisible}"
+                android:onClick="@{handlers::onClickSearchBar}"
+                />
 
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="212dp"
-                    android:background="@color/paleGrey">
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <Spinner
-                        android:id="@+id/list_view_sort_spinner"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toRightOf="parent"
-                        android:layout_marginTop="136dp"
-                        android:layout_marginLeft="102dp"
-                        android:layout_marginRight="20dp"
-                        style="@style/spinnerField"
-                        android:layout_alignParentStart="true"
-                        android:layout_alignParentLeft="true"
-                        android:layout_alignParentTop="true"
-                        android:spinnerMode="dialog"
-                        android:entries="@{viewModel.sortLabels}"
-                        android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onItemSelected(parent, view, position, id)}}"
-                         />
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:background="@drawable/background_triangle" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="@{viewModel.activeListVisible}"
-                    >
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                        android:textColor="@color/black"
-                        android:textSize="20dp"
-                        android:firstBaselineToTopHeight="0dp"
-                        android:lastBaselineToBottomHeight="0dp"
-                        android:includeFontPadding="false"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:text="募集中の仕事"
-                        />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/list_view_active_job_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        android:orientation="vertical"
-                        android:padding="20dp"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:visibility="@{viewModel.futureListVisible}"
-                    >
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                        android:textColor="@color/black"
-                        android:textSize="20dp"
-                        android:firstBaselineToTopHeight="0dp"
-                        android:lastBaselineToBottomHeight="0dp"
-                        android:includeFontPadding="false"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:text="募集予定の仕事"
-                        />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/list_view_future_job_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        android:orientation="vertical"
-                        android:padding="20dp"
-                        />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@color/paleGrey"
-                    android:visibility="@{viewModel.pastListVisible}"
-                    >
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                        android:textColor="@color/black"
-                        android:textSize="20dp"
-                        android:firstBaselineToTopHeight="0dp"
-                        android:lastBaselineToBottomHeight="0dp"
-                        android:includeFontPadding="false"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:text="募集終了した仕事"
-                        />
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/list_view_past_job_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        android:orientation="vertical"
-                        android:padding="20dp"
-                        />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
-
-        <!-- 検索条件ボタン -->
-        <ImageButton
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:background="#00000000"
-            android:src="@drawable/search_button_2x"
-            android:scaleType="fitCenter"
-            android:padding="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="60dp"
-            android:layout_marginLeft="20dp"
-            android:elevation="@dimen/default_elevation"
-            android:onClick="@{handlers::onClickSearch}"
-            />
-        <!-- 募集中のみチェックボックス -->
-        <ImageButton
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:background="@{viewModel.activeOnlyButtonBackground}"
-            android:scaleType="fitCenter"
-            android:padding="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="136dp"
-            android:layout_marginLeft="20dp"
-            android:elevation="@dimen/default_elevation"
-            android:onClick="@{handlers::onToggleActiveOnly}"
-            />
-        <!-- 地図ボタン -->
-        <ImageButton
-            android:layout_width="66dp"
-            android:layout_height="66dp"
-            android:background="#00000000"
-            android:src="@drawable/map_2x"
-            android:scaleType="fitCenter"
-            android:padding="0dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="60dp"
-            android:layout_marginRight="20dp"
-            android:elevation="@dimen/default_elevation"
-            android:onClick="@{handlers::onClickMap}"
-            />
-
-        <!-- 検索バー -->
-        <jp.co.recruit.erikura.presenters.fragments.SearchBarView
+        <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
+            android:id="@+id/list_view_navigation"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginTop="60dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="96dp"
-            android:elevation="@dimen/default_elevation"
-            erikura:conditions="@{viewModel.conditions}"
-            android:visibility="@{viewModel.searchBarVisible}"
-            android:onClick="@{handlers::onClickSearchBar}"
-            />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="90dp"
+            android:layout_alignParentBottom="true"
+            app:menu="@menu/tab_menu"
+            app:itemIconTint="@drawable/bottom_navigation_item_state"
+            app:itemTextColor="@drawable/bottom_navigation_item_state"
+            android:background="@drawable/background_border_top"
+            onNavigationItemSelected="@{handlers.onNavigationItemSelected}" />
+    </RelativeLayout>
 </layout>

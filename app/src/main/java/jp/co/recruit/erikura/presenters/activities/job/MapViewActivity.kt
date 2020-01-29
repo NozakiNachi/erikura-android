@@ -6,7 +6,10 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
+import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -21,6 +24,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -126,6 +132,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
         Realm.init(this)
 
+        // 下部のタブの選択肢を仕事を探すに変更
+        val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
+        nav.selectedItemId = R.id.tab_menu_search_jobs
+
         val adapter = ErikuraCarouselAdapter(this, listOf())
         adapter.onClickListner = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
@@ -182,7 +192,6 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             val query = viewModel.query(it)
             fetchJobs(query)
         }
-
     }
 
     override fun onPause() {
@@ -327,6 +336,24 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             startActivity(intent)
         }
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.v("MENU ITEM SELECTED: ", item.toString())
+        when(item.itemId) {
+            R.id.tab_menu_search_jobs -> {
+                // 何も行いません
+            }
+            R.id.tab_menu_applied_jobs -> {
+                // FIXME: 画面遷移の実装
+                Toast.makeText(this, "応募した仕事画面に遷移", Toast.LENGTH_LONG).show()
+            }
+            R.id.tab_menu_mypage -> {
+                // FIXME: 画面遷移の実装
+                Toast.makeText(this, "マイページ画面に遷移", Toast.LENGTH_LONG).show()
+            }
+        }
+        return true
+    }
 }
 
 class MapViewViewModel: BaseJobQueryViewModel() {
@@ -381,4 +408,6 @@ interface MapViewEventHandlers {
     fun onClickCurrentLocation(view: View)
 
     fun onClickCarouselItem(job: Job)
+
+    fun onNavigationItemSelected(item: MenuItem): Boolean
 }

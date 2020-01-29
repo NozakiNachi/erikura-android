@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/tab_menu_applied_jobs"
+        android:icon="@drawable/ic_documents_2x"
+        android:title="応募した仕事" />
+
+    <item
+        android:id="@+id/tab_menu_search_jobs"
+        android:icon="@drawable/ic_seacrh_2x"
+        android:title="仕事を探す" />
+
+    <item
+        android:id="@+id/tab_menu_mypage"
+        android:icon="@drawable/ic_man_2x"
+        android:title="マイページ" />
+</menu>

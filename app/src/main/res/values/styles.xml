@@ -177,4 +177,9 @@
         <item name="android:divider">@color/silver</item>
         <item name="android:dividerHeight">1dp</item>
     </style>
+
+    <style name="bottomNavigationItemText">
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
+        <item name="android:textSize">12dp</item>
+    </style>
 </resources>

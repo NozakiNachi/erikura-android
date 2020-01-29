@@ -6,9 +6,11 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import android.widget.CalendarView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
@@ -66,6 +69,10 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        // 下部のタブの選択肢を仕事を探すに変更
+        val nav: BottomNavigationView = findViewById(R.id.list_view_navigation)
+        nav.selectedItemId = R.id.tab_menu_search_jobs
 
         activeJobsAdapter = JobListAdapter(this, listOf(), null).also {
             it.onClickListner =  object: JobListAdapter.OnClickListener {
@@ -218,6 +225,24 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     ) {
         viewModel.searchBarVisible.value = View.GONE
     }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.v("MENU ITEM SELECTED: ", item.toString())
+        when(item.itemId) {
+            R.id.tab_menu_search_jobs -> {
+                // 何も行いません
+            }
+            R.id.tab_menu_applied_jobs -> {
+                // FIXME: 画面遷移の実装
+                Toast.makeText(this, "応募した仕事画面に遷移", Toast.LENGTH_LONG).show()
+            }
+            R.id.tab_menu_mypage -> {
+                // FIXME: 画面遷移の実装
+                Toast.makeText(this, "マイページ画面に遷移", Toast.LENGTH_LONG).show()
+            }
+        }
+        return true
+    }
 }
 
 class ListViewViewModel : BaseJobQueryViewModel() {
@@ -271,4 +296,6 @@ interface ListViewHandlers {
     fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
 
     fun onScrollChange(v: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int)
+
+    fun onNavigationItemSelected(item: MenuItem): Boolean
 }
