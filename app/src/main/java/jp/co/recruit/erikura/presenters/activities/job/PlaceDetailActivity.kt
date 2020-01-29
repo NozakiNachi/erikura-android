@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Place
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
 import jp.co.recruit.erikura.presenters.fragments.JobsListFragment
@@ -60,9 +61,30 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
         startActivity(intent)
     }
 
+    override fun onClickFavorite(view: View) {
+        // FIXME: 未ログイン時はログイン必須画面へ飛ばす
+        if (viewModel.favorited.value?: false) {
+            // お気に入り登録処理
+            Api(this).placeFavorite(place.id) {
+                viewModel.favorited.value = true
+            }
+        }else {
+            // お気に入り削除処理
+            Api(this).placeFavoriteDelete(place.id) {
+                viewModel.favorited.value = false
+            }
+        }
+    }
+
     private fun fetchPlace(){
         Api(this).place(place.id) { place ->
             viewModel.setupThumbnail(this, place)
+            // お気に入りボタンの状態取得処理
+            UserSession.retrieve()?.let {
+                Api(this).placeFavoriteShow(place.id) {
+                    viewModel.favorited.value = it
+                }
+            }
             val transaction = supportFragmentManager.beginTransaction()
             val workingPlaceView = WorkingPlaceViewFragment(place)
             val jobsList = JobsListFragment(place.jobs)
@@ -78,6 +100,7 @@ class PlaceDetailViewModel: ViewModel() {
     val bitmap: MutableLiveData<Bitmap> = MutableLiveData()
     val thumbnailVisibility: MutableLiveData<Int> = MutableLiveData()
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
+    val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
 
     fun setupMapButton() {
@@ -111,4 +134,5 @@ class PlaceDetailViewModel: ViewModel() {
 
 interface PlaceDetailEventHandlers {
     fun onClickOpenMap(view: View)
+    fun onClickFavorite(view: View)
 }
