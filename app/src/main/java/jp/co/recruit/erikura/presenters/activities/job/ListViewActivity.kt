@@ -171,7 +171,6 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
 
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
-        // FIXME: 緯度経度については要検討
         intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
         startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
@@ -209,11 +208,10 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     }
 
     fun onQueryChanged() {
-        // FIXME: キーワードが指定されている場合の対策を検討する
-        locationManager.latLng?.let {
-            val query = viewModel.query(it)
-            fetchJobs(query)
-        }
+        // viewModel 側に実装を移すべきか検討すること
+        val latLng = viewModel.keyword.value?.let { viewModel.latLng.value } ?: locationManager.latLngOrDefault
+        val query = viewModel.query(latLng)
+        fetchJobs(query)
     }
 
     override fun onScrollChange(

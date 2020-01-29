@@ -62,6 +62,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     private lateinit var mMap: GoogleMap
     private lateinit var carouselView: RecyclerView
+    private lateinit var adapter: ErikuraCarouselAdapter
     private var firstFetchRequested: Boolean = false
 
     private fun fetchJobs(query: JobQuery) {
@@ -125,7 +126,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                     CameraUpdateFactory.newLatLngZoom(nearest.latLng, defaultZoom)
                 mMap.animateCamera(updateRequest)
                 // カルーセルを最も近い案件に変更します
-                val nearestIndex: Int = (viewModel.markerMap[nearest.id]?.marker?.tag as Int) ?: 0
+                val nearestIndex: Int = (viewModel.markerMap[nearest.id]?.marker?.tag as Int?) ?: 0
                 var layoutManager = carouselView.layoutManager as LinearLayoutManager
                 layoutManager.scrollToPosition(nearestIndex)
 
@@ -135,12 +136,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します"))
 
                 // クリアした検索条件での再検索を行います
-                val query = JobQuery(
+                val newQuery = JobQuery(
                     latitude = locationManager.latLngOrDefault.latitude,
                     longitude = locationManager.latLngOrDefault.longitude)
-                if (viewModel.query(locationManager.latLngOrDefault) != query) {
-                    viewModel.apply(query)
-                    fetchJobs(query)
+                if (query != newQuery) {
+                    viewModel.apply(newQuery)
+                    fetchJobs(newQuery)
                 }
             }
         }
@@ -159,7 +160,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
         nav.selectedItemId = R.id.tab_menu_search_jobs
 
-        val adapter = ErikuraCarouselAdapter(this, listOf())
+        adapter = ErikuraCarouselAdapter(this, listOf())
         adapter.onClickListner = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
@@ -172,14 +173,8 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         carouselView.adapter = adapter
 
         carouselView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                super.onScrollStateChanged(recyclerView, newState)
-            }
-
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
-
-                val adapter = recyclerView.adapter as ErikuraCarouselAdapter
 
                 val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
@@ -233,7 +228,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested) {
-                mMap?.animateCamera(CameraUpdateFactory.newLatLng(it))
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(it))
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
@@ -296,7 +291,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
     }
 
-    fun onCameraMoveStarted(reason: Int) {
+    fun onCameraMoveStarted(_reason: Int) {
         cameraMoving = true
 
         // 案件取得によるカメラリセット以外の場合

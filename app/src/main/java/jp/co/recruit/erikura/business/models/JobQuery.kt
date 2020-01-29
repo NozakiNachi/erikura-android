@@ -62,5 +62,11 @@ data class JobQuery(
         const val MAX_WORKING_TIME = 999999999
     }
 
-    val latLng: LatLng get() = LatLng(latitude!!, longitude!!)
+    val latLng: LatLng? get() {
+        return latitude?.let { lat ->
+            longitude?.let { lng ->
+                LatLng(lat, lng)
+            }
+        }
+    }
 }

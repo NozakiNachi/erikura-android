@@ -10,22 +10,15 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.models.SortType
 
 open class BaseJobQueryViewModel: ViewModel() {
-    val keyword: MutableLiveData<String> =
-        MutableLiveData()
-    val minimumReward: MutableLiveData<Int> =
-        MutableLiveData()
-    val maximumReward: MutableLiveData<Int> =
-        MutableLiveData()
-    val minimumWorkingTime: MutableLiveData<Int> =
-        MutableLiveData()
-    val maximumWorkingTime: MutableLiveData<Int> =
-        MutableLiveData()
-    val jobKind: MutableLiveData<JobKind> =
-        MutableLiveData()
-    val sortType: MutableLiveData<SortType> =
-        MutableLiveData()
-    val periodType: MutableLiveData<PeriodType> =
-        MutableLiveData()
+    val keyword: MutableLiveData<String> = MutableLiveData()
+    val minimumReward: MutableLiveData<Int> = MutableLiveData()
+    val maximumReward: MutableLiveData<Int> = MutableLiveData()
+    val minimumWorkingTime: MutableLiveData<Int> = MutableLiveData()
+    val maximumWorkingTime: MutableLiveData<Int> = MutableLiveData()
+    val jobKind: MutableLiveData<JobKind> = MutableLiveData()
+    val sortType: MutableLiveData<SortType> = MutableLiveData()
+    val periodType: MutableLiveData<PeriodType> = MutableLiveData()
+    val latLng: MutableLiveData<LatLng> = MutableLiveData()
 
     val conditions = MediatorLiveData<List<String>>().also { result ->
         result.addSource(keyword)               { result.value = generateConditions() }
@@ -57,6 +50,7 @@ open class BaseJobQueryViewModel: ViewModel() {
 
     open fun apply(query: JobQuery) {
         keyword.value = query.keyword
+        latLng.value = query.latLng
         minimumWorkingTime.value = query.minimumWorkingTime
         maximumWorkingTime.value = query.maximumWorkingTime
         minimumReward.value = query.minimumReward
