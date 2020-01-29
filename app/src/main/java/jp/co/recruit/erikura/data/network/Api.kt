@@ -4,9 +4,11 @@ import android.app.Activity
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.BuildConfig
@@ -14,9 +16,11 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.util.LocationManager
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.OkHttpClient
+import okhttp3.Request as HttpRequest
+import okhttp3.Response as HttpResponse
 import org.apache.commons.io.IOUtils
+import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.net.URL
@@ -365,9 +369,9 @@ class Api(var activity: Activity) {
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
         // OkHttp3 クライアントを作成します
         val client = ErikuraApiServiceBuilder().httpBuilder.build()
-        val observable: Observable<Response> = Observable.create {
+        val observable: Observable<HttpResponse> = Observable.create {
             try {
-                val request = Request.Builder().url(url).get().build()
+                val request = HttpRequest.Builder().url(url).get().build()
                 val response = client.newCall(request).execute()
                 it.onNext(response)
                 it.onComplete()
@@ -444,41 +448,53 @@ class Api(var activity: Activity) {
             )
     }
 
-    fun <T> executeObservable(observable: Observable<jp.co.recruit.erikura.data.network.ApiResponse<T>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
+    private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
         val defaultError = defaultError ?: activity.getString(R.string.common_messages_apiError)
         showProgressAlert()
         observable
             .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onComplete = {
-                    activity.runOnUiThread{
-                        hideProgressAlert()
-                    }
+                    hideProgressAlert()
                 },
-                onNext = { apiResponse: jp.co.recruit.erikura.data.network.ApiResponse<T> ->
-                    activity.runOnUiThread {
+                onNext = { response: Response<ApiResponse<T>> ->
+                    if (response.isSuccessful) {
+                        // isSuccessfull の判定をしているので、body は常に取得できる想定です
+                        val apiResponse: ApiResponse<T> = response.body()!!
                         if (apiResponse.hasError) {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(apiResponse.errors)
+                            processError(apiResponse.errors ?: listOf(defaultError), onError)
                         }
                         else {
                             onComplete(apiResponse.body)
                         }
                     }
-                },
-                onError = { throwable ->
-                    activity.runOnUiThread{
-                        Log.v("ERROR", throwable.message, throwable)
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                                listOf(throwable.message ?: defaultError)
-                            )
+                    else {
+                        when(response.code()) {
+                            401 -> {
+                                // FIXME: 認証必須画面への遷移を行います
+                                // FIXME: Activityの NEW_TASK | CLEAR_TOP での遷移で良いか検討してください
+                                Toast.makeText(activity, "401 Unauthorized", Toast.LENGTH_LONG).show()
+                            }
+                            500 -> {
+                                Log.v("ERROR RESPONSE", response.errorBody().toString())
+                                processError(listOf(defaultError), onError)
+                            }
+                            else -> {
+                                Log.v("ERROR RESPONSE", response.errorBody().toString())
+                                processError(listOf(defaultError), onError)
+                            }
                         }
                     }
+                },
+                onError = { throwable ->
+                    Log.v("ERROR", throwable.message, throwable)
+                    processError(listOf(throwable.message ?: defaultError), onError)
                 }
             )
     }
 
-    fun showProgressAlert() {
+    private fun showProgressAlert() {
         if (progressAlert == null) {
             progressAlert = AlertDialog.Builder(activity).apply {
                 setView(LayoutInflater.from(activity).inflate(R.layout.dialog_progress, null, false))
@@ -494,8 +510,12 @@ class Api(var activity: Activity) {
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
     }
 
-    fun hideProgressAlert() {
+    private fun hideProgressAlert() {
         progressAlert?.hide()
+    }
+
+    private fun processError(messages: List<String>, onError: ((messages: List<String>?) -> Unit)?) {
+        (onError ?: { msgs -> displayErrorAlert(msgs) })(messages)
     }
 
     fun displayErrorAlert(messages: List<String>? = null, caption: String? = null) {

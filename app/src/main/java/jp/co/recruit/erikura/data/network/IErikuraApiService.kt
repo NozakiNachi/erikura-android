@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
 import jp.co.recruit.erikura.business.models.*
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.*
 import java.util.*
 
@@ -40,7 +41,7 @@ interface IErikuraApiService {
         @Query("minimumReward") minimumReward: Int? = null,
         @Query("maximumReward") maximumReward: Int? = null,
         @Query("job_kind") jobKind: Int? = null
-    ): Observable<ApiResponse<JobsResponse>>
+    ): ApiObservable<JobsResponse>
 
     @GET("reports")
     fun reloadReport(@Query("job_id") jobId: Int): Observable<ApiResponse<Report>>
@@ -144,6 +145,8 @@ interface IErikuraApiService {
 //        working_time_range: ErikuraConfig.working_time_range.split(/\R/).map(&:to_i)
 //    })
 }
+
+typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
 
 data class ApiResponse<BODY>(
     var body: BODY,
