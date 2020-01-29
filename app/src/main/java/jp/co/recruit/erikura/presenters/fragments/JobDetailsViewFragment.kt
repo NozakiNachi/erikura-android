@@ -95,6 +95,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     val tool: MutableLiveData<String> = MutableLiveData()
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
+    val summaryTitlesVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val workingPlace: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
 
     val openMapButtonText: MutableLiveData<SpannableString> = MutableLiveData()
@@ -117,6 +118,9 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
                 }
             }
             summaryTitles.value = summaryTitleStr
+            if(summaryTitleStr.isNullOrBlank()) {
+                summaryTitlesVisibility.value = View.GONE
+            }
             // 場所
 /*            var place = SpannableStringBuilder()
 

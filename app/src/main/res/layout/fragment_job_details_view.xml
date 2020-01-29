@@ -112,7 +112,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/silver"/>
+                android:background="@color/silver"
+                android:visibility="@{viewModel.summaryTitlesVisibility}"/>
 
             <!-- 報告箇所 -->
             <LinearLayout
@@ -120,7 +121,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{viewModel.summaryTitlesVisibility}">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
