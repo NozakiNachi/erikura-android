@@ -58,56 +58,24 @@ class Api(var activity: Activity) {
 //    }
 
     fun login(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
-        erikuraApiService.login(LoginRequest(email = email, password = password))
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val session = UserSession(userId = it.body.userId, token = it.body.accessToken)
-                        userSession = session
-                        activity.runOnUiThread { onComplete(session) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.login(LoginRequest(email = email, password = password)),
+            onError =  onError
+        ) { body ->
+            val session = UserSession(userId = body.userId, token = body.accessToken)
+            userSession = session
+            onComplete(session)
+        }
     }
 
     fun registerEmail(email: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (id: Int) -> Unit) {
-        erikuraApiService.registerEmail(RegisterEmailRequest(email = email))
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val id = it.body.id
-                        activity.runOnUiThread { onComplete(id) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.registerEmail(RegisterEmailRequest(email = email)),
+            onError = onError
+        ) { body ->
+            val id = body.id
+            onComplete(id)
+        }
     }
 
     fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
@@ -121,7 +89,6 @@ class Api(var activity: Activity) {
             minimumWorkingTime = query.minimumWorkingTime,
             maximumWorkingTime = query.maximumWorkingTime,
             jobKind = query.jobKind?.id)
-
         executeObservable(observable, onError = onError) {
             val jobs = it.jobs
             onComplete(jobs)
@@ -129,241 +96,90 @@ class Api(var activity: Activity) {
     }
 
     fun jobKinds(onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (jobKinds: List<JobKind>) -> Unit) {
-        erikuraApiService.jobKinds()
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val jobKinds = it.body
-                        activity.runOnUiThread { onComplete(jobKinds) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.jobKinds(),
+            onError = onError
+        ) { jobKinds ->
+            onComplete(jobKinds)
+        }
     }
 
     fun registerConfirm(confirmationToken: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (id: Int) -> Unit) {
-        erikuraApiService.registerConfirm(ConfirmationTokenRequest(confirmationToken = confirmationToken))
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val id = it.body.id
-                        activity.runOnUiThread { onComplete(id) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.registerConfirm(ConfirmationTokenRequest(confirmationToken = confirmationToken)),
+            onError = onError
+        ) { body ->
+            val id = body.id
+            onComplete(id)
+        }
     }
 
     fun postalCode(postalCode: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (prefecture: String?, city: String?, street: String?) -> Unit) {
-        erikuraApiService.postalCode(postalCode)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val prefecture = it.body.prefecture
-                        val city = it.body.city
-                        val street = it.body.street
-                        activity.runOnUiThread { onComplete(prefecture, city, street) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.postalCode(postalCode),
+            onError = onError
+        ) { body ->
+            val prefecture = body.prefecture
+            val city = body.city
+            val street = body.street
+            activity.runOnUiThread { onComplete(prefecture, city, street) }
+        }
     }
 
     fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
-        erikuraApiService.initialUpdateUser(user)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val session = UserSession(userId = it.body.userId, token = it.body.accessToken)
-                        userSession = session
-                        activity.runOnUiThread { onComplete(session) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.initialUpdateUser(user),
+            onError = onError
+        ) { body ->
+            val session = UserSession(userId = body.userId, token = body.accessToken)
+            userSession = session
+            onComplete(session)
+        }
     }
 
     fun reloadJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (job: Job) -> Unit) {
-        erikuraApiService.reloadJob(job.id)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val job = it.body
-                        activity.runOnUiThread { onComplete(job) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.reloadJob(job.id),
+            onError = onError
+        ) { reloadedJob ->
+            onComplete(reloadedJob)
+        }
     }
 
     fun place(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (place: Place) -> Unit){
-        erikuraApiService.place(placeId)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val place = it.body
-                        activity.runOnUiThread { onComplete(place) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.place(placeId),
+            onError = onError
+        ) { place ->
+            onComplete(place)
+        }
     }
 
     fun placeFavorite(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: Boolean) -> Unit) {
-        erikuraApiService.placeFavoriteCreate(FavoriteRequest(placeId))
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val result = it.body
-                        activity.runOnUiThread { onComplete(result) }
-                    }
-                },
-                onError = { throwable ->
-
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.placeFavoriteCreate(FavoriteRequest(placeId)),
+            onError = onError
+        ) { result ->
+            onComplete(result)
+        }
     }
 
     fun placeFavoriteDelete(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: Boolean) -> Unit) {
-        erikuraApiService.placeFavoriteDelete(FavoriteRequest(placeId))
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val result = it.body
-                        activity.runOnUiThread { onComplete(result) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.placeFavoriteDelete(FavoriteRequest(placeId)),
+            onError = onError
+        ) { result ->
+            onComplete(result)
+        }
     }
 
     fun placeFavoriteShow(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: Boolean) -> Unit) {
-        erikuraApiService.placeFavoriteShow(placeId)
-            .subscribeOn(Schedulers.io())
-            .subscribeBy(
-                onNext = {
-                    if (it.hasError) {
-                        activity.runOnUiThread {
-                            (onError ?: { msgs -> displayErrorAlert(msgs) })(it.errors)
-                        }
-                    }
-                    else {
-                        val result = it.body
-                        activity.runOnUiThread { onComplete(result) }
-                    }
-                },
-                onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: activity.getString(R.string.common_messages_apiError))
-                        )
-                    }
-                }
-            )
+        executeObservable(
+            erikuraApiService.placeFavoriteShow(placeId),
+            onError = onError
+        ) { body ->
+            onComplete(body)
+        }
     }
 
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
@@ -449,7 +265,7 @@ class Api(var activity: Activity) {
     }
 
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
-        val defaultError = defaultError ?: activity.getString(R.string.common_messages_apiError)
+        val defaultErrorMessage = defaultError ?: activity.getString(R.string.common_messages_apiError)
         showProgressAlert()
         observable
             .subscribeOn(Schedulers.io())
@@ -463,7 +279,7 @@ class Api(var activity: Activity) {
                         // isSuccessfull の判定をしているので、body は常に取得できる想定です
                         val apiResponse: ApiResponse<T> = response.body()!!
                         if (apiResponse.hasError) {
-                            processError(apiResponse.errors ?: listOf(defaultError), onError)
+                            processError(apiResponse.errors ?: listOf(defaultErrorMessage), onError)
                         }
                         else {
                             onComplete(apiResponse.body)
@@ -474,22 +290,22 @@ class Api(var activity: Activity) {
                             401 -> {
                                 // FIXME: 認証必須画面への遷移を行います
                                 // FIXME: Activityの NEW_TASK | CLEAR_TOP での遷移で良いか検討してください
-                                Toast.makeText(activity, "401 Unauthorized", Toast.LENGTH_LONG).show()
+                                Toast.makeText(activity, "401 Unauthorized:\nログイン必須画面を表示します", Toast.LENGTH_LONG).show()
                             }
                             500 -> {
                                 Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                processError(listOf(defaultError), onError)
+                                processError(listOf(defaultErrorMessage), onError)
                             }
                             else -> {
                                 Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                processError(listOf(defaultError), onError)
+                                processError(listOf(defaultErrorMessage), onError)
                             }
                         }
                     }
                 },
                 onError = { throwable ->
                     Log.v("ERROR", throwable.message, throwable)
-                    processError(listOf(throwable.message ?: defaultError), onError)
+                    processError(listOf(throwable.message ?: defaultErrorMessage), onError)
                 }
             )
     }

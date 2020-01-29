@@ -234,6 +234,6 @@
             app:itemIconTint="@drawable/bottom_navigation_item_state"
             app:itemTextColor="@drawable/bottom_navigation_item_state"
             android:background="@drawable/background_border_top"
-            onNavigationItemSelected="@{handlers.onNavigationItemSelected}" />
+            onNavigationItemSelected="@{handlers::onNavigationItemSelected}" />
     </RelativeLayout>
 </layout>
