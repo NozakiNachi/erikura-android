@@ -133,6 +133,7 @@
     <string name="go">進む</string>
     <string name="showManual">マニュアルを表示</string>
     <string name="openMap">　地図アプリで開く</string>
+    <string name="entry">この仕事に応募</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

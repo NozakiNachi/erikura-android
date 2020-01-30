@@ -172,6 +172,13 @@
         <item name="android:text">次へ</item>
     </style>
 
+    <!-- お気に入りボタン -->
+    <style name="favoriteButton">
+        <item name="android:textOn"></item>
+        <item name="android:textOff"></item>
+        <item name="android:background">@drawable/favorite_button</item>
+    </style>
+
     <!-- 履歴ポップアップ -->
     <style name="historyPopupListViewStyle">
         <item name="android:divider">@color/silver</item>
