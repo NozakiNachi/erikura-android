@@ -103,11 +103,9 @@
                 <ToggleButton
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:textOn=""
-                    android:textOff=""
+                    style="@style/favoriteButton"
                     android:checked="@={viewModel.favorited}"
-                    android:onClick="@{handlers::onClickFavorite}"
-                    android:background="@drawable/favorite_button"/>
+                    android:onClick="@{handlers::onClickFavorite}" />
             </LinearLayout>
         </FrameLayout>
 

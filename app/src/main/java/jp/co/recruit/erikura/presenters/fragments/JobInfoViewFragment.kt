@@ -24,6 +24,7 @@ class JobInfoViewFragment(val job: Job?) : Fragment(), JobInfoViewFragmentEventH
     ): View? {
         // Inflate the layout for this fragment
         val binding = FragmentJobInfoViewBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         viewModel.setup(job)
         binding.viewModel = viewModel
         binding.handler = this

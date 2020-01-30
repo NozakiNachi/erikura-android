@@ -29,6 +29,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
     ): View? {
         container?.removeAllViews()
         val binding = FragmentNormalJobDetailsBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         viewModel.setup(activity, job)
         binding.viewModel = viewModel
         return binding.root
@@ -40,7 +41,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         val transaction = childFragmentManager.beginTransaction()
         val timeLabel = TimeLabelFragment(job)
         val jobInfoView = JobInfoViewFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(activity, job)
+        val thumbnailImage = ThumbnailImageFragment(job)
         val manualButton = ManualButtonFragment(job)
         val applyFlowLink = ApplyFlowLinkFragment()
         val jobDetailsView = JobDetailsViewFragment(job)

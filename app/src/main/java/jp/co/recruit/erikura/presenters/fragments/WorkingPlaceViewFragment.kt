@@ -22,6 +22,7 @@ class WorkingPlaceViewFragment(private val place: Place) : Fragment() {
     ): View? {
         container?.removeAllViews()
         val binding = FragmentWorkingPlaceViewBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         viewModel.setup(place)
         binding.viewModel = viewModel
         return binding.root

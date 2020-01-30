@@ -14,7 +14,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentThumbnailImageBinding
 
-class ThumbnailImageFragment(private val activity: Activity, val job: Job?) : Fragment() {
+class ThumbnailImageFragment(val job: Job?) : Fragment() {
     private val viewModel: ThumbnailImageFragmentViewModel by lazy {
         ViewModelProvider(this).get(ThumbnailImageFragmentViewModel::class.java)
     }
@@ -24,7 +24,8 @@ class ThumbnailImageFragment(private val activity: Activity, val job: Job?) : Fr
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentThumbnailImageBinding.inflate(inflater, container, false)
-        viewModel.setup(activity, job)
+        binding.lifecycleOwner = activity
+        viewModel.setup(activity!!, job)
         binding.viewModel = viewModel
         return binding.root
     }

@@ -68,7 +68,7 @@ interface IErikuraApiService {
     @GET("entries/cancellation_reasons")
     fun cancelReasons(): ApiObservable<CancelReasonsResponse>
 
-    @DELETE("entires")
+    @HTTP(method = "DELETE", path = "entires", hasBody = true)
     fun cancel(@Body request: CancelRequest): ApiObservable<EntryIdResponse>
 
     @POST("entries/start")
@@ -84,13 +84,13 @@ interface IErikuraApiService {
     fun place(@Path("placeId") placeId: Int): ApiObservable<Place>
 
     @GET("place_favorites/show")
-    fun placeFavoriteShow(@Query("place_id") placeId: Int): ApiObservable<Boolean>
+    fun placeFavoriteShow(@Query("place_id") placeId: Int): ApiObservable<ResultResponse>
 
     @POST("place_favorites")
-    fun placeFavoriteCreate(@Body request: FavoriteRequest): ApiObservable<Boolean>
+    fun placeFavoriteCreate(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
-    @DELETE("place_favorites/destory")
-    fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<Boolean>
+    @HTTP(method = "DELETE", path = "place_favorites/destroy", hasBody = true)
+    fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
     @PATCH("reports")
     fun report(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
@@ -100,7 +100,7 @@ interface IErikuraApiService {
     @POST("reorts/image_upload")
     fun imageUpload(@Part("photo") photo: RequestBody): ApiObservable<PhotoTokenResponse>
 
-    @DELETE("reports")
+    @HTTP(method = "DELETE", path = "reports", hasBody = true)
     fun deleteReport(@Body request: DeleteReportRequest): ApiObservable<ReportIdResponse>
 
     // FIXME: geocoding

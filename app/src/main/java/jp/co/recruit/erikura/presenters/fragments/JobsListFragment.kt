@@ -34,6 +34,7 @@ class JobsListFragment(private val jobs: Map<PlaceJobType, List<Job>>) : Fragmen
     ): View? {
         container?.removeAllViews()
         val binding = FragmentJobsListBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         viewModel.activeJobs = jobs[PlaceJobType.ACTIVE]?: listOf()
         viewModel.futureJobs = jobs[PlaceJobType.FUTURE]?: listOf()
         viewModel.pastJobs = jobs[PlaceJobType.PAST]?: listOf()
