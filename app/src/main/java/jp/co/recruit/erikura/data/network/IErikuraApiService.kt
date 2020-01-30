@@ -84,13 +84,13 @@ interface IErikuraApiService {
     fun place(@Path("placeId") placeId: Int): ApiObservable<Place>
 
     @GET("place_favorites/show")
-    fun placeFavoriteShow(@Query("place_id") placeId: Int): ApiObservable<Boolean>
+    fun placeFavoriteShow(@Query("place_id") placeId: Int): ApiObservable<ResultResponse>
 
     @POST("place_favorites")
-    fun placeFavoriteCreate(@Body request: FavoriteRequest): ApiObservable<Boolean>
+    fun placeFavoriteCreate(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
-    @DELETE("place_favorites/destory")
-    fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<Boolean>
+    @HTTP(method = "DELETE", path = "place_favorites/destroy", hasBody = true)
+    fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
     @PATCH("reports")
     fun report(@Body request: ReportRequest): ApiObservable<ReportIdResponse>

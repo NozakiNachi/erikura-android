@@ -159,7 +159,8 @@ class Api(var activity: Activity) {
         executeObservable(
             erikuraApiService.placeFavoriteCreate(FavoriteRequest(placeId)),
             onError = onError
-        ) { result ->
+        ) { body ->
+            val result = body.result
             onComplete(result)
         }
     }
@@ -168,7 +169,8 @@ class Api(var activity: Activity) {
         executeObservable(
             erikuraApiService.placeFavoriteDelete(FavoriteRequest(placeId)),
             onError = onError
-        ) { result ->
+        ) { body ->
+            val result = body.result
             onComplete(result)
         }
     }
@@ -178,7 +180,8 @@ class Api(var activity: Activity) {
             erikuraApiService.placeFavoriteShow(placeId),
             onError = onError
         ) { body ->
-            onComplete(body)
+            val result = body.result
+            onComplete(result)
         }
     }
 

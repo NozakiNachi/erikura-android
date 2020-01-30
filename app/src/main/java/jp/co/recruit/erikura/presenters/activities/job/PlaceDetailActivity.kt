@@ -62,7 +62,6 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
     }
 
     override fun onClickFavorite(view: View) {
-        // FIXME: 未ログイン時はログイン必須画面へ飛ばす
         if (viewModel.favorited.value?: false) {
             // お気に入り登録処理
             Api(this).placeFavorite(place.id) {
