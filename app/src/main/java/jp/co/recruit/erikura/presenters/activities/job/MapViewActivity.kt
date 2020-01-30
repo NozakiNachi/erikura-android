@@ -6,11 +6,9 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -22,9 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.material.bottomnavigation.BottomNavigationMenuView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.google.maps.android.SphericalUtil
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
@@ -118,6 +114,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
                 // 最も距離が近い案件を取得します
                 val nearest = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
+                var nearestMarker: ErikuraMarkerView = viewModel.markerMap[nearest.id]!!
+                var nearestIndex: Int = nearestMarker.marker.tag as Int
+                // マーカーをアクティブに変更します
+                viewModel.activeMaker = nearestMarker
                 // 最も近い案件に地図を移動します
                 resetCameraPosition = true
                 val updateRequest: CameraUpdate = if (zoomInitialized)
@@ -126,7 +126,6 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                     CameraUpdateFactory.newLatLngZoom(nearest.latLng, defaultZoom)
                 mMap.animateCamera(updateRequest)
                 // カルーセルを最も近い案件に変更します
-                val nearestIndex: Int = (viewModel.markerMap[nearest.id]?.marker?.tag as Int?) ?: 0
                 var layoutManager = carouselView.layoutManager as LinearLayoutManager
                 layoutManager.scrollToPosition(nearestIndex)
 
