@@ -18,6 +18,7 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentManualButtonBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         binding.handler = this
         return binding.root
     }

@@ -35,6 +35,7 @@ class MapViewFragment(private val activity: AppCompatActivity, val job: Job?) : 
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentMapViewBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         binding.viewModel = viewModel
         return binding.root
     }

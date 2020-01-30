@@ -15,6 +15,7 @@ class ApplyFlowLinkFragment : Fragment(), ApplyFlowLinkFragmentEventHandlers {
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentApplyFlowLinkBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         binding.handler = this
         return binding.root
     }

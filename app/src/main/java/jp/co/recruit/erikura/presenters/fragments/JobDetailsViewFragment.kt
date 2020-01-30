@@ -25,7 +25,6 @@ import java.util.*
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.*
-import android.util.Log
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.bold
@@ -42,6 +41,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentJobDetailsViewBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
         viewModel.setup(job)
         binding.viewModel = viewModel
         binding.handlers = this
