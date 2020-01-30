@@ -373,7 +373,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     // 現在地に戻る
     override fun onClickCurrentLocation(view: View) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationManager.latLng))
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationManager.latLngOrDefault))
     }
 
     // カルーセルクリック時の処理
