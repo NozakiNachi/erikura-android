@@ -68,7 +68,7 @@ interface IErikuraApiService {
     @GET("entries/cancellation_reasons")
     fun cancelReasons(): ApiObservable<CancelReasonsResponse>
 
-    @DELETE("entires")
+    @HTTP(method = "DELETE", path = "entires", hasBody = true)
     fun cancel(@Body request: CancelRequest): ApiObservable<EntryIdResponse>
 
     @POST("entries/start")
@@ -100,7 +100,7 @@ interface IErikuraApiService {
     @POST("reorts/image_upload")
     fun imageUpload(@Part("photo") photo: RequestBody): ApiObservable<PhotoTokenResponse>
 
-    @DELETE("reports")
+    @HTTP(method = "DELETE", path = "reports", hasBody = true)
     fun deleteReport(@Body request: DeleteReportRequest): ApiObservable<ReportIdResponse>
 
     // FIXME: geocoding
