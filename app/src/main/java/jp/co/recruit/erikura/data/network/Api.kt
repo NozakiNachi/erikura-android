@@ -1,6 +1,6 @@
 package jp.co.recruit.erikura.data.network
 
-import android.app.Activity
+import android.content.Context
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -16,7 +16,6 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.util.LocationManager
-import okhttp3.OkHttpClient
 import okhttp3.Request as HttpRequest
 import okhttp3.Response as HttpResponse
 import org.apache.commons.io.IOUtils
@@ -25,7 +24,7 @@ import java.io.File
 import java.io.IOException
 import java.net.URL
 
-class Api(var activity: Activity) {
+class Api(var context: Context) {
     companion object {
         var userSession: UserSession? = null
 
@@ -122,7 +121,7 @@ class Api(var activity: Activity) {
             val prefecture = body.prefecture
             val city = body.city
             val street = body.street
-            activity.runOnUiThread { onComplete(prefecture, city, street) }
+            onComplete(prefecture, city, street)
         }
     }
 
@@ -202,6 +201,7 @@ class Api(var activity: Activity) {
         }
 
         observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { response ->
                     if (response.isSuccessful) {
@@ -210,24 +210,18 @@ class Api(var activity: Activity) {
                                 IOUtils.copy(body.byteStream(), os)
                             }
                         }
-                        activity.runOnUiThread{
-                            onComplete(destination)
-                        }
+                        onComplete(destination)
                     }
                     else {
-                        activity.runOnUiThread {
-                            onError?.let {
-                                it(listOf("Download Error"))
-                            }
+                        onError?.let {
+                            it(listOf("Download Error"))
                         }
                     }
                 },
                 onError = { e ->
                     Log.e("Download Error", e.message, e)
-                    activity.runOnUiThread {
-                        onError?.let {
-                            it(listOf(e.message ?: "Download Error"))
-                        }
+                    onError?.let {
+                        it(listOf(e.message ?: "Download Error"))
                     }
                 }
             )
@@ -236,15 +230,14 @@ class Api(var activity: Activity) {
     fun geocode(keyword: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: LatLng) -> Unit) {
         googleMapApiService.geocode(BuildConfig.GEOCODING_API_KEY, keyword)
             .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { response ->
                     when(response.status) {
                         GeocodingResponse.Status.OK -> {
                             if (response.results.size > 0) {
                                 val location = response.results.first().geometry.location
-                                activity.runOnUiThread {
-                                    onComplete(LatLng(location.lat, location.lng))
-                                }
+                                onComplete(LatLng(location.lat, location.lng))
                             }
                         }
                         GeocodingResponse.Status.ZERO_RESULTS -> {
@@ -258,17 +251,22 @@ class Api(var activity: Activity) {
                 },
                 onError = { throwable ->
                     Log.v("ERROR", throwable.message, throwable)
-                    activity.runOnUiThread {
-                        (onError ?: { msgs -> displayErrorAlert(msgs) })(
-                            listOf(throwable.message ?: "キーワードでの検索に失敗しました")
-                        )
-                    }
+                    (onError ?: { msgs -> displayErrorAlert(msgs) })(
+                        listOf(throwable.message ?: "キーワードでの検索に失敗しました")
+                    )
                 }
             )
     }
 
+    fun erikuraConfig(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (map: ErikuraConfigMap) -> Unit) {
+        executeObservable(erikuraApiService.erikuraConfig(), onError = onError) { result ->
+            onComplete(result)
+        }
+    }
+
+
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
-        val defaultErrorMessage = defaultError ?: activity.getString(R.string.common_messages_apiError)
+        val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
         showProgressAlert()
         observable
             .subscribeOn(Schedulers.io())
@@ -293,7 +291,7 @@ class Api(var activity: Activity) {
                             401 -> {
                                 // FIXME: 認証必須画面への遷移を行います
                                 // FIXME: Activityの NEW_TASK | CLEAR_TOP での遷移で良いか検討してください
-                                Toast.makeText(activity, "401 Unauthorized:\nログイン必須画面を表示します", Toast.LENGTH_LONG).show()
+                                Toast.makeText(context, "401 Unauthorized:\nログイン必須画面を表示します", Toast.LENGTH_LONG).show()
                             }
                             500 -> {
                                 Log.v("ERROR RESPONSE", response.errorBody().toString())
@@ -315,14 +313,14 @@ class Api(var activity: Activity) {
 
     private fun showProgressAlert() {
         if (progressAlert == null) {
-            progressAlert = AlertDialog.Builder(activity).apply {
-                setView(LayoutInflater.from(activity).inflate(R.layout.dialog_progress, null, false))
+            progressAlert = AlertDialog.Builder(context).apply {
+                setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null, false))
                 setCancelable(false)
             }.create()
 
 
         }
-        val dm = activity.resources.displayMetrics
+        val dm = context.resources.displayMetrics
         progressAlert?.show()
         progressAlert?.window?.setLayout(
             TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
@@ -338,12 +336,12 @@ class Api(var activity: Activity) {
     }
 
     fun displayErrorAlert(messages: List<String>? = null, caption: String? = null) {
-        activity.runOnUiThread {
-            val alertDialog = AlertDialog.Builder(activity)
+        AndroidSchedulers.mainThread().scheduleDirect {
+            val alertDialog = AlertDialog.Builder(context)
                 .apply {
-                    setTitle(caption ?: activity.getString(R.string.common_captions_apiError))
+                    setTitle(caption ?: context.getString(R.string.common_captions_apiError))
                     setMessage(
-                        messages?.joinToString("\n") ?: activity.getString(R.string.common_messages_apiError)
+                        messages?.joinToString("\n") ?: context.getString(R.string.common_messages_apiError)
                     )
                     setPositiveButton(R.string.common_buttons_close) { _, _ -> }
                 }.create()

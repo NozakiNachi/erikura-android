@@ -1,12 +1,17 @@
 package jp.co.recruit.erikura.data.network
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
 import jp.co.recruit.erikura.business.models.*
 import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
+import java.lang.reflect.Type
 import java.util.*
+import kotlin.collections.HashMap
 
 interface IErikuraApiService {
     @POST("users")
@@ -136,8 +141,8 @@ interface IErikuraApiService {
     fun clientVersion(): ApiObservable<RequiredClientVersion>
 
     // FIXME: erikuraConfig
-//    @GET("utils/erikura_config")
-//    fun erikuraConfig(): Observable<Response<>>
+    @GET("utils/erikura_config")
+    fun erikuraConfig(): ApiObservable<ErikuraConfigMap>
 
 //    def erikura_config
 //    render_success({
@@ -290,3 +295,37 @@ data class PushEndpointRequest(
 data class FavoriteRequest(
     var placeId: Int
 )
+
+sealed class ErikuraConfigValue {
+    data class DoubleList(val values: List<Double>): ErikuraConfigValue()
+}
+
+class ErikuraConfigMap: HashMap<String, ErikuraConfigValue>()
+
+class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): ErikuraConfigMap {
+        val jsonObject = json?.asJsonObject
+        val result = ErikuraConfigMap()
+
+        jsonObject?.entrySet()?.forEach { entry ->
+            val deserializerMap: Map<String, (JsonElement?) -> ErikuraConfigValue> = mapOf(
+                Pair(ErikuraConfig.REWARD_RANGE_KEY, { json -> deserializeDoubleList(json, context) }),
+                Pair(ErikuraConfig.WORKING_TIME_RANGE_KEY, { json -> deserializeDoubleList(json, context) })
+            )
+            deserializerMap[entry.key]?.let { deserializer ->
+                result.put(entry.key, deserializer(entry.value))
+            }
+        }
+        return result
+    }
+
+    private fun deserializeDoubleList(json: JsonElement?, context: JsonDeserializationContext?): ErikuraConfigValue.DoubleList {
+        return ErikuraConfigValue.DoubleList(
+            context?.deserialize(json, List::class.java) ?: listOf()
+        )
+    }
+}

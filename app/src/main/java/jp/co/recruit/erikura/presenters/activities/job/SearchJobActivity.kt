@@ -24,6 +24,7 @@ import io.realm.Realm
 import io.realm.Sort
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.JobKind
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.data.network.Api
@@ -209,11 +210,8 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
         }
 
     init {
-        // FIXME: API での作業時間の取得
-        this.workingTimes = listOf(1, 5, 10, 15, 20, 25, 30, 45, 60, 75, 90, 105, 120, 180, 240, 300, 360, 420, 480)
-        // FIXME: APIでの報酬の取得
-        this.rewards = listOf(1, 5, 10, 50, 100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000)
-
+        this.workingTimes = ErikuraConfig.workingTimeRange
+        this.rewards = ErikuraConfig.rewardRange
         this.workingTimeLabel.value = formatWorkingTimeText()
         this.rewardLabel.value = formatRewardText()
     }

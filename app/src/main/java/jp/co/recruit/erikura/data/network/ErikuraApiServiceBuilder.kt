@@ -51,6 +51,7 @@ class ErikuraApiServiceBuilder {
     fun create(): IErikuraApiService {
         val gson = GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(ErikuraConfigMap::class.java, ErikuraConfigDeserializer())
             .serializeNulls()
             .create()
 

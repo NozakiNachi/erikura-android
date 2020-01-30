@@ -153,7 +153,6 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
                     asset.type = type
                     onComplete(asset)
 
-                    // キャッシュしないので、ファイルを削除します
                     dest.delete()
                 }
             } catch (e: IOException) {
