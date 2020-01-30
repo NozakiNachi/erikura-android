@@ -64,6 +64,8 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
 
 class NormalJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
+    val warningCaption: MutableLiveData<String> = MutableLiveData()
+    val warningCaptionVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     fun setup(activity: Activity, job: Job?) {
         if (job != null){
@@ -79,6 +81,20 @@ class NormalJobDetailsFragmentViewModel: ViewModel() {
                         bitmapDrawable.value = bitmapDraw
                     }
                 }
+            }
+
+            if (job.isFuture || job.isPast) {
+                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
+                warningCaptionVisibility.value = View.VISIBLE
+            }else if (job.isEntried) {
+                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
+                warningCaptionVisibility.value = View.VISIBLE
+            }else if (!job.reEntryPermitted) {
+                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_cantEntry)
+                warningCaptionVisibility.value = View.VISIBLE
+            }else {
+                warningCaption.value = ""
+                warningCaptionVisibility.value = View.GONE
             }
 
         }

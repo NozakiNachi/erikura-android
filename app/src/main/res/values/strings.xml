@@ -73,6 +73,9 @@
     <string name="jobDetails_workingPlace">場所</string>
     <string name="jobDetails_workingPlaceLink">この場所の仕事全て</string>
     <string name="jobDetails_applyFlowCaption">応募後の流れ</string>
+    <string name="jobDetails_outOfEntryExpire">応募受付期間外のため応募できません</string>
+    <string name="jobDetails_entryFinished">受付が終了いたしました</string>
+    <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
