@@ -240,6 +240,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         // ズームの初期設定を行っておきます
         mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
 
+        // FIXME: ロゴの位置を変更する
+        // MEMO: 下記のやり方だと地図の中心位置がずれる
+        //mMap.setPadding(0, 0, 0, 300)
+
         // 地図上のアイコンをグレーにするためにスタイル設定を行います
         try {
             val styleOptions = MapStyleOptions.loadRawResourceStyle(this, R.raw.style)
