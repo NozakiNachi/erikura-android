@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.databinding.FragmentMarkerBinding
+import jp.co.recruit.erikura.presenters.view_models.JobDetailMarkerView
 import jp.co.recruit.erikura.presenters.view_models.MarkerViewModel
 import java.io.FileOutputStream
 import java.io.IOException
@@ -43,7 +44,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
         }
     }
 
-    private val markerViewModel: MarkerViewModel = MarkerViewModel(job)
+    private val markerViewModel: MarkerViewModel = if (activity.localClassName == "presenters.activities.job.JobDetailsActivity") JobDetailMarkerView(job) else MarkerViewModel(job)
     lateinit var marker: Marker
 
     var active: Boolean

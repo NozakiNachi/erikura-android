@@ -13,12 +13,12 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MarkerViewModel(private val job: Job): ViewModel() {
+open class MarkerViewModel(private val job: Job): ViewModel() {
     val active: MutableLiveData<Boolean> = MutableLiveData()
     val icon: MutableLiveData<Bitmap> = MutableLiveData()
 
     val fee: String get() = String.format("%,d円", job.fee)
-    val isDisabled: Boolean get() = job.isEntried || job.isFuture
+    open val isDisabled: Boolean get() = job.isEntried || job.isFuture
     val iconUrl: URL? get () {
         if (isDisabled) {
             return job.jobKind?.inactiveIconUrl
@@ -28,7 +28,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
         }
     }
 
-    val boostVisibility: Int get() {
+    open val boostVisibility: Int get() {
         if (job.boost) {
             return View.VISIBLE
         }
@@ -36,7 +36,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
             return View.GONE
         }
     }
-    val wantedVisibility: Int get() {
+    open val wantedVisibility: Int get() {
         if (job.wanted) {
             return View.VISIBLE
         }
@@ -44,7 +44,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
             return View.GONE
         }
     }
-    val soonVisibility: Int get() {
+    open val soonVisibility: Int get() {
         val now = Date()
         val workingStartAt = job.workingStartAt ?: now
         if (workingStartAt > now && (workingStartAt.time - now.time) < (24 * 60 * 60 * 1000)) {
@@ -110,7 +110,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
         return ErikuraApplication.instance.applicationContext.resources.getColor(colorId, null)
     }
 
-    val markerUrl: String get() {
+    open val markerUrl: String get() {
         val iconPath = job.jobKind?.activeIconUrl?.path ?: "EMPTY_PATH"
         if (job.isStartSoon) {
             return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/comingSoon/${iconPath}/"
