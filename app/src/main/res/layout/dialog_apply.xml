@@ -13,12 +13,124 @@
     </data>
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@color/white">
 
         <LinearLayout
             android:orientation="vertical"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/applyFlowDialog_caption"
+                android:textColor="@color/coral"
+                android:textSize="22dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textStyle="bold"
+                android:textColor="@color/blackTwo"
+                android:visibility="@{viewModel.entryQuestionVisibility}"
+                android:text="@{viewModel.entryQuestion}" />
+
+            <EditText
+                style="@style/textField"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:visibility="@{viewModel.entryQuestionVisibility}"
+                android:text="@={viewModel.entryQuestionAnswer}"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/blackTwo"
+                android:lineSpacingExtra="10dp"
+                android:gravity="center"
+                android:text="@string/applyDialog_caption1" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/blackTwo"
+                android:lineSpacingExtra="10dp"
+                android:gravity="center"
+                android:text="@{viewModel.caption}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/blackTwo"
+                android:lineSpacingExtra="10dp"
+                android:text="@{viewModel.reportPlaces}"
+                android:visibility="@{viewModel.reportPlacesVisibility}"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    style="@style/linkText"
+                    android:text="@string/registerEmail_terms_of_service"
+                    android:onClick="@{handlers::onClickTermsOfService}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    android:textColor="@color/blackTwo"
+                    android:text="@string/registerEmail_comma"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    style="@style/linkText"
+                    android:text="@string/registerEmail_privacy_policy"
+                    android:onClick="@{handlers::onClickPrivacyPolicy}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14dp"
+                    android:textColor="@color/blackTwo"
+                    android:text="@string/registerEmail_agree"
+                    />
+
+            </LinearLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                style="@style/primaryButton"
+                android:text="@string/entry"
+                android:enabled="@{viewModel.isEntryButtonEnabled()}"
+                android:onClick="@{handlers::onClickEntryButton}"
+                />
 
         </LinearLayout>
     </ScrollView>

@@ -47,8 +47,7 @@ class ApplyButtonFragment(val job: Job?) : Fragment(), ApplyButtonFragmentEventH
     }
 
     override fun onClickApply(view: View) {
-        // FIXME: 応募確認ダイアログの表示
-        val dialog = ApplyDialogFragment()
+        val dialog = ApplyDialogFragment(job)
         dialog.show(childFragmentManager, "Apply")
     }
 
