@@ -1,13 +1,11 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import JobUtil
-import android.content.res.ColorStateList
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -35,12 +33,11 @@ class TimeLabelFragment(val job: Job?) : Fragment() {
 
 class TimeLabelFragmentViewModel: ViewModel() {
     val text: MutableLiveData<CharSequence> = MutableLiveData()
-    val color: MutableLiveData<ColorStateList> = MutableLiveData()
+    val color: MutableLiveData<Int> = MutableLiveData()
 
     fun setup(job: Job?) {
-        var tv = TextView(ErikuraApplication.instance.applicationContext)
-        JobUtil.setupTimeLabel(tv, ErikuraApplication.instance.applicationContext, job)
-        text.value = tv.text
-        color.value = tv.textColors
+        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job)
+        text.value = timeLimitText
+        color.value = timeLimitColor
     }
 }
