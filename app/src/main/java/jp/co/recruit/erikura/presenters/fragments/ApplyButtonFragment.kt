@@ -13,6 +13,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentApplyButtonBinding
+import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 
 class ApplyButtonFragment(val job: Job?) : Fragment(), ApplyButtonFragmentEventHandlers {
     private val viewModel: ApplyButtonFragmentViewModel by lazy {
@@ -47,6 +48,8 @@ class ApplyButtonFragment(val job: Job?) : Fragment(), ApplyButtonFragmentEventH
 
     override fun onClickApply(view: View) {
         // FIXME: 応募確認ダイアログの表示
+        val dialog = ApplyDialogFragment()
+        dialog.show(childFragmentManager, "Apply")
     }
 
 }
