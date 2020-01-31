@@ -101,30 +101,42 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
     private fun buildMarkerImage(callback: (Asset) -> Unit) {
         val markerUrl: String = markerViewModel.markerUrl
+
+        markerViewModel.iconUrl?.also { url ->
+            assetsManager.fetchImage(activity, url.toString(), Asset.AssetType.Marker) { icon ->
+                markerViewModel.icon.value = icon
+                buildMarkerImageImpl(callback, markerUrl, saveCache = true)
+            }
+        } ?: run{
+            buildMarkerImageImpl(callback, markerUrl, saveCache = false)
+        }
+    }
+
+    private fun buildMarkerImageImpl(callback: (Asset) -> Unit, markerUrl: String, saveCache: Boolean) {
         val binding = FragmentMarkerBinding.inflate(activity.layoutInflater, null, false)
         binding.lifecycleOwner = activity
         binding.viewModel = markerViewModel
 
-        val build: () -> Unit = {
-            val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, urlString, type, onComplete ->
-                binding.executePendingBindings()
+        val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, urlString, type, onComplete ->
+            binding.executePendingBindings()
 
-                val markerView = binding.root
-                markerView.measure(
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                )
-                markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
+            val markerView = binding.root
+            markerView.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            )
+            markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
 
-                val markerImage = markerView.drawToBitmap(Bitmap.Config.ARGB_8888)
+            val markerImage = markerView.drawToBitmap(Bitmap.Config.ARGB_8888)
 
-                val dest = assetsManager.generateDownloadFile()
-                try {
-                    FileOutputStream(dest).use { out ->
-                        markerImage.compress(Bitmap.CompressFormat.PNG, 100, out)
-                        out.flush()
-                    }
+            val dest = assetsManager.generateDownloadFile()
+            try {
+                FileOutputStream(dest).use { out ->
+                    markerImage.compress(Bitmap.CompressFormat.PNG, 100, out)
+                    out.flush()
+                }
 
+                if (saveCache) {
                     assetsManager.removeExpiredCache(type)
                     assetsManager.realm.executeTransaction { realm ->
                         val asset = realm.createObject(Asset::class.java, markerUrl)
@@ -133,23 +145,24 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
                         asset.type = type
                         onComplete(asset)
                     }
-                } catch (e: IOException) {
-                    Log.e("Error", e.message, e)
-                    // FIXME: エラー処理として何をするべきか?
                 }
-            }
-            assetsManager.downloadAsset(activity, markerUrl, Asset.AssetType.Marker, downloadHandler) { asset ->
-                callback(asset)
+                else {
+                    val asset = Asset()
+                    asset.url = markerUrl
+                    asset.path = dest.path
+                    asset.lastAccessedAt = Date()
+                    asset.type = type
+                    onComplete(asset)
+
+                    dest.delete()
+                }
+            } catch (e: IOException) {
+                Log.e("Error", e.message, e)
+                // FIXME: エラー処理として何をするべきか?
             }
         }
-
-        markerViewModel.iconUrl?.also { url ->
-            assetsManager.fetchImage(activity, url.toString(), Asset.AssetType.Marker) { icon ->
-                markerViewModel.icon.value = icon
-                build()
-            }
-        } ?: run{
-            build()
+        assetsManager.downloadAsset(activity, markerUrl, Asset.AssetType.Marker, downloadHandler) { asset ->
+            callback(asset)
         }
     }
 }

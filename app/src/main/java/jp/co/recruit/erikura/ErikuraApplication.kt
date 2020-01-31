@@ -2,6 +2,7 @@ package jp.co.recruit.erikura
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import jp.co.recruit.erikura.business.models.UserSession

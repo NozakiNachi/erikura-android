@@ -6,7 +6,6 @@ import kotlinx.android.parcel.Parcelize
 import org.apache.commons.io.FilenameUtils
 import java.net.URL
 
-
 @Parcelize
 data class JobKind(
     var id: Int = 0,
