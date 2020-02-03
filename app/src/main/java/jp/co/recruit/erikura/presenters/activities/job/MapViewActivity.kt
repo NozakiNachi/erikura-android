@@ -80,6 +80,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 if (carouselView.adapter is ErikuraCarouselAdapter) {
                     var adapter = carouselView.adapter as ErikuraCarouselAdapter
                     adapter.data = jobs
+                    adapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
                     adapter.notifyDataSetChanged()
                 }
 
@@ -159,8 +160,8 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
         nav.selectedItemId = R.id.tab_menu_search_jobs
 
-        adapter = ErikuraCarouselAdapter(this, listOf())
-        adapter.onClickListner = object: ErikuraCarouselAdapter.OnClickListener {
+        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
+        adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
             }
@@ -170,6 +171,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         carouselView.setHasFixedSize(true)
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
+
+        (carouselView.layoutManager as? LinearLayoutManager)?.let {
+            it.stackFromEnd = true
+        }
 
         carouselView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {

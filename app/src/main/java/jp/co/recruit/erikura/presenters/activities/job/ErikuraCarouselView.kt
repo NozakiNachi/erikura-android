@@ -4,12 +4,20 @@ import JobUtil
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -62,8 +70,24 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
     }
 }
 
-class ErikuraCarouselAdapter(val activity: Activity, var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
-    var onClickListner: OnClickListener? = null
+class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, List<Job>>): ViewModel() {
+    private val jobsCountAt: Int get() = jobsByLocation[job.latLng]?.size ?: 0
+    val hasOtherJobs: Boolean get() = jobsCountAt > 1
+    val jobsCountText: String get() = String.format("ほか%d件の仕事", jobsCountAt - 1)
+    val jobsCountTextVisibility: Int get() = if(hasOtherJobs) { View.VISIBLE } else { View.GONE }
+    val bodyBackgroundDrawable: Drawable
+        get() {
+            return if (hasOtherJobs) {
+                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+            }
+            else {
+                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+            }
+        }
+}
+
+class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+    var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -82,12 +106,16 @@ class ErikuraCarouselAdapter(val activity: Activity, var data: List<Job>): Recyc
 
     override fun onBindViewHolder(holder: ErikuraCarouselViewHolder, position: Int) {
         val job = data[position]
+        val viewModel = ErikuraCarouselViewModel(job, jobsByLocation)
+
+        holder.binding.viewModel = viewModel
+        holder.binding.lifecycleOwner = activity
 
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
 
         holder.binding.root.setOnClickListener {
-            onClickListner?.apply {
+            onClickListener?.apply {
                 onClick(job)
             }
         }

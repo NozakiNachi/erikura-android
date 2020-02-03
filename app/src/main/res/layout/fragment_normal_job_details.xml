@@ -40,7 +40,7 @@
                     <!-- 時間表示ラベル -->
                     <FrameLayout
                         android:id="@+id/jobDetails_timeLabelFragment"
-                        android:background="@drawable/erikura_carousel_knob"
+                        android:background="@drawable/background_carousel_knob"
                         android:layout_width="wrap_content"
                         android:layout_height="45dp"
                         android:layout_gravity="right"
