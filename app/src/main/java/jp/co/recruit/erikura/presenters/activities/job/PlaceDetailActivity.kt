@@ -39,7 +39,12 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_place_detail)
 
-        place = intent.getParcelableExtra("place")
+        val value = intent.getParcelableExtra<Place>("place")
+        if (value != null) {
+            place = value
+        }else {
+            handleIntent(intent)
+        }
         Log.v("DEBUG", place.toString())
 
         val binding: ActivityPlaceDetailBinding = DataBindingUtil.setContentView(this, R.layout.activity_place_detail)
@@ -91,6 +96,12 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
             transaction.replace(R.id.placeDetail_jobsList, jobsList)
             transaction.commit()
         }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val appLinkData: Uri? = intent.data
+        val placeId = appLinkData!!.lastPathSegment!!.toInt()
+        place.id = placeId
     }
 }
 
