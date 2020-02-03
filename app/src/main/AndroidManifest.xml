@@ -25,10 +25,8 @@
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="*"
                     android:scheme="erikura" />
@@ -36,7 +34,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".presenters.activities.job.SearchJobActivity" />
-        <activity android:name=".presenters.activities.job.JobDetailsActivity" />
+        <activity android:name=".presenters.activities.job.JobDetailsActivity">
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:pathPrefix="/jobs/" />
+            </intent-filter>
+        </activity>
         <activity android:name=".presenters.activities.job.ListViewActivity" />
         <activity android:name=".presenters.activities.RegisterFinishedActivity" />
         <activity android:name=".presenters.activities.RegisterWishWorkActivity" />
@@ -66,10 +75,8 @@
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="*"
                     android:scheme="erikura" />

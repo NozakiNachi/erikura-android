@@ -1,5 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -20,11 +22,15 @@ class JobDetailsActivity : AppCompatActivity() {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_details)
-
-        job = intent.getParcelableExtra("job")
+        
+        val value = intent.getParcelableExtra<Job>("job")
+        if (value != null) {
+            job = value
+        }else {
+            handleIntent(intent)
+        }
         Log.v("DEBUG", job.toString())
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -76,5 +82,11 @@ class JobDetailsActivity : AppCompatActivity() {
         // fragmentの更新
         transaction.replace(R.id.job_details, fragment)
         transaction.commit()
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val appLinkData: Uri? = intent.data
+        val jobId = appLinkData!!.lastPathSegment!!.toInt()
+        job.id = jobId
     }
 }
