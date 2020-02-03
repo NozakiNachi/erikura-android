@@ -5,10 +5,15 @@ import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
 import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -36,9 +41,17 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
         binding.viewModel = viewModel
         binding.handlers = this
 
+
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
         return builder.create()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        var tv = dialog!!.findViewById<TextView>(R.id.apply_agreementLink)
+        tv.text = makeLink()
+        tv.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onClickTermsOfService(view: View) {
@@ -62,6 +75,32 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
     override fun onClickEntryButton(view: View) {
         // FIXME: 応募処理の実装
     }
+
+    private fun makeLink(): SpannableStringBuilder {
+        var str = SpannableStringBuilder()
+
+        var start = 0
+        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service))
+        var end = str.length
+        str.setSpan(object : ClickableSpan() {
+            override fun onClick(view: View) {
+                onClickTermsOfService(view)
+            }
+        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+        start = str.length
+        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy))
+        end = str.length
+        str.setSpan(object : ClickableSpan() {
+            override fun onClick(view: View) {
+                onClickPrivacyPolicy(view)
+            }
+        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        return str
+    }
 }
 
 class ApplyDialogFragmentViewModel: ViewModel() {
@@ -73,6 +112,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val reportPlacesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     val isEntryButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(entryQuestionVisibility) { result.value = isValid() }
         result.addSource(entryQuestionAnswer) { result.value = isValid() }
     }
 
@@ -100,7 +140,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
         }
     }
 
-    fun isValid(): Boolean {
+    private fun isValid(): Boolean {
         if (entryQuestionVisibility.value == View.VISIBLE && entryQuestionAnswer.value.isNullOrBlank()) {
             return false
         }else {
