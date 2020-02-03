@@ -47,8 +47,12 @@ class ApplyButtonFragment(val job: Job?) : Fragment(), ApplyButtonFragmentEventH
     }
 
     override fun onClickApply(view: View) {
-        val dialog = ApplyDialogFragment(job)
-        dialog.show(childFragmentManager, "Apply")
+        if (UserSession.retrieve() != null) {
+            val dialog = ApplyDialogFragment(job)
+            dialog.show(childFragmentManager, "Apply")
+        }else {
+            // FIXME: ログイン必須画面へ遷移
+        }
     }
 
 }
@@ -63,6 +67,7 @@ class ApplyButtonFragmentViewModel: ViewModel() {
             if (job.isPastOrInactive || job.isFuture) {
                 applyButtonVisibility.value = View.INVISIBLE
             }
+
             // お気に入り状態の取得
             UserSession.retrieve()?.let {
                 Api(activity).placeFavoriteShow(job.place?.id?: 0) {

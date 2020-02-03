@@ -22,6 +22,8 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogApplyBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
@@ -73,7 +75,15 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
     }
 
     override fun onClickEntryButton(view: View) {
-        // FIXME: 応募処理の実装
+        if (UserSession.retrieve() != null) {
+            if (job != null) {
+                Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "") {
+                    // FIXME: 応募完了画面へ遷移
+                }
+            }
+        }else {
+            // FIXME: ログイン必須画面へ遷移
+        }
     }
 
     private fun makeLink(): SpannableStringBuilder {

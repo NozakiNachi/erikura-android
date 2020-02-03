@@ -145,6 +145,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun entry(job: Job, comment: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.entry(EntryRequest(job.id, comment)),
+            onError = onError
+        ) {body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
     fun place(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (place: Place) -> Unit){
         executeObservable(
             erikuraApiService.place(placeId),
