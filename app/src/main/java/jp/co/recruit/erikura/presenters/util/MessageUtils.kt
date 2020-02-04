@@ -13,6 +13,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.databinding.DialogLocationAlertBinding
 import jp.co.recruit.erikura.databinding.DialogMessageAlertBinding
 
 // 画面へのメッセージ表示を行うためのユーティリティ
@@ -43,6 +44,25 @@ object MessageUtils {
 
         return dialog
     }
+
+    fun displayLocationAlert(context: FragmentActivity, onCloseListener: (() -> Unit)? = null): AlertDialog {
+        val dialog = AlertDialog.Builder(context).apply {
+            val binding: DialogLocationAlertBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(context),
+                R.layout.dialog_location_alert,
+                null, false
+            )
+            binding.lifecycleOwner = context
+
+            setView(binding.root)
+            setOnDismissListener { onCloseListener?.invoke() }
+        }.create()
+
+        dialog.show()
+
+        return dialog
+    }
+
 
     class MessageAlertViewModel : ViewModel() {
         val messages: MutableLiveData<String> = MutableLiveData()

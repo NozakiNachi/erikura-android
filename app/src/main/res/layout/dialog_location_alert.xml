@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="位置情報の利用を\n許可してください"
+            style="@style/label_w2"
+            android:textSize="22dp"
+            android:textColor="@color/coral"
+            android:gravity="center_horizontal"
+            />
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="設定アプリから、「エリクラ」の\n位置情報の利用を許可してください。"
+            style="@style/label_w2"
+            android:textSize="14dp"
+            android:gravity="center_horizontal"
+            />
+    </LinearLayout>
+</layout>

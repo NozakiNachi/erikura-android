@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -27,6 +28,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
+import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
@@ -194,6 +196,25 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
                         // 案件の検索処理を実施します
                         fetchJobs(query)
                     }
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode) {
+            LocationManager.REQUEST_ACCESS_FINE_LOCATION_ID -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    locationManager.start(this)
+                }
+                else {
+                    MessageUtils.displayLocationAlert(this)
                 }
             }
         }
