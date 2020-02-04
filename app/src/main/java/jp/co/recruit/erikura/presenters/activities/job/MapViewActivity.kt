@@ -168,7 +168,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
 
         carouselView = findViewById(R.id.map_view_carousel)
-        carouselView.setHasFixedSize(true)
+//        carouselView.setHasFixedSize(true)
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
 
