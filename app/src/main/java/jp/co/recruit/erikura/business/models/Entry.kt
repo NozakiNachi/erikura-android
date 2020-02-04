@@ -6,7 +6,7 @@ data class Entry(
     var id: Int,
     var userId: Int,
     var jobId: Int,
-    var comment: Int,
+    var comment: String,
     var limitAt: Date,
     var startedAt: Date?,
     var startedLatitude: Double?,

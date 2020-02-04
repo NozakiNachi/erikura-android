@@ -76,6 +76,7 @@
     <string name="jobDetails_outOfEntryExpire">応募受付期間外のため応募できません</string>
     <string name="jobDetails_entryFinished">受付が終了いたしました</string>
     <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
+    <string name="jobDetails_maxEntry">未報告案件が%1$d件以上あるため応募できません</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>

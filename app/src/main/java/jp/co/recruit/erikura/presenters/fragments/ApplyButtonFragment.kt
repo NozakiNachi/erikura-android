@@ -10,12 +10,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentApplyButtonBinding
 import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 
-class ApplyButtonFragment(val job: Job?) : Fragment(), ApplyButtonFragmentEventHandlers {
+class ApplyButtonFragment(val job: Job?, val user: User) : Fragment(), ApplyButtonFragmentEventHandlers {
     private val viewModel: ApplyButtonFragmentViewModel by lazy {
         ViewModelProvider(this).get(ApplyButtonFragmentViewModel::class.java)
     }
@@ -26,7 +27,7 @@ class ApplyButtonFragment(val job: Job?) : Fragment(), ApplyButtonFragmentEventH
     ): View? {
         val binding = FragmentApplyButtonBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(activity!!, job)
+        viewModel.setup(activity!!, job, user)
         binding.viewModel = viewModel
         binding.handlers = this
         return binding.root
@@ -61,10 +62,10 @@ class ApplyButtonFragmentViewModel: ViewModel() {
     val applyButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
-    fun setup(activity: Activity, job: Job?){
+    fun setup(activity: Activity, job: Job?, user: User){
         if (job != null) {
             // 案件受付期間外の判定
-            if (job.isPastOrInactive || job.isFuture) {
+            if (job.isPastOrInactive || job.isFuture || !job.reEntryPermitted || (UserSession.retrieve() != null && user.holdingJobs >= user.maxJobs) || (UserSession.retrieve() != null && job.targetGender != null && job.targetGender != user.gender) || job.banned) {
                 applyButtonVisibility.value = View.INVISIBLE
             }
 

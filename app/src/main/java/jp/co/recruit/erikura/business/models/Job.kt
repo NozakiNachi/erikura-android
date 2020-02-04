@@ -51,7 +51,9 @@ data class Job(
     var reportId: Int? = 0,
     var report: @RawValue Report? = null,
     var reEntryPermitted: Boolean = false,
-    var summaryTitles: List<String> = listOf()
+    var summaryTitles: List<String> = listOf(),
+    var targetGender: Gender? = null,
+    var banned: Boolean = false
 ): Parcelable {
 
     // isReportCreatable

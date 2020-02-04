@@ -21,7 +21,7 @@ interface IErikuraApiService {
     fun registerConfirm(@Body request: ConfirmationTokenRequest): ApiObservable<IdResponse>
 
     @GET("users")
-    fun user(): Observable<ApiResponse<User>>
+    fun user(): ApiObservable<User>
 
     @PATCH("users/initial_update")
     fun initialUpdateUser(@Body request: User): ApiObservable<InitialUpdateResponse>
