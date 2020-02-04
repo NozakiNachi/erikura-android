@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.*
@@ -65,6 +66,10 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
             if (hasFocus) {
                 textField.showDropDown()
             }
+        }
+        // 完了ボタンでソフトキーボードを閉じるようにする
+        textField.setOnEditorActionListener { v, actionId, event ->
+            false
         }
 
         adapter.clear()
