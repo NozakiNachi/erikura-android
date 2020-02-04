@@ -137,7 +137,6 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
             viewModel.minimumWorkingTime.value = min
             viewModel.maximumWorkingTime.value = max
         }
-        // FIXME: 作業時間の最大、最小などどのバインディング
         fragment.show(supportFragmentManager, "workingTimePicker")
     }
 
@@ -151,7 +150,6 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
             viewModel.minimumReward.value = min
             viewModel.maximumReward.value = max
         }
-        // FIXME: 報酬の最大、最小などとのバインディング
         fragment.show(supportFragmentManager, "rewordPicker")
     }
 
