@@ -85,7 +85,7 @@ data class Job(
     val isRejected: Boolean get() = (report?.isRejected ?: false)
     /** 募集直前(24時間以内)のタスクか */
     val isStartSoon: Boolean get() {
-        return isFuture && ((Date().time - this.workingStartAt!!.time) < (24 * 60 * 60 * 1000))
+        return isFuture && (Math.abs(Date().time - this.workingStartAt!!.time) < (24 * 60 * 60 * 1000))
     }
 
     /** 案件の状態を取得します */
