@@ -133,15 +133,15 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 Log.v("Fetch Job", "Nearest: ${nearestIndex}, ${layoutManager.toString()}")
             }
             else {
-                MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します"))
-
-                // クリアした検索条件での再検索を行います
-                val newQuery = JobQuery(
-                    latitude = locationManager.latLngOrDefault.latitude,
-                    longitude = locationManager.latLngOrDefault.longitude)
-                if (query != newQuery) {
-                    viewModel.apply(newQuery)
-                    fetchJobs(newQuery)
+                MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
+                    // クリアした検索条件での再検索を行います
+                    val newQuery = JobQuery(
+                        latitude = locationManager.latLngOrDefault.latitude,
+                        longitude = locationManager.latLngOrDefault.longitude)
+                    if (query != newQuery) {
+                        viewModel.apply(newQuery)
+                        fetchJobs(newQuery)
+                    }
                 }
             }
         }

@@ -17,7 +17,7 @@ import jp.co.recruit.erikura.databinding.DialogMessageAlertBinding
 
 // 画面へのメッセージ表示を行うためのユーティリティ
 object MessageUtils {
-    fun displayAlert(context: FragmentActivity, messages: Collection<String>, caption: String? = null) {
+    fun displayAlert(context: FragmentActivity, messages: Collection<String>, caption: String? = null, onCloseListener: (() -> Unit)? = null): AlertDialog {
         val dialog = AlertDialog.Builder(context).apply {
             caption?.let { setTitle(caption) }
 
@@ -33,12 +33,15 @@ object MessageUtils {
             binding.lifecycleOwner = context
 
             setView(binding.root)
-            // FIXME: positiveButton の設定は必要なのか？
-            // FIXME: 幅の指定を検討する？
-            // FIXME: フォントの指定はどうするべきか？
+
+            setOnDismissListener {
+                onCloseListener?.invoke()
+            }
         }.create()
 
         dialog.show()
+
+        return dialog
     }
 
     class MessageAlertViewModel : ViewModel() {
