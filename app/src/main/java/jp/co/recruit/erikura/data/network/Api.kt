@@ -136,6 +136,15 @@ class Api(var context: Context) {
         }
     }
 
+    fun user(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (user: User) -> Unit) {
+        executeObservable(
+            erikuraApiService.user(),
+            onError = onError
+        ) { user ->
+            onComplete(user)
+        }
+    }
+
     fun reloadJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (job: Job) -> Unit) {
         executeObservable(
             erikuraApiService.reloadJob(job.id),
@@ -152,6 +161,15 @@ class Api(var context: Context) {
         ) {body ->
             val id = body.entryId
             onComplete(id)
+        }
+    }
+
+    fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
+        executeObservable(
+            erikuraApiService.recommendedJobs(job.id),
+            onError = onError
+        ) { body ->
+            onComplete(body.jobs)
         }
     }
 

@@ -16,9 +16,11 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
+import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 
 
-class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?) : Fragment() {
+class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment() {
     private val viewModel: NormalJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(NormalJobDetailsFragmentViewModel::class.java)
     }
@@ -30,7 +32,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         container?.removeAllViews()
         val binding = FragmentNormalJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(activity, job)
+        viewModel.setup(activity, job, user)
         binding.viewModel = viewModel
         return binding.root
     }
@@ -39,7 +41,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        val timeLabel = TimeLabelFragment(job)
+        val timeLabel = TimeLabelFragment(job, user)
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
         val manualButton = ManualButtonFragment(job)
@@ -47,7 +49,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
         val applyFlowView = ApplyFlowViewFragment()
-        val applyButton = ApplyButtonFragment(job)
+        val applyButton = ApplyButtonFragment(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
@@ -67,7 +69,7 @@ class NormalJobDetailsFragmentViewModel: ViewModel() {
     val warningCaption: MutableLiveData<String> = MutableLiveData()
     val warningCaptionVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
-    fun setup(activity: Activity, job: Job?) {
+    fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null){
             // ダウンロード
             job.thumbnailUrl?.let { url ->
@@ -86,11 +88,14 @@ class NormalJobDetailsFragmentViewModel: ViewModel() {
             if (job.isFuture || job.isPast) {
                 warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
                 warningCaptionVisibility.value = View.VISIBLE
-            }else if (job.isEntried) {
+            }else if (job.isEntried || (UserSession.retrieve() != null && job.targetGender != null && job.targetGender != user.gender) || job.banned) {
                 warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
                 warningCaptionVisibility.value = View.VISIBLE
             }else if (!job.reEntryPermitted) {
                 warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_cantEntry)
+                warningCaptionVisibility.value = View.VISIBLE
+            }else if (UserSession.retrieve() != null && user.holdingJobs >= user.maxJobs) {
+                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_maxEntry, user.maxJobs)
                 warningCaptionVisibility.value = View.VISIBLE
             }else {
                 warningCaption.value = ""

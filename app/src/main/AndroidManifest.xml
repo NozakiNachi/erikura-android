@@ -21,12 +21,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".presenters.activities.job.ApplyCompletedActivity"></activity>
         <activity android:name=".presenters.activities.job.PlaceDetailActivity">
+
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="*"
                     android:scheme="erikura" />
@@ -35,11 +39,14 @@
         </activity>
         <activity android:name=".presenters.activities.job.SearchJobActivity" />
         <activity android:name=".presenters.activities.job.JobDetailsActivity">
+
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="*"
                     android:scheme="erikura" />
@@ -72,11 +79,14 @@
         <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" />
         <activity android:name=".presenters.activities.RegisterNameActivity" />
         <activity android:name=".presenters.activities.RegisterPasswordActivity">
+
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="*"
                     android:scheme="erikura" />
