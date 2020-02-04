@@ -164,6 +164,15 @@ class Api(var context: Context) {
         }
     }
 
+    fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
+        executeObservable(
+            erikuraApiService.recommendedJobs(job.id),
+            onError = onError
+        ) { body ->
+            onComplete(body.jobs)
+        }
+    }
+
     fun place(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (place: Place) -> Unit){
         executeObservable(
             erikuraApiService.place(placeId),

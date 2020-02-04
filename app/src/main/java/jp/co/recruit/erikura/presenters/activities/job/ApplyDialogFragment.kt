@@ -78,7 +78,9 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
         if (UserSession.retrieve() != null) {
             if (job != null) {
                 Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "") {
-                    // FIXME: 応募完了画面へ遷移
+                    val intent= Intent(activity, ApplyCompletedActivity::class.java)
+                    intent.putExtra("job", job)
+                    startActivity(intent)
                 }
             }
         }else {

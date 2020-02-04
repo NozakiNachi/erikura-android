@@ -93,6 +93,11 @@
     <string name="applyDialog_caption2Pattern1">報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
     <string name="applyDialog_caption2Pattern2">必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
 
+    <!-- 応募完了画面 -->
+    <string name="applyCompleted_caption">応募が完了しました！</string>
+    <string name="applyCompleted_note">24時間以内に現地に向かい、\n作業を行いましょう！</string>
+    <string name="applyCompleted_recommend">お近くの仕事</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -143,6 +148,8 @@
     <string name="showManual">マニュアルを表示</string>
     <string name="openMap">　地図アプリで開く</string>
     <string name="entry">この仕事に応募</string>
+    <string name="jobDetail">この仕事の詳細</string>
+    <string name="searchOtherJobs">他の仕事を探す</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

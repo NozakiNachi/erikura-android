@@ -64,7 +64,7 @@ interface IErikuraApiService {
     @GET("jobs/kind")
     fun jobKinds(): ApiObservable<List<JobKind>>
 
-    @GET("jobs/recommended")
+    @GET("jobs/recommend")
     fun recommendedJobs(@Query("job_id") jobId: Int): ApiObservable<JobsResponse>
 
     @POST("entries")
