@@ -28,6 +28,7 @@ import android.text.style.*
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.text.bold
+import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 
 
@@ -103,7 +104,13 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     fun setup(job: Job?){
         if (job != null) {
             // 納期
-            limit.value = "${dateToString(job.workingStartAt?: Date(), "yyyy/MM/dd HH:mm")} ～ ${dateToString(job.workingFinishAt?: Date(), "yyyy/MM/dd HH:mm")}"
+            var end: Date
+            if (job.status == JobStatus.Applied) {
+                end = job.entry?.limitAt?: Date()
+            }else {
+                end = job.workingFinishAt?: Date()
+            }
+            limit.value = "${dateToString(job.workingStartAt?: Date(), "yyyy/MM/dd HH:mm")} ～ ${dateToString(end, "yyyy/MM/dd HH:mm")}"
             // 持ち物
             tool.value = job.tools
             // 仕事概要

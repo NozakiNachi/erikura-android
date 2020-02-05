@@ -12,6 +12,7 @@ import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 
 
@@ -65,8 +66,7 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = NormalJobDetailsFragment(this, job, user)
             }
             JobStatus.Applied -> {
-                // FIXME: 応募済み画面
-                fragment = NormalJobDetailsFragment(this, job, user)
+                fragment = AppliedJobDetailsFragment(this, job, user)
             }
             JobStatus.Working -> {
                 // FIXME: 作業中画面

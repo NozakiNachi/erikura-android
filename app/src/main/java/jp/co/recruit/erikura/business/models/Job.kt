@@ -47,7 +47,7 @@ data class Job(
     var distance: Int? = 0,
     var jobKind: JobKind? = null,
     var entryId: Int? = 0,
-    var entry: @RawValue Entry? = null,
+    var entry: Entry? = null,
     var reportId: Int? = 0,
     var report: @RawValue Report? = null,
     var reEntryPermitted: Boolean = false,

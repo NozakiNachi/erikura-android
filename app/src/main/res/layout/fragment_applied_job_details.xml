@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragmentViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.AppliedJobDetailsFragment">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/white"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- 背景ブラー画像 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@{viewModel.bitmapDrawable}">
+
+                    <!-- 簡易表示 -->
+                    <FrameLayout
+                        android:id="@+id/appliedJobDetails_jobInfoViewFragment"
+                        android:background="@drawable/background_dialog_body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"/>
+                    <!-- タイムリミット表示 -->
+                    <!--<FrameLayout
+                        android:id="@+id/appliedJobDetails_timeLimitFragment"
+                        android:background="@drawable/background_dialog_body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="10dp" />-->
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/background_triangle_reverse"/>
+
+                </LinearLayout>
+
+                <!-- マニュアル画像 -->
+                <!--<FrameLayout
+                    android:id="@+id/appliedJobDetails_manualImageFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />-->
+
+                <!-- マニュアル表示ボタン -->
+                <FrameLayout
+                    android:id="@+id/appliedJobDetails_manualButtonFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
+                <!-- この仕事をキャンセル -->
+                <FrameLayout
+                    android:id="@+id/appliedJobDetails_cancelButtonFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
+                <!-- サムネイル画像 -->
+                <FrameLayout
+                    android:id="@+id/appliedJobDetails_thumbnailImageFragment"
+                    android:layout_width="251dp"
+                    android:layout_height="188dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp" />
+
+                <!-- 案件詳細情報 -->
+                <FrameLayout
+                    android:id="@+id/appliedJobDetails_jobDetailsViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
+                <!-- 地図埋め込み -->
+                <FrameLayout
+                    android:id="@+id/appliedJobDetails_mapViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="110dp"/>
+
+            </LinearLayout>
+
+
+        </ScrollView>
+
+        <!-- 作業開始ボタンとお気に入りボタン -->
+        <!--<LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:orientation="vertical">
+            <FrameLayout
+                android:id="@+id/appliedJobDetails_startButtonFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>-->
+
+
+    </FrameLayout>
+</layout>
