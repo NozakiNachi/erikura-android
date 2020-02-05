@@ -150,6 +150,7 @@
     <string name="entry">この仕事に応募</string>
     <string name="jobDetail">この仕事の詳細</string>
     <string name="searchOtherJobs">他の仕事を探す</string>
+    <string name="cancel">この仕事をキャンセル</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

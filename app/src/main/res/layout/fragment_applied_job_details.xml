@@ -79,11 +79,11 @@
                     android:layout_marginTop="20dp" />
 
                 <!-- この仕事をキャンセル -->
-                <!--<FrameLayout
-                    android:id="@+id/appliedJobDetails_cancelFragment"
+                <FrameLayout
+                    android:id="@+id/appliedJobDetails_cancelButtonFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp" />-->
+                    android:layout_marginTop="20dp" />
 
                 <!-- サムネイル画像 -->
                 <FrameLayout

@@ -39,11 +39,13 @@ class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job
 
         val transaction = childFragmentManager.beginTransaction()
         val jobInfoView = JobInfoViewFragment(job)
+        val cancelButton = CancelButtonFragment(job)
         val manualButton = ManualButtonFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
+        transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton, "cancelButton")
         transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton, "manualButton")
         transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
