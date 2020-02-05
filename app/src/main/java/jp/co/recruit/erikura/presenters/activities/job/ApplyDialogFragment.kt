@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
@@ -62,7 +63,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -71,7 +72,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
     }
 
     override fun onClickEntryButton(view: View) {
@@ -80,7 +81,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                 Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "") {
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
-                    startActivity(intent)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                 }
             }
         }else {

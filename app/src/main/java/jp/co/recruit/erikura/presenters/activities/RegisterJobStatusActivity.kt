@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -69,7 +70,7 @@ class RegisterJobStatusActivity : AppCompatActivity(), RegisterJobStatusEventHan
     private fun moveToNext() {
         val intent: Intent = Intent(this@RegisterJobStatusActivity, RegisterWishWorkActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

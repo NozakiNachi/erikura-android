@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -30,7 +31,7 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(termsOfServiceURLString)
             }
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
         }
     }
 }

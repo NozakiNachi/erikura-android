@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -63,7 +64,7 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
     override fun onClickOpenMap(view: View) {
         val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${place.latitude?:0},${place.longitude?:0}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickFavorite(view: View) {

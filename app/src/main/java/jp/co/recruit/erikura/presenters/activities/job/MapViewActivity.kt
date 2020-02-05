@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -32,6 +33,7 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
+import jp.co.recruit.erikura.presenters.activities.AppliedJobsActivity
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
@@ -375,7 +377,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val intent = Intent(this, SearchJobActivity::class.java)
         // FIXME: 緯度経度については要検討
         intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
-        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -395,7 +397,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     override fun onClickList(view: View) {
         val intent = Intent(this, ListViewActivity::class.java)
         // FIXME: 検索条件の引き継ぎについて検討する
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         // 地図画面は閉じておきます
         finish()
     }
@@ -418,7 +420,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         else {
             val intent= Intent(this, JobDetailsActivity::class.java)
             intent.putExtra("job", job)
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 
@@ -429,8 +431,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 // 何も行いません
             }
             R.id.tab_menu_applied_jobs -> {
-                // FIXME: 画面遷移の実装
-                Toast.makeText(this, "応募した仕事画面に遷移", Toast.LENGTH_LONG).show()
+                Intent(this, AppliedJobsActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
             }
             R.id.tab_menu_mypage -> {
                 // FIXME: 画面遷移の実装

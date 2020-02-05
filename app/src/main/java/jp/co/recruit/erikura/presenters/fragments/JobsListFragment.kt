@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -97,7 +98,7 @@ class JobsListFragment(private val jobs: Map<PlaceJobType, List<Job>>) : Fragmen
     fun onJobSelected(job: Job) {
         val intent= Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
     }
 
 }

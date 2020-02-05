@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.Typeface.BOLD
@@ -73,7 +74,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
                     val intent= Intent(activity, PlaceDetailActivity::class.java)
                     intent.putExtra("place", job.place)
                     intent.flags = Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
-                    startActivity(intent)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             val tf = Typeface.create(ResourcesCompat.getFont(ErikuraApplication.instance.applicationContext, R.font.hirakakupron_w6_alphanbum_01), BOLD)
@@ -86,7 +87,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
     override fun onClickOpenMap(view: View) {
         val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${job?.latitude?:0},${job?.longitude?:0}")
         val intent = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
     }
 
 }
@@ -149,7 +150,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
                     Log.v("debug", "linkが押下された")
                     val intent= Intent(get, PlaceDetailActivity::class.java)
                     intent.putExtra("place", place)
-                    startActivity(intent)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             val tf = Typeface.create(ResourcesCompat.getFont(ErikuraApplication.instance.applicationContext, R.font.hirakakupron_w6_alphanbum_01), BOLD)
