@@ -112,7 +112,8 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/silver"/>
+                android:background="@color/silver"
+                android:visibility="@{viewModel.summaryTitlesVisibility}"/>
 
             <!-- 報告箇所 -->
             <LinearLayout
@@ -120,7 +121,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="@{viewModel.summaryTitlesVisibility}">
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -164,31 +166,13 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
+                        android:id="@+id/jobDetailsView_placeLink"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="10dp"
                         android:textSize="14dp"
                         android:textColor="@color/black"
-                        android:text="@{viewModel.workingPlace}" />
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:lineSpacingExtra="10dp"
-                            android:textSize="14dp"
-                            android:textColor="@color/black"
-                            android:text="@{viewModel.workingBuilding}" />
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="14dp"
-                            style="@style/linkText"
-                            android:text="@string/jobDetails_workingPlaceLink" />
-                    </LinearLayout>
+                        android:textColorLink="@color/topaz" />
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="44dp"

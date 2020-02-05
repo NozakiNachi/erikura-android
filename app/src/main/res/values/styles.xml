@@ -13,10 +13,27 @@
 
         <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
 
+        <item name="android:windowEnterTransition">@android:transition/slide_bottom</item>
+<!--        <style name="Theme1" parent="Theme.AppCompat">-->
+<!--            <item name="android:windowEnterTransition">@android:transition/slide_left</item>-->
+<!--            <item name="android:windowExitTransition">@android:transition/slide_bottom</item>-->
+<!--        </style>-->
+
     </style>
 
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/launcher_screen</item>
+    </style>
+
+    <style name="label">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+    <style name="label_w2" parent="label">
+        <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
+    </style>
+    <style name="label_w6" parent="label">
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
     </style>
 
 
@@ -61,6 +78,10 @@
         <item name="android:paddingLeft">20dp</item>
         <item name="android:paddingRight">20dp</item>
         <item name="android:background">@drawable/text_field</item>
+    </style>
+
+    <style name="textField_noborder" parent="textField">
+        <item name="android:background">@drawable/text_field_noborder</item>
     </style>
 
     <!-- パスワードフィールド -->
@@ -172,9 +193,21 @@
         <item name="android:text">次へ</item>
     </style>
 
+    <!-- お気に入りボタン -->
+    <style name="favoriteButton">
+        <item name="android:textOn"></item>
+        <item name="android:textOff"></item>
+        <item name="android:background">@drawable/favorite_button</item>
+    </style>
+
     <!-- 履歴ポップアップ -->
     <style name="historyPopupListViewStyle">
         <item name="android:divider">@color/silver</item>
         <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <style name="bottomNavigationItemText">
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
+        <item name="android:textSize">12dp</item>
     </style>
 </resources>

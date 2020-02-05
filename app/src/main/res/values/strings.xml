@@ -71,8 +71,12 @@
     <string name="jobDetails_summary">仕事概要</string>
     <string name="jobDetails_summaryTitles">報告箇所</string>
     <string name="jobDetails_workingPlace">場所</string>
-    <string name="jobDetails_workingPlaceLink"><a href="">この場所の仕事全て</a></string>
+    <string name="jobDetails_workingPlaceLink">この場所の仕事全て</string>
     <string name="jobDetails_applyFlowCaption">応募後の流れ</string>
+    <string name="jobDetails_outOfEntryExpire">応募受付期間外のため応募できません</string>
+    <string name="jobDetails_entryFinished">受付が終了いたしました</string>
+    <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
+    <string name="jobDetails_maxEntry">未報告案件が%1$d件以上あるため応募できません</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -83,6 +87,16 @@
     <string name="applyFlowDialog_step3">作業報告をする</string>
     <string name="applyFlowDialog_step3Explain">作業箇所の写真を撮影し、コメントを添えて、作業報告をしましょう。</string>
     <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
+
+    <!-- 応募確認モーダル -->
+    <string name="applyDialog_caption1">作業報告締切は、応募後24時間以内となります。</string>
+    <string name="applyDialog_caption2Pattern1">報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
+    <string name="applyDialog_caption2Pattern2">必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
+
+    <!-- 応募完了画面 -->
+    <string name="applyCompleted_caption">応募が完了しました！</string>
+    <string name="applyCompleted_note">24時間以内に現地に向かい、\n作業を行いましょう！</string>
+    <string name="applyCompleted_recommend">お近くの仕事</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -133,6 +147,10 @@
     <string name="go">進む</string>
     <string name="showManual">マニュアルを表示</string>
     <string name="openMap">　地図アプリで開く</string>
+    <string name="entry">この仕事に応募</string>
+    <string name="jobDetail">この仕事の詳細</string>
+    <string name="searchOtherJobs">他の仕事を探す</string>
+    <string name="cancel">この仕事をキャンセル</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

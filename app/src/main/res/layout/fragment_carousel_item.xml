@@ -2,9 +2,10 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
     <data>
-
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.job.ErikuraCarouselViewModel" />
     </data>
 
     <LinearLayout
@@ -17,7 +18,7 @@
             android:id="@+id/carousel_cell_timelimit_pane"
             android:layout_width="wrap_content"
             android:layout_height="30dp"
-            android:background="@drawable/erikura_carousel_knob"
+            android:background="@drawable/background_carousel_knob"
             android:elevation="@dimen/default_elevation">
             <TextView
                 android:id="@+id/carousel_cell_timelimit"
@@ -43,7 +44,7 @@
             android:id="@+id/carousel_cell_detail_pane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/erikura_carousel_body"
+            android:background="@{viewModel.bodyBackgroundDrawable}"
             android:elevation="@dimen/default_elevation">
 
             <TextView
@@ -78,6 +79,7 @@
                 />
 
             <LinearLayout
+                android:id="@+id/carousel_cell_detail_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/carousel_cell_title"
@@ -180,6 +182,29 @@
                     android:ellipsize="end"
                     />
             </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/carousel_cell_detail_table"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_marginBottom="0dp"
+                android:text="@{viewModel.jobsCountText}"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                android:textColor="@color/topaz"
+                android:textSize="10dp"
+                android:firstBaselineToTopHeight="0dp"
+                android:lastBaselineToBottomHeight="0dp"
+                android:includeFontPadding="false"
+                android:background="@drawable/background_roundrect_topaz"
+                android:paddingTop="3dp"
+                android:paddingBottom="3dp"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"
+                android:visibility="@{viewModel.jobsCountTextVisibility}"
+                />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>
 </layout>

@@ -13,12 +13,12 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MarkerViewModel(private val job: Job): ViewModel() {
+open class MarkerViewModel(private val job: Job): ViewModel() {
     val active: MutableLiveData<Boolean> = MutableLiveData()
     val icon: MutableLiveData<Bitmap> = MutableLiveData()
 
     val fee: String get() = String.format("%,d円", job.fee)
-    val isDisabled: Boolean get() = job.isEntried || job.isFuture
+    open val isDisabled: Boolean get() = job.isEntried || job.isFuture
     val iconUrl: URL? get () {
         if (isDisabled) {
             return job.jobKind?.inactiveIconUrl
@@ -28,7 +28,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
         }
     }
 
-    val boostVisibility: Int get() {
+    open val boostVisibility: Int get() {
         if (job.boost) {
             return View.VISIBLE
         }
@@ -36,7 +36,7 @@ class MarkerViewModel(private val job: Job): ViewModel() {
             return View.GONE
         }
     }
-    val wantedVisibility: Int get() {
+    open val wantedVisibility: Int get() {
         if (job.wanted) {
             return View.VISIBLE
         }
@@ -44,15 +44,29 @@ class MarkerViewModel(private val job: Job): ViewModel() {
             return View.GONE
         }
     }
-    val soonVisibility: Int get() {
-        val now = Date()
-        val workingStartAt = job.workingStartAt ?: now
-        if (workingStartAt > now && (workingStartAt.time - now.time) < (24 * 60 * 60 * 1000)) {
+    open val soonVisibility: Int get() {
+        if (job.isStartSoon) {
             return View.VISIBLE
         }
         else {
             return View.GONE
         }
+    }
+
+    open val futureVisibility: Int get() {
+        if (job.isFuture && !job.isStartSoon) {
+            return View.VISIBLE
+        }
+        else {
+            return View.GONE
+        }
+    }
+
+    open val futureText: String get() {
+        return job.workingStartAt?.let {
+            val sdf = SimpleDateFormat("MM/dd")
+            return String.format("%s開始", sdf.format(it))
+        } ?: ""
     }
 
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
@@ -110,16 +124,16 @@ class MarkerViewModel(private val job: Job): ViewModel() {
         return ErikuraApplication.instance.applicationContext.resources.getColor(colorId, null)
     }
 
-    val markerUrl: String get() {
+    open val markerUrl: String get() {
         val iconPath = job.jobKind?.activeIconUrl?.path ?: "EMPTY_PATH"
         if (job.isStartSoon) {
-            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active}/${job.isFuture}/comingSoon/${iconPath}/"
+            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/comingSoon/${iconPath}/"
         } else if (job.isFuture) {
             val df = SimpleDateFormat("YYYYMMdd")
             val time = df.format(job.workingStartAt)
-            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active}/${job.isFuture}/${time}/${iconPath}/"
+            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/${time}/${iconPath}/"
         } else {
-            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active}/${job.isFuture}/current/${iconPath}/"
+            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/current/${iconPath}/"
         }
     }
 }

@@ -1,33 +1,39 @@
 package jp.co.recruit.erikura.data.network
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
 import jp.co.recruit.erikura.business.models.*
 import okhttp3.RequestBody
+import retrofit2.Response
 import retrofit2.http.*
+import java.lang.reflect.Type
 import java.util.*
+import kotlin.collections.HashMap
 
 interface IErikuraApiService {
     @POST("users")
-    fun registerEmail(@Body request: RegisterEmailRequest): Observable<Response<IdResponse>>
+    fun registerEmail(@Body request: RegisterEmailRequest): ApiObservable<IdResponse>
 
     @POST("users/confirm")
-    fun registerConfirm(@Body request: ConfirmationTokenRequest): Observable<Response<IdResponse>>
+    fun registerConfirm(@Body request: ConfirmationTokenRequest): ApiObservable<IdResponse>
 
     @GET("users")
-    fun user(): Observable<Response<User>>
+    fun user(): ApiObservable<User>
 
     @PATCH("users/initial_update")
-    fun initialUpdateUser(@Body request: User): Observable<Response<InitialUpdateResponse>>
+    fun initialUpdateUser(@Body request: User): ApiObservable<InitialUpdateResponse>
 
     @PATCH("users")
-    fun updateUser(@Body request: User): Observable<Response<IdResponse>>
+    fun updateUser(@Body request: User): ApiObservable<IdResponse>
 
     @POST("login")
-    fun login(@Body request: LoginRequest): Observable<Response<LoginResponse>>
+    fun login(@Body request: LoginRequest): ApiObservable<LoginResponse>
 
     @DELETE("logout")
-    fun logout(): Observable<Response<ResultResponse>>
+    fun logout(): ApiObservable<ResultResponse>
 
     @GET("jobs")
     fun searchJob(
@@ -40,94 +46,103 @@ interface IErikuraApiService {
         @Query("minimumReward") minimumReward: Int? = null,
         @Query("maximumReward") maximumReward: Int? = null,
         @Query("job_kind") jobKind: Int? = null
-    ): Observable<Response<JobsResponse>>
+    ): ApiObservable<JobsResponse>
 
     @GET("reports")
-    fun reloadReport(@Query("job_id") jobId: Int): Observable<Response<Report>>
+    fun reloadReport(@Query("job_id") jobId: Int): ApiObservable<Report>
 
     @GET("jobs/{jobId}")
-    fun reloadJob(@Path("jobId") jobId: Int): Observable<Response<Job>>
+    fun reloadJob(@Path("jobId") jobId: Int): ApiObservable<Job>
 
     @GET("jobs/own")
     fun ownJobs(
         @Query("status") status: String,
         @Query("reported_at_from") reportedAtFrom: Date? = null,
         @Query("reported_at_to") reportedAtTo: Date? = null
-    ): Observable<Response<JobsResponse>>
+    ): ApiObservable<JobsResponse>
 
     @GET("jobs/kind")
-    fun jobKinds(): Observable<Response<List<JobKind>>>
+    fun jobKinds(): ApiObservable<List<JobKind>>
 
-    @GET("jobs/recommended")
-    fun recommendedJobs(@Query("job_id") jobId: Int): Observable<Response<JobsResponse>>
+    @GET("jobs/recommend")
+    fun recommendedJobs(@Query("job_id") jobId: Int): ApiObservable<JobsResponse>
 
     @POST("entries")
-    fun entry(@Body request: EntryRequest): Observable<Response<EntryIdResponse>>
+    fun entry(@Body request: EntryRequest): ApiObservable<EntryIdResponse>
 
     @GET("entries/cancellation_reasons")
-    fun cancelReasons(): Observable<Response<CancelReasonsResponse>>
+    fun cancelReasons(): ApiObservable<CancelReasonsResponse>
 
-    @DELETE("entires")
-    fun cancel(@Body request: CancelRequest): Observable<Response<EntryIdResponse>>
+    @HTTP(method = "DELETE", path = "entires", hasBody = true)
+    fun cancel(@Body request: CancelRequest): ApiObservable<EntryIdResponse>
 
     @POST("entries/start")
-    fun startJob(@Body request: StartJobRequest): Observable<Response<EntryIdResponse>>
+    fun startJob(@Body request: StartJobRequest): ApiObservable<EntryIdResponse>
 
     @POST("entries/finish")
-    fun stopJob(@Body request: StopJobRequest): Observable<Response<EntryIdResponse>>
+    fun stopJob(@Body request: StopJobRequest): ApiObservable<EntryIdResponse>
 
     @PATCH("entries/abort")
-    fun abortJob(@Body request: AbortJobRequest): Observable<Response<EntryIdResponse>>
+    fun abortJob(@Body request: AbortJobRequest): ApiObservable<EntryIdResponse>
 
     @GET("places/{placeId}")
-    fun place(@Path("placeId") placeId: Int): Observable<Response<Place>>
+    fun place(@Path("placeId") placeId: Int): ApiObservable<Place>
+
+    @GET("place_favorites/show")
+    fun placeFavoriteShow(@Query("place_id") placeId: Int): ApiObservable<ResultResponse>
+
+    @POST("place_favorites")
+    fun placeFavoriteCreate(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
+
+    @HTTP(method = "DELETE", path = "place_favorites/destroy", hasBody = true)
+    fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
     @PATCH("reports")
-    fun report(@Body request: ReportRequest): Observable<Response<ReportIdResponse>>
+    fun report(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
 
     // FIXME: download => OKHTTP で直接ダウンロードするのがいいのか
 
     @POST("reorts/image_upload")
-    fun imageUpload(@Part("photo") photo: RequestBody): Observable<Response<PhotoTokenResponse>>
+    fun imageUpload(@Part("photo") photo: RequestBody): ApiObservable<PhotoTokenResponse>
 
-    @DELETE("reports")
-    fun deleteReport(@Body request: DeleteReportRequest): Observable<Response<ReportIdResponse>>
+    @HTTP(method = "DELETE", path = "reports", hasBody = true)
+    fun deleteReport(@Body request: DeleteReportRequest): ApiObservable<ReportIdResponse>
 
     // FIXME: geocoding
 
     @GET("informations")
-    fun informations(): Observable<Response<InformationResponse>>
+    fun informations(): ApiObservable<InformationResponse>
 
     @GET("users/notification")
-    fun notificationSetting(): Observable<Response<NotificationSetting>>
+    fun notificationSetting(): ApiObservable<NotificationSetting>
 
     @PATCH("users/notification")
-    fun updateNotificationSetting(@Body request: NotificationSetting): Observable<Response<UserIdResponse>>
+    fun updateNotificationSetting(@Body request: NotificationSetting): ApiObservable<UserIdResponse>
 
     @GET("utils/address")
-    fun postalCode(@Query("postal_code") postalCode: String): Observable<Response<PostalCodeResponse>>
+    fun postalCode(@Query("postal_code") postalCode: String): ApiObservable<PostalCodeResponse>
 
     @GET("utils/bank_information")
-    fun bank(@Query("keyword") keyword: String): Observable<Response<List<List<String>>>>
+    fun bank(@Query("keyword") keyword: String): ApiObservable<List<List<String>>>
 
     @GET("utils/branch_information")
-    fun branch(@Query("keyword") keyword: String, @Query("bank_no") bankNo: String): Observable<Response<List<List<String>>>>
+    fun branch(@Query("keyword") keyword: String, @Query("bank_no") bankNo: String): ApiObservable<List<List<String>>>
 
     @GET("users/payments")
-    fun payment(): Observable<Response<Payment>>
+    fun payment(): ApiObservable<Payment>
 
     @POST("users/payments")
-    fun updatePayment(@Body request: Payment): Observable<Response<UserIdResponse>>
+    fun updatePayment(@Body request: Payment): ApiObservable<UserIdResponse>
 
     @POST("users/push_endpoint")
-    fun pushEndpoint(@Body request: PushEndpointRequest): Observable<Response<ResultResponse>>
+    fun pushEndpoint(@Body request: PushEndpointRequest): ApiObservable<ResultResponse>
 
     @GET("utils/client_version")
-    fun clientVersion(): Observable<Response<RequiredClientVersion>>
+    fun clientVersion(): ApiObservable<RequiredClientVersion>
 
     // FIXME: erikuraConfig
-//    @GET("utils/erikura_config")
-//    fun erikuraConfig(): Observable<Response<>>
+    @GET("utils/erikura_config")
+    fun erikuraConfig(): ApiObservable<ErikuraConfigMap>
 
 //    def erikura_config
 //    render_success({
@@ -136,7 +151,9 @@ interface IErikuraApiService {
 //    })
 }
 
-data class Response<BODY>(
+typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
+
+data class ApiResponse<BODY>(
     var body: BODY,
     var errors: List<String>? = null
 ) {
@@ -274,3 +291,41 @@ data class DeleteReportRequest(
 data class PushEndpointRequest(
     var ios_fcm_token: String
 )
+
+data class FavoriteRequest(
+    var placeId: Int
+)
+
+sealed class ErikuraConfigValue {
+    data class DoubleList(val values: List<Double>): ErikuraConfigValue()
+}
+
+class ErikuraConfigMap: HashMap<String, ErikuraConfigValue>()
+
+class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): ErikuraConfigMap {
+        val jsonObject = json?.asJsonObject
+        val result = ErikuraConfigMap()
+
+        jsonObject?.entrySet()?.forEach { entry ->
+            val deserializerMap: Map<String, (JsonElement?) -> ErikuraConfigValue> = mapOf(
+                Pair(ErikuraConfig.REWARD_RANGE_KEY, { json -> deserializeDoubleList(json, context) }),
+                Pair(ErikuraConfig.WORKING_TIME_RANGE_KEY, { json -> deserializeDoubleList(json, context) })
+            )
+            deserializerMap[entry.key]?.let { deserializer ->
+                result.put(entry.key, deserializer(entry.value))
+            }
+        }
+        return result
+    }
+
+    private fun deserializeDoubleList(json: JsonElement?, context: JsonDeserializationContext?): ErikuraConfigValue.DoubleList {
+        return ErikuraConfigValue.DoubleList(
+            context?.deserialize(json, List::class.java) ?: listOf()
+        )
+    }
+}

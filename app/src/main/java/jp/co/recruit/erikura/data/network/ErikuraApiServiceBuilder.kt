@@ -21,8 +21,6 @@ class ErikuraApiServiceBuilder {
 
     val httpBuilder: OkHttpClient.Builder get() {
         return OkHttpClient.Builder().apply {
-            val application = ErikuraApplication.instance
-
             // 独自ヘッダを追加します
             addInterceptor(Interceptor { chain ->
                 val original = chain.request()
@@ -33,9 +31,10 @@ class ErikuraApiServiceBuilder {
                     .header("Content-Type", "application/json")
                     .header("User-Agent-Version", "v0.0.0.1")
                     .header("User-Agent-Type", "android")
-//                    application.userSession?.let {
-//                        requestBuilder.header("Authorization", it.token)
-//                    }
+
+                Api.userSession?.let {
+                    requestBuilder.header("Authorization", it.token)
+                }
                 val request = requestBuilder.build()
                 return@Interceptor chain.proceed(request)
             })
@@ -46,13 +45,13 @@ class ErikuraApiServiceBuilder {
             connectTimeout(30, TimeUnit.SECONDS)
             // FIXME: キャッシュが無効になっていることを確認
             // FIXME: cookie が無効になっていることを書くに
-
         }
     }
 
     fun create(): IErikuraApiService {
         val gson = GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .registerTypeAdapter(ErikuraConfigMap::class.java, ErikuraConfigDeserializer())
             .serializeNulls()
             .create()
 

@@ -20,7 +20,7 @@ class RealmManager {
 
         val realmConfig = RealmConfiguration.Builder()
             .schemaVersion(schemaVersion)
-            .migration { realm, oldVersion, newVersion ->
+            .migration { _realm, oldVersion, _newVersion ->
                 if (oldVersion < 1) {
 
                 }

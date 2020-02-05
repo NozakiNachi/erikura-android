@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -39,7 +40,7 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
         Api(this).registerEmail(viewModel.email.value ?:"") {
             Log.v("DEBUG", "仮登録メール送信： userId=${it}")
             val intent: Intent = Intent(this@RegisterEmailActivity, RegisterEmailFinishedActivity::class.java)
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 
@@ -49,7 +50,7 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -58,7 +59,7 @@ class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

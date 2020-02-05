@@ -1,11 +1,9 @@
 package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
-import android.util.Log
+import jp.co.recruit.erikura.business.util.UrlUtils
 import kotlinx.android.parcel.Parcelize
 import org.apache.commons.io.FilenameUtils
-import java.io.File
-import java.net.MalformedURLException
 import java.net.URL
 
 @Parcelize
@@ -17,20 +15,17 @@ data class JobKind(
     var summaryTitles: List<String> = listOf()
 ): Parcelable {
     val activeIconUrl: URL? get() {
-        return iconUrl?.let {
-            try {
-                return URL(it)
-            } catch (e: MalformedURLException) {
-                Log.e("URL Parse error", e.message, e)
-                return null
-            }
-        }
+        return iconUrl?.let { UrlUtils.parse(it) }
     }
     val inactiveIconUrl: URL? get() {
         return activeIconUrl?.let { url ->
             val extension = FilenameUtils.getExtension(url.path)
             val path = arrayOf(FilenameUtils.getBaseName(url.path) + "_inactive", extension).joinToString(".")
-            return URL(activeIconUrl, arrayOf(path, url.query).filterNotNull().joinToString("?"))
+            URL(activeIconUrl, arrayOf(path, url.query).filterNotNull().joinToString("?"))
         }
+    }
+
+    override fun toString(): String {
+        return name ?: super.toString()
     }
 }

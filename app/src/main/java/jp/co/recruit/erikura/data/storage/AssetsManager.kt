@@ -39,8 +39,7 @@ class AssetsManager {
     val realm: Realm = ErikuraApplication.realm
 
     fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
-        val asset = lookupAsset(url)
-        if (asset != null) {
+        lookupAsset(url)?.also { asset ->
             val file = File(asset.path)
             if (file.exists()) {
                 try {
@@ -64,8 +63,7 @@ class AssetsManager {
                     }
                 }
             }
-        }
-        else {
+        } ?: run {
             downloadAsset(activity, url, type) { asset ->
                 try {
                     BitmapFactory.decodeFile(asset.path)?.let {

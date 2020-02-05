@@ -6,6 +6,9 @@ import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.CommonStatusCodes
+import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
@@ -20,19 +23,18 @@ class LocationManager {
 
         const val Interval: Long = 5000
         const val FastestInterval: Long = 1000
+
+        // 自己位置が取得できない場合のデフォルト値は渋谷駅
+        val defaultLatLng = LatLng(35.658322, 139.70163)
     }
 
-    val defaultLatLng =
-        LatLng(35.658322, 139.70163)
     private var fusedClient: FusedLocationProviderClient =
-        LocationServices.getFusedLocationProviderClient(
-            ErikuraApplication.instance.applicationContext
-        )
+        LocationServices.getFusedLocationProviderClient(ErikuraApplication.applicationContext)
     private var clientSettings: SettingsClient =
-        LocationServices.getSettingsClient(
-            ErikuraApplication.instance.applicationContext
-        )
+        LocationServices.getSettingsClient(ErikuraApplication.applicationContext)
     var latLng: LatLng? = null
+
+    val latLngOrDefault: LatLng get() = latLng ?: defaultLatLng
 
     private var locationUpdateCallbacks: MutableList<LocationUpdateCallback> = ArrayList()
 
@@ -71,7 +73,7 @@ class LocationManager {
 
     fun start(activity: FragmentActivity) {
         val locationRequest = LocationRequest().apply {
-            setPriority(LocationRequest.PRIORITY_LOW_POWER)
+            setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)
             setInterval(Interval)
             setFastestInterval(FastestInterval)
         }
@@ -79,21 +81,29 @@ class LocationManager {
             .addLocationRequest(locationRequest)
             .build()
 
-        clientSettings.checkLocationSettings(locationSettingsRequest)
-            .addOnSuccessListener { locationSettingsResponse ->
-                if (!checkPermission(activity)) {
-                    return@addOnSuccessListener
+        val responseTask = clientSettings.checkLocationSettings(locationSettingsRequest)
+        responseTask.addOnSuccessListener {
+            if (!checkPermission(activity)) {
+                return@addOnSuccessListener
+            }
+            fusedClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+        }
+        responseTask.addOnFailureListener { e ->
+            when(e) {
+                is ApiException -> {
+                    when (e.statusCode) {
+                        LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                            val e2 = e as ResolvableApiException
+                            e2.startResolutionForResult(activity, REQUEST_ACCESS_FINE_LOCATION_ID)
+                            Log.d("ERROR", "Dialog Displayed")
+                        }
+                        LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                            Log.d("ERROR", "Unable to turn on location service", e)
+                        }
+                    }
                 }
-
-                fusedClient.requestLocationUpdates(locationRequest, locationCallback,
-                    Looper.myLooper()
-                )
             }
-            .addOnFailureListener { e ->
-                // FIXME: GPSが有効になっていない場合の対応など
-                //        https://qiita.com/nbkn/items/41b3dd5a86be6e2b57bf
-                Log.d("MapView: Error", e.message, e)
-            }
+        }
     }
 
     fun stop() {

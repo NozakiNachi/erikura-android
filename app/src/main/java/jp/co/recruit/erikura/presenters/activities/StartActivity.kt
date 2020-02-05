@@ -1,14 +1,18 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.network.ErikuraConfigMap
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
@@ -18,6 +22,9 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
+        // ErikuraConfig を読み込みます
+        ErikuraConfig.load(this)
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
@@ -44,14 +51,14 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 //        val registerButton: Button = findViewById(R.id.registerButton)
 //        val intent: Intent = Intent(this@StartActivity, RegisterEmailActivity::class.java)
 //        registerButton.setOnClickListener {
-//            startActivity(intent)
+//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 //        }
 //
 //        // ログインボタンの設定
 //        val loginButton: Button = findViewById(R.id.loginButton)
 //        val intentLogin: Intent = Intent(this@StartActivity, LoginActivity::class.java)
 //        loginButton.setOnClickListener {
-//            startActivity(intentLogin)
+//            startActivity(intentLogin, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 //        }
 //
 //        // リンクの設定
@@ -83,7 +90,11 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 
         if (Api.isLogin) {
             // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
-            startActivity(Intent(this, MapViewActivity::class.java))
+            Intent(this, MapViewActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+            }
+            finish()
             return
         }
     }
@@ -101,18 +112,18 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 
     override fun onClickRegisterButton(view: View) {
         val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickLoginButton(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickStartWithoutLogin(view: View) {
         // 地図画面へ遷移
         val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
 //    private val REQUEST_OAUTH_REQUEST_CODE = 1

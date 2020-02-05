@@ -4,12 +4,20 @@ import JobUtil
 import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
+import android.graphics.drawable.Drawable
+import android.util.Log
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -38,122 +46,9 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
     )
 
     fun setup(context: Context, job: Job) {
-
-        JobUtil.setupTimeLabel(timeLimit, context, job)
-        /*if (job.isPastOrInactive) {
-            timeLimit.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.warmGrey
-                )
-            )
-            timeLimit.text = "受付終了"
-        }
-        else if (job.isFuture) {
-            timeLimit.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.waterBlue
-                )
-            )
-            val now = Date()
-            val diff = job.workingStartAt.time - now.time
-            val diffHours = diff / (60 * 60 * 1000)
-            val diffDays = diffHours / 24
-            val diffRestHours = diffHours % 24
-
-            val sb = SpannableStringBuilder()
-            sb.append("募集開始まで")
-            if (diffDays > 0) {
-                val start = sb.length
-                sb.append(diffDays.toString())
-                sb.setSpan(
-                    RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                sb.append("日")
-            }
-            if (diffDays > 0 && diffRestHours > 0) {
-                sb.append("と")
-            }
-            if (diffRestHours > 0) {
-                val start = sb.length
-                sb.append(diffRestHours.toString())
-                sb.setSpan(
-                    RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                )
-                sb.append("時間")
-            }
-            timeLimit.text = sb
-        }
-        when(job.status) {
-            JobStatus.Working -> {
-                timeLimit.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.vibrantGreen
-                    )
-                )
-                timeLimit.text = "作業実施中"
-            }
-            JobStatus.Finished -> {
-                timeLimit.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.vibrantGreen
-                    )
-                )
-                timeLimit.text = "実施済み(未報告)"
-            }
-            JobStatus.Reported -> {
-                timeLimit.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.warmGrey
-                    )
-                )
-                timeLimit.text = "作業報告済み"
-            }
-            else -> {
-                timeLimit.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.coral
-                    )
-                )
-                val now = Date()
-                val diff = job.workingFinishAt.time - now.time
-                val diffHours = diff / (60 * 60 * 1000)
-                val diffDays = diffHours / 24
-                val diffRestHours = diffHours % 24
-
-                val sb = SpannableStringBuilder()
-                sb.append("作業終了まで")
-                if (diffDays > 0) {
-                    val start = sb.length
-                    sb.append(diffDays.toString())
-                    sb.setSpan(
-                        RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                    sb.append("日")
-                }
-                if (diffDays > 0 && diffRestHours > 0) {
-                    sb.append("と")
-                }
-                if (diffRestHours > 0) {
-                    val start = sb.length
-                    sb.append(diffRestHours.toString())
-                    sb.setSpan(
-                        RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                    sb.append("時間")
-                }
-                timeLimit.text = sb
-            }
-        }*/
+        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(context, job)
+        timeLimit.text = timeLimitText
+        timeLimit.setTextColor(timeLimitColor)
 
         title.text = job.title
         reward.text = job.fee.toString() + "円"
@@ -175,8 +70,24 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
     }
 }
 
-class ErikuraCarouselAdapter(val activity: Activity, var data: List<Job>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
-    var onClickListner: OnClickListener? = null
+class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, List<Job>>): ViewModel() {
+    private val jobsCountAt: Int get() = jobsByLocation[job.latLng]?.size ?: 0
+    val hasOtherJobs: Boolean get() = jobsCountAt > 1
+    val jobsCountText: String get() = String.format("ほか%d件の仕事", jobsCountAt - 1)
+    val jobsCountTextVisibility: Int get() = if(hasOtherJobs) { View.VISIBLE } else { View.GONE }
+    val bodyBackgroundDrawable: Drawable
+        get() {
+            return if (hasOtherJobs) {
+                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+            }
+            else {
+                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+            }
+        }
+}
+
+class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+    var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -195,12 +106,16 @@ class ErikuraCarouselAdapter(val activity: Activity, var data: List<Job>): Recyc
 
     override fun onBindViewHolder(holder: ErikuraCarouselViewHolder, position: Int) {
         val job = data[position]
+        val viewModel = ErikuraCarouselViewModel(job, jobsByLocation)
+
+        holder.binding.viewModel = viewModel
+        holder.binding.lifecycleOwner = activity
 
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
 
         holder.binding.root.setOnClickListener {
-            onClickListner?.apply {
+            onClickListener?.apply {
                 onClick(job)
             }
         }

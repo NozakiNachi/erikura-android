@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Active -->
+    <item
+        android:state_focused="true"
+        android:state_enabled="true"
+        android:state_pressed="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+    <!-- Active/Disabled -->
+    <item
+        android:state_focused="true"
+        android:state_enabled="false"
+        android:state_pressed="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="@color/paleGrey" />
+        </shape>
+    </item>
+    <!-- 無効な場合 -->
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="@color/paleGrey" />
+        </shape>
+    </item>
+    <!-- 有効な場合 -->
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="4dp" />
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+</selector>

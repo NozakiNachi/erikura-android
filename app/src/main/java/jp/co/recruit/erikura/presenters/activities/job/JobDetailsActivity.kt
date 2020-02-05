@@ -1,5 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
@@ -7,25 +9,32 @@ import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
+import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 
 
 class JobDetailsActivity : AppCompatActivity() {
 
     var job: Job = Job()
+    var user: User = User()
     var fragment = Fragment()
-    val transaction = supportFragmentManager.beginTransaction()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_details)
 
+        val value = intent.getParcelableExtra<Job>("job")
+        if (value != null) {
+            job = value
+        }else {
+            handleIntent(intent)
+        }
         Log.v("DEBUG", job.toString())
-        job = intent.getParcelableExtra("job")
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -33,52 +42,56 @@ class JobDetailsActivity : AppCompatActivity() {
     }
 
     private fun fetchJob() {
-        if (job != null) {
-            // jobの再取得
-            Api(this).reloadJob(job) {
-                it.toString()
+        // jobの再取得
+        Api(this).reloadJob(job) {
+            it.toString()
+            job = it
+            if (UserSession.retrieve() != null) {
+                Api(this).user {
+                    user = it
+                    refreshContents()
+                }
+            }else {
                 refreshContents()
             }
         }
     }
 
     private fun refreshContents() {
-        // fragmentの破棄
-        if (fragment != null ) {
-            transaction.remove(fragment)
-        }
+        val transaction = supportFragmentManager.beginTransaction()
         // fragmentの作成
         // jobのステータスで挿しこむフラグメントを変更します
-        if(job != null){
-            when(job.status) {
-                JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment(this, job)
-                }
-                JobStatus.Applied -> {
-                    // FIXME: 応募済み画面
-                    fragment = NormalJobDetailsFragment(this, job)
-                }
-                JobStatus.Working -> {
-                    // FIXME: 作業中画面
-                    fragment = NormalJobDetailsFragment(this, job)
-                }
-                JobStatus.Finished -> {
-                    // FIXME: 作業完了画面
-                    fragment = NormalJobDetailsFragment(this, job)
-                }
-                JobStatus.Reported -> {
-                    // FIXME: 作業報告済み画面
-                    fragment = NormalJobDetailsFragment(this, job)
-                }
-                else -> {
-                    fragment = NormalJobDetailsFragment(this, job)
-                }
+        when(job.status) {
+            JobStatus.Normal -> {
+                fragment = NormalJobDetailsFragment(this, job, user)
             }
-
+            JobStatus.Applied -> {
+                fragment = AppliedJobDetailsFragment(this, job, user)
+            }
+            JobStatus.Working -> {
+                // FIXME: 作業中画面
+                fragment = NormalJobDetailsFragment(this, job, user)
+            }
+            JobStatus.Finished -> {
+                // FIXME: 作業完了画面
+                fragment = NormalJobDetailsFragment(this, job, user)
+            }
+            JobStatus.Reported -> {
+                // FIXME: 作業報告済み画面
+                fragment = NormalJobDetailsFragment(this, job, user)
+            }
+            else -> {
+                fragment = NormalJobDetailsFragment(this, job, user)
+            }
         }
-        // fragmentの追加
-        transaction.add(R.id.job_details, fragment)
-        // FIXME: 非同期処理の中で呼んでいるため?IllegalStateExceptionで落ちる
+        // fragmentの更新
+        transaction.replace(R.id.job_details, fragment)
         transaction.commit()
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val appLinkData: Uri? = intent.data
+        val jobId = appLinkData!!.lastPathSegment!!.toInt()
+        job.id = jobId
     }
 }

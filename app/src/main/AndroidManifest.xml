@@ -21,8 +21,39 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.job.SearchJobActivity"></activity>
-        <activity android:name=".presenters.activities.job.JobDetailsActivity" />
+        <activity android:name=".presenters.activities.AppliedJobsActivity"></activity>
+        <activity android:name=".presenters.activities.job.ApplyCompletedActivity" />
+        <activity android:name=".presenters.activities.job.PlaceDetailActivity">
+
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:pathPrefix="/places/" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".presenters.activities.job.SearchJobActivity" />
+        <activity android:name=".presenters.activities.job.JobDetailsActivity">
+
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:pathPrefix="/jobs/" />
+            </intent-filter>
+        </activity>
         <activity android:name=".presenters.activities.job.ListViewActivity" />
         <activity android:name=".presenters.activities.RegisterFinishedActivity" />
         <activity android:name=".presenters.activities.RegisterWishWorkActivity" />

@@ -169,6 +169,22 @@
                     />
 
                 <TextView
+                    android:id="@+id/carousel_cell_tools"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:textSize="12dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/black"
+                    android:text="@{viewModel.tools}"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    />
+
+                <TextView
                     android:id="@+id/carousel_cell_working_place"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -55,7 +56,7 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
             // 登録完了画面へ遷移
             val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 
@@ -65,7 +66,7 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -74,7 +75,7 @@ class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandl
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

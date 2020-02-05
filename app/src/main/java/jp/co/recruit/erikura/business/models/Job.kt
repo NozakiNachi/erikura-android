@@ -47,11 +47,13 @@ data class Job(
     var distance: Int? = 0,
     var jobKind: JobKind? = null,
     var entryId: Int? = 0,
-    var entry: @RawValue Entry? = null,
+    var entry: Entry? = null,
     var reportId: Int? = 0,
     var report: @RawValue Report? = null,
     var reEntryPermitted: Boolean = false,
-    var summaryTitles: List<String> = listOf()
+    var summaryTitles: List<String> = listOf(),
+    var targetGender: Gender? = null,
+    var banned: Boolean = false
 ): Parcelable {
 
     // isReportCreatable
@@ -85,7 +87,7 @@ data class Job(
     val isRejected: Boolean get() = (report?.isRejected ?: false)
     /** 募集直前(24時間以内)のタスクか */
     val isStartSoon: Boolean get() {
-        return isFuture && ((Date().time - this.workingStartAt!!.time) < (24 * 60 * 60 * 1000))
+        return isFuture && (Math.abs(Date().time - this.workingStartAt!!.time) < (24 * 60 * 60 * 1000))
     }
 
     /** 案件の状態を取得します */

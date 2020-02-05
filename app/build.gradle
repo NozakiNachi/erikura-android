@@ -36,7 +36,7 @@ android {
         // MEMO: http でアクセスするためには res/xml/network_security_config.html にドメインを追加してください
         buildConfigField("String", "SERVER_BASE_URL", '"' + properties.getProperty("server.base_url") + '"')
         buildConfigField("String", "GOOGLE_MAP_API_KEY", '"' + properties.getProperty("google.map_api_key") + '"')
-        buildConfigField("String", "GEOCODING_API_KEY", '"' + properties.getProperty("google.geocding_api_key") + '"')
+        buildConfigField("String", "GEOCODING_API_KEY", '"' + properties.getProperty("google.geocoding_api_key") + '"')
         // FIXME: geocoding 用のURL
     }
     buildTypes {
@@ -111,6 +111,7 @@ dependencies {
     implementation 'commons-io:commons-io:2.6'
     implementation 'commons-lang:commons-lang:2.6'
     implementation 'com.google.maps.android:android-maps-utils:0.6.2'
+    implementation 'com.android.support:design:28.0.0'
 }
 
 androidExtensions {
