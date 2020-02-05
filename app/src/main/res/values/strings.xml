@@ -98,6 +98,10 @@
     <string name="applyCompleted_note">24時間以内に現地に向かい、\n作業を行いましょう！</string>
     <string name="applyCompleted_recommend">お近くの仕事</string>
 
+    <!-- 応募キャンセルモーダル -->
+    <string name="cancel_caption">この仕事をキャンセルしますか？</string>
+    <string name="cancel_note">キャンセル理由が今後のお仕事に影響することはありません</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -110,6 +114,8 @@
     <string name="city">ご住所</string>
     <string name="street">番地以降</string>
     <string name="phone">電話番号</string>
+    <string name="cancelReason">キャンセル理由</string>
+    <string name="cancelReasonDetail">具体的なキャンセル理由</string>
 
     <!-- 入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
@@ -165,6 +171,7 @@
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
     <string name="register_phone_hint">例）08046015529</string>
+    <string name="cancel_reason_hint">例）急用が入り仕事が完了できなくなった</string>
 
     <!-- 都道府県 -->
     <string-array name="prefecture_list">

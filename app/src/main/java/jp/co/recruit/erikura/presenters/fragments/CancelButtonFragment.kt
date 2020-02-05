@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentCancelButtonBinding
+import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 
 class CancelButtonFragment(private val job: Job?) : Fragment(), CancelButtonFragmentEventHandler {
 
@@ -21,7 +22,8 @@ class CancelButtonFragment(private val job: Job?) : Fragment(), CancelButtonFrag
     }
 
     override fun onClickCancel(view: View) {
-        // FIXME: キャンセルモーダルの表示
+        val dialog = CancelDialogFragment(job)
+        dialog.show(childFragmentManager, "Cancel")
     }
 
 }
