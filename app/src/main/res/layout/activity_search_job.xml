@@ -31,7 +31,7 @@
                     android:id="@+id/search_job_text_field"
                     android:layout_width="match_parent"
                     android:layout_height="66dp"
-                    style="@style/textField"
+                    style="@style/textField_noborder"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -41,6 +41,7 @@
                     android:elevation="@dimen/default_elevation"
                     android:inputType="text"
                     android:text="@={viewModel.keyword}"
+                    android:hint="例：渋谷区/渋谷駅"
                     />
 
                 <ImageButton
