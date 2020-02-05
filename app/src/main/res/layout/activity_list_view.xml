@@ -70,6 +70,39 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:visibility="@{viewModel.notFoundVisibility}">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="30dp"
+                            android:text="検索条件に合致する案件が\nありませんでした"
+                            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                            android:textColor="@color/warmGrey"
+                            android:textSize="22dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:gravity="center_horizontal"
+                            android:lineSpacingMultiplier="1.5"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="条件を変えて再度検索してください。"
+                            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                            android:textColor="@color/warmGrey"
+                            android:textSize="14dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:gravity="center_horizontal"
+                            />
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:visibility="@{viewModel.activeListVisible}"
                         >
                         <TextView

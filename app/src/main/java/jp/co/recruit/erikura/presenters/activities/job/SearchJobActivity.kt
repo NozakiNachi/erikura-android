@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.*
@@ -65,6 +66,10 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
             if (hasFocus) {
                 textField.showDropDown()
             }
+        }
+        // 完了ボタンでソフトキーボードを閉じるようにする
+        textField.setOnEditorActionListener { v, actionId, event ->
+            false
         }
 
         adapter.clear()
@@ -132,7 +137,6 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
             viewModel.minimumWorkingTime.value = min
             viewModel.maximumWorkingTime.value = max
         }
-        // FIXME: 作業時間の最大、最小などどのバインディング
         fragment.show(supportFragmentManager, "workingTimePicker")
     }
 
@@ -146,7 +150,6 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
             viewModel.minimumReward.value = min
             viewModel.maximumReward.value = max
         }
-        // FIXME: 報酬の最大、最小などとのバインディング
         fragment.show(supportFragmentManager, "rewordPicker")
     }
 

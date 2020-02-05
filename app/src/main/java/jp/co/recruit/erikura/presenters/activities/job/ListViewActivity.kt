@@ -1,7 +1,9 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -26,6 +28,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
+import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
 class ListViewActivity : AppCompatActivity(), ListViewHandlers {
@@ -45,21 +49,53 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
 
     fun fetchJobs(query: JobQuery) {
         Api(this).searchJobs(query) { jobs ->
-            viewModel.jobs = jobs
+            if (jobs.isNotEmpty()) {
+                viewModel.jobs = jobs
 
-            val position = LatLng(query.latitude!!, query.longitude!!)
+                val position = LatLng(query.latitude!!, query.longitude!!)
 
-            activeJobsAdapter.jobs = viewModel.activeJobs
-            activeJobsAdapter.currentPosition = position
-            activeJobsAdapter.notifyDataSetChanged()
+                activeJobsAdapter.jobs = viewModel.activeJobs
+                activeJobsAdapter.currentPosition = position
+                activeJobsAdapter.notifyDataSetChanged()
 
-            futureJobsAdapter.jobs = viewModel.futureJobs
-            futureJobsAdapter.currentPosition = position
-            futureJobsAdapter.notifyDataSetChanged()
+                futureJobsAdapter.jobs = viewModel.futureJobs
+                futureJobsAdapter.currentPosition = position
+                futureJobsAdapter.notifyDataSetChanged()
 
-            pastJobsAdapter.jobs = viewModel.pastJobs
-            pastJobsAdapter.currentPosition = position
-            pastJobsAdapter.notifyDataSetChanged()
+                pastJobsAdapter.jobs = viewModel.pastJobs
+                pastJobsAdapter.currentPosition = position
+                pastJobsAdapter.notifyDataSetChanged()
+            }
+            else {
+                // クリアした検索条件での再検索を行います
+                val newQuery = JobQuery(
+                    latitude = locationManager.latLngOrDefault.latitude,
+                    longitude = locationManager.latLngOrDefault.longitude)
+
+                if (query != newQuery) {
+                    MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
+                        viewModel.apply(newQuery)
+                        fetchJobs(newQuery)
+                    }
+                }
+                else {
+                    viewModel.jobs = jobs
+
+                    val position = LatLng(query.latitude!!, query.longitude!!)
+
+                    activeJobsAdapter.jobs = viewModel.activeJobs
+                    activeJobsAdapter.currentPosition = position
+                    activeJobsAdapter.notifyDataSetChanged()
+
+                    futureJobsAdapter.jobs = viewModel.futureJobs
+                    futureJobsAdapter.currentPosition = position
+                    futureJobsAdapter.notifyDataSetChanged()
+
+                    pastJobsAdapter.jobs = viewModel.pastJobs
+                    pastJobsAdapter.currentPosition = position
+                    pastJobsAdapter.notifyDataSetChanged()
+                }
+            }
         }
     }
 
@@ -165,6 +201,25 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode) {
+            LocationManager.REQUEST_ACCESS_FINE_LOCATION_ID -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    locationManager.start(this)
+                }
+                else {
+                    MessageUtils.displayLocationAlert(this)
+                }
+            }
+        }
+    }
+
     override fun onClickSearch(view: View) {
         viewModel.searchBarVisible.value = View.VISIBLE
     }
@@ -256,6 +311,13 @@ class ListViewViewModel : BaseJobQueryViewModel() {
             pastJobs = value.filter { job -> job.isPastOrInactive }
             pastListVisible.value = if(pastJobs.isEmpty())   { View.GONE } else { View.VISIBLE }
 
+            if(value.isEmpty()) {
+                notFoundVisibility.value = View.VISIBLE
+            }
+            else {
+                notFoundVisibility.value = View.GONE
+            }
+
         }
     var activeJobs: List<Job> = listOf()
     var futureJobs: List<Job> = listOf()
@@ -269,6 +331,8 @@ class ListViewViewModel : BaseJobQueryViewModel() {
     val pastListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     val searchBarVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
+    val notFoundVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     val activeOnlyButtonBackground = MediatorLiveData<Drawable>().also { result ->
         result.addSource(periodType) {

@@ -145,6 +145,7 @@
                     android:clipToPadding="false"
                     map:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="horizontal"
+                    android:foregroundGravity="bottom"
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </FrameLayout>

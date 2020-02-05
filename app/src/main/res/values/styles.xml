@@ -19,6 +19,17 @@
         <item name="android:windowBackground">@drawable/launcher_screen</item>
     </style>
 
+    <style name="label">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingMultiplier">1.5</item>
+    </style>
+    <style name="label_w2" parent="label">
+        <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
+    </style>
+    <style name="label_w6" parent="label">
+        <item name="android:fontFamily">@font/hirakakupron_w6_alphanbum_01</item>
+    </style>
+
 
     <!-- 画面タイトル -->
     <style name="titleLabel">

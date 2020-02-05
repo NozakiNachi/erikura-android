@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -80,6 +81,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 if (carouselView.adapter is ErikuraCarouselAdapter) {
                     var adapter = carouselView.adapter as ErikuraCarouselAdapter
                     adapter.data = jobs
+                    adapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
                     adapter.notifyDataSetChanged()
                 }
 
@@ -132,15 +134,15 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 Log.v("Fetch Job", "Nearest: ${nearestIndex}, ${layoutManager.toString()}")
             }
             else {
-                MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します"))
-
-                // クリアした検索条件での再検索を行います
-                val newQuery = JobQuery(
-                    latitude = locationManager.latLngOrDefault.latitude,
-                    longitude = locationManager.latLngOrDefault.longitude)
-                if (query != newQuery) {
-                    viewModel.apply(newQuery)
-                    fetchJobs(newQuery)
+                MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
+                    // クリアした検索条件での再検索を行います
+                    val newQuery = JobQuery(
+                        latitude = locationManager.latLngOrDefault.latitude,
+                        longitude = locationManager.latLngOrDefault.longitude)
+                    if (query != newQuery) {
+                        viewModel.apply(newQuery)
+                        fetchJobs(newQuery)
+                    }
                 }
             }
         }
@@ -159,17 +161,21 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
         nav.selectedItemId = R.id.tab_menu_search_jobs
 
-        adapter = ErikuraCarouselAdapter(this, listOf())
-        adapter.onClickListner = object: ErikuraCarouselAdapter.OnClickListener {
+        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
+        adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
             }
         }
 
         carouselView = findViewById(R.id.map_view_carousel)
-        carouselView.setHasFixedSize(true)
+//        carouselView.setHasFixedSize(true)
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
+
+        (carouselView.layoutManager as? LinearLayoutManager)?.let {
+            it.stackFromEnd = true
+        }
 
         carouselView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -289,6 +295,25 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                         // 案件の検索処理を実施します
                         fetchJobs(query)
                     }
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode) {
+            LocationManager.REQUEST_ACCESS_FINE_LOCATION_ID -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    locationManager.start(this)
+                }
+                else {
+                    MessageUtils.displayLocationAlert(this)
                 }
             }
         }

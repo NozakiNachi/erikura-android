@@ -45,14 +45,28 @@ open class MarkerViewModel(private val job: Job): ViewModel() {
         }
     }
     open val soonVisibility: Int get() {
-        val now = Date()
-        val workingStartAt = job.workingStartAt ?: now
-        if (workingStartAt > now && (workingStartAt.time - now.time) < (24 * 60 * 60 * 1000)) {
+        if (job.isStartSoon) {
             return View.VISIBLE
         }
         else {
             return View.GONE
         }
+    }
+
+    open val futureVisibility: Int get() {
+        if (job.isFuture && !job.isStartSoon) {
+            return View.VISIBLE
+        }
+        else {
+            return View.GONE
+        }
+    }
+
+    open val futureText: String get() {
+        return job.workingStartAt?.let {
+            val sdf = SimpleDateFormat("MM/dd")
+            return String.format("%s開始", sdf.format(it))
+        } ?: ""
     }
 
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
