@@ -75,6 +75,10 @@
         <item name="android:background">@drawable/text_field</item>
     </style>
 
+    <style name="textField_noborder" parent="textField">
+        <item name="android:background">@drawable/text_field_noborder</item>
+    </style>
+
     <!-- パスワードフィールド -->
     <style name="passwordField" parent="textField">
         <item name="android:inputType">textPassword</item>

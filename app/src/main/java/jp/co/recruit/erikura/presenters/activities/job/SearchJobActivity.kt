@@ -96,6 +96,10 @@ class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
         }
     }
 
+    override fun onClickClear(view: View) {
+        viewModel.keyword.value = ""
+    }
+
     override fun onClickDetailButton(view: View) {
         viewModel.detailButtonVisibility.value = View.GONE
         viewModel.detailConditionsVisibility.value = View.VISIBLE
@@ -268,6 +272,7 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
 }
 
 interface SearchJobHandlers {
+    fun onClickClear(view: View)
     fun onClickDetailButton(view: View)
     fun onClickSearchButton(view: View)
     fun onClickRewardSpinner(view: View)
