@@ -47,15 +47,33 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
                     <!-- タイムリミット表示 -->
-                    <!--<FrameLayout
-                        android:id="@+id/appliedJobDetails_timeLimitFragment"
+                    <LinearLayout
                         android:background="@drawable/background_dialog_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:layout_marginBottom="10dp" />-->
+                        android:layout_marginBottom="10dp"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/titleLabel"
+                            android:gravity="center"
+                            android:textAllCaps="false"
+                            android:text="@{viewModel.timeLimit}" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            style="@style/smallCaption"
+                            android:text="@string/jobDetails_pressButton"
+                            android:visibility="@{viewModel.msgVisibility}"/>
+
+                    </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
