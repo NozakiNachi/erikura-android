@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -28,6 +29,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
+import jp.co.recruit.erikura.presenters.activities.AppliedJobsActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
@@ -227,13 +229,13 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
         intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
-        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickMap(view: View) {
         val intent = Intent(this, MapViewActivity::class.java)
         // FIXME: 検索条件の引き継ぎについて検討する
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         // リストビューは破棄しておきます
         finish()
     }
@@ -259,7 +261,7 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
     fun onJobSelected(job: Job) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     fun onQueryChanged() {
@@ -286,8 +288,11 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
                 // 何も行いません
             }
             R.id.tab_menu_applied_jobs -> {
-                // FIXME: 画面遷移の実装
-                Toast.makeText(this, "応募した仕事画面に遷移", Toast.LENGTH_LONG).show()
+                Intent(this, AppliedJobsActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
+                finish()
             }
             R.id.tab_menu_mypage -> {
                 // FIXME: 画面遷移の実装

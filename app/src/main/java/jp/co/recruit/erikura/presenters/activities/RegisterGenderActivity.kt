@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -43,7 +44,7 @@ class RegisterGenderActivity : AppCompatActivity(), RegisterGenderEventHandlers 
     fun moveToNext(user: User) {
         val intent: Intent = Intent(this@RegisterGenderActivity, RegisterAddressActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

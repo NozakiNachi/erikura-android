@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -50,14 +51,14 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 //        val registerButton: Button = findViewById(R.id.registerButton)
 //        val intent: Intent = Intent(this@StartActivity, RegisterEmailActivity::class.java)
 //        registerButton.setOnClickListener {
-//            startActivity(intent)
+//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 //        }
 //
 //        // ログインボタンの設定
 //        val loginButton: Button = findViewById(R.id.loginButton)
 //        val intentLogin: Intent = Intent(this@StartActivity, LoginActivity::class.java)
 //        loginButton.setOnClickListener {
-//            startActivity(intentLogin)
+//            startActivity(intentLogin, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 //        }
 //
 //        // リンクの設定
@@ -111,18 +112,18 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 
     override fun onClickRegisterButton(view: View) {
         val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickLoginButton(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickStartWithoutLogin(view: View) {
         // 地図画面へ遷移
         val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
 //    private val REQUEST_OAUTH_REQUEST_CODE = 1

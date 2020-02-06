@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -25,7 +26,7 @@ class RegisterFinishedActivity : AppCompatActivity(), RegisterFinishedEventHandl
         // 地図画面へ遷移します
         // FIXME: チュートリアルの表示
         val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

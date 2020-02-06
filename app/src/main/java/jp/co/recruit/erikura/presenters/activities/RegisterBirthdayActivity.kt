@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -58,7 +59,7 @@ class RegisterBirthdayActivity : AppCompatActivity(), RegisterBirthdayEventHandl
         user.dateOfBirth = viewModel.birthday.value
         val intent: Intent = Intent(this@RegisterBirthdayActivity, RegisterGenderActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickEditView(view: View) {

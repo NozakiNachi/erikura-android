@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -49,7 +50,7 @@ class LoginActivity : AppCompatActivity(), LoginEventHandlers {
             // 地図画面へ遷移します
             // FIXME: チュートリアルの表示
             val intent = Intent(this, MapViewActivity::class.java)
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 
@@ -59,7 +60,7 @@ class LoginActivity : AppCompatActivity(), LoginEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(reminderURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickUnreachLink(view: View) {
@@ -68,7 +69,7 @@ class LoginActivity : AppCompatActivity(), LoginEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(unreachURLString)
         }
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

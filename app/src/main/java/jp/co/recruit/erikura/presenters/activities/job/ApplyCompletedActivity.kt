@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.ActivityOptions
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -62,20 +63,20 @@ class ApplyCompletedActivity : AppCompatActivity(), ApplyCompletedEventHandlers 
     override fun onClickJobDetails(view: View) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         finish()
     }
 
     override fun onClickSearchOtherJobs(view: View) {
         val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         finish()
     }
 
     fun onJobSelected(job: Job) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

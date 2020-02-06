@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -49,7 +50,7 @@ class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandl
                 val array = it.toTypedArray()
                 intent.putExtra("errorMessages", array)
             }
-            startActivity(intent)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             finish()
         }) {
             Log.v("DEBUG", "仮登録確認： userId=${it}")
@@ -62,7 +63,7 @@ class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandl
         user.password = viewModel.password.value
         val intent: Intent = Intent(this@RegisterPasswordActivity, RegisterNameActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

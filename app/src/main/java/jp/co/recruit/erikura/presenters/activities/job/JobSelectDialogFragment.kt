@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.ActivityOptions
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
@@ -81,7 +82,7 @@ class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectD
 
         val intent= Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
         dialog?.dismiss()
     }
 

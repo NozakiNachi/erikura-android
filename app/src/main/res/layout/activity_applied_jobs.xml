@@ -6,7 +6,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.AppliedJobsViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.AppliedJobsHandlers" />
     </data>
     
     <RelativeLayout
@@ -35,7 +40,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="実施済み\n(未報告)"
-                    />
+                    >
+                </com.google.android.material.tabs.TabItem>
+
 
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -58,6 +65,7 @@
             app:itemIconTint="@drawable/bottom_navigation_item_state"
             app:itemTextColor="@drawable/bottom_navigation_item_state"
             android:background="@drawable/background_border_top"
+            onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
             />
     </RelativeLayout>
 </layout>

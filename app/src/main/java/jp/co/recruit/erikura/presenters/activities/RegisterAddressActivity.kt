@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -60,7 +61,7 @@ class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandler
 
         val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 
     }
 

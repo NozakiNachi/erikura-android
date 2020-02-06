@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -61,7 +62,7 @@ class WebViewActivity : AppCompatActivity() {
                         // 上記以外の場合は、外部Activityを開きます
                         Intent(Intent.ACTION_VIEW).apply {
                             data = request?.url
-                            startActivity(this)
+                            startActivity(this, ActivityOptions.makeSceneTransitionAnimation(this@WebViewActivity).toBundle())
                         }
                         return true
                     }
@@ -72,7 +73,7 @@ class WebViewActivity : AppCompatActivity() {
                 val i = Intent(Intent.ACTION_QUICK_VIEW).apply {
                     data = Uri.parse(url)
                 }
-                startActivity(i)
+                startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
             webView.loadUrl(url)
         }
