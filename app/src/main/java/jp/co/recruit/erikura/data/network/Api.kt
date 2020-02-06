@@ -164,6 +164,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun cancel(job: Job, reasonCode: Int?, comment: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.cancel(CancelRequest(job.id, reasonCode?: 0, comment?: "")),
+            onError = onError
+        ){ body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
     fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         executeObservable(
             erikuraApiService.recommendedJobs(job.id),
@@ -209,6 +219,15 @@ class Api(var context: Context) {
         ) { body ->
             val result = body.result
             onComplete(result)
+        }
+    }
+
+    fun cancelReasons( onError: ((message: List<String>?) -> Unit)? = null, onComplete: (cancelReasons: List<CancelReason>) -> Unit) {
+        executeObservable(
+            erikuraApiService.cancelReasons(),
+            onError = onError
+        ) { body ->
+            onComplete(body.cancellationReasons)
         }
     }
 

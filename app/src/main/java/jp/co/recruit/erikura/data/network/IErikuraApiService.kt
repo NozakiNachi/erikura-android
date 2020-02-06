@@ -73,7 +73,7 @@ interface IErikuraApiService {
     @GET("entries/cancellation_reasons")
     fun cancelReasons(): ApiObservable<CancelReasonsResponse>
 
-    @HTTP(method = "DELETE", path = "entires", hasBody = true)
+    @HTTP(method = "DELETE", path = "entries", hasBody = true)
     fun cancel(@Body request: CancelRequest): ApiObservable<EntryIdResponse>
 
     @POST("entries/start")
@@ -234,7 +234,8 @@ data class EntryRequest(
 
 data class CancelRequest(
     var jobId: Int,
-    var reasonCode: Int
+    var reasonCode: Int,
+    var otherReason: String
 )
 
 data class StartJobRequest(

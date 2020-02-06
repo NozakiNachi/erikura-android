@@ -63,11 +63,13 @@ class ApplyCompletedActivity : AppCompatActivity(), ApplyCompletedEventHandlers 
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         startActivity(intent)
+        finish()
     }
 
     override fun onClickSearchOtherJobs(view: View) {
         val intent = Intent(this, MapViewActivity::class.java)
         startActivity(intent)
+        finish()
     }
 
     fun onJobSelected(job: Job) {
