@@ -385,7 +385,8 @@ class Api(var context: Context) {
     }
 
     private fun hideProgressAlert() {
-        progressAlert?.hide()
+        progressAlert?.dismiss()
+        progressAlert = null
     }
 
     private fun processError(messages: List<String>, onError: ((messages: List<String>?) -> Unit)?) {
