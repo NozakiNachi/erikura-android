@@ -33,7 +33,7 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
-import jp.co.recruit.erikura.presenters.activities.AppliedJobsActivity
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
@@ -431,7 +431,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                 // 何も行いません
             }
             R.id.tab_menu_applied_jobs -> {
-                Intent(this, AppliedJobsActivity::class.java).let { intent ->
+                Intent(this, OwnJobsActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }

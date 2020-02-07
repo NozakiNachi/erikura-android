@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presenters.fragments.AppliedJobsFragment">
+    
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.AppliedJobsViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.AppliedJobsHandlers" />
+    </data>
+    
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="未実施の仕事"
+                style="@style/label_w2"
+                android:textSize="22dp"
+                android:textColor="@color/black"
+                android:paddingTop="40dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:background="@color/paleGrey"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@drawable/background_triangle" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/applied_jobs_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                android:padding="20dp"
+                />
+            <!-- FIXME: 0件の場合の表示 -->
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>
