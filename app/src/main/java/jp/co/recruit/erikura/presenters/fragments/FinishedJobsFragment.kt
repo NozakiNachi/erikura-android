@@ -7,6 +7,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.OwnJobQuery
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
+import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 
 import jp.co.recruit.erikura.R
 
@@ -24,6 +33,11 @@ import jp.co.recruit.erikura.R
  * create an instance of this fragment.
  */
 class FinishedJobsFragment : Fragment() {
+    private val viewModel: FinishedJobsViewModel by lazy {
+        ViewModelProvider(this).get(FinishedJobsViewModel::class.java)
+    }
+    private lateinit var jobListView: RecyclerView
+    private lateinit var jobListAdapter: JobListAdapter
 //    // TODO: Rename and change types of parameters
 //    private var param1: String? = null
 //    private var param2: String? = null
@@ -99,4 +113,19 @@ class FinishedJobsFragment : Fragment() {
 //                }
 //            }
 //    }
+    private fun fetchFinishedJobs() {
+    Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.FINISHED)) { jobs ->
+        viewModel.finishedJobs.value = jobs
+        jobListAdapter.jobs = viewModel.unreportedJobs
+        jobListAdapter.notifyDataSetChanged()
+    }
+}
+}
+class FinishedJobsViewModel: ViewModel(){
+    val finishedJobs: MutableLiveData<List<Job>> = MutableLiveData(listOf())
+
+    val unreportedJobs: List<Job> get() {
+        val unreported = finishedJobs.value ?: listOf()
+        return unreported
+    }
 }
