@@ -178,7 +178,7 @@ class Api(var context: Context) {
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
-                    jobId = 0,
+                    jobId = job.id,
                     latitude = 0.0,
                     longitude = 0.0,
                     steps = 0,

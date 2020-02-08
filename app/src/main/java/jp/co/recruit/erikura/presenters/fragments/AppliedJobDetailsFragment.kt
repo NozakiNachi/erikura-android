@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
 import java.util.*
 
 
@@ -86,7 +87,9 @@ class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job
 
         job?.let {
             Api(activity).startJob(it) {
-                // FIXME: 作業開始ダイアログの表示
+                val dialog = StartDialogFragment(job)
+                dialog.show(childFragmentManager, "Start")
+                // FIXME: 案件詳細画面(作業中)の表示
             }
         }
     }
