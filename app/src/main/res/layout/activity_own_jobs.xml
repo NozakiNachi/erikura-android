@@ -8,10 +8,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.AppliedJobsViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.OwnJobsViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.AppliedJobsHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.OwnJobsHandlers" />
     </data>
     
     <RelativeLayout
@@ -24,34 +24,35 @@
             android:orientation="vertical">
 
             <com.google.android.material.tabs.TabLayout
+                android:id="@+id/applied_jobs_tab_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="122dp"
                 android:background="@color/white"
                 android:elevation="@dimen/default_elevation"
+                app:tabIndicatorColor="@color/blackTwo"
+                app:tabIndicatorHeight="4dp"
+                app:tabPaddingTop="60dp"
+                app:tabTextColor="@color/blackTwo"
+                app:tabSelectedTextColor="@color/blackTwo"
+                app:tabBackground="@drawable/background_owned_jobs_tab"
+                style="@style/owned_jobs_tab_layout"
                 >
-
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="未実施"
-                    />
-
+                    android:text="未実施"/>
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="実施済み\n(未報告)"
-                    >
-                </com.google.android.material.tabs.TabItem>
-
-
+                    android:text="実施済み\n(未報告)"/>
                 <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="報告済み"
-                    />
+                    android:text="報告済み"/>
             </com.google.android.material.tabs.TabLayout>
 
             <androidx.viewpager.widget.ViewPager
+                android:id="@+id/applied_jobs_view_pager"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
         </LinearLayout>
@@ -67,5 +68,7 @@
             android:background="@drawable/background_border_top"
             onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
             />
+
+        <!-- FIXME: 実施中のバッジ表示 -->
     </RelativeLayout>
 </layout>

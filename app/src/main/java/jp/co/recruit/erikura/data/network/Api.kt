@@ -332,6 +332,15 @@ class Api(var context: Context) {
         }
     }
 
+    fun ownJob(query: OwnJobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
+        executeObservable(erikuraApiService.ownJobs(
+            status = query.status.code,
+            reportedAtFrom = query.reportedFrom,
+            reportedAtTo = query.reportedTo
+        ), onError = onError) { response ->
+            onComplete(response.jobs)
+        }
+    }
 
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
@@ -380,6 +389,7 @@ class Api(var context: Context) {
     }
 
     private fun showProgressAlert() {
+        // 同一のAPIインスタンスから呼ばれた場合だけでも、スピナー表示を共通化することを考える
         if (progressAlert == null) {
             progressAlert = AlertDialog.Builder(context).apply {
                 setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null, false))
