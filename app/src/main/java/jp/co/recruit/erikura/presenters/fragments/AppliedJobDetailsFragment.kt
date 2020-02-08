@@ -48,12 +48,14 @@ class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job
 
         val transaction = childFragmentManager.beginTransaction()
         val jobInfoView = JobInfoViewFragment(job)
+        val manualImage = ManualImageFragment(job)
         val cancelButton = CancelButtonFragment(job)
         val manualButton = ManualButtonFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
+        transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage, "manualImage")
         transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton, "cancelButton")
         transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton, "manualButton")
         transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
@@ -71,7 +73,9 @@ class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job
             val diffHours = diff / (1000 * 60 * 60)
             val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
 
-            if (diffMinutes == 0) {
+            if(diffHours == 0) {
+                str.append("あと${diffMinutes}分以内\n")
+            } else if (diffMinutes == 0) {
                 str.append("あと${diffHours}時間以内\n")
             }else {
                 str.append("あと${diffHours}時間${diffMinutes}分以内\n")
