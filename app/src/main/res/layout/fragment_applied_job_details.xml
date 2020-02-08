@@ -8,6 +8,9 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragmentViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragmentEventHandlers" />
     </data>
 
     <FrameLayout
@@ -133,16 +136,44 @@
         </ScrollView>
 
         <!-- 作業開始ボタンとお気に入りボタン -->
-        <!--<LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical">
             <FrameLayout
-                android:id="@+id/appliedJobDetails_startButtonFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>-->
+                android:layout_height="wrap_content"
+                tools:context=".presenters.fragments.ApplyButtonFragment">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_marginRight="0dp"
+                        android:layout_weight="20"
+                        style="@style/primaryButton"
+                        android:text="@string/startJob"
+                        android:onClick="@{handlers::onClickStart}" />
+                    <ToggleButton
+                        android:layout_width="70dp"
+                        android:layout_height="68dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        style="@style/favoriteButton"
+                        android:checked="@={viewModel.favorited}"
+                        android:onClick="@{handlers::onClickFavorite}" />
+                </LinearLayout>
+
+            </FrameLayout>
+        </LinearLayout>
 
 
     </FrameLayout>

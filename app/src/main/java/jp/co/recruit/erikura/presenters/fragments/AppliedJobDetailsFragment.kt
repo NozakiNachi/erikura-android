@@ -20,12 +20,14 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import java.util.*
 
 
 
-class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment() {
+class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment(), AppliedJobDetailsFragmentEventHandlers {
     private val viewModel: AppliedJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
     }
@@ -40,6 +42,7 @@ class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job
         viewModel.setup(activity, job, user)
         updateTimeLimit()
         binding.viewModel = viewModel
+        binding.handlers = this
         return binding.root
     }
 
@@ -62,6 +65,30 @@ class AppliedJobDetailsFragment(private val activity: AppCompatActivity, val job
         transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
         transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView, "mapView")
         transaction.commit()
+    }
+
+    override fun onClickFavorite(view: View) {
+        if (viewModel.favorited.value?: false) {
+            // お気に入り登録処理
+            Api(activity!!).placeFavorite(job?.place?.id?: 0) {
+                viewModel.favorited.value = true
+            }
+        }else {
+            // お気に入り削除処理
+            Api(activity!!).placeFavoriteDelete(job?.place?.id?: 0) {
+                viewModel.favorited.value = false
+            }
+        }
+    }
+
+    override fun onClickStart(view: View) {
+        // FIXME: モーションフィットネスの許可
+
+        job?.let {
+            Api(activity).startJob(it) {
+                // FIXME: 作業開始ダイアログの表示
+            }
+        }
     }
 
     private fun updateTimeLimit() {
@@ -97,6 +124,7 @@ class AppliedJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null){
@@ -114,6 +142,17 @@ class AppliedJobDetailsFragmentViewModel: ViewModel() {
                 }
             }
 
+            // お気に入り状態の取得
+            UserSession.retrieve()?.let {
+                Api(activity).placeFavoriteShow(job.place?.id?: 0) {
+                    favorited.value = it
+                }
+            }
         }
     }
+}
+
+interface AppliedJobDetailsFragmentEventHandlers {
+    fun onClickFavorite(view: View)
+    fun onClickStart(view: View)
 }

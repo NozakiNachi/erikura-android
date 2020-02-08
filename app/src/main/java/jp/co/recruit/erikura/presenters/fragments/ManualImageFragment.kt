@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -39,10 +38,10 @@ class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragme
 
     override fun onClickManualImage(view: View) {
         if(job?.manualUrl != null){
-            val termsOfServiceURLString = job.manualUrl
+            val manualURLString = job.manualUrl
             val intent = Intent(activity, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
-                data = Uri.parse(termsOfServiceURLString)
+                data = Uri.parse(manualURLString)
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
         }

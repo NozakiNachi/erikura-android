@@ -174,6 +174,25 @@ class Api(var context: Context) {
         }
     }
 
+    fun startJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.startJob(
+                StartJobRequest(
+                    jobId = 0,
+                    latitude = 0.0,
+                    longitude = 0.0,
+                    steps = 0,
+                    distance = 0,
+                    floorAsc = 0,
+                    floorDesc = 0
+            )),
+            onError = onError
+        ){ body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
     fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         executeObservable(
             erikuraApiService.recommendedJobs(job.id),
@@ -273,6 +292,8 @@ class Api(var context: Context) {
                 }
             )
     }
+
+
 
     fun geocode(keyword: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: LatLng) -> Unit) {
         googleMapApiService.geocode(BuildConfig.GEOCODING_API_KEY, keyword)
