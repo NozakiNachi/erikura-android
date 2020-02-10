@@ -68,6 +68,8 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
             var start = place.length
             place.bold { append(ErikuraApplication.instance.getString(R.string.jobDetails_workingPlaceLink)) }
             var end = place.length
+            val linkTextAppearanceSpan = TextAppearanceSpan(ErikuraApplication.instance.applicationContext, R.style.linkText)
+            place.setSpan(linkTextAppearanceSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
             place.setSpan(object : ClickableSpan() {
                 override fun onClick(view: View) {
                     // 場所詳細画面へ遷移
@@ -77,8 +79,6 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            val tf = Typeface.create(ResourcesCompat.getFont(ErikuraApplication.instance.applicationContext, R.font.hirakakupron_w6_alphanbum_01), BOLD)
-            place.setSpan(tf, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         }
         tv.text = place
         tv.movementMethod = LinkMovementMethod.getInstance()
@@ -98,8 +98,6 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
     val summaryTitlesVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
-    val workingPlace: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
-
     val openMapButtonText: MutableLiveData<SpannableString> = MutableLiveData()
 
     fun setup(job: Job?){
@@ -129,33 +127,6 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             if(summaryTitleStr.isNullOrBlank()) {
                 summaryTitlesVisibility.value = View.GONE
             }
-            // 場所
-/*            var place = SpannableStringBuilder()
-
-            if ( (job.place?.hasEntries?: false) || (job.place?.workingPlaceShort.isNullOrBlank()) ) {
-                place.append(job.place?.workingPlace)
-                if(!(job.place?.workingBuilding.isNullOrBlank())) {
-                    place.append("\n${job.place?.workingBuilding}")
-                }
-            }else {
-                place.append(job.place?.workingPlaceShort)
-            }
-            place.append("　")
-            var start = place.length
-            place.bold { append(ErikuraApplication.instance.getString(R.string.jobDetails_workingPlaceLink)) }
-            var end = place.length
-            place.setSpan(object : ClickableSpan() {
-                override fun onClick(view: View) {
-                    // 場所詳細画面へ遷移
-                    Log.v("debug", "linkが押下された")
-                    val intent= Intent(get, PlaceDetailActivity::class.java)
-                    intent.putExtra("place", place)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            val tf = Typeface.create(ResourcesCompat.getFont(ErikuraApplication.instance.applicationContext, R.font.hirakakupron_w6_alphanbum_01), BOLD)
-            place.setSpan(tf, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            workingPlace.value = place*/
         }
 
         val str = SpannableString(ErikuraApplication.instance.getString(R.string.openMap))

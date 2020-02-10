@@ -14,6 +14,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -54,7 +55,7 @@ class ManualImageFragmentViewModel: ViewModel() {
 
     fun setup(activity: Activity) {
         val assetsManager = ErikuraApplication.assetsManager
-        val url = "https://s3-ap-northeast-1.amazonaws.com/assets.prd.erikura.net/manual_pdfs/manual_thumbnail.png"
+        val url = ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL)
 
         assetsManager.fetchImage(activity, url) { result ->
             activity.runOnUiThread {
