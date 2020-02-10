@@ -174,13 +174,13 @@ class Api(var context: Context) {
         }
     }
 
-    fun startJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun startJob(job: Job, latLng: LatLng, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
                     jobId = job.id,
-                    latitude = 0.0,
-                    longitude = 0.0,
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
                     steps = 0,
                     distance = 0,
                     floorAsc = 0,

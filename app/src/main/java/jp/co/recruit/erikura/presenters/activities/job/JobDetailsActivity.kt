@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
@@ -14,6 +15,8 @@ import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
+import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
+import java.util.*
 
 
 class JobDetailsActivity : AppCompatActivity() {
@@ -21,6 +24,8 @@ class JobDetailsActivity : AppCompatActivity() {
     var job: Job = Job()
     var user: User = User()
     var fragment = Fragment()
+
+    private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -35,9 +40,9 @@ class JobDetailsActivity : AppCompatActivity() {
         }
         Log.v("DEBUG", job.toString())
     }
-
-    override fun onResume() {
-        super.onResume()
+    
+    override fun onStart() {
+        super.onStart()
         fetchJob()
     }
 
@@ -88,6 +93,7 @@ class JobDetailsActivity : AppCompatActivity() {
         transaction.replace(R.id.job_details, fragment)
         transaction.commit()
     }
+
 
     private fun handleIntent(intent: Intent) {
         val appLinkData: Uri? = intent.data
