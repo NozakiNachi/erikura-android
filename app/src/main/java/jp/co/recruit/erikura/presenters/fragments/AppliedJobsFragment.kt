@@ -60,8 +60,8 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         fetchEntriedJobs()
         fetchStartedJobs()

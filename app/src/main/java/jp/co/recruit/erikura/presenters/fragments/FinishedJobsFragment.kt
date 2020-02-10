@@ -59,7 +59,7 @@ class FinishedJobsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_finished_jobs, container, false)
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
+    //    // TODO: Rename method, update argument and hook method into UI event
 //    fun onButtonPressed(uri: Uri) {
 //        listener?.onFragmentInteraction(uri)
 //    }
@@ -114,12 +114,12 @@ class FinishedJobsFragment : Fragment() {
 //            }
 //    }
     private fun fetchFinishedJobs() {
-    Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.FINISHED)) { jobs ->
-        viewModel.finishedJobs.value = jobs
-        jobListAdapter.jobs = viewModel.unreportedJobs
-        jobListAdapter.notifyDataSetChanged()
+        Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.FINISHED)) { jobs ->
+            viewModel.finishedJobs.value = jobs
+            jobListAdapter.jobs = viewModel.unreportedJobs
+            jobListAdapter.notifyDataSetChanged()
+        }
     }
-}
 }
 class FinishedJobsViewModel: ViewModel(){
     val finishedJobs: MutableLiveData<List<Job>> = MutableLiveData(listOf())
