@@ -252,7 +252,11 @@ class Api(var context: Context) {
 
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
         // OkHttp3 クライアントを作成します
-        val client = ErikuraApiServiceBuilder().httpBuilder.build()
+        var client = ErikuraApiServiceBuilder().httpBuilder.build()
+        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
+            client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
+        }
+
         val observable: Observable<HttpResponse> = Observable.create {
             try {
                 val request = HttpRequest.Builder().url(url).get().build()
