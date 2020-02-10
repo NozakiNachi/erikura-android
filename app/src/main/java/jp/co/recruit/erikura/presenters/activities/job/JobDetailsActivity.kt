@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
+import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import java.util.*
 
@@ -24,6 +25,7 @@ class JobDetailsActivity : AppCompatActivity() {
     var job: Job = Job()
     var user: User = User()
     var fragment = Fragment()
+    var fromAppliedJobDetailsFragment: Boolean = false
 
     private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
 
@@ -39,6 +41,8 @@ class JobDetailsActivity : AppCompatActivity() {
             handleIntent(intent)
         }
         Log.v("DEBUG", job.toString())
+
+        fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
     }
     
     override fun onStart() {
@@ -74,8 +78,7 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = AppliedJobDetailsFragment(this, job, user)
             }
             JobStatus.Working -> {
-                // FIXME: 作業中画面
-                fragment = NormalJobDetailsFragment(this, job, user)
+                fragment = WorkingJobDetailsFragment(this, job, user, fromAppliedJobDetailsFragment)
             }
             JobStatus.Finished -> {
                 // FIXME: 作業完了画面
