@@ -26,6 +26,7 @@ class JobDetailsActivity : AppCompatActivity() {
     var user: User = User()
     var fragment = Fragment()
     var fromAppliedJobDetailsFragment: Boolean = false
+    var fromWorkingJobDetailsFragment: Boolean = false
 
     private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
 
@@ -43,6 +44,7 @@ class JobDetailsActivity : AppCompatActivity() {
         Log.v("DEBUG", job.toString())
 
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
+        fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
     }
     
     override fun onStart() {
@@ -75,7 +77,7 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = NormalJobDetailsFragment(this, job, user)
             }
             JobStatus.Applied -> {
-                fragment = AppliedJobDetailsFragment(this, job, user)
+                fragment = AppliedJobDetailsFragment(this, job, user, fromWorkingJobDetailsFragment)
             }
             JobStatus.Working -> {
                 fragment = WorkingJobDetailsFragment(this, job, user, fromAppliedJobDetailsFragment)

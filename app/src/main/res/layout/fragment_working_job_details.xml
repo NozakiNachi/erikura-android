@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
+
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragmentViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragmentEventHandlers" />
     </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -34,53 +38,75 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@{viewModel.bitmapDrawable}">
+                    android:background="@{viewModel.bitmapDrawable}"
+                    android:orientation="vertical">
 
                     <!-- 簡易表示 -->
                     <FrameLayout
                         android:id="@+id/workingJobDetails_jobInfoViewFragment"
-                        android:background="@drawable/background_dialog_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        android:layout_marginTop="40dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/background_dialog_body" />
                     <!-- タイムリミット表示 -->
                     <LinearLayout
-                        android:background="@drawable/background_dialog_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
+                        android:background="@drawable/background_dialog_body"
+                        android:orientation="vertical"
                         android:padding="20dp">
 
                         <TextView
+                            style="@style/titleLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
-                            style="@style/titleLabel"
                             android:gravity="center"
-                            android:textColor="@color/vibrantGreen"
-                            android:text="作業実施中" />
+                            android:text="作業実施中"
+                            android:textColor="@color/vibrantGreen" />
 
-                        <TextView
-                            android:layout_width="match_parent"
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            style="@style/titleLabel"
+                            android:layout_marginTop="10dp"
+                            android:layout_gravity="center"
                             android:gravity="center"
-                            android:textAllCaps="false"
-                            android:text="@{viewModel.timeCount}" />
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/smallCaption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="開始から"
+                                android:textAllCaps="false" />
+
+                            <TextView
+                                style="@style/titleLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@{viewModel.timeCount}"
+                                android:textAllCaps="false" />
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:background="@drawable/background_triangle_reverse"/>
+                        android:background="@drawable/background_triangle_reverse" />
 
                 </LinearLayout>
 
@@ -100,6 +126,13 @@
                     android:layout_marginTop="20dp" />
 
                 <!-- 作業をキャンセル -->
+                <Button
+                    style="@style/tertiaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="20dp"
+                    android:onClick="@{handlers::onClickCancelWorking}"
+                    android:text="作業をキャンセル" />
 
 
                 <!-- サムネイル画像 -->
@@ -123,7 +156,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="110dp"/>
+                    android:layout_marginBottom="110dp" />
 
             </LinearLayout>
 
@@ -136,6 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical">
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -146,22 +180,24 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:orientation="horizontal">
+
                     <Button
+                        style="@style/primaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:layout_marginRight="0dp"
                         android:layout_weight="20"
-                        style="@style/primaryButton"
-                        android:text="作業を完了"
-                        android:onClick="@{handlers::onClickStop}" />
+                        android:onClick="@{handlers::onClickStop}"
+                        android:text="作業を完了" />
+
                     <ToggleButton
+                        style="@style/favoriteButton"
                         android:layout_width="70dp"
                         android:layout_height="68dp"
+                        android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="20dp"
-                        android:layout_gravity="center"
                         android:layout_weight="1"
-                        style="@style/favoriteButton"
                         android:checked="@={viewModel.favorited}"
                         android:onClick="@{handlers::onClickFavorite}" />
                 </LinearLayout>

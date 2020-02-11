@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
@@ -20,9 +21,11 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import java.util.*
 
 
 class WorkingJobDetailsFragment(
@@ -97,7 +100,30 @@ class WorkingJobDetailsFragment(
         }
     }
 
+    override fun onClickCancelWorking(view: View) {
+        job?.let {
+            Api(activity).abortJob(job) {
+                val intent= Intent(activity, JobDetailsActivity::class.java)
+                intent.putExtra("job", job)
+                intent.putExtra("onClickCancelWorking", true)
+                startActivity(intent)
+            }
+        }
+    }
+
     override fun onClickStop(view: View) {
+        if (!fitApiManager.checkPermission()) {
+            fitApiManager.requestPermission(this)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        fitApiManager.startFitnessSubscription(activity)
+    }
+
+    private fun updateTimeCount(){
 
     }
 }
@@ -129,11 +155,14 @@ class WorkingJobDetailsFragmentViewModel: ViewModel() {
                     favorited.value = it
                 }
             }
+
+            timeCount.value = SpannableStringBuilder("5分02秒")
         }
     }
 }
 
 interface WorkingJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
+    fun onClickCancelWorking(view: View)
     fun onClickStop(view: View)
 }
