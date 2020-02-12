@@ -43,7 +43,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:layout_marginTop="5dp"
-                android:text="5分02秒" />
+                android:text="@{viewModel.workingTime}" />
 
         </LinearLayout>
 
