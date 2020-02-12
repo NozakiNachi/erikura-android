@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -84,44 +85,51 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     override fun onClickLogoutLink(view: View) {
-        // ログアウトダイアログの表示
-        val intent = Intent(this, LogoutActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        // FIXME: 直接ダイアログを呼び出して、ログアウトダイアログボタンを表示する。
+        AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+            .setTitle("ログアウトダイアログボタン")
+            .setMessage("ログアウトダイアログボタンを呼び出します。")
+            .setPositiveButton("OK", { dialog, which ->
+
+                val intent = Intent(this, LogoutActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            })
+            .show()
     }
 }
 
 
 
-    class ConfigurationViewModel: ViewModel() {
-        val email: MutableLiveData<String> = MutableLiveData()
-        val password: MutableLiveData<String> = MutableLiveData()
-        val enableAutoLogin: MutableLiveData<Boolean> = MutableLiveData()
+class ConfigurationViewModel: ViewModel() {
+    val email: MutableLiveData<String> = MutableLiveData()
+    val password: MutableLiveData<String> = MutableLiveData()
+    val enableAutoLogin: MutableLiveData<Boolean> = MutableLiveData()
 
-        val isLoginButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-            result.addSource(email) { result.value = isValid() }
-            result.addSource(password) { result.value = isValid()  }
-        }
-
-        fun isValid(): Boolean {
-            return (email.value?.isNotBlank() ?: false) && (password.value?.isNotBlank() ?: false)
-        }
+    val isLoginButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(email) { result.value = isValid() }
+        result.addSource(password) { result.value = isValid()  }
     }
 
-    interface ConfigurationEventHandlers {
-        // 非ログイン対処
-        //fun onClickUnreachLink(view: View)
-        // 会員情報変更へのリンク
-        fun onRegistrationLink(view: View)
-        // 口座情報登録・変更へのリンク
-        fun onAccountRegistration(view: View)
-        // 通知設定へのリンク
-        fun onNotificationSettings(view: View)
-        // このアプリについてへのリンク
-        fun onAboutTheApp(view: View)
-        // よくある質問へのリンク
-        fun onFrequentQuestions(view: View)
-        // 問い合わせへのリンク
-        fun onInquiry(view: View)
-        // ログアウトへのリンク
-        fun onClickLogoutLink(view: View)
+    fun isValid(): Boolean {
+        return (email.value?.isNotBlank() ?: false) && (password.value?.isNotBlank() ?: false)
     }
+}
+
+interface ConfigurationEventHandlers {
+    // 非ログイン対処
+    //fun onClickUnreachLink(view: View)
+    // 会員情報変更へのリンク
+    fun onRegistrationLink(view: View)
+    // 口座情報登録・変更へのリンク
+    fun onAccountRegistration(view: View)
+    // 通知設定へのリンク
+    fun onNotificationSettings(view: View)
+    // このアプリについてへのリンク
+    fun onAboutTheApp(view: View)
+    // よくある質問へのリンク
+    fun onFrequentQuestions(view: View)
+    // 問い合わせへのリンク
+    fun onInquiry(view: View)
+    // ログアウトへのリンク
+    fun onClickLogoutLink(view: View)
+}

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -12,6 +13,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
@@ -27,6 +29,11 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
+        // FIXME: マイページを選んでいるときはマイページが光るように修正
+//        // 下部のタブの選択肢を仕事を探すに変更
+//        val nav: BottomNavigationView = findViewById(R.id.mypage_view_navigation)
+//        nav.selectedItemId = R.id.tab_menu_search_jobs
 
         val binding: ActivityMypageBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_mypage)
@@ -57,9 +64,30 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-//    override fun onClickUnreachLink(view: View) {
+    //    override fun onClickUnreachLink(view: View) {
 //
 //    }
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.v("MENU ITEM SELECTED: ", item.toString())
+        when(item.itemId) {
+            R.id.tab_menu_search_jobs -> {
+                Intent(this, MapViewActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
+            }
+            R.id.tab_menu_applied_jobs -> {
+                Intent(this, OwnJobsActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
+            }
+            R.id.tab_menu_mypage -> {
+                // 何も行いません
+            }
+        }
+        return true
+    }
 
 }
 
@@ -77,4 +105,6 @@ interface MypageEventHandlers {
     fun onClickConfiguration(view: View)
     // お知らせ取得API
     //fun onClickUnreachLink(view: View)
+
+    fun onNavigationItemSelected(item: MenuItem): Boolean
 }

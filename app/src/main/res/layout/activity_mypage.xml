@@ -13,6 +13,9 @@
             type="jp.co.recruit.erikura.presenters.activities.MypageEventHandlers" />
     </data>
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -285,4 +288,16 @@
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
+    <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
+        android:id="@+id/mypage_view_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/tab_menu"
+        app:itemIconTint="@drawable/bottom_navigation_item_state"
+        app:itemTextColor="@drawable/bottom_navigation_item_state"
+        android:background="@drawable/background_border_top"
+        onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
+        />
+</RelativeLayout>
 </layout>
