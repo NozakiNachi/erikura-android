@@ -44,47 +44,49 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
 //    override fun onClickUnreachLink(view: View) {
-//        //
+//        // FIXME: リンク先の作成
 //    }
 
     override fun onRegistrationLink(view: View) {
-        // リンク先の作成
+        // FIXME: リンク先の作成
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onAccountRegistration(view: View) {
-        // リンク先の作成
+        // FIXME: リンク先の作成
         val intent = Intent(this, ConfigurationActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onNotificationSettings(view: View) {
-        // リンク先の作成
+        // FIXME: リンク先の作成
         val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onAboutTheApp(view: View) {
-        // リンク先の作成
+        // FIXME: リンク先の作成
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onFrequentQuestions(view: View) {
-        // リンク先の作成
+        // FIXME: リンク先の作成
         val intent = Intent(this, ConfigurationActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onInquiry(view: View) {
-        // リンク先の作成
+        // FIXME: リンク先の作成
         val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    override fun onClickLogout(view: View) {
-        MessageUtils.displayLogout(this)
+    override fun onClickLogoutLink(view: View) {
+        // ログアウトダイアログの表示
+        val intent = Intent(this, LogoutActivity::class.java)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 
@@ -121,5 +123,5 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         // 問い合わせへのリンク
         fun onInquiry(view: View)
         // ログアウトへのリンク
-        fun onClickLogout(view: View)
+        fun onClickLogoutLink(view: View)
     }
