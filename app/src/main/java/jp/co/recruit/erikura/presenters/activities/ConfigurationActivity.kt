@@ -84,7 +84,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     override fun onClickLogout(view: View) {
-//        MessageUtils.displayLogout(this)
+        MessageUtils.displayLogout(this)
     }
 }
 

@@ -105,6 +105,14 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- スタート画面 -->
         <activity
+            android:name=".presenters.activities.MypageActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- マイページ -->
+        <activity
+            android:name=".presenters.activities.ConfigurationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
+        <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher">
