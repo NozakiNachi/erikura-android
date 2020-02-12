@@ -66,9 +66,8 @@
                             style="@style/titleLabel"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
                             android:gravity="center"
-                            android:text="作業実施中"
+                            android:text="@string/jobDetails_working"
                             android:textColor="@color/vibrantGreen" />
 
                         <LinearLayout
@@ -86,7 +85,7 @@
                                 android:layout_marginRight="5dp"
                                 android:layout_weight="1"
                                 android:gravity="center"
-                                android:text="開始から"
+                                android:text="@string/jobDetails_startTo"
                                 android:textAllCaps="false" />
 
                             <TextView
@@ -132,7 +131,7 @@
                     android:layout_height="44dp"
                     android:layout_marginTop="20dp"
                     android:onClick="@{handlers::onClickCancelWorking}"
-                    android:text="作業をキャンセル" />
+                    android:text="@string/cancelWorking" />
 
 
                 <!-- サムネイル画像 -->
@@ -188,7 +187,7 @@
                         android:layout_marginRight="0dp"
                         android:layout_weight="20"
                         android:onClick="@{handlers::onClickStop}"
-                        android:text="作業を完了" />
+                        android:text="@string/stopJob" />
 
                     <ToggleButton
                         style="@style/favoriteButton"

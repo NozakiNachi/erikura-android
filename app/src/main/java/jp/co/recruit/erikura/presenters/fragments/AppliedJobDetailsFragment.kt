@@ -116,10 +116,6 @@ class AppliedJobDetailsFragment(
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        fitApiManager.startTime = Calendar.getInstance().run {
-            add(Calendar.DATE, -1)
-            time
-        }
 
         job?.let {
             Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {

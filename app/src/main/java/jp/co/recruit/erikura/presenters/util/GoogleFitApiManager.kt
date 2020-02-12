@@ -37,8 +37,6 @@ class GoogleFitApiManager {
                     .build()
     }
 
-    var startTime: Date = Date()
-
     fun checkPermission(): Boolean {
         return GoogleSignIn.hasPermissions(
             GoogleSignIn.getLastSignedInAccount(ErikuraApplication.instance.applicationContext),
@@ -67,10 +65,10 @@ class GoogleFitApiManager {
 //        Log.v("START TIME: ", startTime.toString())
 //        Log.v("END TIME: ", endTime.toString())
 
-//        val startTime = Calendar.getInstance().run {
-//            add(Calendar.DATE, -1)
-//            time
-//        }
+        val startTime = Calendar.getInstance().run {
+            add(Calendar.DATE, -1)
+            time
+        }
         val endTime = Date()
         Log.v("START TIME: ", startTime.toString())
         Log.v("END TIME: ", endTime.toString())

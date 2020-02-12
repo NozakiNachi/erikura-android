@@ -5,7 +5,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.text.SpannableStringBuilder
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,6 +37,9 @@ class WorkingJobDetailsFragment(
     private val viewModel: WorkingJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(WorkingJobDetailsFragmentViewModel::class.java)
     }
+
+    private var timer: Timer = Timer()
+    private var timerHandler: Handler = Handler()
 
     private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
     private val locationManager: LocationManager = ErikuraApplication.locationManager
@@ -84,6 +87,14 @@ class WorkingJobDetailsFragment(
         )
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView, "mapView")
         transaction.commit()
+
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimer()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onClickFavorite(view: View) {
@@ -101,6 +112,7 @@ class WorkingJobDetailsFragment(
     }
 
     override fun onClickCancelWorking(view: View) {
+        timer.cancel()
         job?.let {
             Api(activity).abortJob(job) {
                 val intent= Intent(activity, JobDetailsActivity::class.java)
@@ -112,6 +124,7 @@ class WorkingJobDetailsFragment(
     }
 
     override fun onClickStop(view: View) {
+        timer.cancel()
         if (!fitApiManager.checkPermission()) {
             fitApiManager.requestPermission(this)
         }
@@ -123,14 +136,20 @@ class WorkingJobDetailsFragment(
         fitApiManager.startFitnessSubscription(activity)
     }
 
-    private fun updateTimeCount(){
-
+    // 1秒ごとに呼び出される処理
+    private fun updateTimer(){
+        job?.let {
+            var now = Date()
+            var startTime = job.entry?.startedAt?: job.entry?.createdAt?: now
+            var time = now.time - startTime.time
+            viewModel.timeCount.value = String.format("%d分%02d秒", time/(60 * 1000), (time%(60 * 1000))/1000)
+        }
     }
 }
 
 class WorkingJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
-    val timeCount: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
+    val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun setup(activity: Activity, job: Job?, user: User) {
@@ -156,7 +175,7 @@ class WorkingJobDetailsFragmentViewModel: ViewModel() {
                 }
             }
 
-            timeCount.value = SpannableStringBuilder("5分02秒")
+            timeCount.value = "0分0秒"
         }
     }
 }

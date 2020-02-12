@@ -33,7 +33,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:gravity="center"
-                    android:text="作業をキャンセルしました" />
+                    android:text="@string/cancelWorkingDialog_caption" />
             </LinearLayout>
         </ScrollView>
 
