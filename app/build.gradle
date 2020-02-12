@@ -16,6 +16,8 @@ apply plugin: 'realm-android'
 //    - 名前: テスト用には適当な名前を設定
 //    - フィンガープリント： 以下の手順で取得
 //      * keytool -keystore ~/.android/debug.keystore -list -v
+//      うまくいかない時
+//      * keytool -list -keystore "C:\Users\<ユーザ名>\.android\debug.keystore" -v
 //      * SHA-1 の値をコピー
 //    - パッケージ名: AndroidManifest.xml より
 

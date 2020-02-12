@@ -253,7 +253,7 @@ data class StopJobRequest(
     var latitude: Double,
     var longitude: Double,
     var steps: Int,
-    var distance: Int,
+    var distance: Double,
     var floorAsc: Int,
     var floorDesc: Int
 )

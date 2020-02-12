@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.fitness.data.DataType
+import com.google.android.gms.fitness.data.Field
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -23,9 +26,11 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
+import jp.co.recruit.erikura.presenters.activities.job.WorkingFinishedActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class WorkingJobDetailsFragment(
@@ -115,7 +120,7 @@ class WorkingJobDetailsFragment(
         timer.cancel()
         job?.let {
             Api(activity).abortJob(job) {
-                val intent= Intent(activity, JobDetailsActivity::class.java)
+                val intent = Intent(activity, JobDetailsActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("onClickCancelWorking", true)
                 startActivity(intent)
@@ -125,29 +130,46 @@ class WorkingJobDetailsFragment(
 
     override fun onClickStop(view: View) {
         timer.cancel()
-        if (!fitApiManager.checkPermission()) {
-            fitApiManager.requestPermission(this)
+        if (fitApiManager.checkPermission()) {
+            job?.let {
+
+                // ステップ数の取得→距離の取得→stopJobの呼び出し
+                var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: Date()
+                fitApiManager.readAggregateStepDelta(
+                    fitApiManager.setAccount(activity),
+                    startTime,
+                    Date(),
+                    activity
+                ) {
+                    Log.v("Step", "$it")
+                }
+            }
+
+        }else {
+            job?.let {
+                Api(activity).stopJob(it, locationManager.latLng ?: locationManager.latLngOrDefault, 0, 0.0) {
+//                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
+//                    intent.putExtra("job", job)
+//                    startActivity(intent)
+                }
+            }
         }
-    }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        fitApiManager.startFitnessSubscription(activity)
     }
 
     // 1秒ごとに呼び出される処理
-    private fun updateTimer(){
+    private fun updateTimer() {
         job?.let {
             var now = Date()
-            var startTime = job.entry?.startedAt?: job.entry?.createdAt?: now
+            var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: now
             var time = now.time - startTime.time
-            viewModel.timeCount.value = String.format("%d分%02d秒", time/(60 * 1000), (time%(60 * 1000))/1000)
+            viewModel.timeCount.value =
+                String.format("%d分%02d秒", time / (60 * 1000), (time % (60 * 1000)) / 1000)
         }
     }
 }
 
-class WorkingJobDetailsFragmentViewModel: ViewModel() {
+class WorkingJobDetailsFragmentViewModel : ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)

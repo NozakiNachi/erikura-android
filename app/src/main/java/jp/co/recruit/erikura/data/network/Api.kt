@@ -203,6 +203,26 @@ class Api(var context: Context) {
         }
     }
 
+    fun stopJob(job: Job, latLng: LatLng, steps: Int, distance: Double, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.stopJob(
+                StopJobRequest(
+                    jobId = job.id,
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
+                    steps = steps,
+                    distance = distance,
+                    floorAsc = 0,
+                    floorDesc = 0
+                )
+            ),
+            onError = onError
+        ){ body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
     fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         executeObservable(
             erikuraApiService.recommendedJobs(job.id),

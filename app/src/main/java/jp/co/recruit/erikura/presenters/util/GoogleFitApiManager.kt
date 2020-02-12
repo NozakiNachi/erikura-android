@@ -12,7 +12,9 @@ import com.google.android.gms.fitness.Fitness
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.google.android.gms.fitness.data.Field
+import com.google.android.gms.fitness.data.Value
 import com.google.android.gms.fitness.request.DataReadRequest
+import com.google.android.gms.fitness.result.DataReadResponse
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import java.util.*
@@ -56,6 +58,22 @@ class GoogleFitApiManager {
         }
     }
 
+    fun requestPermission2(activity: FragmentActivity) {
+        if (!checkPermission()) {
+            // 権限のリクエスト
+            GoogleSignIn.requestPermissions(
+                activity,
+                REQUEST_OAUTH_REQUEST_CODE,
+                GoogleSignIn.getLastSignedInAccount(ErikuraApplication.instance.applicationContext),
+                fitnessOptions
+            )
+        }
+    }
+
+    fun setAccount(activity: FragmentActivity): GoogleSignInAccount {
+        return GoogleSignIn.getAccountForExtension(activity, fitnessOptions)
+    }
+
     fun startFitnessSubscription(activity: FragmentActivity) {
         Toast.makeText(applicationContext, "GoogleFit データ取得を開始します", Toast.LENGTH_LONG).show()
 
@@ -76,7 +94,7 @@ class GoogleFitApiManager {
         val googleSignInAccount: GoogleSignInAccount =
             GoogleSignIn.getAccountForExtension(activity, fitnessOptions)
 
-        readAggregateStepDelta(googleSignInAccount, startTime, endTime, activity)
+//        readAggregateStepDelta(googleSignInAccount, startTime, endTime, activity)
         readAggregateDistanceDelta(googleSignInAccount, startTime, endTime, activity)
 //        readStepCountDelta(googleSignInAccount, startTime, endTime, activity)
 //        readStepCountCumulative(googleSignInAccount, startTime, endTime, activity)
@@ -89,7 +107,8 @@ class GoogleFitApiManager {
         googleSignInAccount: GoogleSignInAccount,
         startTime: Date,
         endTime: Date,
-        activity: FragmentActivity
+        activity: FragmentActivity,
+        onComplete: (value: Value) -> Unit
     ) {
         val request = DataReadRequest.Builder()
             .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
@@ -112,6 +131,8 @@ class GoogleFitApiManager {
                         val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
                         val value = point.getValue(Field.FIELD_STEPS)
                         Log.d("Aggregate Steps", "$start $end $start2 $end2 $value")
+
+                        onComplete(value)
                     }
                 }
             }
