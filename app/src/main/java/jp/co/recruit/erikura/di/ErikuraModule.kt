@@ -7,6 +7,7 @@ import jp.co.recruit.erikura.data.network.GoogleMapApiServiceBuilder
 import jp.co.recruit.erikura.data.network.IErikuraApiService
 import jp.co.recruit.erikura.data.network.IGoogleMapApiService
 import jp.co.recruit.erikura.data.storage.AssetsManager
+import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import javax.inject.Singleton
 
@@ -30,5 +31,10 @@ class ErikuraModule {
     @Singleton
     @Provides fun providesLocationManger(): LocationManager {
         return LocationManager()
+    }
+
+    @Singleton
+    @Provides fun provideGoogleFitApiManager(): GoogleFitApiManager {
+        return GoogleFitApiManager()
     }
 }

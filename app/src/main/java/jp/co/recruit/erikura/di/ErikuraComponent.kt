@@ -4,6 +4,7 @@ import dagger.Component
 import jp.co.recruit.erikura.data.network.IErikuraApiService
 import jp.co.recruit.erikura.data.network.IGoogleMapApiService
 import jp.co.recruit.erikura.data.storage.AssetsManager
+import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import javax.inject.Singleton
 
@@ -15,5 +16,5 @@ interface ErikuraComponent {
     fun googleMapApiService(): IGoogleMapApiService
     fun assetsManager(): AssetsManager
     fun locationManger(): LocationManager
-
+    fun googleFitApiManager(): GoogleFitApiManager
 }

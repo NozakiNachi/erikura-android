@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragmentViewModel" />
+            type="jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragmentViewModel" />
+
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragmentEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragmentEventHandlers" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presenters.fragments.AppliedJobDetailsFragment">
+        tools:context=".presenters.fragments.WorkingJobDetailsFragment">
 
         <ScrollView
             android:layout_width="fill_parent"
@@ -37,57 +38,80 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@{viewModel.bitmapDrawable}">
+                    android:background="@{viewModel.bitmapDrawable}"
+                    android:orientation="vertical">
 
                     <!-- 簡易表示 -->
                     <FrameLayout
-                        android:id="@+id/appliedJobDetails_jobInfoViewFragment"
-                        android:background="@drawable/background_dialog_body"
+                        android:id="@+id/workingJobDetails_jobInfoViewFragment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"/>
+                        android:layout_marginTop="40dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/background_dialog_body" />
                     <!-- タイムリミット表示 -->
                     <LinearLayout
-                        android:background="@drawable/background_dialog_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
+                        android:background="@drawable/background_dialog_body"
+                        android:orientation="vertical"
                         android:padding="20dp">
 
                         <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
                             style="@style/titleLabel"
-                            android:gravity="center"
-                            android:textAllCaps="false"
-                            android:text="@{viewModel.timeLimit}" />
-                        <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
-                            style="@style/smallCaption"
-                            android:text="@string/jobDetails_pressButton"
-                            android:visibility="@{viewModel.msgVisibility}"/>
+                            android:gravity="center"
+                            android:text="@string/jobDetails_working"
+                            android:textColor="@color/vibrantGreen" />
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                style="@style/smallCaption"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="5dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@string/jobDetails_startTo"
+                                android:textAllCaps="false" />
+
+                            <TextView
+                                style="@style/titleLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="@{viewModel.timeCount}"
+                                android:textAllCaps="false" />
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:background="@drawable/background_triangle_reverse"/>
+                        android:background="@drawable/background_triangle_reverse" />
 
                 </LinearLayout>
 
                 <!-- マニュアル画像 -->
                 <FrameLayout
-                    android:id="@+id/appliedJobDetails_manualImageFragment"
+                    android:id="@+id/workingJobDetails_manualImageFragment"
                     android:layout_width="160dp"
                     android:layout_height="212dp"
                     android:layout_gravity="center"
@@ -95,21 +119,24 @@
 
                 <!-- マニュアル表示ボタン -->
                 <FrameLayout
-                    android:id="@+id/appliedJobDetails_manualButtonFragment"
+                    android:id="@+id/workingJobDetails_manualButtonFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp" />
 
-                <!-- この仕事をキャンセル -->
-                <FrameLayout
-                    android:id="@+id/appliedJobDetails_cancelButtonFragment"
+                <!-- 作業をキャンセル -->
+                <Button
+                    style="@style/tertiaryButton"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp" />
+                    android:layout_height="44dp"
+                    android:layout_marginTop="20dp"
+                    android:onClick="@{handlers::onClickCancelWorking}"
+                    android:text="@string/cancelWorking" />
+
 
                 <!-- サムネイル画像 -->
                 <FrameLayout
-                    android:id="@+id/appliedJobDetails_thumbnailImageFragment"
+                    android:id="@+id/workingJobDetails_thumbnailImageFragment"
                     android:layout_width="251dp"
                     android:layout_height="188dp"
                     android:layout_gravity="center"
@@ -117,34 +144,34 @@
 
                 <!-- 案件詳細情報 -->
                 <FrameLayout
-                    android:id="@+id/appliedJobDetails_jobDetailsViewFragment"
+                    android:id="@+id/workingJobDetails_jobDetailsViewFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp" />
 
                 <!-- 地図埋め込み -->
                 <FrameLayout
-                    android:id="@+id/appliedJobDetails_mapViewFragment"
+                    android:id="@+id/workingJobDetails_mapViewFragment"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="110dp"/>
+                    android:layout_marginBottom="110dp" />
 
             </LinearLayout>
 
 
         </ScrollView>
 
-        <!-- 作業開始ボタンとお気に入りボタン -->
+        <!-- 作業完了ボタンとお気に入りボタン -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:orientation="vertical">
+
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:context=".presenters.fragments.ApplyButtonFragment">
+                android:layout_height="wrap_content">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -152,29 +179,30 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:orientation="horizontal">
+
                     <Button
+                        style="@style/primaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:layout_marginRight="0dp"
                         android:layout_weight="20"
-                        style="@style/primaryButton"
-                        android:text="@string/startJob"
-                        android:onClick="@{handlers::onClickStart}" />
+                        android:onClick="@{handlers::onClickStop}"
+                        android:text="@string/stopJob" />
+
                     <ToggleButton
+                        style="@style/favoriteButton"
                         android:layout_width="70dp"
                         android:layout_height="68dp"
+                        android:layout_gravity="center"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="20dp"
-                        android:layout_gravity="center"
                         android:layout_weight="1"
-                        style="@style/favoriteButton"
                         android:checked="@={viewModel.favorited}"
                         android:onClick="@{handlers::onClickFavorite}" />
                 </LinearLayout>
 
             </FrameLayout>
         </LinearLayout>
-
 
     </FrameLayout>
 </layout>

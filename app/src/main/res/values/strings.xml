@@ -80,6 +80,9 @@
     <string name="jobDetails_goWorking">に現地に行って\n作業完了しましょう！</string>
     <string name="jobDetails_overLimit">納期を超過しています</string>
     <string name="jobDetails_pressButton">※現地に着いて、作業開始する時に「作業を開始」ボタンを押してください。</string>
+    <string name="jobDetails_manualImageURL">https://s3-ap-northeast-1.amazonaws.com/assets.prd.erikura.net/manual_pdfs/manual_thumbnail.png</string>
+    <string name="jobDetails_working">作業実施中</string>
+    <string name="jobDetails_startTo">開始から</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -104,6 +107,12 @@
     <!-- 応募キャンセルモーダル -->
     <string name="cancel_caption">この仕事をキャンセルしますか？</string>
     <string name="cancel_note">キャンセル理由が今後のお仕事に影響することはありません</string>
+
+    <!-- 作業開始モーダル -->
+    <string name="startDialog_caption">作業を開始しました！</string>
+
+    <!-- 作業キャンセルモーダル -->
+    <string name="cancelWorkingDialog_caption">作業をキャンセルしました</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -160,6 +169,9 @@
     <string name="jobDetail">この仕事の詳細</string>
     <string name="searchOtherJobs">他の仕事を探す</string>
     <string name="cancel">この仕事をキャンセル</string>
+    <string name="startJob">現地に行って\n作業を開始</string>
+    <string name="cancelWorking">作業をキャンセル</string>
+    <string name="stopJob">作業を完了</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

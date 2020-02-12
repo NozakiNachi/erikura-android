@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
@@ -14,6 +15,9 @@ import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
+import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
+import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
+import java.util.*
 
 
 class JobDetailsActivity : AppCompatActivity() {
@@ -21,6 +25,10 @@ class JobDetailsActivity : AppCompatActivity() {
     var job: Job = Job()
     var user: User = User()
     var fragment = Fragment()
+    var fromAppliedJobDetailsFragment: Boolean = false
+    var fromWorkingJobDetailsFragment: Boolean = false
+
+    private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -34,10 +42,13 @@ class JobDetailsActivity : AppCompatActivity() {
             handleIntent(intent)
         }
         Log.v("DEBUG", job.toString())
-    }
 
-    override fun onResume() {
-        super.onResume()
+        fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
+        fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
+    }
+    
+    override fun onStart() {
+        super.onStart()
         fetchJob()
     }
 
@@ -66,11 +77,10 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = NormalJobDetailsFragment(this, job, user)
             }
             JobStatus.Applied -> {
-                fragment = AppliedJobDetailsFragment(this, job, user)
+                fragment = AppliedJobDetailsFragment(this, job, user, fromWorkingJobDetailsFragment)
             }
             JobStatus.Working -> {
-                // FIXME: 作業中画面
-                fragment = NormalJobDetailsFragment(this, job, user)
+                fragment = WorkingJobDetailsFragment(this, job, user, fromAppliedJobDetailsFragment)
             }
             JobStatus.Finished -> {
                 // FIXME: 作業完了画面
@@ -88,6 +98,7 @@ class JobDetailsActivity : AppCompatActivity() {
         transaction.replace(R.id.job_details, fragment)
         transaction.commit()
     }
+
 
     private fun handleIntent(intent: Intent) {
         val appLinkData: Uri? = intent.data

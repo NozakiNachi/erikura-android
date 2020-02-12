@@ -6,10 +6,12 @@ import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
+import android.text.style.TextAppearanceSpan
 import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
@@ -95,6 +97,8 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
         var start = 0
         str.append(ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service))
         var end = str.length
+        val linkTextAppearanceSpan = TextAppearanceSpan(ErikuraApplication.instance.applicationContext, R.style.linkText)
+        str.setSpan(linkTextAppearanceSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         str.setSpan(object : ClickableSpan() {
             override fun onClick(view: View) {
                 onClickTermsOfService(view)
@@ -105,6 +109,8 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
         start = str.length
         str.append(ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy))
         end = str.length
+        val linkTextAppearanceSpan2 = TextAppearanceSpan(ErikuraApplication.instance.applicationContext, R.style.linkText)
+        str.setSpan(linkTextAppearanceSpan2, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         str.setSpan(object : ClickableSpan() {
             override fun onClick(view: View) {
                 onClickPrivacyPolicy(view)

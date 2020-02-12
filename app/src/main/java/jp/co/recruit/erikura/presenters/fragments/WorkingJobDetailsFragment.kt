@@ -3,12 +3,9 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ForegroundColorSpan
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,8 +20,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
-import jp.co.recruit.erikura.presenters.activities.job.CancelWorkingDialogFragment
+import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
@@ -32,15 +28,18 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
 
 
-class AppliedJobDetailsFragment(
+class WorkingJobDetailsFragment(
     private val activity: AppCompatActivity,
     val job: Job?,
     val user: User,
-    private val fromWorkingJob: Boolean = false
-) : Fragment(), AppliedJobDetailsFragmentEventHandlers {
-    private val viewModel: AppliedJobDetailsFragmentViewModel by lazy {
-        ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
+    private val fromAppliedJob: Boolean = false
+) : Fragment(), WorkingJobDetailsFragmentEventHandlers {
+    private val viewModel: WorkingJobDetailsFragmentViewModel by lazy {
+        ViewModelProvider(this).get(WorkingJobDetailsFragmentViewModel::class.java)
     }
+
+    private var timer: Timer = Timer()
+    private var timerHandler: Handler = Handler()
 
     private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
     private val locationManager: LocationManager = ErikuraApplication.locationManager
@@ -50,10 +49,9 @@ class AppliedJobDetailsFragment(
         savedInstanceState: Bundle?
     ): View? {
         container?.removeAllViews()
-        val binding = FragmentAppliedJobDetailsBinding.inflate(inflater, container, false)
+        val binding = FragmentWorkingJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         viewModel.setup(activity, job, user)
-        updateTimeLimit()
         binding.viewModel = viewModel
         binding.handlers = this
         return binding.root
@@ -62,35 +60,41 @@ class AppliedJobDetailsFragment(
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        if (fromWorkingJob) {
-            val dialog = CancelWorkingDialogFragment()
-            dialog.show(childFragmentManager, "CancelWorking")
+        if (fromAppliedJob) {
+            val dialog = StartDialogFragment(job)
+            dialog.show(childFragmentManager, "Start")
         }
 
         val transaction = childFragmentManager.beginTransaction()
         val jobInfoView = JobInfoViewFragment(job)
         val manualImage = ManualImageFragment(job)
-        val cancelButton = CancelButtonFragment(job)
         val manualButton = ManualButtonFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
-        transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage, "manualImage")
-        transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton, "cancelButton")
-        transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton, "manualButton")
+        transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
+        transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage, "manualImage")
+        transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton, "manualButton")
         transaction.add(
-            R.id.appliedJobDetails_thumbnailImageFragment,
+            R.id.workingJobDetails_thumbnailImageFragment,
             thumbnailImage,
             "thumbnailImage"
         )
         transaction.add(
-            R.id.appliedJobDetails_jobDetailsViewFragment,
+            R.id.workingJobDetails_jobDetailsViewFragment,
             jobDetailsView,
             "jobDetailsView"
         )
-        transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView, "mapView")
+        transaction.add(R.id.workingJobDetails_mapViewFragment, mapView, "mapView")
         transaction.commit()
+
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimer()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onClickFavorite(view: View) {
@@ -107,64 +111,45 @@ class AppliedJobDetailsFragment(
         }
     }
 
-    override fun onClickStart(view: View) {
-        if (!fitApiManager.checkPermission()) {
-            fitApiManager.requestPermission(this)
-        }
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
+    override fun onClickCancelWorking(view: View) {
+        timer.cancel()
         job?.let {
-            Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
+            Api(activity).abortJob(job) {
                 val intent= Intent(activity, JobDetailsActivity::class.java)
                 intent.putExtra("job", job)
-                intent.putExtra("onClickStart", true)
+                intent.putExtra("onClickCancelWorking", true)
                 startActivity(intent)
             }
         }
     }
 
-    private fun updateTimeLimit() {
-        val str = SpannableStringBuilder()
-        val today = Date().time
-        val limit = job?.entry?.limitAt?.time ?: 0
-        val diff: Int = limit.toInt() - today.toInt()
-        if (diff >= 0) {
-            val diffHours = diff / (1000 * 60 * 60)
-            val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+    override fun onClickStop(view: View) {
+        timer.cancel()
+        if (!fitApiManager.checkPermission()) {
+            fitApiManager.requestPermission(this)
+        }
+    }
 
-            if (diffHours == 0) {
-                str.append("あと${diffMinutes}分以内\n")
-            } else if (diffMinutes == 0) {
-                str.append("あと${diffHours}時間以内\n")
-            } else {
-                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
-            }
-            str.setSpan(
-                ForegroundColorSpan(Color.RED),
-                0,
-                str.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorking))
-            viewModel.timeLimit.value = str
-            viewModel.msgVisibility.value = View.VISIBLE
-        } else {
-            str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-            str.setSpan(R.color.colorAccent, 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            viewModel.timeLimit.value = str
-            viewModel.msgVisibility.value = View.GONE
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        fitApiManager.startFitnessSubscription(activity)
+    }
+
+    // 1秒ごとに呼び出される処理
+    private fun updateTimer(){
+        job?.let {
+            var now = Date()
+            var startTime = job.entry?.startedAt?: job.entry?.createdAt?: now
+            var time = now.time - startTime.time
+            viewModel.timeCount.value = String.format("%d分%02d秒", time/(60 * 1000), (time%(60 * 1000))/1000)
         }
     }
 }
 
-class AppliedJobDetailsFragmentViewModel : ViewModel() {
+class WorkingJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
-    val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
-    val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun setup(activity: Activity, job: Job?, user: User) {
@@ -189,11 +174,14 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
                     favorited.value = it
                 }
             }
+
+            timeCount.value = "0分0秒"
         }
     }
 }
 
-interface AppliedJobDetailsFragmentEventHandlers {
+interface WorkingJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
-    fun onClickStart(view: View)
+    fun onClickCancelWorking(view: View)
+    fun onClickStop(view: View)
 }

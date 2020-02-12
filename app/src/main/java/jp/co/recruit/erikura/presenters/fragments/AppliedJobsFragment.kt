@@ -60,8 +60,8 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
         return binding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
+    override fun onResume() {
+        super.onResume()
 
         fetchEntriedJobs()
         fetchStartedJobs()
@@ -83,6 +83,13 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
             viewModel.startedJobs.value = jobs
             jobListAdapter.jobs = viewModel.appliedJobs
             jobListAdapter.notifyDataSetChanged()
+
+            if (!jobs.isNullOrEmpty()) {
+                val transaction = childFragmentManager.beginTransaction()
+                val timerCircle = WorkingTimeCircleFragment(jobs.first())
+                transaction.replace(R.id.applied_jobs_timer_circle, timerCircle, "timerCircle")
+                transaction.commit()
+            }
         }
     }
 }

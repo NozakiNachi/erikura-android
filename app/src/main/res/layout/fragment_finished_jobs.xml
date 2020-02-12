@@ -1,19 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".presenters.fragments.FinishedJobsFragment">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel" />
+    </data>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="実施済みの仕事一覧を実装する" />
+                android:text="実施済み（未報告）の仕事"
+                style="@style/label_w2"
+                android:textSize="22dp"
+                android:textColor="@color/black"
+                android:paddingTop="40dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:background="@color/paleGrey"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@drawable/background_triangle"
+                />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/job_list_item_timelimit"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:includeFontPadding="false"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:textColor="@{viewModel.textColor}"
+                    android:textSize="12dp" />
+
+                <TextView
+                    android:id="@+id/job_list_item_distance"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:includeFontPadding="false"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:text="@{viewModel.distance}"
+                    android:textColor="@color/warmGrey"
+                    android:textSize="12dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/applied_jobs_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                android:padding="20dp"
+                />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </layout>

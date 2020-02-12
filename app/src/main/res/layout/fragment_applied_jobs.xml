@@ -3,51 +3,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presenters.fragments.AppliedJobsFragment">
-    
+
     <data>
+
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.AppliedJobsViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.fragments.AppliedJobsHandlers" />
     </data>
-    
-    <androidx.core.widget.NestedScrollView
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <LinearLayout
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="未実施の仕事"
-                style="@style/label_w2"
-                android:textSize="22dp"
-                android:textColor="@color/black"
-                android:paddingTop="40dp"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:paddingBottom="10dp"
-                android:background="@color/paleGrey"
-                />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:background="@drawable/background_triangle" />
+                android:orientation="vertical">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/applied_jobs_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:orientation="vertical"
-                android:padding="20dp"
-                />
-            <!-- FIXME: 0件の場合の表示 -->
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                <TextView
+                    style="@style/label_w2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/paleGrey"
+                    android:paddingLeft="20dp"
+                    android:paddingTop="40dp"
+                    android:paddingRight="20dp"
+                    android:paddingBottom="10dp"
+                    android:text="未実施の仕事"
+                    android:textColor="@color/black"
+                    android:textSize="22dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_triangle" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/applied_jobs_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                <!-- FIXME: 0件の場合の表示 -->
+            </LinearLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+        <FrameLayout
+            android:id="@+id/applied_jobs_timer_circle"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="110dp"
+            android:layout_gravity="bottom|right" />
+    </FrameLayout>
 </layout>

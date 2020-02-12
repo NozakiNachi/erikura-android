@@ -174,6 +174,35 @@ class Api(var context: Context) {
         }
     }
 
+    fun startJob(job: Job, latLng: LatLng, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.startJob(
+                StartJobRequest(
+                    jobId = job.id,
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
+                    steps = 0,
+                    distance = 0,
+                    floorAsc = 0,
+                    floorDesc = 0
+            )),
+            onError = onError
+        ){ body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
+    fun abortJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.abortJob(AbortJobRequest(job.id, job.entryId?: 0)),
+            onError = onError
+        ){ body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
     fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         executeObservable(
             erikuraApiService.recommendedJobs(job.id),
@@ -233,7 +262,11 @@ class Api(var context: Context) {
 
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
         // OkHttp3 クライアントを作成します
-        val client = ErikuraApiServiceBuilder().httpBuilder.build()
+        var client = ErikuraApiServiceBuilder().httpBuilder.build()
+        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
+            client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
+        }
+
         val observable: Observable<HttpResponse> = Observable.create {
             try {
                 val request = HttpRequest.Builder().url(url).get().build()
@@ -273,6 +306,8 @@ class Api(var context: Context) {
                 }
             )
     }
+
+
 
     fun geocode(keyword: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: LatLng) -> Unit) {
         googleMapApiService.geocode(BuildConfig.GEOCODING_API_KEY, keyword)
