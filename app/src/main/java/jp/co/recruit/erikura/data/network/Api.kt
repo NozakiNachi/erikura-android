@@ -308,6 +308,51 @@ class Api(var context: Context) {
     }
 
 
+    fun downloadResourceFromAWS(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+        // OkHttp3 クライアントを作成します
+        var client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
+
+        val observable: Observable<HttpResponse> = Observable.create {
+            try {
+                val request = HttpRequest.Builder().url(url).get().build()
+                val response = client.newCall(request).execute()
+                it.onNext(response)
+                it.onComplete()
+            }
+            catch (e: IOException) {
+                Log.e("Error in downloading resource", e.message, e)
+                it.onError(e)
+            }
+        }
+
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { response ->
+                    if (response.isSuccessful) {
+                        response.body?.let { body ->
+                            destination.outputStream().use { os ->
+                                IOUtils.copy(body.byteStream(), os)
+                            }
+                        }
+                        onComplete(destination)
+                    }
+                    else {
+                        onError?.let {
+                            it(listOf("Download Error"))
+                        }
+                    }
+                },
+                onError = { e ->
+                    Log.e("Download Error", e.message, e)
+                    onError?.let {
+                        it(listOf(e.message ?: "Download Error"))
+                    }
+                }
+            )
+    }
+
+
 
     fun geocode(keyword: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: LatLng) -> Unit) {
         googleMapApiService.geocode(BuildConfig.GEOCODING_API_KEY, keyword)
