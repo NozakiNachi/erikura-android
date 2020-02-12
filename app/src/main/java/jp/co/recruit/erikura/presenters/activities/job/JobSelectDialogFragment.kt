@@ -95,7 +95,7 @@ interface JobSelectDialogHandler {
     fun onClickClose(view: View)
 }
 
-class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>, var currentPosition: LatLng?) : RecyclerView.Adapter<JobListHolder>() {
+class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>, var currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType = JobUtil.TimeLabelType.SEARCH) : RecyclerView.Adapter<JobListHolder>() {
     var onClickListner: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobListHolder {
@@ -114,7 +114,7 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
     }
 
     override fun onBindViewHolder(holder: JobListHolder, position: Int) {
-        holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition)
+        holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition = currentPosition, timeLabelType = timeLabelType)
         holder.binding.lifecycleOwner = activity
 
         holder.binding.root.setOnClickListener {

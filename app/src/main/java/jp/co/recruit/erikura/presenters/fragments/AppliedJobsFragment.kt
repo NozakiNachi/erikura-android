@@ -41,12 +41,12 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        jobListAdapter = JobListAdapter(activity!!, listOf(), null).also {
+        jobListAdapter = JobListAdapter(activity!!, listOf(), currentPosition = null, timeLabelType = JobUtil.TimeLabelType.OWNED).also {
             it.onClickListner = object: JobListAdapter.OnClickListener {
                 override fun onClick(job: Job) {
-                    Intent(activity, JobDetailsActivity::class.java).let {
-                        it.putExtra("job", job)
-                        startActivity(it, ActivityOptions.makeSceneTransitionAnimation(activity!!).toBundle())
+                    Intent(activity, JobDetailsActivity::class.java).let { intent ->
+                        intent.putExtra("job", job)
+                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity!!).toBundle())
                     }
                 }
             }

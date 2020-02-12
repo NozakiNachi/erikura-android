@@ -11,9 +11,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import java.text.SimpleDateFormat
 
-class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng?): ViewModel() {
+class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType): ViewModel() {
     val assetsManager = ErikuraApplication.assetsManager
     val resources = activity.resources
     val dateFormat = SimpleDateFormat("YYYY/MM/dd HH:mm")
@@ -29,7 +30,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     val distance: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
 
     init {
-        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job)
+        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType)
         textColor.value = timeLimitColor
         timeLimit.value = timeLimitText
 
