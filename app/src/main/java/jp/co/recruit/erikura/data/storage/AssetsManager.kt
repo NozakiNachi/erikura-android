@@ -38,7 +38,7 @@ class AssetsManager {
     private val completionCallbackMap: MutableMap<String, MutableList<CompletionCallback>> = HashMap()
     val realm: Realm = ErikuraApplication.realm
 
-    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, fromAWS: Boolean = false, onComplete: (image: Bitmap) -> Unit) {
         lookupAsset(url)?.also { asset ->
             val file = File(asset.path)
             if (file.exists()) {
@@ -52,7 +52,7 @@ class AssetsManager {
                 }
             }
             else {
-                downloadAsset(activity, url, type) { asset ->
+                downloadAsset(activity, url, type, fromAWS) { asset ->
                     try {
                         BitmapFactory.decodeFile(asset.path)?.let {
                             onComplete(it)
@@ -64,7 +64,7 @@ class AssetsManager {
                 }
             }
         } ?: run {
-            downloadAsset(activity, url, type) { asset ->
+            downloadAsset(activity, url, type, fromAWS) { asset ->
                 try {
                     BitmapFactory.decodeFile(asset.path)?.let {
                         onComplete(it)
@@ -112,6 +112,7 @@ class AssetsManager {
         activity: Activity,
         urlString: String,
         type: Asset.AssetType = Asset.AssetType.Other,
+        fromAWS: Boolean = false,
         downloadHandler: ((activity: Activity, urlString: String, type: Asset.AssetType, onComplete: (asset: Asset) -> Unit) -> Unit)? = null,
         onComplete: CompletionCallback
     ){
@@ -134,7 +135,7 @@ class AssetsManager {
                     downloadHandler(activity, urlString, type, completeHandler)
                 }
                 else {
-                    downloadAssetImpl(activity, urlString, type, completeHandler)
+                    downloadAssetImpl(activity, urlString, type, fromAWS, completeHandler)
                 }
             }
         }
@@ -144,14 +145,23 @@ class AssetsManager {
         activity: Activity,
         urlString: String,
         type: Asset.AssetType = Asset.AssetType.Other,
+        fromAWS: Boolean = false,
         onComplete: CompletionCallback
     ) {
         synchronized(lock) {
             val url = adjustURL(URL(urlString))
             val dest: File = generateDownloadFile()
-            Api(activity).downloadResource(url, dest) { file ->
-                registerAsset(url.toString(), type, file)?.let { asset ->
-                    onComplete(asset)
+            if (fromAWS) {
+                Api(activity).downloadResourceFromAWS(url, dest) { file ->
+                    registerAsset(url.toString(), type, file)?.let { asset ->
+                        onComplete(asset)
+                    }
+                }
+            }else {
+                Api(activity).downloadResource(url, dest) { file ->
+                    registerAsset(url.toString(), type, file)?.let { asset ->
+                        onComplete(asset)
+                    }
                 }
             }
         }

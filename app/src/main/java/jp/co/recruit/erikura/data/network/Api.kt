@@ -217,6 +217,26 @@ class Api(var context: Context) {
         }
     }
 
+    fun stopJob(job: Job, latLng: LatLng, steps: Int, distance: Double, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+        executeObservable(
+            erikuraApiService.stopJob(
+                StopJobRequest(
+                    jobId = job.id,
+                    latitude = latLng.latitude,
+                    longitude = latLng.longitude,
+                    steps = steps,
+                    distance = distance,
+                    floorAsc = 0,
+                    floorDesc = 0
+                )
+            ),
+            onError = onError
+        ){ body ->
+            val id = body.entryId
+            onComplete(id)
+        }
+    }
+
     fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         executeObservable(
             erikuraApiService.recommendedJobs(job.id),
@@ -280,6 +300,51 @@ class Api(var context: Context) {
         if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
             client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
         }
+
+        val observable: Observable<HttpResponse> = Observable.create {
+            try {
+                val request = HttpRequest.Builder().url(url).get().build()
+                val response = client.newCall(request).execute()
+                it.onNext(response)
+                it.onComplete()
+            }
+            catch (e: IOException) {
+                Log.e("Error in downloading resource", e.message, e)
+                it.onError(e)
+            }
+        }
+
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { response ->
+                    if (response.isSuccessful) {
+                        response.body?.let { body ->
+                            destination.outputStream().use { os ->
+                                IOUtils.copy(body.byteStream(), os)
+                            }
+                        }
+                        onComplete(destination)
+                    }
+                    else {
+                        onError?.let {
+                            it(listOf("Download Error"))
+                        }
+                    }
+                },
+                onError = { e ->
+                    Log.e("Download Error", e.message, e)
+                    onError?.let {
+                        it(listOf(e.message ?: "Download Error"))
+                    }
+                }
+            )
+    }
+
+
+    fun downloadResourceFromAWS(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+        // OkHttp3 クライアントを作成します
+        var client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
 
         val observable: Observable<HttpResponse> = Observable.create {
             try {

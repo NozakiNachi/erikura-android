@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.android.gms.fitness.data.DataType
+import com.google.android.gms.fitness.data.Field
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -18,6 +20,7 @@ import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class JobDetailsActivity : AppCompatActivity() {
