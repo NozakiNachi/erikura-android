@@ -17,11 +17,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.OwnJobQuery
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
+import jp.co.recruit.erikura.presenters.fragments.WorkingTimeCircleFragment
 import java.lang.IllegalArgumentException
 
 class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
@@ -123,6 +126,18 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
             }
         }
         return true
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Api(this).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
+            if (!jobs.isNullOrEmpty()) {
+                val transaction = supportFragmentManager.beginTransaction()
+                val timerCircle = WorkingTimeCircleFragment(jobs.first())
+                transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
+                transaction.commit()
+            }
+        }
     }
 }
 
