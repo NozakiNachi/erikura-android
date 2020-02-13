@@ -51,7 +51,12 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
             sb.append("検索地点より")
 
             val start = sb.length
-            sb.append(String.format("%,dm", dist.toInt()))
+            if (dist < 1000.0) {
+                sb.append(String.format("%,dm", dist.toInt()))
+            }else {
+                var distDouble: Double = dist / 1000
+                sb.append(String.format("%.1fkm", distDouble))
+            }
             sb.setSpan(
                 RelativeSizeSpan(16.0f / 12.0f),
                 start,
