@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
@@ -70,10 +72,23 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
         fetchReportedJobs()
     }
 
+    override fun onTargetMonthSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        viewModel.months.value?.let {
+            val item = it[position]
+            viewModel.targetMonth.value = item
+
+            // 取り直しを行います
+            fetchReportedJobs()
+        }
+    }
+
+
     private fun fetchReportedJobs() {
-        // FIXME: 年月の変更時の再fetch
-        // FIXME: レポート期間を ViewModel から取得する
-        Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED)) { jobs ->
+        val targetMonth = viewModel.targetMonth.value ?: Date()
+        val startDate = DateUtils.beginningOfMonth(targetMonth)
+        val endDate = DateUtils.endOfMonth(targetMonth)
+
+        Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED, reportedFrom = startDate, reportedTo = endDate)) { jobs ->
             viewModel.reportedJobs.value = jobs
             jobListAdapter.jobs = viewModel.reportedJobs.value ?: listOf()
             jobListAdapter.notifyDataSetChanged()
@@ -84,6 +99,7 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
 }
 
 class ReportedJobsViewModel: ViewModel() {
+    val targetMonth: MutableLiveData<Date> = MutableLiveData()
     val reportedJobs: MutableLiveData<List<Job>> = MutableLiveData()
     val months: MutableLiveData<List<Date>> = MutableLiveData()
     val monthsLabels = MediatorLiveData<List<String>>().also { result ->
@@ -93,40 +109,23 @@ class ReportedJobsViewModel: ViewModel() {
         }
     }
 
-//    val jobKindsItems = MediatorLiveData<List<JobKindItem>>().also { result ->
-//        result.addSource(jobKinds) {
-//            val items = mutableListOf<JobKindItem>(JobKindItem.Nothing)
-//            it.forEach { jobKind -> items.add(JobKindItem.Item(jobKind)) }
-//            result.value = items
-//        }
-//    }
-//
-//    var workingTimes: List<Int> = listOf()
-//        set(value) {
-//            field = value
-//            minimumWorkingTimeItems.value = (listOf(JobQuery.MIN_WORKING_TIME) + value).filterNotNull().map {
-//                Log.v("TEST", "${formatWorkingTime(it)}, ${it}")
-//                PickerItem(formatWorkingTime(it), it)
-//            }
-//            maximumWorkingTimeItems.value = (value + listOf(JobQuery.MAX_WORKING_TIME)).filterNotNull().map {
-//                Log.v("TEST", "${formatWorkingTime(it)}, ${it}")
-//                PickerItem(formatWorkingTime(it), it)
-//            }
-//        }
-//    var rewards: List<Int> = listOf()
-//        set(value) {
-//            field = value
-//            minimumRewardItems.value = (listOf(JobQuery.MIN_REWARD) + value).map { PickerItem(formatReward(it), it) }
-//            maximumRewardItems.value = (value + listOf(JobQuery.MAX_REWARD)).map { PickerItem(formatReward(it), it) }
-//        }
-//
-//    init {
-//        this.workingTimes = ErikuraConfig.workingTimeRange
-//        this.rewards = ErikuraConfig.rewardRange
-//        this.workingTimeLabel.value = formatWorkingTimeText()
-//        this.rewardLabel.value = formatRewardText()
-//    }
+    init {
+        // 選択可能な年月を取得します
+        val currentMonth = DateUtils.truncate(Date(), Calendar.MONTH)
+        val cal = Calendar.getInstance()
+        cal.time = currentMonth
+        cal.add(Calendar.YEAR, -3)
+        val monthsList = mutableListOf<Date>()
+        while (cal.time <= currentMonth) {
+            monthsList.add(cal.time)
+            cal.add(Calendar.MONTH, 1)
+        }
+        months.value = monthsList.reversed()
+        targetMonth.value = currentMonth
+        // FIXME: 初期選択情報の更新
+    }
 }
 
 interface ReportedJobsHandler {
+    fun onTargetMonthSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
 }

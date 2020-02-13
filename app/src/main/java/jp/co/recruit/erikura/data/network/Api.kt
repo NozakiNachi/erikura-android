@@ -23,6 +23,7 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.net.URL
+import java.text.SimpleDateFormat
 
 class Api(var context: Context) {
     companion object {
@@ -386,8 +387,6 @@ class Api(var context: Context) {
             )
     }
 
-
-
     fun geocode(keyword: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: LatLng) -> Unit) {
         googleMapApiService.geocode(BuildConfig.GEOCODING_API_KEY, keyword)
             .subscribeOn(Schedulers.io())
@@ -426,10 +425,12 @@ class Api(var context: Context) {
     }
 
     fun ownJob(query: OwnJobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+
         executeObservable(erikuraApiService.ownJobs(
             status = query.status.code,
-            reportedAtFrom = query.reportedFrom,
-            reportedAtTo = query.reportedTo
+            reportedAtFrom = query.reportedFrom?.let{ sdf.format(it) },
+            reportedAtTo = query.reportedTo?.let{ sdf.format(it) }
         ), onError = onError) { response ->
             onComplete(response.jobs)
         }
