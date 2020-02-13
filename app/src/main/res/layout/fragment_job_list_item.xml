@@ -49,6 +49,49 @@
                 android:includeFontPadding="false"
                 android:layout_marginLeft="0dp"
                 />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                >
+                <TextView
+                    android:id="@+id/job_list_item_comment"
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:background="@drawable/background_roundrect_topaz"
+                    android:drawableLeft="@drawable/icon_comment_10"
+                    android:drawablePadding="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    style="@style/label_w2"
+                    android:textSize="12dp"
+                    android:textColor="@color/black"
+                    android:text="@{viewModel.commentText}"
+                    android:visibility="@{viewModel.commentVisible}"
+                    />
+                <TextView
+                    android:id="@+id/job_list_item_good"
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="@drawable/background_roundrect_topaz"
+                    android:drawableLeft="@drawable/icon_good_10"
+                    android:drawablePadding="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    style="@style/label_w2"
+                    android:textSize="12dp"
+                    android:textColor="@color/black"
+                    android:text="@{viewModel.goodText}"
+                    android:visibility="@{viewModel.goodVisible}"
+                    />
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
         <TextView
             android:id="@+id/job_list_item_title"

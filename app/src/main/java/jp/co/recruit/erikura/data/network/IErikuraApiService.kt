@@ -57,8 +57,8 @@ interface IErikuraApiService {
     @GET("jobs/own")
     fun ownJobs(
         @Query("status") status: String,
-        @Query("reported_at_from") reportedAtFrom: Date? = null,
-        @Query("reported_at_to") reportedAtTo: Date? = null
+        @Query("reported_at_from") reportedAtFrom: String? = null,
+        @Query("reported_at_to") reportedAtTo: String? = null
     ): ApiObservable<JobsResponse>
 
     @GET("jobs/kind")
@@ -143,12 +143,6 @@ interface IErikuraApiService {
     // FIXME: erikuraConfig
     @GET("utils/erikura_config")
     fun erikuraConfig(): ApiObservable<ErikuraConfigMap>
-
-//    def erikura_config
-//    render_success({
-//        reward_range: ErikuraConfig.reward_range.split(/\R/).map(&:to_i),
-//        working_time_range: ErikuraConfig.working_time_range.split(/\R/).map(&:to_i)
-//    })
 }
 
 typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>

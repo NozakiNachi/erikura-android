@@ -8,6 +8,7 @@ import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -261,6 +262,9 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         catch (e: Resources.NotFoundException) {
             Log.e("ERROR", e.message, e)
         }
+
+        val mapPadding = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 164.0f, resources.displayMetrics).toInt()
+        mMap.setPadding(0, mapPadding, 0, mapPadding)
 
         // カメラ移動に関するコールバックの登録
         mMap.setOnCameraMoveStartedListener { onCameraMoveStarted(it) }

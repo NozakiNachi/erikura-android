@@ -1,106 +1,131 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.content.Context
-import android.net.Uri
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Spinner
+import android.widget.AdapterView
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.OwnJobQuery
+import jp.co.recruit.erikura.business.util.DateUtils
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.databinding.FragmentReportedJobsBinding
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
+import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
+import java.text.SimpleDateFormat
+import java.util.*
 
-//// TODO: Rename parameter arguments, choose names that match
-//// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-//private const val ARG_PARAM1 = "param1"
-//private const val ARG_PARAM2 = "param2"
-//
-///**
-// * A simple [Fragment] subclass.
-// * Activities that contain this fragment must implement the
-// * [ReportedJobsFragment.OnFragmentInteractionListener] interface
-// * to handle interaction events.
-// * Use the [ReportedJobsFragment.newInstance] factory method to
-// * create an instance of this fragment.
-// */
-class ReportedJobsFragment : Fragment() {
-//    // TODO: Rename and change types of parameters
-//    private var param1: String? = null
-//    private var param2: String? = null
-//    private var listener: OnFragmentInteractionListener? = null
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    val prefectureSpinner = findViewById<Spinner>(R.id.reportedWork_date)
-//    prefectureSpinner.isFocusable = true
-//    prefectureSpinner.isFocusableInTouchMode = true
-//    }
+class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
+    private val viewModel: ReportedJobsViewModel by lazy {
+        ViewModelProvider(this).get(ReportedJobsViewModel::class.java)
+    }
+
+    private lateinit var jobListView: RecyclerView
+    private lateinit var jobListAdapter: JobListAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_reported_jobs, container, false)
+        val binding: FragmentReportedJobsBinding = DataBindingUtil.inflate(
+            inflater, R.layout.fragment_reported_jobs, container, false
+        )
+        binding.lifecycleOwner = activity
+        binding.viewModel = viewModel
+        binding.handlers = this
+
+        jobListAdapter = JobListAdapter(activity!!, listOf(), currentPosition = null, timeLabelType = JobUtil.TimeLabelType.OWNED).also {
+            it.onClickListner = object: JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    Intent(activity, JobDetailsActivity::class.java).let { intent ->
+                        intent.putExtra("job", job)
+                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity!!).toBundle())
+                    }
+                }
+            }
+        }
+        jobListView = binding.root.findViewById(R.id.applied_jobs_recycler_view)
+        jobListView.setHasFixedSize(true)
+        jobListView.adapter = jobListAdapter
+        jobListView.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
+        jobListView.addItemDecoration(JobListItemDecorator())
+
+        return binding.root
     }
 
-//    // TODO: Rename method, update argument and hook method into UI event
-//    fun onButtonPressed(uri: Uri) {
-//        listener?.onFragmentInteraction(uri)
-//    }
-//
-//    override fun onAttach(context: Context) {
-//        super.onAttach(context)
-//        if (context is OnFragmentInteractionListener) {
-//            listener = context
-//        } else {
-//            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
-//        }
-//    }
-//
-//    override fun onDetach() {
-//        super.onDetach()
-//        listener = null
-//    }
-//
-//    /**
-//     * This interface must be implemented by activities that contain this
-//     * fragment to allow an interaction in this fragment to be communicated
-//     * to the activity and potentially other fragments contained in that
-//     * activity.
-//     *
-//     *
-//     * See the Android Training lesson [Communicating with Other Fragments]
-//     * (http://developer.android.com/training/basics/fragments/communicating.html)
-//     * for more information.
-//     */
-//    interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        fun onFragmentInteraction(uri: Uri)
-//    }
-//
-//    companion object {
-//        /**
-//         * Use this factory method to create a new instance of
-//         * this fragment using the provided parameters.
-//         *
-//         * @param param1 Parameter 1.
-//         * @param param2 Parameter 2.
-//         * @return A new instance of fragment ReportedJobsFragment.
-//         */
-//        // TODO: Rename and change types and number of parameters
-//        @JvmStatic
-//        fun newInstance(param1: String, param2: String) =
-//            ReportedJobsFragment().apply {
-//                arguments = Bundle().apply {
-//                    putString(ARG_PARAM1, param1)
-//                    putString(ARG_PARAM2, param2)
-//                }
-//            }
-//    }
+    override fun onResume() {
+        super.onResume()
+
+        fetchReportedJobs()
+    }
+
+    override fun onTargetMonthSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        viewModel.months.value?.let {
+            val item = it[position]
+            viewModel.targetMonth.value = item
+
+            // 取り直しを行います
+            fetchReportedJobs()
+        }
+    }
+
+
+    private fun fetchReportedJobs() {
+        val targetMonth = viewModel.targetMonth.value ?: Date()
+        val startDate = DateUtils.beginningOfMonth(targetMonth)
+        val endDate = DateUtils.endOfMonth(targetMonth)
+
+        Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED, reportedFrom = startDate, reportedTo = endDate)) { jobs ->
+            viewModel.reportedJobs.value = jobs
+            jobListAdapter.jobs = viewModel.reportedJobs.value ?: listOf()
+            jobListAdapter.notifyDataSetChanged()
+            // FIXME: 0件になる場合の表示内容の更新
+            // FIXME: トラッキングタグの送出(jobIdが必要)
+        }
+    }
+}
+
+class ReportedJobsViewModel: ViewModel() {
+    val targetMonth: MutableLiveData<Date> = MutableLiveData()
+    val reportedJobs: MutableLiveData<List<Job>> = MutableLiveData()
+    val months: MutableLiveData<List<Date>> = MutableLiveData()
+    val monthsLabels = MediatorLiveData<List<String>>().also { result ->
+        result.addSource(months) {
+            val sdf = SimpleDateFormat("yyyy年MM月")
+            result.value = months.value?.map { sdf.format(it) }
+        }
+    }
+
+    init {
+        // 選択可能な年月を取得します
+        val currentMonth = DateUtils.truncate(Date(), Calendar.MONTH)
+        val cal = Calendar.getInstance()
+        cal.time = currentMonth
+        cal.add(Calendar.YEAR, -3)
+        val monthsList = mutableListOf<Date>()
+        while (cal.time <= currentMonth) {
+            monthsList.add(cal.time)
+            cal.add(Calendar.MONTH, 1)
+        }
+        months.value = monthsList.reversed()
+        targetMonth.value = currentMonth
+        // FIXME: 初期選択情報の更新
+    }
+}
+
+interface ReportedJobsHandler {
+    fun onTargetMonthSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
 }

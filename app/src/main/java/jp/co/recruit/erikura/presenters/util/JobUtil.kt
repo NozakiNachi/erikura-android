@@ -10,7 +10,13 @@ import jp.co.recruit.erikura.business.models.JobStatus
 import java.util.*
 
 object JobUtil {
-    fun setupTimeLabel(context: Context, job: Job?): Pair<SpannableStringBuilder, Int> {
+    enum class TimeLabelType {
+        SEARCH,
+        OWNED,
+    }
+
+
+    fun setupTimeLabel(context: Context, job: Job?, type: TimeLabelType = TimeLabelType.SEARCH): Pair<SpannableStringBuilder, Int> {
         // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
         // 作業実施中: working 状態の場合, green, 12pt
         // 実施済み(未報告): finished の場合, green, 12pt
@@ -20,7 +26,13 @@ object JobUtil {
         var text: SpannableStringBuilder = SpannableStringBuilder().apply { append("") }
         var color: Int = ContextCompat.getColor(context, R.color.warmGrey)
         if (job != null) {
-            if (job.isPastOrInactive) {
+            if (job.isPast) {
+                color = ContextCompat.getColor(context, R.color.warmGrey)
+                text = SpannableStringBuilder().apply {
+                    append("受付終了")
+                }
+            }
+            else if (type == TimeLabelType.SEARCH && job.isPastOrInactive) {
                 color = ContextCompat.getColor(context, R.color.warmGrey)
                 text = SpannableStringBuilder().apply {
                     append("受付終了")

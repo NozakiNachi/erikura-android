@@ -5,15 +5,18 @@ import android.graphics.Bitmap
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
+import android.util.TypedValue
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import java.text.SimpleDateFormat
 
-class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng?): ViewModel() {
+class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType): ViewModel() {
     val assetsManager = ErikuraApplication.assetsManager
     val resources = activity.resources
     val dateFormat = SimpleDateFormat("YYYY/MM/dd HH:mm")
@@ -28,8 +31,17 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val distance: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
 
+    val goodCount: Int get() = job?.report?.operatorLikeCount ?: 0
+    val commentCount: Int get() = job?.report?.operatorCommentsCount ?: 0
+    val goodText: String get() = String.format("%,d件", goodCount)
+    val commentText: String get() = String.format("%,d件", commentCount)
+    val hasGood: Boolean get() = goodCount > 0
+    val hasComment: Boolean get() = commentCount > 0
+    val goodVisible: Int get() = if (timeLabelType == JobUtil.TimeLabelType.OWNED && hasGood) { View.VISIBLE } else { View.GONE }
+    val commentVisible: Int get() = if (timeLabelType == JobUtil.TimeLabelType.OWNED && hasComment) { View.VISIBLE } else { View.GONE }
+
     init {
-        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job)
+        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType)
         textColor.value = timeLimitColor
         timeLimit.value = timeLimitText
 
