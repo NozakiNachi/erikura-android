@@ -489,13 +489,12 @@ class Api(var context: Context) {
                 setCancelable(false)
             }.create()
 
-
+            val dm = context.resources.displayMetrics
+            progressAlert?.show()
+            progressAlert?.window?.setLayout(
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
         }
-        val dm = context.resources.displayMetrics
-        progressAlert?.show()
-        progressAlert?.window?.setLayout(
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
     }
 
     private fun hideProgressAlert() {

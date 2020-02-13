@@ -4,13 +4,11 @@ import android.app.ActivityOptions
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -94,7 +92,7 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
 //            }
 //        })
 
-        val tabLayout: TabLayout = findViewById(R.id.applied_jobs_tab_layout)
+        val tabLayout: TabLayout = findViewById(R.id.owned_jobs_tab_layout)
         tabLayout.setupWithViewPager(viewPager)
 
 

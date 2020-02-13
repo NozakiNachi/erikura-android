@@ -15,7 +15,7 @@ data class Entry(
     var startedLatitude: Double? = null,
     var startedLongitude: Double? = null,
     var startedSteps: Int? = 0,
-    var startedDistance: Int? = 0,
+    var startedDistance: Double? = 0.0,
     var startedFloorAsc: Int? = 0,
     var startedFloorDesc: Int? = 0,
     var finishedAt: Date? = null,
