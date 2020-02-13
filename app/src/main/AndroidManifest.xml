@@ -113,6 +113,10 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
         <activity
+            android:name=".presenters.activities.LogoutActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- ログアウト -->
+        <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher">

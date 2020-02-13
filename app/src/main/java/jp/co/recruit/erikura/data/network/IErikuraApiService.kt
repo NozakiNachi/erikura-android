@@ -33,7 +33,7 @@ interface IErikuraApiService {
     fun login(@Body request: LoginRequest): ApiObservable<LoginResponse>
 
     @DELETE("logout")
-    fun logout(): ApiObservable<ResultResponse>
+    fun logout(): ApiObservable<LogoutResponse>
 
     @GET("jobs")
     fun searchJob(
@@ -172,6 +172,11 @@ data class InitialUpdateResponse(
 )
 
 data class LoginResponse(
+    var userId: Int,
+    var accessToken: String
+)
+
+data class LogoutResponse(
     var userId: Int,
     var accessToken: String
 )

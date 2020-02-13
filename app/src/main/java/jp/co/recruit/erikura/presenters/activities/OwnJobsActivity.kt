@@ -115,8 +115,13 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
                 // 何も行いません
             }
             R.id.tab_menu_mypage -> {
+                // MEMO: マイページ画面遷移コードを動作確認のため実装
                 // FIXME: 画面遷移の実装
-                Toast.makeText(this, "マイページ画面に遷移", Toast.LENGTH_LONG).show()
+                // Toast.makeText(this, "マイページ画面に遷移", Toast.LENGTH_LONG).show()
+                Intent(this, MypageActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
             }
         }
         return true

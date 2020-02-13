@@ -67,6 +67,20 @@ class Api(var context: Context) {
         }
     }
 
+    fun logout(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.logout(),
+            onError =  onError
+        ) { body ->
+            if(body.accessToken == null){
+                userSession = null
+            }else{
+                // エラーメッセージを出す
+            }
+            onComplete()
+        }
+    }
+
     fun registerEmail(email: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (id: Int) -> Unit) {
         executeObservable(
             erikuraApiService.registerEmail(RegisterEmailRequest(email = email)),
