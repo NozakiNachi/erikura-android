@@ -133,7 +133,10 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
         Api(this).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
             if (!jobs.isNullOrEmpty()) {
                 val transaction = supportFragmentManager.beginTransaction()
-                val timerCircle = WorkingTimeCircleFragment(jobs.first())
+                val sortedJobs = jobs.sortedBy{
+                    it.entry?.limitAt
+                }.first()
+                val timerCircle = WorkingTimeCircleFragment(sortedJobs)
                 transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
                 transaction.commit()
             }
