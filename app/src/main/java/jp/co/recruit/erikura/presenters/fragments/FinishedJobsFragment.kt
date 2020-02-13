@@ -68,7 +68,6 @@ class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
             }
         }
         jobListView = binding.root.findViewById(R.id.finished_jobs_recycler_view)
-        jobListView.setHasFixedSize(true)
         jobListView.adapter = jobListAdapter
         jobListView.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
         jobListView.addItemDecoration(JobListItemDecorator())
