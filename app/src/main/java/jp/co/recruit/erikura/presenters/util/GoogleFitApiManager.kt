@@ -95,7 +95,7 @@ class GoogleFitApiManager {
             GoogleSignIn.getAccountForExtension(activity, fitnessOptions)
 
 //        readAggregateStepDelta(googleSignInAccount, startTime, endTime, activity)
-        readAggregateDistanceDelta(googleSignInAccount, startTime, endTime, activity)
+//        readAggregateDistanceDelta(googleSignInAccount, startTime, endTime, activity)
 //        readStepCountDelta(googleSignInAccount, startTime, endTime, activity)
 //        readStepCountCumulative(googleSignInAccount, startTime, endTime, activity)
 //        readStepCountCadence(googleSignInAccount, startTime, endTime, activity)
@@ -126,13 +126,17 @@ class GoogleFitApiManager {
                     val start = Date(bucket.getStartTime(TimeUnit.MILLISECONDS))
                     val end = Date(bucket.getEndTime(TimeUnit.MILLISECONDS))
                     val dataSet = bucket.getDataSet(DataType.AGGREGATE_STEP_COUNT_DELTA)
-                    dataSet?.dataPoints?.forEach { point ->
-                        val start2 = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-                        val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-                        val value = point.getValue(Field.FIELD_STEPS)
-                        Log.d("Aggregate Steps", "$start $end $start2 $end2 $value")
+                    if (dataSet?.dataPoints.isNullOrEmpty()) {
+                        onComplete(Value(0))
+                    }else {
+                        dataSet?.dataPoints?.forEach { point ->
+                            val start2 = Date(point.getStartTime(TimeUnit.MILLISECONDS))
+                            val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
+                            val value = point.getValue(Field.FIELD_STEPS)
+                            Log.d("Aggregate Steps", "$start $end $start2 $end2 $value")
 
-                        onComplete(value)
+                            onComplete(value)
+                        }
                     }
                 }
             }
@@ -142,7 +146,8 @@ class GoogleFitApiManager {
         googleSignInAccount: GoogleSignInAccount,
         startTime: Date,
         endTime: Date,
-        activity: FragmentActivity
+        activity: FragmentActivity,
+        onComplete: (value: Value) -> Unit
     ) {
         val request = DataReadRequest.Builder()
             .aggregate(DataType.TYPE_DISTANCE_DELTA, DataType.AGGREGATE_DISTANCE_DELTA)
@@ -158,11 +163,17 @@ class GoogleFitApiManager {
                     val start = Date(bucket.getStartTime(TimeUnit.MILLISECONDS))
                     val end = Date(bucket.getEndTime(TimeUnit.MILLISECONDS))
                     val dataSet = bucket.getDataSet(DataType.AGGREGATE_DISTANCE_DELTA)
-                    dataSet?.dataPoints?.forEach { point ->
-                        val start2 = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-                        val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-                        val value = point.getValue(Field.FIELD_DISTANCE)
-                        Log.d("Aggregate Distance", "$start $end $start2 $end2 $value")
+                    if (dataSet?.dataPoints.isNullOrEmpty()) {
+                        onComplete(Value(0))
+                    }else {
+                        dataSet?.dataPoints?.forEach { point ->
+                            val start2 = Date(point.getStartTime(TimeUnit.MILLISECONDS))
+                            val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
+                            val value = point.getValue(Field.FIELD_DISTANCE)
+                            Log.d("Aggregate Distance", "$start $end $start2 $end2 $value")
+
+                            onComplete(value)
+                        }
                     }
                 }
             }

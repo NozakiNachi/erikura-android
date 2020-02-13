@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.fitness.data.Value
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -24,6 +25,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
+import jp.co.recruit.erikura.presenters.activities.job.WorkingFinishedActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
@@ -128,8 +130,8 @@ class WorkingJobDetailsFragment(
         timer.cancel()
         if (fitApiManager.checkPermission()) {
             job?.let {
-
-                // ステップ数の取得→距離の取得→stopJobの呼び出し
+                var steps = 0
+                var distance = 0.0
                 var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: Date()
                 fitApiManager.readAggregateStepDelta(
                     fitApiManager.setAccount(activity),
@@ -138,15 +140,31 @@ class WorkingJobDetailsFragment(
                     activity
                 ) {
                     Log.v("Step", "$it")
+                    steps = if(it == Value(0)) {0}else {it.asInt()}
+                    fitApiManager.readAggregateDistanceDelta(
+                        fitApiManager.setAccount(activity),
+                        startTime,
+                        Date(),
+                        activity
+                    ) {
+                        Log.v("Distance", "$it")
+                        distance = if(it == Value(0)) {0.0}else {it.asFloat().toDouble()}
+                        // stopJobの呼び出し
+                        Api(activity).stopJob(job, locationManager.latLng ?: locationManager.latLngOrDefault, steps, distance) {
+                            val intent= Intent(activity, WorkingFinishedActivity::class.java)
+                            intent.putExtra("job", job)
+                            startActivity(intent)
+                        }
+                    }
                 }
             }
 
         }else {
             job?.let {
                 Api(activity).stopJob(it, locationManager.latLng ?: locationManager.latLngOrDefault, 0, 0.0) {
-//                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
-//                    intent.putExtra("job", job)
-//                    startActivity(intent)
+                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
+                    intent.putExtra("job", job)
+                    startActivity(intent)
                 }
             }
         }
