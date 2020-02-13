@@ -21,12 +21,12 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@id/owned_jobs_view_navigation">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@id/owned_jobs_view_navigation"
                 android:orientation="vertical">
 
                 <com.google.android.material.tabs.TabLayout
