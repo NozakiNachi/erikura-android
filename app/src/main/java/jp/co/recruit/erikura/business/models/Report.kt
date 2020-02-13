@@ -1,5 +1,8 @@
 package jp.co.recruit.erikura.business.models
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+import kotlinx.android.parcel.RawValue
 import java.util.*
 
 enum class ReportStatus {
@@ -8,16 +11,17 @@ enum class ReportStatus {
     Rejected
 }
 
+@Parcelize
 data class Report (
     var id: Int? = null,
-    var jobId: Int,
+    var jobId: Int = 0,
     var workingMinute: Int? = null,
     var additionalComment: String? = null,
     var additionalReportPhotoUrl: String? = null,
     var additionalReportPhotoWillDelete: Boolean = false,
-    var additionalReportPhotoToken: String?,
+    var additionalReportPhotoToken: String? = null,
     var additionalOperatorLikes: Boolean = false,
-    var additionalOPeratorComments: List<OperatorComment> = listOf(),
+    var additionalOPeratorComments: List<@RawValue OperatorComment> = listOf(),
     var evaluation: String? = null,
     var comment: String? = null,
     var owner: Boolean = false,
@@ -27,8 +31,8 @@ data class Report (
     var rejectedAt: Date? = null,
     var rejectComment: String? = null,
     var createdAt: Date? = null,
-    var outputSummaries: List<OutputSummary> = listOf()
-) {
+    var outputSummaries: List<@RawValue OutputSummary> = listOf()
+): Parcelable {
     // photoAsset
     // isUploadCompleted
     // activeOutputSummaryCount

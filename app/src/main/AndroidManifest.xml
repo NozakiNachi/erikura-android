@@ -21,27 +21,38 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.job.WorkingFinishedActivity"></activity>
-        <activity android:name=".presenters.activities.OwnJobsActivity" />
-        <activity android:name=".presenters.activities.job.ApplyCompletedActivity" />
-        <activity android:name=".presenters.activities.job.PlaceDetailActivity">
 
-            <!-- ディープリンクの設定 -->
+        <activity
+            android:name=".presenters.activities.StartActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Launcher">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="*"
-                    android:scheme="erikura" />
-                <data android:pathPrefix="/places/" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".presenters.activities.job.SearchJobActivity" />
-        <activity android:name=".presenters.activities.job.JobDetailsActivity">
+        <activity
+            android:name=".presenters.activities.LoginActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- スタート画面 -->
 
+        <!-- ============================================================ -->
+        <!-- 案件検索関連 -->
+
+        <!-- 地図画面 -->
+        <activity
+            android:name=".presenters.activities.job.MapViewActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/title_activity_map_view" />
+        <!-- リスト画面 -->
+        <activity android:name=".presenters.activities.job.ListViewActivity" android:screenOrientation="portrait" />
+        <!-- 案件検索画面 -->
+        <activity android:name=".presenters.activities.job.SearchJobActivity" android:screenOrientation="portrait" />
+
+        <!-- ============================================================ -->
+        <!-- 案件詳細関連 -->
+        <activity android:name=".presenters.activities.job.JobDetailsActivity" android:screenOrientation="portrait">
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -55,14 +66,78 @@
                 <data android:pathPrefix="/jobs/" />
             </intent-filter>
         </activity>
-        <activity android:name=".presenters.activities.job.ListViewActivity" />
-        <activity android:name=".presenters.activities.RegisterFinishedActivity" />
-        <activity android:name=".presenters.activities.RegisterWishWorkActivity" />
-        <activity android:name=".presenters.activities.RegisterJobStatusActivity" />
-        <activity android:name=".presenters.activities.RegisterPhoneActivity" />
-        <activity android:name=".presenters.activities.RegisterAddressActivity" />
-        <activity android:name=".presenters.activities.RegisterGenderActivity" />
-        <activity android:name=".presenters.activities.RegisterBirthdayActivity" />
+        <activity android:name=".presenters.activities.job.ApplyCompletedActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.job.WorkingFinishedActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".presenters.activities.job.PlaceDetailActivity" android:screenOrientation="portrait">
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:pathPrefix="/places/" />
+            </intent-filter>
+        </activity>
+
+        <!-- ============================================================ -->
+        <!-- 応募済みの仕事関連 -->
+        <activity android:name=".presenters.activities.OwnJobsActivity" android:screenOrientation="portrait" />
+
+        <!-- ============================================================ -->
+        <!-- マイページ関連 -->
+        <activity
+            android:name=".presenters.activities.MypageActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- マイページ -->
+        <activity
+            android:name=".presenters.activities.ConfigurationActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
+        <activity
+            android:name=".presenters.activities.LogoutActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- ログアウト -->
+
+        <!-- ============================================================ -->
+        <!-- 新規会員登録関連 -->
+        <activity
+            android:name=".presenters.activities.RegisterEmailActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterNameActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterPasswordActivity" android:screenOrientation="portrait">
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:path="/user/register/password" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".presenters.activities.RegisterBirthdayActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterGenderActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterAddressActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterPhoneActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterJobStatusActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterWishWorkActivity" android:screenOrientation="portrait" />
+        <activity android:name=".presenters.activities.RegisterFinishedActivity" android:screenOrientation="portrait" />
+
+        <!-- ============================================================ -->
+        <!-- その他 -->
+        <activity
+            android:name=".presenters.activities.WebViewActivity"
+            android:screenOrientation="portrait" />
+
+        <!-- ============================================================ -->
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -77,60 +152,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
-        <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" />
-        <activity android:name=".presenters.activities.RegisterNameActivity" />
-        <activity android:name=".presenters.activities.RegisterPasswordActivity">
-
-            <!-- ディープリンクの設定 -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="*"
-                    android:scheme="erikura" />
-                <data android:path="/user/register/password" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".presenters.activities.WebViewActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".presenters.activities.RegisterEmailActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".presenters.activities.LoginActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- スタート画面 -->
-        <activity
-            android:name=".presenters.activities.MypageActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- マイページ -->
-        <activity
-            android:name=".presenters.activities.ConfigurationActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
-        <activity
-            android:name=".presenters.activities.LogoutActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- ログアウト -->
-        <activity
-            android:name=".presenters.activities.StartActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Launcher">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity> <!-- ============================================================ -->
-        <!-- 案件検索関連 -->
-        <activity
-            android:name=".presenters.activities.job.MapViewActivity"
-            android:label="@string/title_activity_map_view" />
     </application>
 
 </manifest>
