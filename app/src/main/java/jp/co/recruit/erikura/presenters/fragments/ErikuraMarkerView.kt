@@ -161,7 +161,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
                 // FIXME: エラー処理として何をするべきか?
             }
         }
-        assetsManager.downloadAsset(activity, markerUrl, Asset.AssetType.Marker, false, downloadHandler) { asset ->
+        assetsManager.downloadAsset(activity, markerUrl, Asset.AssetType.Marker, downloadHandler) { asset ->
             callback(asset)
         }
     }

@@ -57,7 +57,7 @@ class ManualImageFragmentViewModel: ViewModel() {
         val assetsManager = ErikuraApplication.assetsManager
         val url = ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL)
 
-        assetsManager.fetchImage(activity, url, fromAWS = true) { result ->
+        assetsManager.fetchImage(activity, url) { result ->
             activity.runOnUiThread {
                 bitmap.value = result
             }

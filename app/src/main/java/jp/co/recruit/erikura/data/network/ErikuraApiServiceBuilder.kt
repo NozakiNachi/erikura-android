@@ -20,35 +20,14 @@ class ErikuraApiServiceBuilder {
     }
 
     val httpBuilder: OkHttpClient.Builder get() {
-        return OkHttpClient.Builder().apply {
-            // 独自ヘッダを追加します
-            addInterceptor(Interceptor { chain ->
-                val original = chain.request()
-                val requestBuilder = original.newBuilder()
-                    .method(original.method, original.body)
-                // FIXME: version の取得方法を修正
-                requestBuilder
-                    .header("Content-Type", "application/json")
-                    .header("User-Agent-Version", "v0.0.0.1")
-                    .header("User-Agent-Type", "android")
-
-                Api.userSession?.let {
-                    requestBuilder.header("Authorization", it.token)
-                }
-                val request = requestBuilder.build()
-                return@Interceptor chain.proceed(request)
-            })
-            // リクエストのログを有効にします
-            addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
-            // タイムアウトを設定します
-            readTimeout(30, TimeUnit.SECONDS)
-            connectTimeout(30, TimeUnit.SECONDS)
-            // FIXME: キャッシュが無効になっていることを確認
-            // FIXME: cookie が無効になっていることを書くに
-        }
+        return buildClient(true)
     }
 
     val httpBuilderForAWS: OkHttpClient.Builder get() {
+        return buildClient(false)
+    }
+
+    private fun buildClient(isIconDownload: Boolean): OkHttpClient.Builder {
         return OkHttpClient.Builder().apply {
             // 独自ヘッダを追加します
             addInterceptor(Interceptor { chain ->
@@ -61,6 +40,11 @@ class ErikuraApiServiceBuilder {
                     .header("User-Agent-Version", "v0.0.0.1")
                     .header("User-Agent-Type", "android")
 
+                if (isIconDownload) {
+                    Api.userSession?.let {
+                        requestBuilder.header("Authorization", it.token)
+                    }
+                }
                 val request = requestBuilder.build()
                 return@Interceptor chain.proceed(request)
             })
