@@ -114,6 +114,10 @@
     <!-- 作業キャンセルモーダル -->
     <string name="cancelWorkingDialog_caption">作業をキャンセルしました</string>
 
+    <!-- 作業完了画面 -->
+    <string name="working_finished_caption">作業が完了しました！</string>
+    <string name="working_finished_note">撮影した実施箇所の写真を送って、\n作業報告を行いましょう！</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -172,6 +176,8 @@
     <string name="startJob">現地に行って\n作業を開始</string>
     <string name="cancelWorking">作業をキャンセル</string>
     <string name="stopJob">作業を完了</string>
+    <string name="report">この仕事の作業報告を行う</string>
+    <string name="go_applied_jobs">応募した仕事の一覧へ戻る</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
