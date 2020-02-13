@@ -1,15 +1,19 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.ActivityOptions
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
@@ -18,6 +22,8 @@ import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.databinding.FragmentFinishedJobsBinding
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 
 //// TODO: Rename parameter arguments, choose names that match
 //// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,34 +38,50 @@ import jp.co.recruit.erikura.R
  * Use the [FinishedJobsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FinishedJobsFragment : Fragment() {
+class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
     private val viewModel: FinishedJobsViewModel by lazy {
         ViewModelProvider(this).get(FinishedJobsViewModel::class.java)
     }
     private lateinit var jobListView: RecyclerView
     private lateinit var jobListAdapter: JobListAdapter
-//    // TODO: Rename and change types of parameters
-//    private var param1: String? = null
-//    private var param2: String? = null
-//    private var listener: OnFragmentInteractionListener? = null
-//
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        arguments?.let {
-//            param1 = it.getString(ARG_PARAM1)
-//            param2 = it.getString(ARG_PARAM2)
-//        }
-//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_finished_jobs, container, false)
+        val binding: FragmentFinishedJobsBinding = DataBindingUtil.inflate(
+            inflater,R.layout.fragment_finished_jobs, container, false
+        )
+        binding.lifecycleOwner = activity
+        binding.viewModel = viewModel
+        binding.handlers = this
+
+        jobListAdapter = JobListAdapter(activity!!, listOf(), null).also{
+            it.onClickListner = object: JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    Intent(activity, JobDetailsActivity::class.java).let {
+                        it.putExtra("job", job)
+                        startActivity(it, ActivityOptions.makeSceneTransitionAnimation(activity!!).toBundle())
+                    }
+                }
+            }
+        }
+        jobListView = binding.root.findViewById(R.id.finished_jobs_recycler_view)
+        jobListView.setHasFixedSize(true)
+        jobListView.adapter = jobListAdapter
+        jobListView.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
+        jobListView.addItemDecoration(JobListItemDecorator())
+
+        return binding.root
     }
 
-    //    // TODO: Rename method, update argument and hook method into UI event
+    override fun onResume() {
+        super.onResume()
+
+        fetchFinishedJobs()
+    }
+//    // TODO: Rename method, update argument and hook method into UI event
 //    fun onButtonPressed(uri: Uri) {
 //        listener?.onFragmentInteraction(uri)
 //    }
@@ -128,4 +150,8 @@ class FinishedJobsViewModel: ViewModel(){
         val unreported = finishedJobs.value ?: listOf()
         return unreported
     }
+}
+
+interface FinishedJobsHandlers {
+
 }

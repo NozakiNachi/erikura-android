@@ -7,7 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel" />
+            type="jp.co.recruit.erikura.presenters.fragments.FinishedJobsViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.FinishedJobsHandlers" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -37,42 +40,8 @@
                 android:background="@drawable/background_triangle"
                 />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/job_list_item_timelimit"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="0dp"
-                    android:firstBaselineToTopHeight="0dp"
-                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                    android:includeFontPadding="false"
-                    android:lastBaselineToBottomHeight="0dp"
-                    android:textColor="@{viewModel.textColor}"
-                    android:textSize="12dp" />
-
-                <TextView
-                    android:id="@+id/job_list_item_distance"
-                    app:layout_constraintRight_toRightOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="0dp"
-                    android:firstBaselineToTopHeight="0dp"
-                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                    android:includeFontPadding="false"
-                    android:lastBaselineToBottomHeight="0dp"
-                    android:text="@{viewModel.distance}"
-                    android:textColor="@color/warmGrey"
-                    android:textSize="12dp" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/applied_jobs_recycler_view"
+                android:id="@+id/finished_jobs_recycler_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

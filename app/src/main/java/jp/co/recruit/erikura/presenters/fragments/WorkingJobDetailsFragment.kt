@@ -26,7 +26,6 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
-import jp.co.recruit.erikura.presenters.activities.job.WorkingFinishedActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
