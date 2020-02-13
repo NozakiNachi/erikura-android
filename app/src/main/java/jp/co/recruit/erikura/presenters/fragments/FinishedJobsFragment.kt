@@ -57,7 +57,7 @@ class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        jobListAdapter = JobListAdapter(activity!!, listOf(), null).also{
+        jobListAdapter = JobListAdapter(activity!!, listOf(), currentPosition = null, timeLabelType = JobUtil.TimeLabelType.OWNED).also{
             it.onClickListner = object: JobListAdapter.OnClickListener {
                 override fun onClick(job: Job) {
                     Intent(activity, JobDetailsActivity::class.java).let {
