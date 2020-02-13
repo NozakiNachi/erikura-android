@@ -114,6 +114,9 @@
     <!-- 作業キャンセルモーダル -->
     <string name="cancelWorkingDialog_caption">作業をキャンセルしました</string>
 
+    <!-- 作業完了モーダル -->
+    <string name="stopDialog_caption">作業を完了しますか？</string>
+
     <!-- 作業完了画面 -->
     <string name="working_finished_caption">作業が完了しました！</string>
     <string name="working_finished_note">撮影した実施箇所の写真を送って、\n作業報告を行いましょう！</string>

@@ -81,9 +81,11 @@ class JobDetailsActivity : AppCompatActivity() {
             }
             JobStatus.Applied -> {
                 fragment = AppliedJobDetailsFragment(this, job, user, fromWorkingJobDetailsFragment)
+                fromWorkingJobDetailsFragment = false
             }
             JobStatus.Working -> {
                 fragment = WorkingJobDetailsFragment(this, job, user, fromAppliedJobDetailsFragment)
+                fromAppliedJobDetailsFragment = false
             }
             JobStatus.Finished -> {
                 // FIXME: 作業完了画面
