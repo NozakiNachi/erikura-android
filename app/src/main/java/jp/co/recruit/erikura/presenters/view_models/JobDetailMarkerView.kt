@@ -3,7 +3,7 @@ package jp.co.recruit.erikura.presenters.view_models
 import android.view.View
 import jp.co.recruit.erikura.business.models.Job
 
-class JobDetailMarkerView(private val job: Job): MarkerViewModel(job) {
+class JobDetailMarkerView(job: Job): MarkerViewModel(job) {
     override val isDisabled: Boolean
         get() {return false}
     override val boostVisibility: Int

@@ -13,8 +13,8 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
-open class MarkerViewModel(private val job: Job): ViewModel() {
-    val active: MutableLiveData<Boolean> = MutableLiveData()
+open class MarkerViewModel(val job: Job): ViewModel() {
+    val active: MutableLiveData<Boolean> = MutableLiveData(false)
     val icon: MutableLiveData<Bitmap> = MutableLiveData()
 
     val fee: String get() = String.format("%,d円", job.fee)
@@ -130,7 +130,7 @@ open class MarkerViewModel(private val job: Job): ViewModel() {
             return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/comingSoon/${iconPath}/"
         } else if (job.isFuture) {
             val df = SimpleDateFormat("YYYYMMdd")
-            val time = df.format(job.workingStartAt)
+            val time = df.format(job.workingStartAt ?: Date())
             return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/${time}/${iconPath}/"
         } else {
             return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/current/${iconPath}/"

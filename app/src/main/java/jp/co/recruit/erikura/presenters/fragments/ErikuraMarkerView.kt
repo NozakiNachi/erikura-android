@@ -101,23 +101,29 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
     private fun buildMarkerImage(callback: (Asset) -> Unit) {
         val markerUrl: String = markerViewModel.markerUrl
+        val viewModel = MarkerViewModel(markerViewModel.job)
+        viewModel.icon.value = markerViewModel.icon.value
+        viewModel.active.value = markerViewModel.active.value
 
         markerViewModel.iconUrl?.also { url ->
             assetsManager.fetchImage(activity, url.toString(), Asset.AssetType.Marker) { icon ->
                 markerViewModel.icon.value = icon
-                buildMarkerImageImpl(callback, markerUrl, saveCache = true)
+                viewModel.icon.value = icon
+                buildMarkerImageImpl(callback, markerUrl, viewModel, saveCache = true)
             }
         } ?: run{
-            buildMarkerImageImpl(callback, markerUrl, saveCache = false)
+            buildMarkerImageImpl(callback, markerUrl, viewModel, saveCache = false)
         }
     }
 
-    private fun buildMarkerImageImpl(callback: (Asset) -> Unit, markerUrl: String, saveCache: Boolean) {
-        val binding = FragmentMarkerBinding.inflate(activity.layoutInflater, null, false)
-        binding.lifecycleOwner = activity
-        binding.viewModel = markerViewModel
+    private fun buildMarkerImageImpl(callback: (Asset) -> Unit, markerUrl: String, viewModel: MarkerViewModel, saveCache: Boolean) {
+        val lifecycleOwner = activity
 
-        val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, urlString, type, onComplete ->
+        val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, _urlString, type, onComplete ->
+            val binding = FragmentMarkerBinding.inflate(activity.layoutInflater, null, false)
+            binding.lifecycleOwner = lifecycleOwner
+            binding.viewModel = viewModel
+
             binding.executePendingBindings()
 
             val markerView = binding.root
