@@ -23,7 +23,15 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
 
     val reward: String get() = String.format("%,d円", job.fee)
     val workingTime: String get() = String.format("%d分", job.workingTime)
-    val workingFinishAt: String get() = String.format("〜%s", dateFormat.format(job.workingFinishAt))
+    val workingFinishAt: String get() {
+        val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
+            job?.entry?.limitAt ?: job.workingFinishAt
+        }
+        else {
+            job.workingFinishAt
+        }
+        return String.format("〜%s", dateFormat.format(finishAt))
+    }
     val tools: String get() = String.format("持ち物: %s", job.tools ?: "")
 
     val image: MutableLiveData<Bitmap> = MutableLiveData()

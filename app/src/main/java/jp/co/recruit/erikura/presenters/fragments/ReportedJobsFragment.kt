@@ -72,7 +72,7 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
         fetchReportedJobs()
     }
 
-    override fun onTargetMonthSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onTargetMonthSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.months.value?.let {
             val item = it[position]
             viewModel.targetMonth.value = item
@@ -127,5 +127,5 @@ class ReportedJobsViewModel: ViewModel() {
 }
 
 interface ReportedJobsHandler {
-    fun onTargetMonthSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onTargetMonthSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
 }
