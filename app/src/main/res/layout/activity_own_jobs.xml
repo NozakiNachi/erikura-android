@@ -70,8 +70,8 @@
                 android:layout_width="100dp"
                 android:layout_height="100dp"
                 android:layout_gravity="bottom|right"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="110dp" />
+                android:layout_marginRight="30dp"
+                android:layout_marginBottom="20dp" />
         </FrameLayout>
 
         <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
