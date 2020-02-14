@@ -39,10 +39,13 @@ class JobDetailsActivity : AppCompatActivity() {
         }
         Log.v("DEBUG", job.toString())
 
+        // アラート表示
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
-
-        // アラート表示
+    }
+    
+    override fun onStart() {
+        super.onStart()
         val errorMessages = intent.getStringArrayExtra("errorMessages")
         if(errorMessages != null){
             Api(this).displayErrorAlert(errorMessages.asList())
@@ -55,10 +58,6 @@ class JobDetailsActivity : AppCompatActivity() {
             dialog.show(supportFragmentManager, "Start")
             fromAppliedJobDetailsFragment = false
         }
-    }
-    
-    override fun onStart() {
-        super.onStart()
         fetchJob()
     }
 
