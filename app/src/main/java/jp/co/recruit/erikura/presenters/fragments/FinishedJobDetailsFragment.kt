@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
+import java.util.*
 
 
 class FinishedJobDetailsFragment(
@@ -90,11 +91,16 @@ class FinishedJobDetailsFragment(
 
     override fun onClickCancelWorking(view: View) {
         job?.let {
-            Api(activity).abortJob(job) {
-                val intent = Intent(activity, JobDetailsActivity::class.java)
-                intent.putExtra("job", job)
-                intent.putExtra("onClickCancelWorking", true)
-                startActivity(intent)
+            if (job.entry?.limitAt?: Date() > Date()) {
+                Api(activity).abortJob(job) {
+                    val intent = Intent(activity, JobDetailsActivity::class.java)
+                    intent.putExtra("job", job)
+                    intent.putExtra("onClickCancelWorking", true)
+                    startActivity(intent)
+                }
+            }else {
+                val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
+                Api(activity).displayErrorAlert(errorMessages)
             }
         }
     }
@@ -109,6 +115,7 @@ class FinishedJobDetailsFragment(
 class FinishedJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
+    val reportButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null) {
@@ -124,6 +131,11 @@ class FinishedJobDetailsFragmentViewModel: ViewModel() {
                         bitmapDrawable.value = bitmapDraw
                     }
                 }
+            }
+
+            // 納期が過ぎている場合はボタンを非表示
+            if (job.entry?.limitAt?: Date() < Date()) {
+                reportButtonVisibility.value = View.INVISIBLE
             }
 
             // お気に入り状態の取得
