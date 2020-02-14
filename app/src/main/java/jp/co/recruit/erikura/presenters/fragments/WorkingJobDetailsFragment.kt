@@ -22,7 +22,6 @@ import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
 import jp.co.recruit.erikura.presenters.activities.job.StopDialogFragment
 import java.util.*
 
@@ -30,8 +29,7 @@ import java.util.*
 class WorkingJobDetailsFragment(
     private val activity: AppCompatActivity,
     val job: Job?,
-    val user: User,
-    private val fromAppliedJob: Boolean = false
+    val user: User
 ) : Fragment(), WorkingJobDetailsFragmentEventHandlers {
     private val viewModel: WorkingJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(WorkingJobDetailsFragmentViewModel::class.java)
@@ -55,11 +53,6 @@ class WorkingJobDetailsFragment(
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        if (fromAppliedJob) {
-            val dialog = StartDialogFragment(job)
-            dialog.show(childFragmentManager, "Start")
-        }
 
         val transaction = childFragmentManager.beginTransaction()
         val jobInfoView = JobInfoViewFragment(job)

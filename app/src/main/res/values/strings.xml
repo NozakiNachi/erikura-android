@@ -64,7 +64,7 @@
 
     <!-- 案件詳細画面 -->
     <string name="jobDetails_workingTime">作業時間（目安）</string>
-    <string name="jobDetails_fee">報酬</string>
+    <string name="jobDetails_fee">報酬（税込）</string>
     <string name="jobDetails_applyFlow"><a href="">応募後の流れを確認</a></string>
     <string name="jobDetails_limit">納期</string>
     <string name="jobDetails_tool">持ち物</string>
@@ -83,6 +83,7 @@
     <string name="jobDetails_manualImageURL">https://s3-ap-northeast-1.amazonaws.com/assets.prd.erikura.net/manual_pdfs/manual_thumbnail.png</string>
     <string name="jobDetails_working">作業実施中</string>
     <string name="jobDetails_startTo">開始から</string>
+    <string name="jobDetails_finished">作業実施完了</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -179,8 +180,10 @@
     <string name="startJob">現地に行って\n作業を開始</string>
     <string name="cancelWorking">作業をキャンセル</string>
     <string name="stopJob">作業を完了</string>
-    <string name="report">この仕事の作業報告を行う</string>
+    <string name="go_report">この仕事の作業報告を行う</string>
     <string name="go_applied_jobs">応募した仕事の一覧へ戻る</string>
+    <string name="cancel_finished">作業を取り消し</string>
+    <string name="report">作業を報告</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
