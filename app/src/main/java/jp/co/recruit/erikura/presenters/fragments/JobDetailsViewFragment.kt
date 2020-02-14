@@ -104,7 +104,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
         if (job != null) {
             // 納期
             var end: Date
-            if (job.status == JobStatus.Applied) {
+            if (job.status == JobStatus.Applied || job.status == JobStatus.Working || job.status == JobStatus.Finished) {
                 end = job.entry?.limitAt?: Date()
             }else {
                 end = job.workingFinishAt?: Date()

@@ -2,13 +2,10 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.text.SpannableStringBuilder
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +21,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
-import jp.co.recruit.erikura.presenters.activities.job.CancelWorkingDialogFragment
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 
 
@@ -92,7 +89,14 @@ class FinishedJobDetailsFragment(
     }
 
     override fun onClickCancelWorking(view: View) {
-        // FIXME: 作業取り消し
+        job?.let {
+            Api(activity).abortJob(job) {
+                val intent = Intent(activity, JobDetailsActivity::class.java)
+                intent.putExtra("job", job)
+                intent.putExtra("onClickCancelWorking", true)
+                startActivity(intent)
+            }
+        }
     }
 
     override fun onClickReport(view: View) {
