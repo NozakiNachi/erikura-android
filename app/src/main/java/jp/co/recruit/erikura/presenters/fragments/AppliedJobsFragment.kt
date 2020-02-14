@@ -69,7 +69,7 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
 
     private fun fetchEntriedJobs() {
         Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.ENTRIED)) { jobs ->
-            viewModel.entriedJobs.value = jobs
+            viewModel.entriedJobs.value = jobs.filter { !it.isExpired }
             jobListAdapter.jobs = viewModel.appliedJobs
             jobListAdapter.notifyDataSetChanged()
 
@@ -80,7 +80,7 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
 
     private fun fetchStartedJobs() {
         Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
-            viewModel.startedJobs.value = jobs
+            viewModel.startedJobs.value = jobs.filter { !it.isExpired }
             jobListAdapter.jobs = viewModel.appliedJobs
             jobListAdapter.notifyDataSetChanged()
         }

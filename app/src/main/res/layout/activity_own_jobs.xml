@@ -5,11 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.OwnJobsViewModel" />
-
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.activities.OwnJobsHandlers" />
@@ -76,13 +74,14 @@
 
         <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
             android:id="@+id/owned_jobs_view_navigation"
-            onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_alignParentBottom="true"
             android:background="@drawable/background_border_top"
             app:itemIconTint="@drawable/bottom_navigation_item_state"
             app:itemTextColor="@drawable/bottom_navigation_item_state"
-            app:menu="@menu/tab_menu" />
+            app:menu="@menu/tab_menu"
+            onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
+            />
     </RelativeLayout>
 </layout>
