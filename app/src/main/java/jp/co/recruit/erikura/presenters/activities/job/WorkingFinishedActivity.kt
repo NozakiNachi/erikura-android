@@ -76,6 +76,7 @@ class WorkingFinishedActivity : AppCompatActivity(), WorkingFinishedEventHandler
     fun onJobSelected(job: Job) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
+        intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }

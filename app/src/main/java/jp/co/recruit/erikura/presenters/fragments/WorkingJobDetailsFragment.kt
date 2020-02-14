@@ -109,6 +109,7 @@ class WorkingJobDetailsFragment(
                     intent.putExtra("job", job)
                     intent.putExtra("onClickCancelWorking", true)
                     startActivity(intent)
+                    activity.finish()
                 }
             }else {
                 val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
