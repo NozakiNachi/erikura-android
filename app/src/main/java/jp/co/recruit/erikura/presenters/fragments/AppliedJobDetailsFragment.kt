@@ -155,9 +155,10 @@ class AppliedJobDetailsFragment(
             viewModel.msgVisibility.value = View.VISIBLE
         } else {
             str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-            str.setSpan(R.color.colorAccent, 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.GONE
+            viewModel.startButtonVisibility.value = View.INVISIBLE
         }
     }
 }
@@ -167,6 +168,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
+    val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null) {
