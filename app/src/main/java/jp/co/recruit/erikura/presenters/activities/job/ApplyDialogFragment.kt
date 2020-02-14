@@ -12,6 +12,7 @@ import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.TextAppearanceSpan
+import android.util.Log
 import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
@@ -80,7 +81,18 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
     override fun onClickEntryButton(view: View) {
         if (UserSession.retrieve() != null) {
             if (job != null) {
-                Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "") {
+                Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "", onError = {
+                    Log.v("DEBUG", "応募失敗")
+                    // 詳細画面のリロード
+                    val intent= Intent(activity, JobDetailsActivity::class.java)
+                    if(it != null) {
+                        val array = it.toTypedArray()
+                        intent.putExtra("errorMessages", array)
+                    }
+                    intent.putExtra("job", job)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                    activity!!.finish()
+                }) {
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())

@@ -25,7 +25,7 @@ import java.util.*
 // マーカーの作成が終わった場合に呼び出されるコールバック
 typealias MarkerSetupCallback = (Marker) -> Unit
 
-class ErikuraMarkerView(private val activity: AppCompatActivity, private val map: GoogleMap, private val job: Job) {
+class ErikuraMarkerView(private val activity: AppCompatActivity, private val map: GoogleMap, private val job: Job, private val optionsRequired: Boolean) {
     companion object {
         const val BASE_ZINDEX: Float            = 5000f
         const val ACTIVE_ZINDEX_OFFSET: Float   = 10000f
@@ -37,14 +37,14 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
         val assetsManager: AssetsManager get() = ErikuraApplication.assetsManager
 
-        fun build(activity: AppCompatActivity, map: GoogleMap, job: Job, callback: MarkerSetupCallback?): ErikuraMarkerView {
-            val markerView = ErikuraMarkerView(activity, map, job)
+        fun build(activity: AppCompatActivity, map: GoogleMap, job: Job, optionsRequired: Boolean = true, callback: MarkerSetupCallback?): ErikuraMarkerView {
+            val markerView = ErikuraMarkerView(activity, map, job, optionsRequired)
             callback?.invoke(markerView.marker)
             return markerView
         }
     }
 
-    private val markerViewModel: MarkerViewModel = if (activity.localClassName == "presenters.activities.job.JobDetailsActivity") JobDetailMarkerView(job) else MarkerViewModel(job)
+    private val markerViewModel: MarkerViewModel = makeMarkerViewModel(job, optionsRequired)
     lateinit var marker: Marker
 
     var active: Boolean
@@ -56,6 +56,10 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
     init {
         buildMarker()
+    }
+
+    fun makeMarkerViewModel(job: Job, optionsRequired: Boolean = true): MarkerViewModel {
+        return if (optionsRequired) {MarkerViewModel(job)} else {JobDetailMarkerView(job)}
     }
 
     private fun buildMarker(): Marker {
@@ -101,7 +105,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
     private fun buildMarkerImage(callback: (Asset) -> Unit) {
         val markerUrl: String = markerViewModel.markerUrl
-        val viewModel = MarkerViewModel(markerViewModel.job)
+        val viewModel = makeMarkerViewModel(markerViewModel.job, optionsRequired)
         viewModel.icon.value = markerViewModel.icon.value
         viewModel.active.value = markerViewModel.active.value
 

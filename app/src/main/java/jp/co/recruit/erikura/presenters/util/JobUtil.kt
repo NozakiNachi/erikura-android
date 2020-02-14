@@ -99,7 +99,7 @@ object JobUtil {
                     else -> {
                         color = ContextCompat.getColor(context, R.color.coral)
                         val now = Date()
-                        val workingFinishAt = job.workingFinishAt ?: now
+                        val workingFinishAt = if (job.status == JobStatus.Applied) { job.entry?.limitAt ?: now } else { job.workingFinishAt ?: now }
                         val diff = workingFinishAt.time - now.time
                         val diffHours = diff / (60 * 60 * 1000)
                         val diffDays = diffHours / 24

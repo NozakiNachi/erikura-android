@@ -75,7 +75,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
                     // 場所詳細画面へ遷移
                     val intent= Intent(activity, PlaceDetailActivity::class.java)
                     intent.putExtra("place", job.place)
-                    intent.flags = Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -94,6 +94,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
 
 class JobDetailsViewFragmentViewModel: ViewModel() {
     val limit: MutableLiveData<String> = MutableLiveData()
+    val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val tool: MutableLiveData<String> = MutableLiveData()
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
@@ -104,8 +105,11 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
         if (job != null) {
             // 納期
             var end: Date
-            if (job.status == JobStatus.Applied) {
+            if (job.status == JobStatus.Applied || job.status == JobStatus.Working || job.status == JobStatus.Finished) {
                 end = job.entry?.limitAt?: Date()
+                if(end < Date()) {
+                    msgVisibility.value = View.VISIBLE
+                }
             }else {
                 end = job.workingFinishAt?: Date()
             }

@@ -15,10 +15,12 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.CancelReason
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogCancelBinding
+import java.util.*
 
 class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialogFragmentEventHandlers {
     private val viewModel: CancelDialogFragmentViewModel by lazy {
@@ -56,13 +58,17 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
     override fun onClickCancel(view: View) {
         val reasonCode: Int = if (viewModel.reasonSelected == viewModel.reasonsItems.value?.lastIndex) {0}else {viewModel.reasonSelected}
         val comment: String = if(reasonCode == 0) {viewModel.reasonText.value?:""} else {""}
-        if (job != null) {
-            Api(activity!!).cancel(job, reasonCode, comment) {
-                val intent= Intent(activity, JobDetailsActivity::class.java)
-                intent.putExtra("job", job)
-                startActivity(intent)
-                activity!!.finish()
-
+        job?.let {
+            if (job.entry?.limitAt?: Date() > Date()) {
+                Api(activity!!).cancel(job, reasonCode, comment) {
+                    val intent= Intent(activity, JobDetailsActivity::class.java)
+                    intent.putExtra("job", job)
+                    startActivity(intent)
+                    activity!!.finish()
+                }
+            }else {
+                val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
+                Api(activity!!).displayErrorAlert(errorMessages)
             }
         }
     }

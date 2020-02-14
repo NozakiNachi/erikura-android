@@ -1,16 +1,16 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.os.Handler
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,30 +20,27 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
+import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import jp.co.recruit.erikura.presenters.activities.job.StopDialogFragment
+import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 import java.util.*
 
 
-class WorkingJobDetailsFragment(
+class FinishedJobDetailsFragment(
     private val activity: AppCompatActivity,
     val job: Job?,
     val user: User
-) : Fragment(), WorkingJobDetailsFragmentEventHandlers {
-    private val viewModel: WorkingJobDetailsFragmentViewModel by lazy {
-        ViewModelProvider(this).get(WorkingJobDetailsFragmentViewModel::class.java)
+) : Fragment(), FinishedJobDetailsFragmentEventHandlers {
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(FinishedJobDetailsFragmentViewModel::class.java)
     }
-
-    private var timer: Timer = Timer()
-    private var timerHandler: Handler = Handler()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         container?.removeAllViews()
-        val binding = FragmentWorkingJobDetailsBinding.inflate(inflater, container, false)
+        val binding = FragmentFinishedJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         viewModel.setup(activity, job, user)
         binding.viewModel = viewModel
@@ -61,29 +58,21 @@ class WorkingJobDetailsFragment(
         val thumbnailImage = ThumbnailImageFragment(job)
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
-        transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage, "manualImage")
-        transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton, "manualButton")
+        transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
+        transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage, "manualImage")
+        transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton, "manualButton")
         transaction.add(
-            R.id.workingJobDetails_thumbnailImageFragment,
+            R.id.finishedJobDetails_thumbnailImageFragment,
             thumbnailImage,
             "thumbnailImage"
         )
         transaction.add(
-            R.id.workingJobDetails_jobDetailsViewFragment,
+            R.id.finishedJobDetails_jobDetailsViewFragment,
             jobDetailsView,
             "jobDetailsView"
         )
-        transaction.add(R.id.workingJobDetails_mapViewFragment, mapView, "mapView")
+        transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView, "mapView")
         transaction.commit()
-
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                timerHandler.post(Runnable {
-                    updateTimer()
-                })
-            }
-        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onClickFavorite(view: View) {
@@ -101,7 +90,6 @@ class WorkingJobDetailsFragment(
     }
 
     override fun onClickCancelWorking(view: View) {
-        timer.cancel()
         job?.let {
             if (job.entry?.limitAt?: Date() > Date()) {
                 Api(activity).abortJob(job) {
@@ -118,31 +106,17 @@ class WorkingJobDetailsFragment(
         }
     }
 
-    override fun onClickStop(view: View) {
-        val dialog = StopDialogFragment(job)
-        dialog.show(childFragmentManager, "Stop")
-
-        timer.cancel()
-
+    override fun onClickReport(view: View) {
+        val intent = Intent(activity, ReportImagePickerActivity::class.java)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
     }
 
-    // 1秒ごとに呼び出される処理
-    private fun updateTimer() {
-        job?.let {
-            var now = Date()
-            var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: now
-            var time = now.time - startTime.time
-            viewModel.timeCount.value =
-                String.format("%d分%02d秒", time / (60 * 1000), (time % (60 * 1000)) / 1000)
-        }
-    }
 }
 
-class WorkingJobDetailsFragmentViewModel : ViewModel() {
+class FinishedJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
-    val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
-    val stopButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val reportButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null) {
@@ -162,7 +136,7 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
 
             // 納期が過ぎている場合はボタンを非表示
             if (job.entry?.limitAt?: Date() < Date()) {
-                stopButtonVisibility.value = View.INVISIBLE
+                reportButtonVisibility.value = View.INVISIBLE
             }
 
             // お気に入り状態の取得
@@ -171,14 +145,12 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
                     favorited.value = it
                 }
             }
-
-            timeCount.value = "0分0秒"
         }
     }
 }
 
-interface WorkingJobDetailsFragmentEventHandlers {
+interface FinishedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickCancelWorking(view: View)
-    fun onClickStop(view: View)
+    fun onClickReport(view: View)
 }

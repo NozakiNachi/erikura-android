@@ -21,7 +21,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".presenters.activities.report.ReportImagePickerActivity"></activity>
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
@@ -36,23 +36,24 @@
             android:name=".presenters.activities.LoginActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- スタート画面 -->
-
         <!-- ============================================================ -->
         <!-- 案件検索関連 -->
-
         <!-- 地図画面 -->
         <activity
             android:name=".presenters.activities.job.MapViewActivity"
-            android:screenOrientation="portrait"
-            android:label="@string/title_activity_map_view" />
-        <!-- リスト画面 -->
-        <activity android:name=".presenters.activities.job.ListViewActivity" android:screenOrientation="portrait" />
-        <!-- 案件検索画面 -->
-        <activity android:name=".presenters.activities.job.SearchJobActivity" android:screenOrientation="portrait" />
-
-        <!-- ============================================================ -->
+            android:label="@string/title_activity_map_view"
+            android:screenOrientation="portrait" /> <!-- リスト画面 -->
+        <activity
+            android:name=".presenters.activities.job.ListViewActivity"
+            android:screenOrientation="portrait" /> <!-- 案件検索画面 -->
+        <activity
+            android:name=".presenters.activities.job.SearchJobActivity"
+            android:screenOrientation="portrait" /> <!-- ============================================================ -->
         <!-- 案件詳細関連 -->
-        <activity android:name=".presenters.activities.job.JobDetailsActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".presenters.activities.job.JobDetailsActivity"
+            android:screenOrientation="portrait">
+
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -66,9 +67,16 @@
                 <data android:pathPrefix="/jobs/" />
             </intent-filter>
         </activity>
-        <activity android:name=".presenters.activities.job.ApplyCompletedActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.job.WorkingFinishedActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".presenters.activities.job.PlaceDetailActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".presenters.activities.job.ApplyCompletedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.job.WorkingFinishedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.job.PlaceDetailActivity"
+            android:screenOrientation="portrait">
+
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -81,13 +89,11 @@
                     android:scheme="erikura" />
                 <data android:pathPrefix="/places/" />
             </intent-filter>
-        </activity>
-
-        <!-- ============================================================ -->
+        </activity> <!-- ============================================================ -->
         <!-- 応募済みの仕事関連 -->
-        <activity android:name=".presenters.activities.OwnJobsActivity" android:screenOrientation="portrait" />
-
-        <!-- ============================================================ -->
+        <activity
+            android:name=".presenters.activities.OwnJobsActivity"
+            android:screenOrientation="portrait" /> <!-- ============================================================ -->
         <!-- マイページ関連 -->
         <activity
             android:name=".presenters.activities.MypageActivity"
@@ -101,15 +107,21 @@
             android:name=".presenters.activities.LogoutActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- ログアウト -->
-
         <!-- ============================================================ -->
         <!-- 新規会員登録関連 -->
         <activity
             android:name=".presenters.activities.RegisterEmailActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterEmailFinishedActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterNameActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterPasswordActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".presenters.activities.RegisterEmailFinishedActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterNameActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterPasswordActivity"
+            android:screenOrientation="portrait">
+
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -123,21 +135,31 @@
                 <data android:path="/user/register/password" />
             </intent-filter>
         </activity>
-        <activity android:name=".presenters.activities.RegisterBirthdayActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterGenderActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterAddressActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterPhoneActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterJobStatusActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterWishWorkActivity" android:screenOrientation="portrait" />
-        <activity android:name=".presenters.activities.RegisterFinishedActivity" android:screenOrientation="portrait" />
-
-        <!-- ============================================================ -->
+        <activity
+            android:name=".presenters.activities.RegisterBirthdayActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterGenderActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterAddressActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterPhoneActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterJobStatusActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterWishWorkActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.RegisterFinishedActivity"
+            android:screenOrientation="portrait" /> <!-- ============================================================ -->
         <!-- その他 -->
         <activity
             android:name=".presenters.activities.WebViewActivity"
-            android:screenOrientation="portrait" />
-
-        <!-- ============================================================ -->
+            android:screenOrientation="portrait" /> <!-- ============================================================ -->
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

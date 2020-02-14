@@ -24,9 +24,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
-import jp.co.recruit.erikura.presenters.activities.job.CancelWorkingDialogFragment
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import jp.co.recruit.erikura.presenters.activities.job.StartDialogFragment
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
@@ -35,8 +33,7 @@ import java.util.*
 class AppliedJobDetailsFragment(
     private val activity: AppCompatActivity,
     val job: Job?,
-    val user: User,
-    private val fromWorkingJob: Boolean = false
+    val user: User
 ) : Fragment(), AppliedJobDetailsFragmentEventHandlers {
     private val viewModel: AppliedJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
@@ -61,11 +58,6 @@ class AppliedJobDetailsFragment(
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-
-        if (fromWorkingJob) {
-            val dialog = CancelWorkingDialogFragment()
-            dialog.show(childFragmentManager, "CancelWorking")
-        }
 
         val transaction = childFragmentManager.beginTransaction()
         val jobInfoView = JobInfoViewFragment(job)
@@ -117,6 +109,7 @@ class AppliedJobDetailsFragment(
                     intent.putExtra("job", job)
                     intent.putExtra("onClickStart", true)
                     startActivity(intent)
+                    activity.finish()
                 }
             }
         }
@@ -132,6 +125,7 @@ class AppliedJobDetailsFragment(
                 intent.putExtra("job", job)
                 intent.putExtra("onClickStart", true)
                 startActivity(intent)
+                activity.finish()
             }
         }
     }
@@ -163,9 +157,10 @@ class AppliedJobDetailsFragment(
             viewModel.msgVisibility.value = View.VISIBLE
         } else {
             str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-            str.setSpan(R.color.colorAccent, 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.GONE
+            viewModel.startButtonVisibility.value = View.INVISIBLE
         }
     }
 }
@@ -175,6 +170,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
+    val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null) {
