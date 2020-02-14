@@ -6,9 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.gms.fitness.data.DataType
-import com.google.android.gms.fitness.data.Field
-import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
@@ -19,9 +16,6 @@ import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
-import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class JobDetailsActivity : AppCompatActivity() {
@@ -31,8 +25,6 @@ class JobDetailsActivity : AppCompatActivity() {
     var fragment = Fragment()
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
-
-    private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -49,6 +41,20 @@ class JobDetailsActivity : AppCompatActivity() {
 
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
+
+        // アラート表示
+        val errorMessages = intent.getStringArrayExtra("errorMessages")
+        if(errorMessages != null){
+            Api(this).displayErrorAlert(errorMessages.asList())
+        }else if(fromWorkingJobDetailsFragment) {
+            val dialog = CancelWorkingDialogFragment()
+            dialog.show(supportFragmentManager, "CancelWorking")
+            fromWorkingJobDetailsFragment = false
+        }else if(fromAppliedJobDetailsFragment) {
+            val dialog = StartDialogFragment(job)
+            dialog.show(supportFragmentManager, "Start")
+            fromAppliedJobDetailsFragment = false
+        }
     }
     
     override fun onStart() {
@@ -81,12 +87,10 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = NormalJobDetailsFragment(this, job, user)
             }
             JobStatus.Applied -> {
-                fragment = AppliedJobDetailsFragment(this, job, user, fromWorkingJobDetailsFragment)
-                fromWorkingJobDetailsFragment = false
+                fragment = AppliedJobDetailsFragment(this, job, user)
             }
             JobStatus.Working -> {
-                fragment = WorkingJobDetailsFragment(this, job, user, fromAppliedJobDetailsFragment)
-                fromAppliedJobDetailsFragment = false
+                fragment = WorkingJobDetailsFragment(this, job, user)
             }
             JobStatus.Finished -> {
                 fragment = FinishedJobDetailsFragment(this, job, user)
