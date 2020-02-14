@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
+import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 
 class WorkingFinishedActivity : AppCompatActivity(), WorkingFinishedEventHandlers {
     private val viewModel: WorkingFinishedViewModel by lazy {
@@ -61,7 +62,8 @@ class WorkingFinishedActivity : AppCompatActivity(), WorkingFinishedEventHandler
     }
 
     override fun onClickReport(view: View) {
-        // FIXME: 作業報告画面へ遷移
+        val intent = Intent(this, ReportImagePickerActivity::class.java)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickAppliedJobs(view: View) {

@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
+import jp.co.recruit.erikura.presenters.fragments.FinishedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
@@ -88,8 +89,7 @@ class JobDetailsActivity : AppCompatActivity() {
                 fromAppliedJobDetailsFragment = false
             }
             JobStatus.Finished -> {
-                // FIXME: 作業完了画面
-                fragment = NormalJobDetailsFragment(this, job, user)
+                fragment = FinishedJobDetailsFragment(this, job, user)
             }
             JobStatus.Reported -> {
                 // FIXME: 作業報告済み画面
