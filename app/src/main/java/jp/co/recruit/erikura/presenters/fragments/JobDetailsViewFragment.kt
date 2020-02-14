@@ -75,7 +75,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
                     // 場所詳細画面へ遷移
                     val intent= Intent(activity, PlaceDetailActivity::class.java)
                     intent.putExtra("place", job.place)
-                    intent.flags = Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
+                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
