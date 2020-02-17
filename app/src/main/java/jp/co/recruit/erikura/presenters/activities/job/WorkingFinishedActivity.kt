@@ -63,6 +63,7 @@ class WorkingFinishedActivity : AppCompatActivity(), WorkingFinishedEventHandler
 
     override fun onClickReport(view: View) {
         val intent = Intent(this, ReportImagePickerActivity::class.java)
+        intent.putExtra("job", job)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 

@@ -1,14 +1,17 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import android.Manifest
+import android.app.ActivityOptions
 import android.content.ContentUris
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -20,18 +23,28 @@ import androidx.core.app.ActivityCompat
 import androidx.core.database.getLongOrNull
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
 
-class ReportImagePickerActivity : AppCompatActivity() {
+class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHandler {
+    private val viewModel by lazy {
+        ViewModelProvider(this).get(ReportImagePickerViewModel::class.java)
+    }
     private val REQUEST_PERMISSION = 2
     private val REQUEST_CODE_CHOOSE = 1
+
+    var job: Job = Job()
 
     private fun hasStoragePermission(): Boolean {
         val permissions = arrayOf(
@@ -53,12 +66,21 @@ class ReportImagePickerActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_image_picker)
 
+        job = intent.getParcelableExtra<Job>("job")
+        Log.v("DEBUG", job.toString())
+
+        val binding: ActivityReportImagePickerBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        binding.handlers = this
+
         if(hasStoragePermission()) {
             displayImagePicker()
         }
         else {
             requestStoragePermission()
         }
+
     }
 
     private fun displayImagePicker() {
@@ -98,6 +120,33 @@ class ReportImagePickerActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onClickManual(view: View) {
+        if(job?.manualUrl != null){
+            val termsOfServiceURLString = job.manualUrl
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(termsOfServiceURLString)
+            }
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+    }
+
+    override fun onClickNext(view: View) {
+        // FIXME: 報告箇所画面へ遷移
+    }
+}
+
+class ReportImagePickerViewModel: ViewModel() {
+    val image: MutableLiveData<ImageView> = MutableLiveData()
+    val imageList: List<ImageView> = listOf()
+    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(image) {result.value = isValid() }
+    }
+
+    private fun isValid(): Boolean {
+        return true
     }
 }
 
@@ -155,6 +204,11 @@ class ImagePickerAdapter(val activity: FragmentActivity): RecyclerViewCursorAdap
         val cellView: ImagePickerCellView = view.findViewById(R.id.report_image_picker_cell)
         item.loadThumbnail(activity, cellView.imageView)
     }
+}
+
+interface ReportImagePickerEventHandler {
+    fun onClickManual(view: View)
+    fun onClickNext(view: View)
 }
 
 data class MediaItem(val id: Long, val mimeType: String, val size: Long, val contentUri: Uri) {

@@ -108,6 +108,7 @@ class FinishedJobDetailsFragment(
 
     override fun onClickReport(view: View) {
         val intent = Intent(activity, ReportImagePickerActivity::class.java)
+        intent.putExtra("job", job)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
     }
 
