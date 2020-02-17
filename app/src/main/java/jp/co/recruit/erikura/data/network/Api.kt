@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.data.network
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.util.TypedValue
@@ -454,7 +455,9 @@ class Api(var context: Context) {
     }
 
     private fun hideProgressAlert() {
-        progressAlert?.dismiss()
+        if (!isDestroyed()) {
+            progressAlert?.dismiss()
+        }
         progressAlert = null
     }
 
@@ -474,5 +477,9 @@ class Api(var context: Context) {
                 }.create()
             alertDialog.show()
         }
+    }
+
+    private fun isDestroyed(): Boolean {
+        return (context as? Activity)?.isDestroyed ?: true
     }
 }
