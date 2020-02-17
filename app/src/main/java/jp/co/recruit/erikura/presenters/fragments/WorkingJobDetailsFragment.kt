@@ -103,11 +103,17 @@ class WorkingJobDetailsFragment(
     override fun onClickCancelWorking(view: View) {
         timer.cancel()
         job?.let {
-            Api(activity).abortJob(job) {
-                val intent = Intent(activity, JobDetailsActivity::class.java)
-                intent.putExtra("job", job)
-                intent.putExtra("onClickCancelWorking", true)
-                startActivity(intent)
+            if (job.entry?.limitAt?: Date() > Date()) {
+                Api(activity).abortJob(job) {
+                    val intent = Intent(activity, JobDetailsActivity::class.java)
+                    intent.putExtra("job", job)
+                    intent.putExtra("onClickCancelWorking", true)
+                    startActivity(intent)
+                    activity.finish()
+                }
+            }else {
+                val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
+                Api(activity).displayErrorAlert(errorMessages)
             }
         }
     }
@@ -136,6 +142,7 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
+    val stopButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null) {
@@ -151,6 +158,11 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
                         bitmapDrawable.value = bitmapDraw
                     }
                 }
+            }
+
+            // 納期が過ぎている場合はボタンを非表示
+            if (job.entry?.limitAt?: Date() < Date()) {
+                stopButtonVisibility.value = View.INVISIBLE
             }
 
             // お気に入り状態の取得

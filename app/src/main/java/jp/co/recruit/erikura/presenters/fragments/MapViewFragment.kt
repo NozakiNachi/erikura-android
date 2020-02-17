@@ -63,7 +63,7 @@ class MapViewFragment(private val activity: AppCompatActivity, val job: Job?) : 
         }
 
         if (job != null) {
-            val erikuraMarker = ErikuraMarkerView.build(activity, mMap, job) {  }
+            val erikuraMarker = ErikuraMarkerView.build(activity, mMap, job, false) {  }
             erikuraMarker.active = true
             viewModel.marker.value = erikuraMarker
         }

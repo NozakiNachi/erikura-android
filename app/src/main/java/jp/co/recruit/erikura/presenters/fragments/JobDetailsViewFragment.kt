@@ -94,6 +94,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
 
 class JobDetailsViewFragmentViewModel: ViewModel() {
     val limit: MutableLiveData<String> = MutableLiveData()
+    val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val tool: MutableLiveData<String> = MutableLiveData()
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
@@ -106,6 +107,9 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             var end: Date
             if (job.status == JobStatus.Applied || job.status == JobStatus.Working || job.status == JobStatus.Finished) {
                 end = job.entry?.limitAt?: Date()
+                if(end < Date()) {
+                    msgVisibility.value = View.VISIBLE
+                }
             }else {
                 end = job.workingFinishAt?: Date()
             }

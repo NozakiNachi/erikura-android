@@ -159,7 +159,8 @@
                         android:layout_weight="20"
                         style="@style/primaryButton"
                         android:text="@string/startJob"
-                        android:onClick="@{handlers::onClickStart}" />
+                        android:onClick="@{handlers::onClickStart}"
+                        android:visibility="@{viewModel.startButtonVisibility}"/>
                     <ToggleButton
                         android:layout_width="70dp"
                         android:layout_height="68dp"

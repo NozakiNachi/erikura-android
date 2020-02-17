@@ -187,6 +187,7 @@
                         android:layout_marginRight="0dp"
                         android:layout_weight="20"
                         android:onClick="@{handlers::onClickStop}"
+                        android:visibility="@{viewModel.stopButtonVisibility}"
                         android:text="@string/stopJob" />
 
                     <ToggleButton
