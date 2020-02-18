@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.data.network
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import okhttp3.Request as HttpRequest
 import okhttp3.Response as HttpResponse
@@ -76,6 +78,8 @@ class Api(var context: Context) {
         ) { body ->
             if(body.accessToken == null){
                 userSession = null
+                // 保存してある認証情報をクリアします
+                UserSession.clear()
             }else{
                 // エラーメッセージを出す
             }
@@ -416,9 +420,13 @@ class Api(var context: Context) {
                     else {
                         when(response.code()) {
                             401 -> {
-                                // FIXME: 認証必須画面への遷移を行います
-                                // FIXME: Activityの NEW_TASK | CLEAR_TOP での遷移で良いか検討してください
-                                Toast.makeText(context, "401 Unauthorized:\nログイン必須画面を表示します", Toast.LENGTH_LONG).show()
+                                // 元画面は表示できないはずなので閉じておきます
+                                (context as? Activity)?.finish()
+                                // ログイン必須画面に遷移させます
+                                Intent(context, LoginRequiredActivity::class.java).let {
+                                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                    context.startActivity(it)
+                                }
                             }
                             500 -> {
                                 Log.v("ERROR RESPONSE", response.errorBody().toString())
