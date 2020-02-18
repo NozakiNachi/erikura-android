@@ -22,7 +22,7 @@
             android:id="@+id/image_picker_cell_check"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:background="@drawable/background_tick_button"
+            style="@style/imagePickerTick"
             android:checked="false"
             />
     </RelativeLayout>

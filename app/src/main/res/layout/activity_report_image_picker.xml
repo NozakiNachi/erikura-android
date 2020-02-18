@@ -5,6 +5,12 @@
     tools:context=".presenters.activities.report.ReportImagePickerActivity">
 
     <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerEventHandler" />
     </data>
 
     <FrameLayout
@@ -78,7 +84,18 @@
             android:layout_marginRight="20dp"
             android:layout_gravity="right"
             style="@style/nextButton"
-            android:enabled="true"
+            android:enabled="@{viewModel.isNextButtonEnabled()}"
+            android:onClick="@{handlers::onClickNext}"
             />
+        <!-- マニュアル表示ボタン -->
+        <Button
+            android:layout_width="110dp"
+            android:layout_height="70dp"
+            style="@style/secondaryButton"
+            android:text="マニュアル"
+            android:textSize="14dp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="30dp"
+            android:onClick="@{handlers::onClickManual}"/>
     </FrameLayout>
 </layout>
