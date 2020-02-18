@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredHandlers" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/paleGrey">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    style="@style/label_w2"
+                    android:textSize="22dp"
+                    android:gravity="center_horizontal"
+                    android:text="この機能を使うために\nログインしてください!"
+                    />
+                
+                <ImageView
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/login_required"
+                    />
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:background="@drawable/background_triangle" />
+
+            <Button
+                android:id="@+id/registerButton"
+                style="@style/primaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:text="@string/registerFree"
+                android:onClick="@{handlers::onClickRegisterButton}"/>
+
+            <Button
+                android:id="@+id/loginButton"
+                style="@style/secondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginBottom="20dp"
+                android:text="@string/login"
+                android:onClick="@{handlers::onClickLoginButton}"/>
+        </LinearLayout>
+    </ScrollView>
+
+</layout>
