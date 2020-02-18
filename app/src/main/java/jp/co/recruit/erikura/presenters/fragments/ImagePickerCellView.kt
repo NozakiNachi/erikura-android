@@ -12,11 +12,14 @@ import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.FragmentImagePickerCellViewBinding
+import android.widget.Toast
+import android.widget.CompoundButton
 
 
 class ImagePickerCellView : FrameLayout {
     var imageView: ImageView
     var toggleButton: ToggleButton
+    var toggleClickListener: ToggleClickListener? = null
 
     constructor(context: Context): this(context, null)
     constructor(context: Context, attrs: AttributeSet?): this(context, attrs, 0)
@@ -35,13 +38,24 @@ class ImagePickerCellView : FrameLayout {
         // 1. ImageView
         // 2. ToggleButton
 
-        // FIXME: click イベントの処理はどうするか？Adapter 側に持たせるか？
+        toggleButton.setOnClickListener {
+            toggleClickListener?.apply {
+                onClick(toggleButton.isChecked)
+            }
+        }
+
+    }
+
+    interface ToggleClickListener {
+        fun onClick(isChecked: Boolean)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
     }
 }
+
+
 
 object ImagePickerCellViewAdapter {
     @BindingAdapter("checked")
