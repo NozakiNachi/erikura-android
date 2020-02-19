@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.ConfigurationViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.ConfigurationMenuItemViewModel" />
     </data>
 
     <RelativeLayout
@@ -18,6 +18,7 @@
             style="@style/label_w2"
             android:textSize="18dp"
             android:textColor="@color/blackTwo"
-            android:text="設定" />
+            android:drawableLeft="@{viewModel.item.iconDrawableId}"
+            android:text="@{viewModel.item.label}" />
     </RelativeLayout>
 </layout>

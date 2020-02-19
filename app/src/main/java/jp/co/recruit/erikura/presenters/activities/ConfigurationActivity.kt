@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuInflater
 import android.view.View
@@ -25,6 +26,7 @@ import java.util.*
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
+    data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
 
@@ -33,6 +35,10 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     var configurationTextList: List<String> = listOf("会員情報変更","口座情報登録・変更","通知設定")
+//    var menuItems: List<MenuItem> = listOf(
+//        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) { Log.v("TEST", "test") }
+//        // 以降メニューを定義する
+//    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -65,7 +71,13 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             return ViewHolder(binding)
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            holder.binding.test.text = configurationDataset[position]
+            //holder.binding.test.text = configurationDataset[position]
+            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.ic_comment_2x, false) {})
+            holder.binding.viewModel = viewModel
+//
+//            holder.binding.addOnLick.. {
+//                item.onSelectd()
+//            }
         }
         override fun getItemCount() = configurationDataset.size
     }
@@ -153,5 +165,9 @@ interface ConfigurationEventHandlers {
 }
 
 class ConfigurationViewModel: ViewModel() {
+
+}
+
+class ConfigurationMenuItemViewModel(val item: ConfigurationActivity.MenuItem) : ViewModel() {
 
 }
