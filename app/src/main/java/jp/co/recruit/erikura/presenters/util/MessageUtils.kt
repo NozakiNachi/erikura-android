@@ -14,7 +14,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.DialogLocationAlertBinding
-import jp.co.recruit.erikura.databinding.DialogLogoutBinding
 import jp.co.recruit.erikura.databinding.DialogMessageAlertBinding
 
 // 画面へのメッセージ表示を行うためのユーティリティ
@@ -51,25 +50,6 @@ object MessageUtils {
             val binding: DialogLocationAlertBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(context),
                 R.layout.dialog_location_alert,
-                null, false
-            )
-            binding.lifecycleOwner = context
-
-            setView(binding.root)
-            setOnDismissListener { onCloseListener?.invoke() }
-        }.create()
-
-        dialog.show()
-
-        return dialog
-    }
-
-    // FIXME: 画面レイアウト確認用のコード。後で削除。
-    fun displayLogout(context: FragmentActivity, onCloseListener: (() -> Unit)? = null): AlertDialog {
-        val dialog = AlertDialog.Builder(context).apply {
-            val binding: DialogLogoutBinding = DataBindingUtil.inflate(
-                LayoutInflater.from(context),
-                R.layout.dialog_logout,
                 null, false
             )
             binding.lifecycleOwner = context
