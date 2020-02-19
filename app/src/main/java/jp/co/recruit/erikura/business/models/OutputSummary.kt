@@ -17,7 +17,8 @@ data class OutputSummary(
     var beforeCleaningPhotoUrl: String? = null,
     var operatorLikes: Boolean = false,
     var operatorComments: List<@RawValue OperatorComment> = listOf(),
-    var willDelete: Boolean = false
+    var willDelete: Boolean = false,
+    var photoAsset: MediaItem? = null
 ) : Parcelable {
     // photoAsset
     // isUploadCompleted
