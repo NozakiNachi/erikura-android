@@ -61,37 +61,31 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.handlers = this
 
 
-//        // 設定画面のメニューをrecycler_viewで表示
-//        addConfiguration()
-//        configuration_recycler_view.layoutManager = LinearLayoutManager(this)
-//        configuration_recycler_view.adapter = ConfigurationAdapter(configurationTextList)
-//
-//    }
-//
-//    fun addConfiguration() {
-//        configurationTextList.add("configuration1")
-//        configurationTextList.add("configuration2")
-//        configurationTextList.add("configuration3")
+        // 設定画面のメニューをrecycler_viewで表示
+        addConfiguration()
+        configuration_recycler_view.layoutManager = LinearLayoutManager(this)
+        configuration_recycler_view.adapter = ConfigurationAdapter(configurationTextList)
+    }
+    fun addConfiguration() {
+        configurationTextList.add("configuration1")
+        configurationTextList.add("configuration2")
+        configurationTextList.add("configuration3")
     }
 
-//    class ConfigurationAdapter(private val myDataset: ArrayList<String>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
-//    {
-//        // RecyclerViewの一要素となるXML要素の型を引数に指定する
-//        // この場合はactivity_configuration.xmlのTextView
-//        class ViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
-//
-//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-//            val textView = LayoutInflater.from(parent.context)
-//                .inflate(R.layout.activity_configuration_list_item, parent, false) as TextView
-//            return ViewHolder(textView)
-//        }
-//
-//        // 第１引数のViewHolderはこのファイルの上のほうで作成した`class ViewHolder`です。
-//        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//            holder.textView.text = myDataset[position]
-//        }
-//        override fun getItemCount() = myDataset.size
-//    }
+    class ConfigurationAdapter(private val myDataset: ArrayList<String>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
+    {
+        class ViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val textView = LayoutInflater.from(parent.context)
+                .inflate(R.layout.activity_configuration_list_item, parent, false) as TextView
+            return ViewHolder(textView)
+        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            holder.textView.text = myDataset[position]
+        }
+        override fun getItemCount() = myDataset.size
+    }
 
 
     override fun onRegistrationLink(view: View) {
@@ -130,22 +124,29 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-
     override fun onClickLogoutLink(view: View) {
         AlertDialog.Builder(this) // FragmentではActivityを取得して生成
             .setView(R.layout.dialog_logout)
+            .setPositiveButton("OK",  { dialog, which ->
+                // ログアウト処理
+                Api(this).logout() {
+                    // スタート画面に戻る
+                    val intent = Intent(this, StartActivity::class.java)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
+            })
             .show()
     }
-
-    override fun onClickLogout(view: View) {
-        // FIXME: ログアウト処理
-        Api(this).logout() {
-            // スタート画面に戻る
-            val intent = Intent(this, StartActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
-        // 戻るボタンで戻れないようにする。
-    }
+//
+//    override fun onClickLogout(view: View) {
+//        // FIXME: ログアウト処理
+//        Api(this).logout() {
+//            // スタート画面に戻る
+//            val intent = Intent(this, StartActivity::class.java)
+//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+//        }
+//        // 戻るボタンで戻れないようにする。
+//    }
 }
 
 interface ConfigurationEventHandlers {
@@ -165,8 +166,6 @@ interface ConfigurationEventHandlers {
     fun onInquiry(view: View)
     // ログアウトへのリンク
     fun onClickLogoutLink(view: View)
-     // ログアウト
-    fun onClickLogout(view: View)
 }
 
 class ConfigurationViewModel: ViewModel() {}
