@@ -3,25 +3,30 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import jp.co.recruit.erikura.BuildConfig
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.ActivityConfigurationBinding
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import jp.co.recruit.erikura.presenters.util.MessageUtils
+import kotlin.collections.ArrayList
+import jp.co.recruit.erikura.databinding.*
+import kotlinx.android.synthetic.main.activity_configuration.*
+import java.util.*
+
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
+    data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
 
@@ -29,24 +34,53 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
 
+    var configurationTextList: List<String> = listOf("会員情報変更","口座情報登録・変更","通知設定")
+//    var menuItems: List<MenuItem> = listOf(
+//        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) { Log.v("TEST", "test") }
+//        // 以降メニューを定義する
+//    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-        val binding: ActivityConfigurationBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_configuration)
+        val binding: ActivityConfigurationBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
 
-        viewModel.email.value = ""
-        viewModel.password.value = ""
-        viewModel.enableAutoLogin.value = true
+        // 設定画面のメニューをrecycler_viewで表示
+        configuration_recycler_view.adapter = ConfigurationAdapter(configurationTextList)
+
+
     }
 
-//    override fun onClickUnreachLink(view: View) {
-//        // FIXME: リンク先の作成
-//    }
+    class ConfigurationAdapter(private val configurationDataset: List<String>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
+    {
+
+        class ViewHolder(val binding: FragmentConfigurationCellBinding) : RecyclerView.ViewHolder(binding.root)
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding = DataBindingUtil.inflate<FragmentConfigurationCellBinding>(
+                LayoutInflater.from(parent.context),
+                R.layout.fragment_configuration_cell,
+                parent,
+                false
+            )
+
+            return ViewHolder(binding)
+        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            //holder.binding.test.text = configurationDataset[position]
+            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.ic_comment_2x, false) {})
+            holder.binding.viewModel = viewModel
+//
+//            holder.binding.addOnLick.. {
+//                item.onSelectd()
+//            }
+        }
+        override fun getItemCount() = configurationDataset.size
+    }
 
     override fun onRegistrationLink(view: View) {
         // FIXME: リンク先の作成
@@ -85,33 +119,27 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     override fun onClickLogoutLink(view: View) {
-        // FIXME: 直接ダイアログを呼び出して、ログアウトダイアログボタンを表示する。
         AlertDialog.Builder(this) // FragmentではActivityを取得して生成
-            .setTitle("ログアウトダイアログボタン")
-            .setMessage("ログアウトダイアログボタンを呼び出します。")
-            .setPositiveButton("OK", { dialog, which ->
-
-                val intent = Intent(this, LogoutActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            .setView(R.layout.dialog_logout)
+            .setPositiveButton("OK",  { dialog, which ->
+                // ログアウト処理
+                Api(this).logout() {
+                    // スタート画面に戻る
+                    val intent = Intent(this, StartActivity::class.java)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
             })
             .show()
     }
-}
-
-
-
-class ConfigurationViewModel: ViewModel() {
-    val email: MutableLiveData<String> = MutableLiveData()
-    val password: MutableLiveData<String> = MutableLiveData()
-    val enableAutoLogin: MutableLiveData<Boolean> = MutableLiveData()
-
-    val isLoginButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(email) { result.value = isValid() }
-        result.addSource(password) { result.value = isValid()  }
-    }
-
-    fun isValid(): Boolean {
-        return (email.value?.isNotBlank() ?: false) && (password.value?.isNotBlank() ?: false)
+    //
+    override fun onClickLogout(view: View) {
+        // FIXME: ログアウト処理
+        Api(this).logout() {
+            // スタート画面に戻る
+            val intent = Intent(this, StartActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+        // 戻るボタンで戻れないようにする。
     }
 }
 
@@ -132,4 +160,14 @@ interface ConfigurationEventHandlers {
     fun onInquiry(view: View)
     // ログアウトへのリンク
     fun onClickLogoutLink(view: View)
+    // ログアウト
+    fun onClickLogout(view: View)
+}
+
+class ConfigurationViewModel: ViewModel() {
+
+}
+
+class ConfigurationMenuItemViewModel(val item: ConfigurationActivity.MenuItem) : ViewModel() {
+
 }

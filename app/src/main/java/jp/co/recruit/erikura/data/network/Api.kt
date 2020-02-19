@@ -97,6 +97,16 @@ class Api(var context: Context) {
         }
     }
 
+//    fun notificationSetting(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (notice: List<notice>) -> Unit) {
+//        val observable = erikuraApiService.notificationSetting(
+//            //
+//        )
+//        executeObservable(observable, onError = onError) {
+//            val notices = it.notices
+//            onComplete(notices)
+//        }
+//    }
+
     fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         val observable = erikuraApiService.searchJob(
             period = query.period.value,
