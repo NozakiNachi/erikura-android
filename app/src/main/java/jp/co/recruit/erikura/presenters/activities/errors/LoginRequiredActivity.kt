@@ -36,6 +36,7 @@ class LoginRequiredActivity : AppCompatActivity(), LoginRequiredHandlers {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
+    // FIXME: 戻るボタンが押下された場合の振る舞いを修正する
 }
 
 class LoginRequiredViewModel: ViewModel() {
