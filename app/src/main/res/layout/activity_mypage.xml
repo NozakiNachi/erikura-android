@@ -16,288 +16,315 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/mypage_view_navigation"
+            >
 
-        <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:background="@color/white"
-            android:fillViewport="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:background="@color/white"
+                android:fillViewport="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/paleGrey"
                     android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/editText"
-                        style="@style/titleLabel"
-                        android:layout_width="390dp"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="10.5dp"
-                        android:layout_marginTop="60.5dp"
-                        android:layout_marginBottom="1.5dp"
-                        android:textColor="@color/blackTwo"
-                        android:textSize="22dp"
-                        android:text="マイページ" />
 
-                    <!--ステータス-->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginBottom="20dp">
+                        android:background="@color/paleGrey"
+                        android:orientation="vertical">
+                        <TextView
+                            android:id="@+id/editText"
+                            style="@style/titleLabel"
+                            android:layout_width="390dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="10.5dp"
+                            android:layout_marginTop="60.5dp"
+                            android:layout_marginBottom="1.5dp"
+                            android:textColor="@color/blackTwo"
+                            android:textSize="22dp"
+                            android:text="マイページ" />
+
+                        <!--ステータス-->
                         <LinearLayout
-                            android:layout_width="120dp"
-                            android:layout_height="121dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="6dp"
-                            android:orientation="vertical">
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:layout_marginTop="12dp"
-                                android:src="@drawable/yen"
-                                android:layout_gravity="center" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                android:textSize="14dp"
-                                android:firstBaselineToTopHeight="0dp"
-                                android:lastBaselineToBottomHeight="0dp"
-                                android:includeFontPadding="false"
-                                android:textColor="@color/blackTwo"
-                                android:maxLines="1"
-                                android:text="今月の報酬" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                android:textSize="14dp"
-                                android:includeFontPadding="false"
-                                android:textColor="@color/blackTwo"
-                                android:text="円" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="120dp"
-                            android:layout_height="121dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="6dp"
-                            android:orientation="vertical">
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:layout_marginTop="12dp"
-                                android:src="@drawable/work_bg_2x"
-                                android:layout_gravity="center" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                android:textSize="14dp"
-                                android:firstBaselineToTopHeight="0dp"
-                                android:lastBaselineToBottomHeight="0dp"
-                                android:includeFontPadding="false"
-                                android:textColor="@color/blackTwo"
-                                android:maxLines="1"
-                                android:text="今月の完了数" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                android:textSize="14dp"
-                                android:firstBaselineToTopHeight="0dp"
-                                android:lastBaselineToBottomHeight="0dp"
-                                android:includeFontPadding="false"
-                                android:textColor="@color/blackTwo"
-                                android:maxLines="1"
-                                android:text="円" />
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_width="120dp"
-                            android:layout_height="121dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="6dp"
-                            android:orientation="vertical">
-                            <ImageView
-                                android:layout_width="16dp"
-                                android:layout_height="16dp"
-                                android:layout_marginTop="12dp"
-                                android:src="@drawable/yen"
-                                android:layout_gravity="center" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                android:textSize="14dp"
-                                android:firstBaselineToTopHeight="0dp"
-                                android:lastBaselineToBottomHeight="0dp"
-                                android:includeFontPadding="false"
-                                android:textColor="@color/blackTwo"
-                                android:maxLines="1"
-                                android:text="今月のいいね数" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="10dp"
-                                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                android:textSize="14dp"
-                                android:firstBaselineToTopHeight="0dp"
-                                android:lastBaselineToBottomHeight="0dp"
-                                android:includeFontPadding="false"
-                                android:textColor="@color/blackTwo"
-                                android:maxLines="1"
-                                android:text="円" />
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="20dp">
+                            <RelativeLayout
+                                android:layout_weight="1.0"
+                                android:layout_width="match_parent"
+                                android:layout_height="121dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="6dp"
+                                android:background="@drawable/background_white_circle"
+                                >
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_above="@id/mypage_monthly_reward_label"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginBottom="10dp"
+                                    android:src="@drawable/yen"
+                                    android:layout_gravity="center" />
+                                <TextView
+                                    android:id="@+id/mypage_monthly_reward_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:gravity="center"
+                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:textSize="14dp"
+                                    android:firstBaselineToTopHeight="0dp"
+                                    android:lastBaselineToBottomHeight="0dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/blackTwo"
+                                    android:maxLines="1"
+                                    android:text="今月の報酬" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/mypage_monthly_reward_label"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="10dp"
+                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:textSize="14dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/blackTwo"
+                                    android:text="@{viewModel.formattedMonthlyRewards}" />
+                            </RelativeLayout>
+                            <RelativeLayout
+                                android:layout_weight="1.0"
+                                android:layout_width="match_parent"
+                                android:layout_height="121dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="6dp"
+                                android:background="@drawable/background_white_circle"
+                                >
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_above="@id/mypage_monthly_jobs_label"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginBottom="10dp"
+                                    android:src="@drawable/work_bg_2x" />
+                                <TextView
+                                    android:id="@+id/mypage_monthly_jobs_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:textSize="14dp"
+                                    android:firstBaselineToTopHeight="0dp"
+                                    android:lastBaselineToBottomHeight="0dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/blackTwo"
+                                    android:maxLines="1"
+                                    android:text="今月の完了数" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/mypage_monthly_jobs_label"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="10dp"
+                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:textSize="14dp"
+                                    android:firstBaselineToTopHeight="0dp"
+                                    android:lastBaselineToBottomHeight="0dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/blackTwo"
+                                    android:maxLines="1"
+                                    android:text="@{viewModel.formattedMonthlyCompletedJobs}" />
+                            </RelativeLayout>
+                            <RelativeLayout
+                                android:layout_weight="1.0"
+                                android:layout_width="match_parent"
+                                android:layout_height="121dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="6dp"
+                                android:background="@drawable/background_white_circle"
+                                >
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:layout_above="@id/mypage_monthly_goods_label"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginBottom="10dp"
+                                    android:src="@drawable/ic_good_2x"
+                                    />
+                                <TextView
+                                    android:id="@+id/mypage_monthly_goods_label"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_centerVertical="true"
+                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:textSize="14dp"
+                                    android:firstBaselineToTopHeight="0dp"
+                                    android:lastBaselineToBottomHeight="0dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/blackTwo"
+                                    android:maxLines="1"
+                                    android:text="今月のいいね数" />
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@id/mypage_monthly_goods_label"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="10dp"
+                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:textSize="14dp"
+                                    android:firstBaselineToTopHeight="0dp"
+                                    android:lastBaselineToBottomHeight="0dp"
+                                    android:includeFontPadding="false"
+                                    android:textColor="@color/blackTwo"
+                                    android:maxLines="1"
+                                    android:text="@{viewModel.formattedMonthlyGoodsCount}" />
+                            </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
 
-<!--                背景画像-->
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:background="@drawable/background_triangle"/>
+    <!--                背景画像-->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:background="@drawable/background_triangle"/>
 
-<!--                メニュー-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="4.5dp"
-                        android:layout_marginBottom="13.5dp"
-                        android:src="@drawable/work_bg_2x" />
+    <!--                メニュー-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="vertical"
+                        android:divider="@drawable/condition_divider"
+                        android:showDividers="beginning|middle|end">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_account" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="20dp"
+                                style="@style/label_w2"
+                                android:textSize="18dp"
+                                android:onClick="@{handlers::onClickPaymentinformationLink}"
+                                android:textColor="@color/blackTwo"
+                                android:text="お支払情報" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_comment_2x" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="20dp"
+                                style="@style/label_w2"
+                                android:textSize="18dp"
+                                android:onClick="@{handlers::onClickJobEvaluation}"
+                                android:textColor="@color/blackTwo"
+                                android:text="仕事へのコメント・いいね" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="20dp">
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:layout_marginLeft="20dp"
+                                android:layout_marginRight="10dp"
+                                android:src="@drawable/ic_preferences" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="20dp"
+                                style="@style/label_w2"
+                                android:textSize="18dp"
+                                android:onClick="@{handlers::onClickConfiguration}"
+                                android:textColor="@color/blackTwo"
+                                android:text="設定" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                     <TextView
-                        android:layout_width="320dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:textSize="18dp"
-                        android:onClick="@{handlers::onClickPaymentinformationLink}"
-                        android:textColor="@color/blackTwo"
-                        android:text="お支払情報" />
-                </LinearLayout>
-
-
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="1dp">
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="4.5dp"
-                        android:layout_marginBottom="13.5dp"
-                        android:src="@drawable/work_bg_2x" />
-                    <TextView
-                        android:layout_width="320dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:textSize="18dp"
-                        android:onClick="@{handlers::onClickJobEvaluation}"
+                        android:layout_marginRight="20dp"
+                        style="@style/label_w2"
+                        android:textSize="20dp"
                         android:textColor="@color/blackTwo"
-                        android:text="仕事へのコメント・いいね" />
-                </LinearLayout>
+                        android:text="お知らせ" />
 
-
-
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp">
-                    <ImageView
-                        android:layout_width="16dp"
-                        android:layout_height="16dp"
-                        android:layout_gravity="center"
+                    <View
+                        android:layout_height="1px"
+                        android:layout_width="match_parent"
+                        android:background="#dddddd"
+                        />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/mypage_information_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="10dp"
-                        android:layout_marginTop="4.5dp"
-                        android:layout_marginBottom="13.5dp"
-                        android:src="@drawable/work_bg_2x" />
-                    <TextView
-                        android:layout_width="320dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="1.5dp"
-                        android:textSize="18dp"
-                        android:onClick="@{handlers::onClickConfiguration}"
-                        android:textColor="@color/blackTwo"
-                        android:text="設定" />
+                        android:layout_marginRight="20dp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        />
+                    <View
+                        android:layout_height="1px"
+                        android:layout_width="match_parent"
+                        android:background="#dddddd"
+                        />
                 </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-
-                <TextView
-                    android:layout_width="390dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20.5dp"
-
-                    android:layout_marginLeft="1.5dp"
-                    android:textSize="20dp"
-                    android:textColor="@color/blackTwo"
-                    android:text="お知らせ" />
-
-
-                <TextView
-                    android:id="@+id/editText2"
-                    android:layout_width="370dp"
-                    android:layout_height="250dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:ems="10"
-                    android:inputType="textPersonName"
-                    android:layout_gravity="center"
-                    android:text="お知らせAPIサーバーから取得した内容" />
-            </LinearLayout>
-        </ScrollView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
-        android:id="@+id/mypage_view_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:layout_alignParentBottom="true"
-        app:menu="@menu/tab_menu"
-        app:itemIconTint="@drawable/bottom_navigation_item_state"
-        app:itemTextColor="@drawable/bottom_navigation_item_state"
-        android:background="@drawable/background_border_top"
-        onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
-        />
-</RelativeLayout>
+        <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
+            android:id="@+id/mypage_view_navigation"
+            android:layout_width="match_parent"
+            android:layout_height="90dp"
+            android:layout_alignParentBottom="true"
+            app:menu="@menu/tab_menu"
+            app:itemIconTint="@drawable/bottom_navigation_item_state"
+            app:itemTextColor="@drawable/bottom_navigation_item_state"
+            android:background="@drawable/background_border_top"
+            onNavigationItemSelected="@{handlers::onNavigationItemSelected}"
+            />
+    </RelativeLayout>
 </layout>

@@ -108,8 +108,6 @@ interface IErikuraApiService {
     @HTTP(method = "DELETE", path = "reports", hasBody = true)
     fun deleteReport(@Body request: DeleteReportRequest): ApiObservable<ReportIdResponse>
 
-    // FIXME: geocoding
-
     @GET("informations")
     fun informations(): ApiObservable<InformationResponse>
 
