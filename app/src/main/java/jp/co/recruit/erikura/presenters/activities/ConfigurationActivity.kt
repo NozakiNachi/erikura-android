@@ -5,6 +5,7 @@ import android.content.Intent
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -43,8 +44,9 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.handlers = this
 
         // 設定画面のメニューをrecycler_viewで表示
-        configuration_recycler_view.layoutManager = LinearLayoutManager(this)
         configuration_recycler_view.adapter = ConfigurationAdapter(configurationTextList)
+
+
     }
 
     class ConfigurationAdapter(private val configurationDataset: List<String>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
