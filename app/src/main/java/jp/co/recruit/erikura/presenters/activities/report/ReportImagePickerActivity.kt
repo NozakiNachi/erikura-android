@@ -154,7 +154,11 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
             summary.photoAsset = v
             outputSummaryList.add(summary)
         }
-        // FIXME: 報告箇所画面へ遷移
+
+        val intent= Intent(this, ReportFormActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putParcelableArrayListExtra("outputSummaryList",  ArrayList(outputSummaryList))
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 
