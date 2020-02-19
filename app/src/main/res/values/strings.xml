@@ -122,9 +122,13 @@
     <string name="working_finished_caption">作業が完了しました！</string>
     <string name="working_finished_note">撮影した実施箇所の写真を送って、\n作業報告を行いましょう！</string>
 
-    <!-- 作業報告画面 -->
+    <!-- 作業報告写真選択画面 -->
     <string name="report_image_picker_caption">作業報告</string>
     <string name="report_image_picker_note">実施箇所の写真を全て選んでください。</string>
+
+    <!-- 作業報告箇所画面 -->
+    <string name="report_form_caption">実施箇所（%1$d/%2$d）</string>
+    <string name="report_form_note">この写真の報告を記入してください。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -140,6 +144,10 @@
     <string name="phone">電話番号</string>
     <string name="cancelReason">キャンセル理由</string>
     <string name="cancelReasonDetail">具体的なキャンセル理由</string>
+    <string name="summary_select">箇所</string>
+    <string name="summary_input">箇所（自由記述）</string>
+    <string name="summary_status">作業後の状態</string>
+    <string name="comment">コメント</string>
 
     <!-- 入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
@@ -153,6 +161,8 @@
     <string name="street_count_error">番地以降は100文字以内で入力してください。</string>
     <string name="phone_pattern_error">電話番号はハイフンを含めずに入力してください。</string>
     <string name="phone_count_error">電話番号は10桁、または11桁で入力してください。</string>
+    <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
+    <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
 
     <!-- ボタンのラベル -->
     <string name="registerFree">会員登録（無料）</string>
@@ -198,15 +208,18 @@
     <string name="register_first_name_hint">例）太郎</string>
     <string name="title_activity_map_view">Map</string>
     <string name="register_postal_code_hint">例）1010021</string>
-    <string name="register_prefecture_hint">選択してください</string>
+    <string name="please_select">選択してください</string>
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
     <string name="register_phone_hint">例）08046015529</string>
     <string name="cancel_reason_hint">例）急用が入り仕事が完了できなくなった</string>
+    <string name="other_hint">その他(自由記入)</string>
+    <string name="summary_hint">例）エレベータ</string>
+    <string name="comment_hint">例）床が少し汚い状態</string>
 
     <!-- 都道府県 -->
     <string-array name="prefecture_list">
-        <item>@string/register_prefecture_hint</item>
+        <item>@string/please_select</item>
         <item>北海道</item>
         <item>青森県</item>
         <item>岩手県</item>
@@ -254,6 +267,14 @@
         <item>宮崎県</item>
         <item>鹿児島県</item>
         <item>沖縄県</item>
+    </string-array>
+
+    <!-- 作業後の状態 -->
+    <string-array name="summary_statuses">
+        <item>@string/please_select</item>
+        <item>異常あり、未対応</item>
+        <item>異常あり、対応済み</item>
+        <item>異常なし</item>
     </string-array>
 
 
