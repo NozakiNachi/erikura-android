@@ -119,17 +119,24 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     override fun onClickLogoutLink(view: View) {
-        AlertDialog.Builder(this) // FragmentではActivityを取得して生成
-            .setView(R.layout.dialog_logout)
-            .setPositiveButton("OK",  { dialog, which ->
-                // ログアウト処理
-                Api(this).logout() {
-                    // スタート画面に戻る
-                    val intent = Intent(this, StartActivity::class.java)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            })
+        val binding: DialogLogoutBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_logout, null, false)
+        binding.lifecycleOwner = this
+        binding.handlers = this
+
+        val dialog = AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+            .setView(binding.root)
             .show()
+
+        binding.logoutButton.setOnClickListener {
+            dialog.dismiss()
+            // ログアウト処理
+            Api(this).logout() {
+                // スタート画面に戻る
+                val intent = Intent(this, StartActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+        }
     }
     //
     override fun onClickLogout(view: View) {
