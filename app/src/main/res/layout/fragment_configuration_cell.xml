@@ -18,7 +18,7 @@
             style="@style/label_w2"
             android:textSize="18dp"
             android:textColor="@color/blackTwo"
-            android:drawableLeft="@{viewModel.item.iconDrawableId}"
+            android:drawableLeft="@{viewModel.icon}"
             android:text="@{viewModel.item.label}" />
     </RelativeLayout>
 </layout>

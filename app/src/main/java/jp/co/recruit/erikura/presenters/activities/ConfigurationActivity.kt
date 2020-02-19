@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -72,7 +74,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             //holder.binding.test.text = configurationDataset[position]
-            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.ic_comment_2x, false) {})
+            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.icon_comment_10, false) {})
             holder.binding.viewModel = viewModel
 //
 //            holder.binding.addOnLick.. {
@@ -176,5 +178,5 @@ class ConfigurationViewModel: ViewModel() {
 }
 
 class ConfigurationMenuItemViewModel(val item: ConfigurationActivity.MenuItem) : ViewModel() {
-
+    val icon: Drawable get() = ErikuraApplication.applicationContext.resources.getDrawable(item.iconDrawableId, null)
 }
