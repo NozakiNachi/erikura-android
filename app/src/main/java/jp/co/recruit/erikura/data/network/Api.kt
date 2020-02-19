@@ -396,6 +396,12 @@ class Api(var context: Context) {
         }
     }
 
+    fun informations(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (informations: List<Information>) -> Unit) {
+        executeObservable(erikuraApiService.informations(), onError = onError) { response ->
+            onComplete(response.information)
+        }
+    }
+
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
         showProgressAlert()
