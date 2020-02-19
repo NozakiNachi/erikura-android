@@ -3,23 +3,42 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
+import android.app.Dialog
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
+import androidx.recyclerview.widget.LinearLayoutManager
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityConfigurationBinding
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.databinding.FragmentJobListItemBinding
+import jp.co.recruit.erikura.presenters.activities.job.*
+import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
+import jp.co.recruit.erikura.presenters.activities.job.JobListHolder
 import jp.co.recruit.erikura.presenters.util.MessageUtils
+import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
+import kotlinx.android.synthetic.main.activity_configuration.*
+
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 
@@ -28,6 +47,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     private val viewModel: ConfigurationViewModel by lazy {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
+
+    var configurationTextList: ArrayList<String> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -39,14 +60,39 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        viewModel.email.value = ""
-        viewModel.password.value = ""
-        viewModel.enableAutoLogin.value = true
+
+//        // 設定画面のメニューをrecycler_viewで表示
+//        addConfiguration()
+//        configuration_recycler_view.layoutManager = LinearLayoutManager(this)
+//        configuration_recycler_view.adapter = ConfigurationAdapter(configurationTextList)
+//
+//    }
+//
+//    fun addConfiguration() {
+//        configurationTextList.add("configuration1")
+//        configurationTextList.add("configuration2")
+//        configurationTextList.add("configuration3")
     }
 
-//    override fun onClickUnreachLink(view: View) {
-//        // FIXME: リンク先の作成
+//    class ConfigurationAdapter(private val myDataset: ArrayList<String>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
+//    {
+//        // RecyclerViewの一要素となるXML要素の型を引数に指定する
+//        // この場合はactivity_configuration.xmlのTextView
+//        class ViewHolder(val textView: TextView) : RecyclerView.ViewHolder(textView)
+//
+//        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+//            val textView = LayoutInflater.from(parent.context)
+//                .inflate(R.layout.activity_configuration_list_item, parent, false) as TextView
+//            return ViewHolder(textView)
+//        }
+//
+//        // 第１引数のViewHolderはこのファイルの上のほうで作成した`class ViewHolder`です。
+//        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+//            holder.textView.text = myDataset[position]
+//        }
+//        override fun getItemCount() = myDataset.size
 //    }
+
 
     override fun onRegistrationLink(view: View) {
         // FIXME: リンク先の作成
@@ -84,34 +130,21 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    override fun onClickLogoutLink(view: View) {
-        // FIXME: 直接ダイアログを呼び出して、ログアウトダイアログボタンを表示する。
-        AlertDialog.Builder(this) // FragmentではActivityを取得して生成
-            .setTitle("ログアウトダイアログボタン")
-            .setMessage("ログアウトダイアログボタンを呼び出します。")
-            .setPositiveButton("OK", { dialog, which ->
 
-                val intent = Intent(this, LogoutActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            })
+    override fun onClickLogoutLink(view: View) {
+        AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+            .setView(R.layout.dialog_logout)
             .show()
     }
-}
 
-
-
-class ConfigurationViewModel: ViewModel() {
-    val email: MutableLiveData<String> = MutableLiveData()
-    val password: MutableLiveData<String> = MutableLiveData()
-    val enableAutoLogin: MutableLiveData<Boolean> = MutableLiveData()
-
-    val isLoginButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(email) { result.value = isValid() }
-        result.addSource(password) { result.value = isValid()  }
-    }
-
-    fun isValid(): Boolean {
-        return (email.value?.isNotBlank() ?: false) && (password.value?.isNotBlank() ?: false)
+    override fun onClickLogout(view: View) {
+        // FIXME: ログアウト処理
+        Api(this).logout() {
+            // スタート画面に戻る
+            val intent = Intent(this, StartActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+        // 戻るボタンで戻れないようにする。
     }
 }
 
@@ -132,4 +165,8 @@ interface ConfigurationEventHandlers {
     fun onInquiry(view: View)
     // ログアウトへのリンク
     fun onClickLogoutLink(view: View)
+     // ログアウト
+    fun onClickLogout(view: View)
 }
+
+class ConfigurationViewModel: ViewModel() {}
