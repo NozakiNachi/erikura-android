@@ -5,9 +5,11 @@
     tools:context=".presenters.activities.report.ReportImagePickerActivity">
 
     <data>
+
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerEventHandler" />
@@ -19,84 +21,165 @@
         <!-- コンテンツ領域 -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
+
             <LinearLayout
                 android:id="@+id/report_image_picker_header"
-                android:layout_alignParentTop="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_alignParentTop="true"
                 android:background="@color/paleGrey"
-                >
-                <View
+                android:orientation="vertical">
+                <!-- FIXME: カスタムViewへの切り出し -->
+                <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginTop="106dp"
-                    />
+                    android:layout_marginTop="106dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="2dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginRight="25dp"
+                        android:background="@color/black" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:orientation="horizontal">
+
+                        <Button
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/background_progress_circle"
+                            android:text="1" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="right">
+
+<!--                            <Button-->
+<!--                                android:layout_width="30dp"-->
+<!--                                android:layout_height="30dp"-->
+<!--                                android:background="@drawable/background_progress_circle"-->
+<!--                                android:text="2" />-->
+
+                            <Button
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/background_progress_circle" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="right">
+
+<!--                            <Button-->
+<!--                                android:layout_width="30dp"-->
+<!--                                android:layout_height="30dp"-->
+<!--                                android:background="@drawable/background_progress_circle"-->
+<!--                                android:text="3" />-->
+
+                            <Button
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/background_progress_circle" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:gravity="right">
+
+<!--                            <Button-->
+<!--                                android:layout_width="30dp"-->
+<!--                                android:layout_height="30dp"-->
+<!--                                android:background="@drawable/background_progress_circle"-->
+<!--                                android:text="4" />-->
+
+                            <Button
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/background_progress_circle" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </FrameLayout>
+
                 <TextView
+                    style="@style/label_w2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="作業報告"
-                    style="@style/label_w2"
-                    android:textColor="@color/black"
-                    android:textSize="22dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="30dp"
-                    />
+                    android:text="作業報告"
+                    android:textColor="@color/black"
+                    android:textSize="22dp" />
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
-                    android:text="実施箇所の写真を全て選んでください。"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    />
+                    android:text="実施箇所の写真を全て選んでください。"
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
             </LinearLayout>
 
             <ImageView
                 android:id="@+id/report_image_picker_preview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/black"
-                android:layout_below="@id/report_image_picker_header"
                 android:layout_above="@id/report_image_picker_selection"
+                android:layout_below="@id/report_image_picker_header"
+                android:background="@color/black"
                 android:foregroundGravity="center_horizontal"
-                android:scaleType="fitCenter"
-                />
-            
+                android:scaleType="fitCenter" />
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/report_image_picker_selection"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="200dp"
                 android:layout_alignParentBottom="true"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="4"
-                />
+                app:spanCount="4" />
         </RelativeLayout>
 
         <!-- Navigation -->
         <Button
+            style="@style/nextButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="60dp"
-            android:layout_marginRight="20dp"
             android:layout_gravity="right"
-            style="@style/nextButton"
+            android:layout_marginRight="0dp"
+            android:layout_marginTop="40dp"
             android:enabled="@{viewModel.isNextButtonEnabled()}"
-            android:onClick="@{handlers::onClickNext}"
-            />
+            android:onClick="@{handlers::onClickNext}" />
+
         <!-- マニュアル表示ボタン -->
         <Button
+            style="@style/secondaryButton"
             android:layout_width="110dp"
             android:layout_height="70dp"
-            style="@style/secondaryButton"
-            android:text="マニュアル"
-            android:textSize="14dp"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="30dp"
-            android:onClick="@{handlers::onClickManual}"/>
+            android:onClick="@{handlers::onClickManual}"
+            android:text="マニュアル"
+            android:textSize="14dp" />
     </FrameLayout>
 </layout>
