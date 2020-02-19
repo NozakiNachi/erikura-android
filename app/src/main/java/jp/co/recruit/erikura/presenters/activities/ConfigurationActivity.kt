@@ -3,51 +3,27 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
-import android.app.Dialog
-import android.graphics.Rect
-import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
-import android.util.Log
-import android.util.TypedValue
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.LatLng
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Information
-import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.presenters.activities.job.*
-import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
-import jp.co.recruit.erikura.presenters.activities.job.JobListHolder
-import jp.co.recruit.erikura.presenters.util.MessageUtils
-import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
-import kotlinx.android.synthetic.main.activity_configuration.*
 import java.util.*
 import kotlin.collections.ArrayList
-import android.view.MenuItem
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import jp.co.recruit.erikura.business.models.OwnJobQuery
-import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.databinding.*
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import java.util.*
 
 
@@ -56,7 +32,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     var user: User = User()
 
     private lateinit var configurationListView: RecyclerView
-    private lateinit var configurationListAdapter: InformationAdapter
+    private lateinit var configurationListAdapter: ConfigurationAdapter
 
     private val viewModel: ConfigurationViewModel by lazy {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
@@ -84,7 +60,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 //        configurationTextList.add("configuration2")
 //        configurationTextList.add("configuration3")
 //    }
-        configurationListAdapter = InformationAdapter(this)
+        configurationListAdapter = ConfigurationAdapter(this)
         configurationListView = findViewById(R.id.configuration_recycler_view)
         configurationListView.adapter = configurationListAdapter
         configurationListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -206,46 +182,47 @@ class ConfigurationAdapter(val activity: FragmentActivity) : RecyclerView.Adapte
 
     override fun onBindViewHolder(holder: ConfigurationCellHolder, position: Int) {
         val configuration = configuration[position]!!
-        val viewModel = ConfigurationCellViewModel(configuration)
+//        val viewModel = ConfigurationCellViewModel(configuration)
 
         holder.binding.lifecycleOwner = activity
-        holder.binding.viewModel = viewModel
-
-        // WebView にコンテンツを設定します
-        val webView = holder.binding.configurationCellWebview
-        webView.webViewClient = object: WebViewClient() {
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-
-                val dp = activity.resources.displayMetrics
-                webView.layoutParams.let { lp ->
-                    lp.height = (webView.contentHeight * dp.scaledDensity).toInt()
-                    webView.layoutParams = lp
-                }
-            }
-        }
-        val encodedHtml = Base64.encodeToString(configuration.content.toByteArray(), Base64.NO_PADDING)
-        webView.loadData(encodedHtml, "text/html", "base64")
-        // FIXME: WebView, Layout の高さ調整
+//        holder.binding.viewModel = viewModel
+//
+//        // WebView にコンテンツを設定します
+//        val webView = holder.binding.configurationCellWebview
+//        webView.webViewClient = object: WebViewClient() {
+//            override fun onPageFinished(view: WebView?, url: String?) {
+//                super.onPageFinished(view, url)
+//
+//                val dp = activity.resources.displayMetrics
+//                webView.layoutParams.let { lp ->
+//                    lp.height = (webView.contentHeight * dp.scaledDensity).toInt()
+//                    webView.layoutParams = lp
+//                }
+//            }
+//        }
+//        val encodedHtml = Base64.encodeToString(configuration.content.toByteArray(), Base64.NO_PADDING)
+//        webView.loadData(encodedHtml, "text/html", "base64")
+//        // FIXME: WebView, Layout の高さ調整
     }
 }
 
 class ConfigurationCellHolder(val binding: FragmentConfigurationCellBinding): RecyclerView.ViewHolder(binding.root)
 
-class ConfigurationCellViewModel(val configuration: Information): ViewModel() {
-    val lastUpdated: String get() {
-        val now = Date()
-        val diff = now.time - configuration.createdAt.time
-        val diffMinutes = diff / (60 * 1000)
-        val diffHours = diffMinutes / 60
-        val diffDays = diffHours / 24
-
-        return if (diffDays > 0) {
-            String.format("%,d日前", diffDays)
-        } else if (diffHours > 0) {
-            String.format("%,d時間前", diffHours)
-        } else {
-            "1時間以内"
-        }
-    }
-}
+class ConfigurationCellViewModel(val configuration: Information): ViewModel() {}
+//class ConfigurationCellViewModel(val configuration: Information): ViewModel() {
+//    val lastUpdated: String get() {
+//        val now = Date()
+//        val diff = now.time - configuration.createdAt.time
+//        val diffMinutes = diff / (60 * 1000)
+//        val diffHours = diffMinutes / 60
+//        val diffDays = diffHours / 24
+//
+//        return if (diffDays > 0) {
+//            String.format("%,d日前", diffDays)
+//        } else if (diffHours > 0) {
+//            String.format("%,d時間前", diffHours)
+//        } else {
+//            "1時間以内"
+//        }
+//    }
+//}
