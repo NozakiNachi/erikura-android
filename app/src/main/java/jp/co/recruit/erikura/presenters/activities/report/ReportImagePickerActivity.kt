@@ -2,12 +2,9 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import android.Manifest
 import android.app.ActivityOptions
-import android.content.ContentUris
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
@@ -17,21 +14,19 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -87,8 +82,8 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
     private fun displayImagePicker() {
         adapter = ImagePickerAdapter(this).also {
             it.onClickListener = object: ImagePickerAdapter.OnClickListener {
-                override fun onClick(item: MediaItem) {
-                    onImageSelected(item)
+                override fun onClick(item: MediaItem, isChecked: Boolean) {
+                    onImageSelected(item, isChecked)
                 }
             }
         }
@@ -113,9 +108,16 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         recyclerView.addItemDecoration(decorator)
     }
 
-    fun onImageSelected(item: MediaItem) {
+    fun onImageSelected(item: MediaItem, isChecked: Boolean) {
         val imageView: ImageView = findViewById(R.id.report_image_picker_preview)
         item.loadImage(this, imageView)
+
+        if (isChecked) {
+            viewModel.imageMap.put(item.id, item)
+        }else {
+            viewModel.imageMap.remove(item.id)
+        }
+        viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
     }
 
     override fun onRequestPermissionsResult(
@@ -146,21 +148,19 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
     }
 
     override fun onClickNext(view: View) {
+        val outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+        viewModel.imageMap.forEach { (k, v) ->
+            val summary = OutputSummary()
+            summary.photoAsset = v
+            outputSummaryList.add(summary)
+        }
         // FIXME: 報告箇所画面へ遷移
     }
 }
 
 class ReportImagePickerViewModel: ViewModel() {
-    val image: MutableLiveData<ImageView> = MutableLiveData()
-    val bitmap: MutableLiveData<Bitmap> = MutableLiveData()
-    val imageList: MutableLiveData<List<ImageView>> = MutableLiveData()
-    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(image) {result.value = isValid() }
-    }
-
-    private fun isValid(): Boolean {
-        return true
-    }
+    val imageMap: MutableMap<Long, MediaItem> = HashMap()
+    val isNextButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
 }
 
 class ImagePickerCellViewModel: ViewModel() {
@@ -221,7 +221,7 @@ class ImagePickerAdapter(val activity: FragmentActivity): RecyclerViewCursorAdap
         cellView.toggleClickListener = object: ImagePickerCellView.ToggleClickListener {
             override fun onClick(isChecked: Boolean) {
                 onClickListener?.apply {
-                    onClick(item)
+                    onClick(item, isChecked)
                 }
             }
         }
@@ -229,28 +229,11 @@ class ImagePickerAdapter(val activity: FragmentActivity): RecyclerViewCursorAdap
     }
 
     interface OnClickListener {
-        fun onClick(item: MediaItem)
+        fun onClick(item: MediaItem, isChecked: Boolean)
     }
 }
 
 interface ReportImagePickerEventHandler {
     fun onClickManual(view: View)
     fun onClickNext(view: View)
-}
-
-data class MediaItem(val id: Long, val mimeType: String, val size: Long, val contentUri: Uri) {
-    companion object {
-        fun from(cursor: Cursor): MediaItem {
-            val id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-            val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
-            val size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
-            val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
-
-            return MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
-        }
-    }
-
-    fun loadImage(context: Context, imageView: ImageView) {
-        Glide.with(context).load(contentUri).into(imageView)
-    }
 }

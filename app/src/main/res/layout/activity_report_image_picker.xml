@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="30dp"
-                    android:text="作業報告"
+                    android:text="@string/report_image_picker_caption"
                     android:textColor="@color/black"
                     android:textSize="22dp" />
 
@@ -136,7 +136,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    android:text="実施箇所の写真を全て選んでください。"
+                    android:text="@string/report_image_picker_note"
                     android:textColor="@color/black"
                     android:textSize="14dp" />
             </LinearLayout>
