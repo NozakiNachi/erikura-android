@@ -91,7 +91,11 @@ class ReportFormViewModel: ViewModel() {
     val summaryItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
     val summaryEditVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val summary: MutableLiveData<String> = MutableLiveData()
+    val summaryErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val summaryErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val comment: MutableLiveData<String> = MutableLiveData()
+    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     var summarySelectedItem: String? = null
     var evaluationSelectedItem: String? = null
@@ -104,21 +108,51 @@ class ReportFormViewModel: ViewModel() {
 
     private fun isValid(): Boolean {
         var valid = true
-        valid = isValidSummary() && valid
+        if (summaryEditVisibility.value == View.VISIBLE) {
+            valid = isValidSummary() && valid
+        }else {
+            summaryErrorMsg.value = ""
+            summaryErrorVisibility.value = View.GONE
+        }
         valid = isValidComment() && valid
+        valid = summarySelectedItem != null && evaluationSelectedItem != null && valid
         return valid
     }
 
     private fun isValidSummary(): Boolean {
-        return true
+        var valid = true
+        if (valid && summary.value.isNullOrBlank()) {
+            valid = false
+            summaryErrorMsg.value = ""
+            summaryErrorVisibility.value = View.GONE
+        }else if (valid && summary.value?.length?: 0 > 50) {
+            valid = false
+            summaryErrorMsg.value = ErikuraApplication.instance.getString(R.string.summary_count_error)
+            summaryErrorVisibility.value = View.VISIBLE
+        }else {
+            valid = true
+            summaryErrorMsg.value = ""
+            summaryErrorVisibility.value = View.GONE
+        }
+        return valid
     }
 
     private fun isValidComment(): Boolean {
-        return true
-    }
-
-    private fun isValidSelect(): Boolean {
-        return true
+        var valid = true
+        if (valid && comment.value.isNullOrBlank()) {
+            valid = false
+            commentErrorMsg.value = ""
+            commentErrorVisibility.value = View.GONE
+        }else if (valid && summary.value?.length?: 0 > 5000) {
+            valid = false
+            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+            commentErrorVisibility.value = View.VISIBLE
+        }else {
+            valid = true
+            commentErrorMsg.value = ""
+            commentErrorVisibility.value = View.GONE
+        }
+        return valid
     }
 }
 

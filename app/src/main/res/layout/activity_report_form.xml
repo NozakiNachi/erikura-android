@@ -244,6 +244,14 @@
                     android:text="@={viewModel.summary}"
                     android:visibility="@{viewModel.summaryEditVisibility}" />
 
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.summaryErrorMsg}"
+                    android:visibility="@{viewModel.summaryErrorVisibility}" />
+
                 <!-- 作業後の状態選択 -->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -305,11 +313,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="110dp"
                     android:gravity="top"
                     android:hint="@string/comment_hint"
                     android:paddingTop="24dp"
                     android:text="@={viewModel.comment}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.commentErrorMsg}"
+                    android:visibility="@{viewModel.commentErrorVisibility}" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp" />
             </LinearLayout>
         </ScrollView>
 
