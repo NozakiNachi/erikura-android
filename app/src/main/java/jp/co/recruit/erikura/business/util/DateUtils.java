@@ -36,4 +36,11 @@ public class DateUtils extends org.apache.commons.lang.time.DateUtils {
         // 月末日の時、分、秒を最大値にしたものを返却します
         return endOfDay(cal).getTime();
     }
+
+    public static Date at(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(year, month - 1, day);
+        return cal.getTime();
+    }
+
 }

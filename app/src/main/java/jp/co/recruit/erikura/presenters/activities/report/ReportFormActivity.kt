@@ -47,11 +47,22 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     }
 
     override fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        // FIXME: 箇所が選択されたときの処理
+        viewModel.summaryItems.value?.let {
+            if (position == 0) {
+                viewModel.summarySelectedItem = null
+                viewModel.summaryEditVisibility.value = View.GONE
+            } else if (position == viewModel.summaryItems.value?.lastIndex) {
+                viewModel.summarySelectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.summaryEditVisibility.value = View.VISIBLE
+            }else {
+                viewModel.summarySelectedItem = job.summaryTitles[position-1]
+                viewModel.summaryEditVisibility.value = View.GONE
+            }
+        }
     }
 
-    override fun onStatusSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        // FIXME: 作業後の状態が選択されたときの処理
+    override fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        viewModel.evaluationSelectedItem = if ( position == 0 ) {null} else {parent.getItemAtPosition(position).toString()}
     }
 
     override fun onClickManual(view: View) {
@@ -80,10 +91,14 @@ class ReportFormViewModel: ViewModel() {
     val summaryItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
     val summaryEditVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val summary: MutableLiveData<String> = MutableLiveData()
+    val summaryErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val summaryErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val comment: MutableLiveData<String> = MutableLiveData()
+    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
-    val summarySelectedItem: String? = null
-    val statusSelectedItem: String? = null
+    var summarySelectedItem: String? = null
+    var evaluationSelectedItem: String? = null
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(summaryEditVisibility) {result.value = isValid()}
@@ -93,27 +108,57 @@ class ReportFormViewModel: ViewModel() {
 
     private fun isValid(): Boolean {
         var valid = true
-        valid = isValidSummary() && valid
+        if (summaryEditVisibility.value == View.VISIBLE) {
+            valid = isValidSummary() && valid
+        }else {
+            summaryErrorMsg.value = ""
+            summaryErrorVisibility.value = View.GONE
+        }
         valid = isValidComment() && valid
+        valid = summarySelectedItem != null && evaluationSelectedItem != null && valid
         return valid
     }
 
     private fun isValidSummary(): Boolean {
-        return true
+        var valid = true
+        if (valid && summary.value.isNullOrBlank()) {
+            valid = false
+            summaryErrorMsg.value = ""
+            summaryErrorVisibility.value = View.GONE
+        }else if (valid && summary.value?.length?: 0 > 50) {
+            valid = false
+            summaryErrorMsg.value = ErikuraApplication.instance.getString(R.string.summary_count_error)
+            summaryErrorVisibility.value = View.VISIBLE
+        }else {
+            valid = true
+            summaryErrorMsg.value = ""
+            summaryErrorVisibility.value = View.GONE
+        }
+        return valid
     }
 
     private fun isValidComment(): Boolean {
-        return true
-    }
-
-    private fun isValidSelect(): Boolean {
-        return true
+        var valid = true
+        if (valid && comment.value.isNullOrBlank()) {
+            valid = false
+            commentErrorMsg.value = ""
+            commentErrorVisibility.value = View.GONE
+        }else if (valid && summary.value?.length?: 0 > 5000) {
+            valid = false
+            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+            commentErrorVisibility.value = View.VISIBLE
+        }else {
+            valid = true
+            commentErrorMsg.value = ""
+            commentErrorVisibility.value = View.GONE
+        }
+        return valid
     }
 }
 
 interface ReportFormEventHandlers {
     fun onClickNext(view: View)
     fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
-    fun onStatusSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
     fun onClickManual(view: View)
 }

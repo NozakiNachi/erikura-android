@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presenters.activities.mypage.PaymentInformationActivity">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationHandlers" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                style="@style/label_w2"
+                android:textSize="22dp"
+                android:textColor="@color/black"
+                android:text="お支払い情報（概算）" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                style="@style/label_w2"
+                android:textSize="12dp"
+                android:textColor="@color/black"
+                android:text="※下記は概算です。実際のお振込金額とは異なる場合があります。" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical"
+                android:visibility="visible">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    style="@style/label_w2"
+                    android:textSize="22dp"
+                    android:textColor="@color/coral"
+                    android:gravity="center_horizontal"
+                    android:text="口座情報が未登録です"
+                    />
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="40dp"
+                    android:layout_marginRight="40dp"
+                    style="@style/primaryButton"
+                    android:text="口座情報登録"/>
+            </LinearLayout>
+            
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                style="@style/spinnerField"
+                android:entries="@{viewModel.targetYearItems}"
+                android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onTargetYearSelected(parent, view, position, id)}}"
+                />
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:gravity="center_horizontal"
+                style="@style/label_w2"
+                android:textSize="22dp"
+                android:textColor="@color/warmGrey"
+                android:text="お支払い情報はありません"
+                android:visibility="visible"
+                />
+            
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@color/silverTwo"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/payment_information_monthly_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"
+                    />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@color/silverTwo"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

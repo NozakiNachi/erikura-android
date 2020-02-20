@@ -35,6 +35,7 @@ import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
 import kotlinx.android.synthetic.main.activity_mypage.*
+import jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationActivity
 import java.util.*
 
 class MypageActivity : AppCompatActivity(), MypageEventHandlers {
@@ -148,26 +149,20 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         }
     }
 
-    override fun onClickPaymentInformationLink(view: View) {
-        // リンク先の作成(お支払情報)
-        val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+    override fun onClickPaymentinformationLink(view: View) {
+        Intent(this, PaymentInformationActivity::class.java).let {
+            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
     }
 
-    override fun onClickJobEvaluationLink(view: View) {
-        // リンク先の作成(仕事へのコメント・いいね画面)
+    override fun onClickJobEvaluation(view: View) {
+        // リンク先の作成
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    override fun onClickFavoriteLink(view: View) {
-        // リンク先の作成(お気に入り画面)
-        val intent = Intent(this, ConfigurationActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onClickConfigurationLink(view: View) {
-        // リンク先の作成(設定画面)
+    override fun onClickConfiguration(view: View) {
+        // リンク先の作成
         val intent = Intent(this, ConfigurationActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
@@ -219,15 +214,17 @@ class MypageViewModel: ViewModel() {
 }
 
 interface MypageEventHandlers {
+    // 今月の○○表示(非ログインチェック)
+    //fun onClickUnreachLink(view: View)
     // お支払情報ページへのリンク
-    fun onClickPaymentInformationLink(view: View)
+    fun onClickPaymentinformationLink(view: View)
     // 仕事へのコメント・いいねへのリンク
-    fun onClickJobEvaluationLink(view: View)
+    fun onClickJobEvaluation(view: View)
     // 設定画面へのリンク
-    fun onClickConfigurationLink(view: View)
-    // お気に入りへのリンク
-    fun onClickFavoriteLink(view: View)
-    // 下部メニュー表示
+    fun onClickConfiguration(view: View)
+    // お知らせ取得API
+    //fun onClickUnreachLink(view: View)
+
     fun onNavigationItemSelected(item: MenuItem): Boolean
 }
 
