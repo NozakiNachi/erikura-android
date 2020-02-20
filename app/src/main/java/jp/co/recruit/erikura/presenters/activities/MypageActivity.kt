@@ -29,6 +29,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMypageBinding
 import jp.co.recruit.erikura.databinding.FragmentInformationCellBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationActivity
 import java.util.*
 
 class MypageActivity : AppCompatActivity(), MypageEventHandlers {
@@ -89,9 +90,9 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
     }
 
     override fun onClickPaymentinformationLink(view: View) {
-        // リンク先の作成
-        val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        Intent(this, PaymentInformationActivity::class.java).let {
+            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
     }
 
     override fun onClickJobEvaluation(view: View) {
