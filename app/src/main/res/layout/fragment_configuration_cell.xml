@@ -19,6 +19,8 @@
             android:textSize="18dp"
             android:textColor="@color/blackTwo"
             android:drawableLeft="@{viewModel.icon}"
-            android:text="@{viewModel.item.label}" />
+            android:text="@{viewModel.item.label}"
+            android:onClick="@{handlers::viewModel.item.onClickId}"
+            />
     </RelativeLayout>
 </layout>

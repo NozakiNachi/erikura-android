@@ -42,7 +42,9 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         MenuItem(1, "口座情報登録・変更", R.drawable.ic_account, true) { Log.v("TEST", "test") },
         MenuItem(2, "通知設定", R.drawable.ic_account, true) { Log.v("TEST", "test")},
         MenuItem(3, "このアプリについて", R.drawable.ic_account, true) { Log.v("TEST", "test")},
-        MenuItem(4, "よくある質問", R.drawable.ic_account, true) { Log.v("TEST", "test")}
+        MenuItem(4, "よくある質問", R.drawable.ic_account, true) { Log.v("TEST", "test")},
+        MenuItem(5, "問い合わせ", R.drawable.ic_account, true) { Log.v("TEST", "test")},
+        MenuItem(6, "ログアウト", R.drawable.ic_account, true) { Log.v("TEST", "test")}
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,7 +60,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         configuration_recycler_view.adapter = ConfigurationAdapter(menuItems)
     }
 
-    class ConfigurationAdapter(private val configurationDataset: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
+    class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
     {
 
         class ViewHolder(val binding: FragmentConfigurationCellBinding) : RecyclerView.ViewHolder(binding.root)
@@ -70,19 +72,19 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
                 parent,
                 false
             )
-
             return ViewHolder(binding)
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            //holder.binding.test.text = configurationDataset[position]
-            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.icon_comment_10, false) {})
+            //holder.binding.test.text = menuItems[position(1)]
+            val MeuListItem = menuItems.get(position)
+            val viewModel = ConfigurationMenuItemViewModel(MeuListItem)
             holder.binding.viewModel = viewModel
-//
+
 //            holder.binding.addOnLick.. {
 //                item.onSelectd()
 //            }
         }
-        override fun getItemCount() = configurationDataset.size
+        override fun getItemCount() = menuItems.size
     }
 
     override fun onRegistrationLink(view: View) {
@@ -126,30 +128,22 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.lifecycleOwner = this
         binding.handlers = this
 
-        val dialog = AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+        val dialog = AlertDialog.Builder(this)
             .setView(binding.root)
             .show()
 
         binding.logoutButton.setOnClickListener {
             dialog.dismiss()
-            // ログアウト処理
-            Api(this).logout() {
-                // スタート画面に戻る
-                val intent = Intent(this, StartActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
         }
     }
-    //
+
     override fun onClickLogout(view: View) {
-        // FIXME: ログアウト処理
         Api(this).logout() {
             // スタート画面に戻る
             val intent = Intent(this, StartActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
-        // 戻るボタンで戻れないようにする。
     }
 }
 
@@ -175,7 +169,6 @@ interface ConfigurationEventHandlers {
 }
 
 class ConfigurationViewModel: ViewModel() {
-
 }
 
 class ConfigurationMenuItemViewModel(val item: ConfigurationActivity.MenuItem) : ViewModel() {
