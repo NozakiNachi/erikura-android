@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.MypageViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.MypageEventHandlers" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@color/white"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/editText"
+                        style="@style/titleLabel"
+                        android:layout_width="390dp"
+                        android:layout_height="48dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="100.5dp"
+                        android:textColor="@color/blackTwo"
+                        android:textSize="20dp"
+                        android:text="会員情報変更" />
+                </LinearLayout>
+
+
+                <!--                ログインID(登録メールアドレスを表示する。)-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_marginTop="4.5dp"
+                        android:layout_marginBottom="13.5dp"
+                        android:src="@drawable/work_bg_2x" />
+                    <TextView
+                        android:layout_width="320dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:textSize="18dp"
+                        android:textColor="@color/blackTwo"
+                        android:text="ログインID (メールアドレス)" />
+<!--                    android:onClick="@{handlers::onClickJobEvaluation}"-->
+                </LinearLayout>
+
+<!--                &lt;!&ndash;パスワード&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="4.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/required_2x" />-->
+<!--                    <TextView-->
+<!--                        android:layout_width="320dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:textSize="18dp"-->
+<!--                        android:onClick="@{handlers::onClickJobEvaluation}"-->
+<!--                        android:textColor="@color/blackTwo"-->
+<!--                        android:text="パスワード" />-->
+<!--                </LinearLayout>-->
+<!--                <EditText-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    style="@style/passwordField"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:text="@={viewModel.password}"-->
+<!--                    android:hint="@string/register_password_hint" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:visibility="@{viewModel.errorVisibility}"-->
+<!--                    style="@style/errorField"-->
+<!--                    android:text="@={viewModel.errorMsg}"-->
+<!--                    />-->
+<!--                <TextView-->
+<!--                    android:layout_width="320dp"-->
+<!--                    android:layout_height="30dp"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:onClick="@{handlers::onClickJobEvaluation}"-->
+<!--                    android:text="※パスワードを変更する場合は入力してください。\n※6文字以上の半角英数で入力してください。"-->
+<!--                    android:textColor="@color/blackTwo"-->
+<!--                    android:textSize="12dp" />-->
+
+
+<!--                &lt;!&ndash;パスワード確認&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        android:layout_width="320dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:textSize="18dp"-->
+<!--                        android:layout_marginTop="15dp"-->
+<!--                        android:onClick="@{handlers::onClickJobEvaluation}"-->
+<!--                        android:textColor="@color/blackTwo"-->
+<!--                        android:text="パスワード確認" />-->
+<!--                </LinearLayout>-->
+<!--                <EditText-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    style="@style/passwordField"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:text="@={viewModel.password}"-->
+<!--                    android:hint="@string/register_password_hint" />-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:visibility="@{viewModel.errorVisibility}"-->
+<!--                    style="@style/errorField"-->
+<!--                    android:text="@={viewModel.errorMsg}"-->
+<!--                    />-->
+<!--                <TextView-->
+<!--                    android:layout_width="320dp"-->
+<!--                    android:layout_height="30dp"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:onClick="@{handlers::onClickJobEvaluation}"-->
+<!--                    android:text="※パスワードを変更する場合は入力してください。"-->
+<!--                    android:textColor="@color/blackTwo"-->
+<!--                    android:textSize="12dp" />-->
+
+
+<!--                &lt;!&ndash;氏名&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="4.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        android:layout_width="320dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:textSize="18dp"-->
+<!--                        android:onClick="@{handlers::onClickJobEvaluation}"-->
+<!--                        android:textColor="@color/blackTwo"-->
+<!--                        android:text="氏名 （姓・名）" />-->
+<!--                </LinearLayout>-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="fill_parent"-->
+<!--                    android:layout_height="91dp">-->
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="113dp"-->
+<!--                        android:layout_height="71dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:orientation="vertical">-->
+<!--                        <EditText-->
+<!--                            style="@style/textField"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="62dp"-->
+<!--                            android:hint="@string/register_last_name_hint"-->
+<!--                            android:text="@={viewModel.firstName}" />-->
+<!--                    </LinearLayout>-->
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="70dp"-->
+<!--                        android:layout_height="72dp"-->
+<!--                        android:layout_weight="1">-->
+
+<!--                        <EditText-->
+<!--                            style="@style/textField"-->
+
+<!--                            android:layout_height="62dp"-->
+<!--                            android:hint="@string/register_first_name_hint"-->
+<!--                            android:text="@={viewModel.firstName}" />-->
+<!--                    </LinearLayout>-->
+<!--                </LinearLayout>-->
+
+
+<!--                &lt;!&ndash;生年月日&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="@string/birthday" />-->
+<!--                </LinearLayout>-->
+<!--                <EditText-->
+<!--                    style="@style/selectField"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:onClick="@{handlers::onClickEditView}"-->
+<!--                    android:text="@={viewModel.birthday}" />-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    style="@style/smallCaption"-->
+<!--                    android:text="@string/registerBirthday_notice"-->
+<!--                    />-->
+
+<!--                &lt;!&ndash;                <Button&ndash;&gt;-->
+<!--                &lt;!&ndash;                    android:layout_width="match_parent"&ndash;&gt;-->
+<!--                &lt;!&ndash;                    android:layout_height="70dp"&ndash;&gt;-->
+<!--                &lt;!&ndash;                    android:layout_marginTop="30dp"&ndash;&gt;-->
+<!--                &lt;!&ndash;                    style="@style/primaryButton"&ndash;&gt;-->
+<!--                &lt;!&ndash;                    android:text="再認証する"&ndash;&gt;-->
+<!--                &lt;!&ndash;                    android:onClick="@{handlers::onClickLogout}"&ndash;&gt;-->
+<!--                &lt;!&ndash;                    />&ndash;&gt;-->
+
+<!--                &lt;!&ndash; 郵便番号 &ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="@string/postalCode" />-->
+<!--                </LinearLayout>-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <EditText-->
+<!--                        style="@style/textField"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="62dp"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:hint="@string/register_postal_code_hint"-->
+<!--                        android:inputType="number"-->
+<!--                        android:text="@={viewModel.postalCode}"-->
+<!--                        android:onFocusChanged="@{handlers::onFocusChanged}"/>-->
+<!--                </LinearLayout>-->
+
+<!--                <TextView-->
+<!--                    style="@style/errorField"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:text="@={viewModel.postalCodeErrorMsg}"-->
+<!--                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />-->
+
+<!--                &lt;!&ndash; 都道府県 &ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="@string/prefecture" />-->
+<!--                </LinearLayout>-->
+<!--                <Spinner-->
+<!--                    android:id="@+id/registerAddress_prefecture"-->
+<!--                    style="@style/spinnerField"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_alignParentStart="true"-->
+<!--                    android:layout_alignParentLeft="true"-->
+<!--                    android:layout_alignParentTop="true"-->
+<!--                    android:entries="@array/prefecture_list"-->
+<!--                    android:spinnerMode="dialog"-->
+<!--                    android:selectedItemPosition="@={viewModel.prefectureId}" />-->
+
+<!--                &lt;!&ndash; ご住所 &ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="@string/city" />-->
+<!--                </LinearLayout>-->
+<!--                <EditText-->
+<!--                    style="@style/textField"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:hint="@string/register_city_hint"-->
+<!--                    android:text="@={viewModel.city}" />-->
+<!--                <TextView-->
+<!--                    style="@style/errorField"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:text="@={viewModel.cityErrorMsg}"-->
+<!--                    android:visibility="@{viewModel.cityErrorVisibility}" />-->
+
+<!--                &lt;!&ndash; 番地以降 &ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="@string/street" />-->
+<!--                </LinearLayout>-->
+<!--                <EditText-->
+<!--                    android:id="@+id/registerAddress_street"-->
+<!--                    style="@style/textField"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:hint="@string/register_street_hint"-->
+<!--                    android:text="@={viewModel.street}" />-->
+<!--                <TextView-->
+<!--                    style="@style/errorField"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:text="@={viewModel.streetErrorMsg}"-->
+<!--                    android:visibility="@{viewModel.streetErrorVisibility}" />-->
+
+
+<!--                &lt;!&ndash;            電話番号&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="@string/phone" />-->
+<!--                </LinearLayout>-->
+<!--                <EditText-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    style="@style/textField"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:text="@={viewModel.phone}"-->
+<!--                    android:hint="@string/register_phone_hint"-->
+<!--                    android:inputType="number"/>-->
+
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:visibility="@{viewModel.errorVisibility}"-->
+<!--                    style="@style/errorField"-->
+<!--                    android:text="@={viewModel.errorMsg}"-->
+<!--                    />-->
+<!--                <TextView-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    style="@style/smallCaption"-->
+<!--                    android:text="@string/registerPhone_notice"-->
+<!--                    />-->
+<!--                &lt;!&ndash;職業(セレクトボックス作成)&ndash;&gt;-->
+
+
+<!--                &lt;!&ndash;やってみたい仕事&ndash;&gt;-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="1dp">-->
+<!--                    <ImageView-->
+<!--                        android:layout_width="16dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:layout_marginRight="10dp"-->
+<!--                        android:layout_marginTop="24.5dp"-->
+<!--                        android:layout_marginBottom="13.5dp"-->
+<!--                        android:src="@drawable/work_bg_2x" />-->
+<!--                    <TextView-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:text="やってみたい仕事" />-->
+<!--                </LinearLayout>-->
+<!--                <CheckBox-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_marginBottom="10dp"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    style="@style/buttonWithCheckBox"-->
+<!--                    android:text="@string/smartPhone"-->
+<!--                    android:checked="@={viewModel.interestedSmartPhone}"/>-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_marginBottom="10dp"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    style="@style/buttonWithCheckBox"-->
+<!--                    android:text="@string/cleaning"-->
+<!--                    android:checked="@={viewModel.interestedCleaning}"/>-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_marginBottom="10dp"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    style="@style/buttonWithCheckBox"-->
+<!--                    android:text="@string/walk"-->
+<!--                    android:checked="@={viewModel.interestedWalk}"/>-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:layout_marginBottom="10dp"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    style="@style/buttonWithCheckBox"-->
+<!--                    android:text="@string/bicycle"-->
+<!--                    android:checked="@={viewModel.interestedBicycle}"/>-->
+
+<!--                <CheckBox-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="62dp"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:paddingLeft="10dp"-->
+<!--                    style="@style/buttonWithCheckBox"-->
+<!--                    android:text="@string/car"-->
+<!--                    android:checked="@={viewModel.interestedCar}"/>-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="40dp" />-->
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
