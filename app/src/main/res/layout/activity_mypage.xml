@@ -284,15 +284,6 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginRight="20dp"
-                        style="@style/label_w2"
-                        android:textSize="18dp"
-                        android:textColor="@color/blackTwo"
-                        android:text="設定" />
-<!--                    android:onClick="@{handlers::onClickConfiguration}"-->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:layout_marginTop="40dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"

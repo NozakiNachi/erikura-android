@@ -50,16 +50,23 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
 
     var mypageItems: List<MypageItem> = listOf(
         MypageItem(0, "お支払情報", R.drawable.ic_account, true) {
-            onClickPaymentinformationLink()
+            Intent(this, PaymentInformationActivity::class.java).let {
+                startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
         },
         MypageItem(1, "お気に入り", R.drawable.ic_account, true) {
-            // FIXME: favorite
+            // FIXME: 正しいリンク先の作成
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_10, true) {
-            onClickJobEvaluation()
+            // FIXME: 正しいリンク先の作成
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MypageItem(3, "設定", R.drawable.ic_preferences, true) {
-            onClickConfiguration()
+            val intent = Intent(this, ConfigurationActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     )
 
@@ -91,7 +98,7 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
                 item.onSelect()
             }
         })
-        mypage_recycler_view.adapter = MypageAdapter(mypageItems)
+        mypage_recycler_view.adapter = adapter
     }
 
     class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Adapter<MypageAdapter.ViewHolder>()
@@ -158,23 +165,6 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         }
     }
 
-    override fun onClickPaymentinformationLink() {
-        Intent(this, PaymentInformationActivity::class.java).let {
-            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
-    }
-
-    override fun onClickJobEvaluation() {
-        // リンク先の作成
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onClickConfiguration() {
-        // リンク先の作成
-        val intent = Intent(this, ConfigurationActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         Log.v("MENU ITEM SELECTED: ", item.toString())
@@ -223,17 +213,6 @@ class MypageViewModel: ViewModel() {
 }
 
 interface MypageEventHandlers {
-    // 今月の○○表示(非ログインチェック)
-    //fun onClickUnreachLink(view: View)
-    // お支払情報ページへのリンク
-    fun onClickPaymentinformationLink()
-    // 仕事へのコメント・いいねへのリンク
-    fun onClickJobEvaluation()
-    // 設定画面へのリンク
-    fun onClickConfiguration()
-    // お知らせ取得API
-    //fun onClickUnreachLink(view: View)
-
     fun onNavigationItemSelected(item: MenuItem): Boolean
 }
 

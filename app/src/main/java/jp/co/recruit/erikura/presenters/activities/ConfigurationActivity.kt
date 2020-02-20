@@ -37,23 +37,41 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
 
-
-    //    var configurationTextList: List<String> = listOf("会員情報変更","口座情報登録・変更","通知設定","よくある質問")
+    // FIXME: 正しいリンク先の作成
     var menuItems: List<MenuItem> = listOf(
-        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) { Log.v("TEST", "test") },
-        MenuItem(1, "口座情報登録・変更", R.drawable.ic_account, true) { Log.v("TEST", "test") },
-        MenuItem(2, "通知設定", R.drawable.ic_account, true) { Log.v("TEST", "test")},
-        MenuItem(3, "このアプリについて", R.drawable.ic_account, true) { Log.v("TEST", "test")},
-        MenuItem(4, "よくある質問", R.drawable.ic_account, true) { Log.v("TEST", "test")},
-        MenuItem(5, "問い合わせ", R.drawable.ic_account, true) { Log.v("TEST", "test")},
-        MenuItem(6, "ログアウト", R.drawable.ic_account, true) { Log.v("TEST", "test")}
+        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(1, "口座情報登録・変更", R.drawable.ic_account, true) {
+            val intent = Intent(this, ConfigurationActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(2, "通知設定", R.drawable.ic_account, true) {
+            val intent = Intent(this, RegisterEmailActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(3, "このアプリについて", R.drawable.ic_account, true) {
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(4, "よくある質問", R.drawable.ic_account, true) {
+            val intent = Intent(this, ConfigurationActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(5, "問い合わせ", R.drawable.ic_account, true) {
+            val intent = Intent(this, RegisterEmailActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(6, "ログアウト", R.drawable.ic_account, true) {
+            onClickLogoutLink()
+        }
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-        val adapter = ConfigurationAdapter(menuItems)
 
         val binding: ActivityConfigurationBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration)
         binding.lifecycleOwner = this
@@ -61,19 +79,19 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.handlers = this
 
         // 設定画面のメニューをrecycler_viewで表示
-        configuration_recycler_view.adapter = ConfigurationAdapter(menuItems)
-
+        val adapter = ConfigurationAdapter(menuItems)
         adapter.setOnItemClickListener(object:ConfigurationAdapter.OnItemClickListener{
-            override fun onItemClickListener(position: Int, clickedText: String) {
-//                Toast.makeText(applicationContext, menuItems.label, Toast.LENGTH_LONG).show()
+            override fun onItemClickListener(item: MenuItem) {
+                item.onSelect()
             }
         })
+        configuration_recycler_view.adapter = adapter
     }
 
     class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
     {
         class ViewHolder(val binding: FragmentConfigurationCellBinding) : RecyclerView.ViewHolder(binding.root)
-        lateinit var listener: OnItemClickListener
+        var listener: OnItemClickListener? = null
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding = DataBindingUtil.inflate<FragmentConfigurationCellBinding>(
@@ -89,12 +107,12 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
-//            holder.binding.setOnItemClickListener{
-//                listener.onItemClickListener(position, menuItems[position].label)
-//            }
+            holder.binding.root.setOnClickListener {
+                listener?.onItemClickListener(menuItems[position])
+            }
         }
         interface OnItemClickListener{
-            fun onItemClickListener(position: Int, clickedText: String)
+            fun onItemClickListener(item: MenuItem)
         }
 
         fun setOnItemClickListener(listener: OnItemClickListener){
@@ -104,44 +122,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         override fun getItemCount() = menuItems.size
     }
 
-    override fun onRegistrationLink(view: View) {
-        // FIXME: リンク先の作成(会員情報変更)
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onAccountRegistration(view: View) {
-        // FIXME: リンク先の作成(口座情報登録変更)
-        val intent = Intent(this, ConfigurationActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onNotificationSettings(view: View) {
-        // FIXME: リンク先の作成(通知設定)
-        val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onAboutTheApp(view: View) {
-        // FIXME: リンク先の作成(このアプリについて)
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onFrequentQuestions(view: View) {
-        // FIXME: リンク先の作成(よくある質問)
-        val intent = Intent(this, ConfigurationActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onInquiry(view: View) {
-        // FIXME: リンク先の作成(問い合わせ)
-        val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
     // ログアウトリンク
-    override fun onClickLogoutLink(view: View) {
+    override fun onClickLogoutLink() {
         val binding: DialogLogoutBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_logout, null, false)
         binding.lifecycleOwner = this
         binding.handlers = this
@@ -168,20 +150,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 }
 
 interface ConfigurationEventHandlers {
-    // 会員情報変更へのリンク
-    fun onRegistrationLink(view: View)
-    // 口座情報登録・変更へのリンク
-    fun onAccountRegistration(view: View)
-    // 通知設定へのリンク
-    fun onNotificationSettings(view: View)
-    // このアプリについてへのリンク
-    fun onAboutTheApp(view: View)
-    // よくある質問へのリンク
-    fun onFrequentQuestions(view: View)
-    // 問い合わせへのリンク
-    fun onInquiry(view: View)
     // ログアウトへのリンク
-    fun onClickLogoutLink(view: View)
+    fun onClickLogoutLink()
     // ログアウト処理
     fun onClickLogout(view: View)
 }
