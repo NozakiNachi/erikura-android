@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -21,27 +22,43 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Information
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMypageBinding
+import jp.co.recruit.erikura.databinding.FragmentConfigurationCellBinding
 import jp.co.recruit.erikura.databinding.FragmentInformationCellBinding
+import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import kotlinx.android.synthetic.main.activity_configuration.*
+import kotlinx.android.synthetic.main.activity_mypage.*
 import java.util.*
 
 class MypageActivity : AppCompatActivity(), MypageEventHandlers {
     private lateinit var informationListView: RecyclerView
     private lateinit var informationListAdapter: InformationAdapter
 
+    data class MypageItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
+
     private val viewModel: MypageViewModel by lazy {
         ViewModelProvider(this).get(MypageViewModel::class.java)
     }
 
+    var mypageItems: List<MypageItem> = listOf(
+        MypageItem(0, "お支払情報", R.drawable.ic_account, true) { Log.v("TEST", "test") },
+        MypageItem(1, "お気に入り", R.drawable.ic_account, true) { Log.v("TEST", "test") },
+        MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_10, true) { Log.v("TEST", "test") },
+        MypageItem(3, "設定", R.drawable.ic_preferences, true) { Log.v("TEST", "test") }
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
+
+        val adapter = MypageAdapter(mypageItems)
 
         val binding: ActivityMypageBinding = DataBindingUtil.setContentView(this, R.layout.activity_mypage)
         binding.lifecycleOwner = this
@@ -56,6 +73,49 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         informationListView = findViewById(R.id.mypage_information_list)
         informationListView.adapter = informationListAdapter
         informationListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+
+        // 設定画面のメニューをrecycler_viewで表示
+        mypage_recycler_view.adapter = MypageAdapter(mypageItems)
+
+        adapter.setOnItemClickListener(object: MypageAdapter.OnItemClickListener{
+            override fun onItemClickListener(position: Int, clickedText: String) {
+//                Toast.makeText(applicationContext, menuItems.label, Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Adapter<MypageAdapter.ViewHolder>()
+    {
+        class ViewHolder(val binding: FragmentMypageCellBinding) : RecyclerView.ViewHolder(binding.root)
+        lateinit var listener: OnItemClickListener
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding = DataBindingUtil.inflate<FragmentMypageCellBinding>(
+                LayoutInflater.from(parent.context),
+                R.layout.fragment_mypage_cell,
+                parent,
+                false
+            )
+            return ViewHolder(binding)
+        }
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val MypageListItem = mypageItems.get(position)
+            val viewModel = MypageMenuItemViewModel(MypageListItem)
+            holder.binding.viewModel = viewModel
+
+//            holder.binding.setOnItemClickListener{
+//                listener.onItemClickListener(position, mypageItems[position].label)
+//            }
+        }
+        interface OnItemClickListener{
+            fun onItemClickListener(position: Int, clickedText: String)
+        }
+
+        fun setOnItemClickListener(listener: OnItemClickListener){
+            this.listener = listener
+        }
+
+        override fun getItemCount() = mypageItems.size
     }
 
     override fun onStart() {
@@ -88,20 +148,26 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         }
     }
 
-    override fun onClickPaymentinformationLink(view: View) {
-        // リンク先の作成
+    override fun onClickPaymentInformationLink(view: View) {
+        // リンク先の作成(お支払情報)
         val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    override fun onClickJobEvaluation(view: View) {
-        // リンク先の作成
+    override fun onClickJobEvaluationLink(view: View) {
+        // リンク先の作成(仕事へのコメント・いいね画面)
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
-    override fun onClickConfiguration(view: View) {
-        // リンク先の作成
+    override fun onClickFavoriteLink(view: View) {
+        // リンク先の作成(お気に入り画面)
+        val intent = Intent(this, ConfigurationActivity::class.java)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+    }
+
+    override fun onClickConfigurationLink(view: View) {
+        // リンク先の作成(設定画面)
         val intent = Intent(this, ConfigurationActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
@@ -153,17 +219,15 @@ class MypageViewModel: ViewModel() {
 }
 
 interface MypageEventHandlers {
-    // 今月の○○表示(非ログインチェック)
-    //fun onClickUnreachLink(view: View)
     // お支払情報ページへのリンク
-    fun onClickPaymentinformationLink(view: View)
+    fun onClickPaymentInformationLink(view: View)
     // 仕事へのコメント・いいねへのリンク
-    fun onClickJobEvaluation(view: View)
+    fun onClickJobEvaluationLink(view: View)
     // 設定画面へのリンク
-    fun onClickConfiguration(view: View)
-    // お知らせ取得API
-    //fun onClickUnreachLink(view: View)
-
+    fun onClickConfigurationLink(view: View)
+    // お気に入りへのリンク
+    fun onClickFavoriteLink(view: View)
+    // 下部メニュー表示
     fun onNavigationItemSelected(item: MenuItem): Boolean
 }
 
@@ -225,4 +289,8 @@ class InformationCellViewModel(val information: Information): ViewModel() {
             "1時間以内"
         }
     }
+}
+
+class MypageMenuItemViewModel(val item: MypageActivity.MypageItem) : ViewModel() {
+    val icon: Drawable get() = ErikuraApplication.applicationContext.resources.getDrawable(item.iconDrawableId, null)
 }

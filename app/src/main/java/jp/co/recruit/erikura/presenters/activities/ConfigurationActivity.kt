@@ -25,6 +25,7 @@ import kotlin.collections.ArrayList
 import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_configuration.*
 import java.util.*
+import android.widget.Toast
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
@@ -35,6 +36,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     private val viewModel: ConfigurationViewModel by lazy {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
+
 
     //    var configurationTextList: List<String> = listOf("会員情報変更","口座情報登録・変更","通知設定","よくある質問")
     var menuItems: List<MenuItem> = listOf(
@@ -51,6 +53,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
+        val adapter = ConfigurationAdapter(menuItems)
+
         val binding: ActivityConfigurationBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -58,12 +62,18 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 
         // 設定画面のメニューをrecycler_viewで表示
         configuration_recycler_view.adapter = ConfigurationAdapter(menuItems)
+
+        adapter.setOnItemClickListener(object:ConfigurationAdapter.OnItemClickListener{
+            override fun onItemClickListener(position: Int, clickedText: String) {
+//                Toast.makeText(applicationContext, menuItems.label, Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
     {
-
         class ViewHolder(val binding: FragmentConfigurationCellBinding) : RecyclerView.ViewHolder(binding.root)
+        lateinit var listener: OnItemClickListener
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding = DataBindingUtil.inflate<FragmentConfigurationCellBinding>(
@@ -75,54 +85,62 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             return ViewHolder(binding)
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            //holder.binding.test.text = menuItems[position(1)]
-            val MeuListItem = menuItems.get(position)
-            val viewModel = ConfigurationMenuItemViewModel(MeuListItem)
+            val MenuListItem = menuItems.get(position)
+            val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
-//            holder.binding.addOnLick.. {
-//                item.onSelectd()
+//            holder.binding.setOnItemClickListener{
+//                listener.onItemClickListener(position, menuItems[position].label)
 //            }
         }
+        interface OnItemClickListener{
+            fun onItemClickListener(position: Int, clickedText: String)
+        }
+
+        fun setOnItemClickListener(listener: OnItemClickListener){
+            this.listener = listener
+        }
+
         override fun getItemCount() = menuItems.size
     }
 
     override fun onRegistrationLink(view: View) {
-        // FIXME: リンク先の作成
+        // FIXME: リンク先の作成(会員情報変更)
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onAccountRegistration(view: View) {
-        // FIXME: リンク先の作成
+        // FIXME: リンク先の作成(口座情報登録変更)
         val intent = Intent(this, ConfigurationActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onNotificationSettings(view: View) {
-        // FIXME: リンク先の作成
+        // FIXME: リンク先の作成(通知設定)
         val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onAboutTheApp(view: View) {
-        // FIXME: リンク先の作成
+        // FIXME: リンク先の作成(このアプリについて)
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onFrequentQuestions(view: View) {
-        // FIXME: リンク先の作成
+        // FIXME: リンク先の作成(よくある質問)
         val intent = Intent(this, ConfigurationActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onInquiry(view: View) {
-        // FIXME: リンク先の作成
+        // FIXME: リンク先の作成(問い合わせ)
         val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
+    // ログアウトリンク
     override fun onClickLogoutLink(view: View) {
         val binding: DialogLogoutBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_logout, null, false)
         binding.lifecycleOwner = this
@@ -137,10 +155,12 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
     }
 
+    // ログアウト処理
     override fun onClickLogout(view: View) {
         Api(this).logout() {
             // スタート画面に戻る
             val intent = Intent(this, StartActivity::class.java)
+            // 戻るボタンの無効化
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
@@ -148,8 +168,6 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 }
 
 interface ConfigurationEventHandlers {
-    // 非ログイン対処
-    //fun onClickUnreachLink(view: View)
     // 会員情報変更へのリンク
     fun onRegistrationLink(view: View)
     // 口座情報登録・変更へのリンク
@@ -164,7 +182,7 @@ interface ConfigurationEventHandlers {
     fun onInquiry(view: View)
     // ログアウトへのリンク
     fun onClickLogoutLink(view: View)
-    // ログアウト
+    // ログアウト処理
     fun onClickLogout(view: View)
 }
 
