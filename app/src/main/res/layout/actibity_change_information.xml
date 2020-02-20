@@ -68,7 +68,7 @@
                         android:layout_height="40dp"
                         android:layout_gravity="center"
                         android:textSize="18dp"
-                        android:onClick="@{handlers::onClickJobEvaluationLink}"
+                        android:onClick="@{handlers::onClickJobEvaluation}"
                         android:textColor="@color/blackTwo"
                         android:text="ログインID (メールアドレス)" />
                 </LinearLayout>
