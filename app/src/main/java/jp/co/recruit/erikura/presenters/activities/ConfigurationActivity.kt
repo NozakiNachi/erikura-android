@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -73,7 +75,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             //holder.binding.test.text = configurationDataset[position]
-            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.ic_comment_2x, false) {})
+            val viewModel = ConfigurationMenuItemViewModel(MenuItem(0, "test", R.drawable.icon_comment_10, false) {})
             holder.binding.viewModel = viewModel
 //
 //            holder.binding.addOnLick.. {
@@ -120,17 +122,24 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     override fun onClickLogoutLink(view: View) {
-        AlertDialog.Builder(this) // FragmentではActivityを取得して生成
-            .setView(R.layout.dialog_logout)
-            .setPositiveButton("OK",  { dialog, which ->
-                // ログアウト処理
-                Api(this).logout() {
-                    // スタート画面に戻る
-                    val intent = Intent(this, StartActivity::class.java)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            })
+        val binding: DialogLogoutBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_logout, null, false)
+        binding.lifecycleOwner = this
+        binding.handlers = this
+
+        val dialog = AlertDialog.Builder(this) // FragmentではActivityを取得して生成
+            .setView(binding.root)
             .show()
+
+        binding.logoutButton.setOnClickListener {
+            dialog.dismiss()
+            // ログアウト処理
+            Api(this).logout() {
+                // スタート画面に戻る
+                val intent = Intent(this, StartActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+        }
     }
     //
     override fun onClickLogout(view: View) {
@@ -170,5 +179,5 @@ class ConfigurationViewModel: ViewModel() {
 }
 
 class ConfigurationMenuItemViewModel(val item: ConfigurationActivity.MenuItem) : ViewModel() {
-
+    val icon: Drawable get() = ErikuraApplication.applicationContext.resources.getDrawable(item.iconDrawableId, null)
 }
