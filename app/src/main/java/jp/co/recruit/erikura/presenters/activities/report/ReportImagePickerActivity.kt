@@ -27,6 +27,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
+import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -155,9 +156,17 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
             outputSummaryList.add(summary)
         }
 
+        if (job.report == null) {
+            job.report = Report()
+        }
+        job.report?.let { report ->
+            report.outputSummaries = outputSummaryList
+            // FIXME: 画像のアップロード処理開始
+        }
+
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
-        intent.putParcelableArrayListExtra("outputSummaryList",  ArrayList(outputSummaryList))
+        intent.putExtra("pictureIndex", 0)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }

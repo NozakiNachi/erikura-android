@@ -5,8 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +27,7 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     }
 
     var job = Job()
+    var pictureIndex = 0
     var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,18 +35,40 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         setContentView(R.layout.activity_report_form)
 
         job = intent.getParcelableExtra<Job>("job")
-        outputSummaryList = intent.getParcelableArrayListExtra("outputSummaryList")
+        pictureIndex = intent.getIntExtra("pictureIndex", 0)
+        outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
 
         val binding: ActivityReportFormBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_form)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
 
-        createSummaryItems()
+        setup()
     }
 
     override fun onClickNext(view: View) {
-        // FIXME: 報告箇所画面 or マニュアル外報告画面
+        job.report?.let {
+            val summaries = it.outputSummaries
+            val summary = summaries[pictureIndex]
+            if (viewModel.summarySelectedItem == ErikuraApplication.instance.getString(R.string.other_hint)) {
+                summary.place = viewModel.summary.value
+            }else {
+                summary.place = viewModel.summarySelectedItem
+            }
+            summary.evaluation = viewModel.evaluationSelectedItem
+            summary.comment = viewModel.comment.value
+
+            var nextIndex = pictureIndex + 1
+            if (nextIndex < summaries.size) {
+                val intent= Intent(this, ReportFormActivity::class.java)
+                intent.putExtra("job", job)
+                intent.putExtra("pictureIndex", nextIndex)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }else {
+                // FIXME: 作業時間入力画面へ遷移
+                Log.v("DEBUG", "作業時間入力画面へ遷移")
+            }
+        }
     }
 
     override fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -76,6 +101,13 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         }
     }
 
+    private fun setup() {
+        val max = (job.report?.outputSummaries?.lastIndex?: 0) + 1
+        viewModel.title.value = ErikuraApplication.instance.getString(R.string.report_form_caption, pictureIndex+1, max)
+        createSummaryItems()
+        createImage()
+    }
+
     private fun createSummaryItems() {
         val summaryTitles: MutableList<String> = mutableListOf()
         summaryTitles.add(ErikuraApplication.instance.getString(R.string.please_select))
@@ -85,9 +117,20 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         summaryTitles.add(ErikuraApplication.instance.getString(R.string.other_hint))
         viewModel.summaryItems.value = summaryTitles
     }
+
+    private fun createImage() {
+        val imageView: ImageView = findViewById(R.id.report_form_image)
+        job.report?.let {
+            val item = it.outputSummaries[pictureIndex].photoAsset
+            item?.let {
+                item.loadImage(this, imageView)
+            }
+        }
+    }
 }
 
 class ReportFormViewModel: ViewModel() {
+    val title: MutableLiveData<String> = MutableLiveData()
     val summaryItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
     val summaryEditVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val summary: MutableLiveData<String> = MutableLiveData()
