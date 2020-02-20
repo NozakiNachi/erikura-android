@@ -34,11 +34,14 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
 
-    var configurationTextList: List<String> = listOf("会員情報変更","口座情報登録・変更","通知設定")
-//    var menuItems: List<MenuItem> = listOf(
-//        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) { Log.v("TEST", "test") }
-//        // 以降メニューを定義する
-//    )
+    //    var configurationTextList: List<String> = listOf("会員情報変更","口座情報登録・変更","通知設定","よくある質問")
+    var menuItems: List<MenuItem> = listOf(
+        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) { Log.v("TEST", "test") },
+        MenuItem(1, "口座情報登録・変更", R.drawable.ic_account, true) { Log.v("TEST", "test") },
+        MenuItem(2, "通知設定", R.drawable.ic_account, true) { Log.v("TEST", "test")},
+        MenuItem(3, "このアプリについて", R.drawable.ic_account, true) { Log.v("TEST", "test")},
+        MenuItem(4, "よくある質問", R.drawable.ic_account, true) { Log.v("TEST", "test")}
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -50,12 +53,10 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.handlers = this
 
         // 設定画面のメニューをrecycler_viewで表示
-        configuration_recycler_view.adapter = ConfigurationAdapter(configurationTextList)
-
-
+        configuration_recycler_view.adapter = ConfigurationAdapter(menuItems)
     }
 
-    class ConfigurationAdapter(private val configurationDataset: List<String>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
+    class ConfigurationAdapter(private val configurationDataset: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
     {
 
         class ViewHolder(val binding: FragmentConfigurationCellBinding) : RecyclerView.ViewHolder(binding.root)
