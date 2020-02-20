@@ -47,11 +47,22 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     }
 
     override fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        // FIXME: 箇所が選択されたときの処理
+        viewModel.summaryItems.value?.let {
+            if (position == 0) {
+                viewModel.summarySelectedItem = null
+                viewModel.summaryEditVisibility.value = View.GONE
+            } else if (position == viewModel.summaryItems.value?.lastIndex) {
+                viewModel.summarySelectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.summaryEditVisibility.value = View.VISIBLE
+            }else {
+                viewModel.summarySelectedItem = job.summaryTitles[position-1]
+                viewModel.summaryEditVisibility.value = View.GONE
+            }
+        }
     }
 
-    override fun onStatusSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        // FIXME: 作業後の状態が選択されたときの処理
+    override fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+        viewModel.evaluationSelectedItem = if ( position == 0 ) {null} else {parent.getItemAtPosition(position).toString()}
     }
 
     override fun onClickManual(view: View) {
@@ -82,8 +93,8 @@ class ReportFormViewModel: ViewModel() {
     val summary: MutableLiveData<String> = MutableLiveData()
     val comment: MutableLiveData<String> = MutableLiveData()
 
-    val summarySelectedItem: String? = null
-    val statusSelectedItem: String? = null
+    var summarySelectedItem: String? = null
+    var evaluationSelectedItem: String? = null
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(summaryEditVisibility) {result.value = isValid()}
@@ -114,6 +125,6 @@ class ReportFormViewModel: ViewModel() {
 interface ReportFormEventHandlers {
     fun onClickNext(view: View)
     fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
-    fun onStatusSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
     fun onClickManual(view: View)
 }
