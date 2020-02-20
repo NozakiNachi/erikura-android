@@ -8,7 +8,6 @@ import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -29,11 +28,9 @@ import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMypageBinding
-import jp.co.recruit.erikura.databinding.FragmentConfigurationCellBinding
 import jp.co.recruit.erikura.databinding.FragmentInformationCellBinding
 import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import kotlinx.android.synthetic.main.activity_configuration.*
 import kotlinx.android.synthetic.main.activity_mypage.*
 import jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationActivity
 import java.util.*
@@ -54,12 +51,12 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
                 startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         },
-        MypageItem(1, "お気に入り", R.drawable.ic_account, true) {
+        MypageItem(1, "お気に入り", R.drawable.icon_comment_18, true) {
             // FIXME: 正しいリンク先の作成
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_10, true) {
+        MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
             // FIXME: 正しいリンク先の作成
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())

@@ -19,6 +19,7 @@
             android:textSize="18dp"
             android:textColor="@color/blackTwo"
             android:drawableLeft="@{viewModel.icon}"
+            android:drawablePadding="10dp"
             android:text="@{viewModel.item.label}"
             />
     </RelativeLayout>

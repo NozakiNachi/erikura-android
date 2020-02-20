@@ -38,32 +38,33 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     // FIXME: 正しいリンク先の作成
+    // FIXME: アイコンのファイル名書き換え
     var menuItems: List<MenuItem> = listOf(
-        MenuItem(0, "会員情報変更", R.drawable.ic_account, true) {
+        MenuItem(0, "会員情報変更", R.drawable.icon_man_10, true) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(1, "口座情報登録・変更", R.drawable.ic_account, true) {
+        MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_10, true) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(2, "通知設定", R.drawable.ic_account, true) {
+        MenuItem(2, "通知設定", R.drawable.icon_slide_10, true) {
             val intent = Intent(this, RegisterEmailActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(3, "このアプリについて", R.drawable.ic_account, true) {
+        MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_10, true) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(4, "よくある質問", R.drawable.ic_account, true) {
+        MenuItem(4, "よくある質問", R.drawable.icon_hatena_10, true) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(5, "問い合わせ", R.drawable.ic_account, true) {
+        MenuItem(5, "問い合わせ", R.drawable.icon_mail_10, true) {
             val intent = Intent(this, RegisterEmailActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(6, "ログアウト", R.drawable.ic_account, true) {
+        MenuItem(6, "ログアウト", R.drawable.icon_exit_10, true) {
             onClickLogoutLink()
         }
     )
