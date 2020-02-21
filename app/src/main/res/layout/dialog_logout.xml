@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:text="ログアウトしますか？"
             style="@style/label_w2"
+            android:textColor="@color/black"
             android:textSize="22dp"
             android:gravity="center_horizontal"
             />
@@ -31,6 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="70dp"
             android:layout_marginTop="30dp"
+            android:layout_marginLeft="0dp"
+            android:layout_marginRight="0dp"
             style="@style/primaryButton"
             android:text="ログアウト"
             android:onClick="@{handlers::onClickLogout}"
