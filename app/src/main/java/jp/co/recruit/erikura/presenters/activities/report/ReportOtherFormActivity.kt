@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -17,11 +18,12 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
+
 class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportOtherFormViewModel::class.java)
     }
-
+    private val RESULT_PICK_IMAGEFILE = 1000
     var job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +47,45 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
+    }
+
+    override fun onClickAddPhotoButton(view: View) {
+        if(ErikuraApplication.instance.hasStoragePermission(this)) {
+            moveToGallery()
+        }
+        else {
+            ErikuraApplication.instance.requestStoragePermission(this)
+        }
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode) {
+            ErikuraApplication.instance.REQUEST_PERMISSION -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    moveToGallery()
+                }
+            }
+        }
+    }
+
+    private fun moveToGallery() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_GET_CONTENT
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "image/*"
+        startActivityForResult(intent, RESULT_PICK_IMAGEFILE )
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // 写真を選択するとここに来るはず。。。。
     }
 
     override fun onClickNext(view: View) {
@@ -88,5 +129,6 @@ class ReportOtherFormViewModel: ViewModel() {
 
 interface ReportOtherFormEventHandlers {
     fun onClickNext(view: View)
+    fun onClickAddPhotoButton(view: View)
     fun onClickManual(view: View)
 }

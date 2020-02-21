@@ -207,6 +207,7 @@
     <string name="cancel_finished">作業を取り消し</string>
     <string name="report">作業を報告</string>
     <string name="manual">マニュアル</string>
+    <string name="add_photo">写真の追加</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
