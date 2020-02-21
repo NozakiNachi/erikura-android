@@ -2,15 +2,15 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presenters.activities.report.ReportWorkingTimeActivity">
+    tools:context=".presenters.activities.report.ReportOtherFormActivity">
 
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.report.ReportWorkingTimeViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportOtherFormViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.report.ReportWorkingTimeEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportOtherFormEventHandlers" />
     </data>
 
     <FrameLayout
@@ -30,7 +30,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:focusableInTouchMode="true">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -141,7 +142,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="30dp"
-                        android:text="@string/report_working_time_caption" />
+                        android:text="@string/report_other_form_caption" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -150,7 +151,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginRight="20dp"
                         android:layout_marginBottom="10dp"
-                        android:text="@string/report_working_time_note"
+                        android:text="@string/report_other_form_note"
                         android:textColor="@color/black" />
 
                 </LinearLayout>
@@ -161,15 +162,55 @@
                     android:layout_height="30dp"
                     android:background="@drawable/background_triangle" />
 
-                <Spinner
-                    style="@style/spinnerField"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentTop="true"
+                <!-- 箇所画像 -->
+<!--                <ImageView-->
+<!--                    android:id="@+id/report_form_image"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="200dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_marginTop="10dp"-->
+<!--                    android:background="@color/white" />-->
+                <Button
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:layout_gravity="center"
                     android:layout_marginTop="10dp"
-                    android:entries="@{viewModel.timeItems}"
-                    android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onTimeSelected(parent, view, position, id)}}"
-                    android:spinnerMode="dialog" />
+                    android:background="@drawable/add_photo_button"
+                    android:paddingTop="40dp"
+                    style="?android:attr/borderlessButtonStyle"
+                    android:textSize="12dp"
+                    android:text="写真の追加" />
+
+
+                <!-- コメント記入 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/comment" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="top"
+                    android:hint="@string/other_comment_hint"
+                    android:paddingTop="24dp"
+                    android:text="@={viewModel.comment}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.commentErrorMsg}"
+                    android:visibility="@{viewModel.commentErrorVisibility}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="110dp" />
             </LinearLayout>
         </ScrollView>
 
@@ -181,6 +222,7 @@
             android:layout_gravity="right"
             android:layout_marginTop="40dp"
             android:layout_marginRight="0dp"
+            android:enabled="@{viewModel.isNextButtonEnabled()}"
             android:onClick="@{handlers::onClickNext}" />
 
         <!-- マニュアルボタン -->
@@ -193,5 +235,6 @@
             android:onClick="@{handlers::onClickManual}"
             android:text="@string/manual"
             android:textSize="14dp" />
+
     </FrameLayout>
 </layout>

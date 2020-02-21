@@ -340,7 +340,7 @@
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="30dp"
             android:onClick="@{handlers::onClickManual}"
-            android:text="マニュアル"
+            android:text="@string/manual"
             android:textSize="14dp" />
 
     </FrameLayout>

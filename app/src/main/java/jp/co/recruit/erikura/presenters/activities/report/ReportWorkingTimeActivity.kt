@@ -52,8 +52,9 @@ class ReportWorkingTimeActivity : AppCompatActivity(), ReportWorkingTimeEventHan
     override fun onClickNext(view: View) {
         job.report?.let {
             it.workingMinute = viewModel.timeSelectedItem
-            //FIXME: マニュアル外報告画面へ遷移
-            Log.v("DEBUG", "マニュアル外報告画面へ遷移")
+            val intent= Intent(this, ReportOtherFormActivity::class.java)
+            intent.putExtra("job", job)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 

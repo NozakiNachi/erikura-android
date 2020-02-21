@@ -187,7 +187,7 @@ class ReportFormViewModel: ViewModel() {
             valid = false
             commentErrorMsg.value = ""
             commentErrorVisibility.value = View.GONE
-        }else if (valid && summary.value?.length?: 0 > 5000) {
+        }else if (valid && comment.value?.length?: 0 > 5000) {
             valid = false
             commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
             commentErrorVisibility.value = View.VISIBLE

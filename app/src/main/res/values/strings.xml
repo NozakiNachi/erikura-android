@@ -134,6 +134,10 @@
     <string name="report_working_time_caption">作業時間</string>
     <string name="report_working_time_note">作業にかかった時間を入力してください。</string>
 
+    <!-- 作業報告マニュアル外報告画面 -->
+    <string name="report_other_form_caption">マニュアル外報告(任意)</string>
+    <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -202,6 +206,7 @@
     <string name="go_applied_jobs">応募した仕事の一覧へ戻る</string>
     <string name="cancel_finished">作業を取り消し</string>
     <string name="report">作業を報告</string>
+    <string name="manual">マニュアル</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -220,6 +225,7 @@
     <string name="other_hint">その他(自由記入)</string>
     <string name="summary_hint">例）エレベータ</string>
     <string name="comment_hint">例）床が少し汚い状態</string>
+    <string name="other_comment_hint">例）階段下に放置自転車があります</string>
 
     <!-- 都道府県 -->
     <string-array name="prefecture_list">
