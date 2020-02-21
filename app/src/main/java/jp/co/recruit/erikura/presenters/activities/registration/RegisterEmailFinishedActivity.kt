@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

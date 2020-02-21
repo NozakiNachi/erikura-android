@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -17,8 +17,10 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterEmailBinding
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
-class RegisterEmailActivity : AppCompatActivity(), SendEmailEventHandlers {
+class RegisterEmailActivity : AppCompatActivity(),
+    SendEmailEventHandlers {
     private val viewModel: RegisterEmailViewModel by lazy {
         ViewModelProvider(this).get(RegisterEmailViewModel::class.java)
     }

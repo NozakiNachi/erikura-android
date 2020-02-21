@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterPhoneViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterPhoneViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterPhoneEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterPhoneEventHandlers" />
     </data>
 
 

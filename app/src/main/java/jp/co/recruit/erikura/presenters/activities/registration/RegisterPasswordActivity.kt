@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -17,10 +17,12 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
+import jp.co.recruit.erikura.presenters.activities.StartActivity
 import java.util.regex.Pattern
 
 
-class RegisterPasswordActivity : AppCompatActivity(), RegisterPasswordEventHandlers {
+class RegisterPasswordActivity : AppCompatActivity(),
+    RegisterPasswordEventHandlers {
     private val viewModel: RegisterPasswordViewModel by lazy {
         ViewModelProvider(this).get(RegisterPasswordViewModel::class.java)
     }

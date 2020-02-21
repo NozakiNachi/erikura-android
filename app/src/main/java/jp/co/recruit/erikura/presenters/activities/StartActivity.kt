@@ -4,7 +4,6 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
@@ -12,9 +11,9 @@ import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.network.ErikuraConfigMap
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 class StartActivity : AppCompatActivity(), StartEventHandlers {
     lateinit var video: VideoView

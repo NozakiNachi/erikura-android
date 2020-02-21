@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -17,10 +17,11 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 
-
-class RegisterWishWorkActivity : AppCompatActivity(), RegisterWishWorkEventHandlers {
+class RegisterWishWorkActivity : AppCompatActivity(),
+    RegisterWishWorkEventHandlers {
     private val viewModel: RegisterWishWorkViewModel by lazy {
         ViewModelProvider(this).get(RegisterWishWorkViewModel::class.java)
     }

@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.app.DatePickerDialog
@@ -16,7 +16,8 @@ import jp.co.recruit.erikura.business.models.User
 import java.util.*
 import jp.co.recruit.erikura.databinding.ActivityRegisterBirthdayBinding
 
-class RegisterBirthdayActivity : AppCompatActivity(), RegisterBirthdayEventHandlers {
+class RegisterBirthdayActivity : AppCompatActivity(),
+    RegisterBirthdayEventHandlers {
     private val viewModel: RegisterBirthdayViewModel by lazy {
         ViewModelProvider(this).get(RegisterBirthdayViewModel::class.java)
     }

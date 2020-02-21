@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -16,7 +16,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterNameBinding
 
-class RegisterNameActivity : AppCompatActivity(), RegisterNameEventHandlers {
+class RegisterNameActivity : AppCompatActivity(),
+    RegisterNameEventHandlers {
     private val viewModel: RegisterNameViewModel by lazy {
         ViewModelProvider(this).get(RegisterNameViewModel::class.java)
     }

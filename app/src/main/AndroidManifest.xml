@@ -115,16 +115,16 @@
         <!-- ============================================================ -->
         <!-- 新規会員登録関連 -->
         <activity
-            android:name=".presenters.activities.RegisterEmailActivity"
+            android:name=".presenters.activities.registration.RegisterEmailActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterEmailFinishedActivity"
+            android:name=".presenters.activities.registration.RegisterEmailFinishedActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterNameActivity"
+            android:name=".presenters.activities.registration.RegisterNameActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterPasswordActivity"
+            android:name=".presenters.activities.registration.RegisterPasswordActivity"
             android:screenOrientation="portrait">
 
             <!-- ディープリンクの設定 -->
@@ -141,25 +141,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".presenters.activities.RegisterBirthdayActivity"
+            android:name=".presenters.activities.registration.RegisterBirthdayActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterGenderActivity"
+            android:name=".presenters.activities.registration.RegisterGenderActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterAddressActivity"
+            android:name=".presenters.activities.registration.RegisterAddressActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterPhoneActivity"
+            android:name=".presenters.activities.registration.RegisterPhoneActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterJobStatusActivity"
+            android:name=".presenters.activities.registration.RegisterJobStatusActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterWishWorkActivity"
+            android:name=".presenters.activities.registration.RegisterWishWorkActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".presenters.activities.RegisterFinishedActivity"
+            android:name=".presenters.activities.registration.RegisterFinishedActivity"
             android:screenOrientation="portrait" /> <!-- ============================================================ -->
         <!-- その他 -->
         <activity

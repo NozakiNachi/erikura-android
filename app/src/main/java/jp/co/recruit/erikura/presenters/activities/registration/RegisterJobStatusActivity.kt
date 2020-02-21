@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -10,7 +10,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterJobStatusBinding
 
-class RegisterJobStatusActivity : AppCompatActivity(), RegisterJobStatusEventHandlers {
+class RegisterJobStatusActivity : AppCompatActivity(),
+    RegisterJobStatusEventHandlers {
 
     var user: User = User()
 

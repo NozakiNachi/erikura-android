@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -12,7 +12,8 @@ import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterGenderBinding
 
-class RegisterGenderActivity : AppCompatActivity(), RegisterGenderEventHandlers {
+class RegisterGenderActivity : AppCompatActivity(),
+    RegisterGenderEventHandlers {
 
     var user: User = User()
 

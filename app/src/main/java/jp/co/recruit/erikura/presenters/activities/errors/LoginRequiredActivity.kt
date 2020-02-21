@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.ActivityLoginRequiredBinding
 import jp.co.recruit.erikura.presenters.activities.LoginActivity
-import jp.co.recruit.erikura.presenters.activities.RegisterEmailActivity
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 class LoginRequiredActivity : AppCompatActivity(), LoginRequiredHandlers {
     private val viewModel: LoginRequiredViewModel by lazy {

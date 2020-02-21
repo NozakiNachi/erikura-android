@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -20,7 +20,8 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterAddressBinding
 import java.util.regex.Pattern
 
-class RegisterAddressActivity : AppCompatActivity(), RegisterAddressEventHandlers {
+class RegisterAddressActivity : AppCompatActivity(),
+    RegisterAddressEventHandlers {
     private val viewModel: RegisterAddressViewModel by lazy {
         ViewModelProvider(this).get(RegisterAddressViewModel::class.java)
     }

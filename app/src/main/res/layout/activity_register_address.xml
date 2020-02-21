@@ -8,11 +8,11 @@
 
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterAddressViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterAddressViewModel" />
 
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterAddressEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterAddressEventHandlers" />
     </data>
 
 

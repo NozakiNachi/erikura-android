@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -10,7 +10,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.ActivityRegisterFinishedBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
-class RegisterFinishedActivity : AppCompatActivity(), RegisterFinishedEventHandlers {
+class RegisterFinishedActivity : AppCompatActivity(),
+    RegisterFinishedEventHandlers {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)

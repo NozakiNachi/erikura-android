@@ -5,27 +5,21 @@ import android.content.Intent
 import android.app.AlertDialog
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import kotlin.collections.ArrayList
 import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_configuration.*
-import java.util.*
-import android.widget.Toast
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {

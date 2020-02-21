@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -17,7 +17,8 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterPhoneBinding
 import java.util.regex.Pattern
 
-class RegisterPhoneActivity : AppCompatActivity(), RegisterPhoneEventHandlers {
+class RegisterPhoneActivity : AppCompatActivity(),
+    RegisterPhoneEventHandlers {
     private val viewModel: RegisterPhoneViewModel by lazy {
         ViewModelProvider(this).get(RegisterPhoneViewModel::class.java)
     }

@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterWishWorkViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterWishWorkViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterWishWorkEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterWishWorkEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

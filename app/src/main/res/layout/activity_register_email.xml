@@ -7,16 +7,16 @@
     <data>
         <variable
             name="view_model"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterEmailViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.SendEmailEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.SendEmailEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presenters.activities.RegisterEmailActivity">
+        tools:context=".presenters.activities.registration.RegisterEmailActivity">
 
         <ScrollView
             android:layout_width="fill_parent"

@@ -7,7 +7,7 @@
     <data>
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.RegisterFinishedEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterFinishedEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
