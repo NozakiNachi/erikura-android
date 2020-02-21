@@ -130,6 +130,10 @@
     <string name="report_form_caption">実施箇所（%1$d/%2$d）</string>
     <string name="report_form_note">この写真の報告を記入してください。</string>
 
+    <!-- 作業報告作業時間画面 -->
+    <string name="report_working_time_caption">作業時間</string>
+    <string name="report_working_time_note">作業にかかった時間を入力してください。</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>

@@ -37,23 +37,12 @@
                     android:background="@color/paleGrey"
                     android:orientation="vertical">
 
-                    <!-- 次へボタン -->
-                    <Button
-                        style="@style/nextButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="right"
-                        android:layout_marginTop="40dp"
-                        android:layout_marginRight="0dp"
-                        android:enabled="@{viewModel.isNextButtonEnabled()}"
-                        android:onClick="@{handlers::onClickNext}" />
-
                     <!-- 進行度表示 -->
                     <!-- FIXME: カスタムViewへの切り出し -->
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:layout_marginTop="20dp">
+                        android:layout_marginTop="106dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -331,6 +320,17 @@
                     android:layout_height="110dp" />
             </LinearLayout>
         </ScrollView>
+
+        <!-- 次へボタン -->
+        <Button
+            style="@style/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="0dp"
+            android:enabled="@{viewModel.isNextButtonEnabled()}"
+            android:onClick="@{handlers::onClickNext}" />
 
         <!-- マニュアルボタン -->
         <Button

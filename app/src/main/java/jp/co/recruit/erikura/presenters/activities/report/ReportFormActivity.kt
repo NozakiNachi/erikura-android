@@ -65,8 +65,9 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
                 intent.putExtra("pictureIndex", nextIndex)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }else {
-                // FIXME: 作業時間入力画面へ遷移
-                Log.v("DEBUG", "作業時間入力画面へ遷移")
+                val intent= Intent(this, ReportWorkingTimeActivity::class.java)
+                intent.putExtra("job", job)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         }
     }
