@@ -30,6 +30,7 @@ import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogApplyBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 
 class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogFragmentEventHandlers {
     private val viewModel: ApplyDialogFragmentViewModel by lazy {
@@ -99,7 +100,8 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                 }
             }
         }else {
-            // FIXME: ログイン必須画面へ遷移
+            val intent= Intent(activity, LoginRequiredActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
         }
     }
 

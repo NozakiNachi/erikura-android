@@ -1,6 +1,8 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -14,6 +16,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentApplyButtonBinding
+import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 
 class ApplyButtonFragment(val job: Job?, val user: User) : Fragment(), ApplyButtonFragmentEventHandlers {
@@ -52,7 +55,8 @@ class ApplyButtonFragment(val job: Job?, val user: User) : Fragment(), ApplyButt
             val dialog = ApplyDialogFragment(job)
             dialog.show(childFragmentManager, "Apply")
         }else {
-            // FIXME: ログイン必須画面へ遷移
+            val intent= Intent(activity, LoginRequiredActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
         }
     }
 
