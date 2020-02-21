@@ -23,6 +23,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
@@ -38,26 +39,8 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportImagePickerViewModel::class.java)
     }
-    private val REQUEST_PERMISSION = 2
-    private val REQUEST_CODE_CHOOSE = 1
     private lateinit var adapter: ImagePickerAdapter
     var job: Job = Job()
-
-    private fun hasStoragePermission(): Boolean {
-        val permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        return permissions.all { ActivityCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED }
-    }
-
-    private fun requestStoragePermission() {
-        val permissions = arrayOf(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        ActivityCompat.requestPermissions(this, permissions, REQUEST_PERMISSION)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,11 +54,11 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         binding.viewModel = viewModel
         binding.handlers = this
 
-        if(hasStoragePermission()) {
+        if(ErikuraApplication.instance.hasStoragePermission(this)) {
             displayImagePicker()
         }
         else {
-            requestStoragePermission()
+            ErikuraApplication.instance.requestStoragePermission(this)
         }
 
     }
@@ -129,7 +112,7 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when(requestCode) {
-            REQUEST_PERMISSION -> {
+            ErikuraApplication.instance.REQUEST_PERMISSION -> {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     displayImagePicker()
                 }
