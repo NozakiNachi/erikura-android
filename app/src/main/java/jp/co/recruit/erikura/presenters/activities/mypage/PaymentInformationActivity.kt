@@ -80,6 +80,12 @@ class PaymentInformationActivity : AppCompatActivity(), PaymentInformationHandle
             }
             monthlyPaymentAdapter.monthlyPayments = monthlyPayments
             monthlyPaymentAdapter.notifyDataSetChanged()
+
+            if(jobs.size == 0){
+                binding.paiment.setVisibility(View.VISIBLE)
+            }else{
+                binding.paiment.setVisibility(View.GONE)
+            }
         }
     }
 }

@@ -227,58 +227,6 @@
                                 android:layout_marginLeft="20dp"
                                 android:layout_marginRight="20dp"
                                 />
-<!--                            <ImageView-->
-<!--                                android:layout_width="16dp"-->
-<!--                                android:layout_height="16dp"-->
-<!--                                android:layout_gravity="center"-->
-<!--                                android:layout_marginLeft="20dp"-->
-<!--                                android:layout_marginRight="10dp"-->
-<!--                                android:src="@drawable/ic_account" />-->
-<!--                            <TextView-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_marginRight="20dp"-->
-<!--                                style="@style/label_w2"-->
-<!--                                android:textSize="18dp"-->
-<!--                                android:onClick="@{handlers::onClickPaymentinformationLink}"-->
-<!--                                android:textColor="@color/blackTwo"-->
-<!--                                android:text="お支払情報" />-->
-<!--                        </LinearLayout>-->
-
-<!--                        <LinearLayout-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginTop="20dp"-->
-<!--                            android:layout_marginBottom="20dp">-->
-<!--                            <ImageView-->
-<!--                                android:layout_width="16dp"-->
-<!--                                android:layout_height="16dp"-->
-<!--                                android:layout_gravity="center"-->
-<!--                                android:layout_marginLeft="20dp"-->
-<!--                                android:layout_marginRight="10dp"-->
-<!--                                android:src="@drawable/ic_comment_2x" />-->
-<!--                            <TextView-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="wrap_content"-->
-<!--                                android:layout_marginRight="20dp"-->
-<!--                                style="@style/label_w2"-->
-<!--                                android:textSize="18dp"-->
-<!--                                android:onClick="@{handlers::onClickJobEvaluation}"-->
-<!--                                android:textColor="@color/blackTwo"-->
-<!--                                android:text="仕事へのコメント・いいね" />-->
-<!--                        </LinearLayout>-->
-
-<!--                        <LinearLayout-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_marginTop="20dp"-->
-<!--                            android:layout_marginBottom="20dp">-->
-<!--                            <ImageView-->
-<!--                                android:layout_width="16dp"-->
-<!--                                android:layout_height="16dp"-->
-<!--                                android:layout_marginLeft="20dp"-->
-<!--                                android:layout_marginRight="10dp"-->
-<!--                                android:src="@drawable/ic_preferences" />-->
                         </LinearLayout>
                     </LinearLayout>
                     <TextView
