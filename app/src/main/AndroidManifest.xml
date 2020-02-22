@@ -110,10 +110,11 @@
             android:name=".presenters.activities.ConfigurationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
+        <!-- 設定画面関連 -->
         <activity
-            android:name=".presenters.activities.LogoutActivity"
+            android:name=".presenters.activities.ChangeInformationActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- ログアウト -->
+            android:windowSoftInputMode="adjustResize" /> <!-- 会員情報変更 -->
         <!-- ============================================================ -->
         <!-- 新規会員登録関連 -->
         <activity

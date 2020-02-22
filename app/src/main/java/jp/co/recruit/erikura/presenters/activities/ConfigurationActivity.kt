@@ -18,6 +18,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
@@ -35,7 +36,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     // FIXME: アイコンのファイル名書き換え
     var menuItems: List<MenuItem> = listOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, ChangeInformationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {
