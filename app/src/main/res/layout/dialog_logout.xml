@@ -35,7 +35,7 @@
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             style="@style/primaryButton"
-            android:text="ログアウト"
+            android:text="@string/logout"
             android:onClick="@{handlers::onClickLogout}"
             />
     </LinearLayout>
