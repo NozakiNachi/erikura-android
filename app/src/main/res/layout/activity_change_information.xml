@@ -465,6 +465,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/smartPhone"
+                    android:checked="@={viewModel.interestedSmartPhone}"
                     />
 
                 <CheckBox
@@ -475,6 +476,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/cleaning"
+                    android:checked="@={viewModel.interestedCleaning}"
                     />
 
                 <CheckBox
@@ -485,6 +487,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/walk"
+                    android:checked="@={viewModel.interestedWalk}"
                     />
 
                 <CheckBox
@@ -495,6 +498,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/bicycle"
+                    android:checked="@={viewModel.interestedBicycle}"
                     />
 
                 <CheckBox
@@ -504,6 +508,7 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/car"
+                    android:checked="@={viewModel.interestedCar}"
                     />
                 <Button
                     android:layout_width="match_parent"
@@ -512,6 +517,7 @@
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
+                    android:onClick="@{handlers::onClickRegister}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"
