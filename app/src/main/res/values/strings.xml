@@ -208,6 +208,8 @@
     <string name="report">作業を報告</string>
     <string name="manual">マニュアル</string>
     <string name="add_photo">写真の追加</string>
+    <string name="logout">ログアウト</string>
+    <string name="registration">登録</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -278,6 +280,19 @@
         <item>宮崎県</item>
         <item>鹿児島県</item>
         <item>沖縄県</item>
+    </string-array>
+
+    <!-- 職業 -->
+    <string-array name="job_status_list">
+        <item>@string/please_select</item>
+        <item>無職</item>
+        <item>専業主婦</item>
+        <item>フリーランサー</item>
+        <item>学生</item>
+        <item>パート</item>
+        <item>会社員</item>
+        <item>自営業</item>
+        <item>その他</item>
     </string-array>
 
     <!-- 作業後の状態 -->
