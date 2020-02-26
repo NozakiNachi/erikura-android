@@ -126,6 +126,9 @@
     <string name="report_image_picker_caption">作業報告</string>
     <string name="report_image_picker_note">実施箇所の写真を全て選んでください。</string>
 
+    <!-- ストレージアクセス確認モーダル -->
+    <string name="storage_access_confirm_caption">作業報告のため、写真へのアクセスを許可してください。</string>
+
     <!-- 作業報告箇所画面 -->
     <string name="report_form_caption">実施箇所（%1$d/%2$d）</string>
     <string name="report_form_note">この写真の報告を記入してください。</string>
@@ -216,6 +219,7 @@
     <string name="logout">ログアウト</string>
     <string name="registration">登録</string>
     <string name="remove_photo">写真を削除</string>
+    <string name="open_settings">設定アプリを開く</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
