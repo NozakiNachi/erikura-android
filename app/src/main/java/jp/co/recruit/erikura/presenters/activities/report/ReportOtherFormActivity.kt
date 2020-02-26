@@ -82,6 +82,9 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
             ErikuraApplication.instance.REQUEST_PERMISSION -> {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     moveToGallery()
+                }else {
+                    val dialog = StorageAccessConfirmDialogFragment()
+                    dialog.show(supportFragmentManager, "confirm")
                 }
             }
         }
