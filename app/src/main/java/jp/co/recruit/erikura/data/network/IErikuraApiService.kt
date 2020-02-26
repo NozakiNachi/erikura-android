@@ -154,9 +154,6 @@ data class ApiResponse<BODY>(
 }
 
 data class IdResponse(
-    @SerializedName("id")
-    var userId: Int,
-    var accessToken: String,
     var id: Int
 )
 

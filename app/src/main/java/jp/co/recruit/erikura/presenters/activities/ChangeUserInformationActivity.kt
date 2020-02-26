@@ -1,9 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
 import android.app.DatePickerDialog
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -14,23 +11,30 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterFinishedActivity
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterPhoneActivity
 import java.util.*
 import java.util.regex.Pattern
 
 
-class ChangeInformationActivity : AppCompatActivity(), ChangeInformationEventHandlers {
+class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformationEventHandlers {
 
     var user: User = User()
-    // カレンダー設定
+
+    private val viewModel: ChangeUserInformationViewModel by lazy {
+        ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
+    }
+
+    // 都道府県のリスト
+    val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
+    // 職業のリスト
+    val job_status_list = ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_list)
+
+    // 生年月日入力のカレンダー設定
     val calender: Calendar = Calendar.getInstance()
     var date: DatePickerDialog.OnDateSetListener =
         DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
@@ -42,56 +46,32 @@ class ChangeInformationActivity : AppCompatActivity(), ChangeInformationEventHan
                 String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
         }
 
-    private val viewModel: ChangeInformationViewModel by lazy {
-        ViewModelProvider(this).get(ChangeInformationViewModel::class.java)
-    }
-
-    val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_change_information)
+        setContentView(R.layout.activity_change_user_information)
 
-//        // ユーザ情報を受け取る
-//        user = intent.getParcelableExtra("user")
-
-        val binding: ActivityChangeInformationBinding = DataBindingUtil.setContentView(this, R.layout.activity_change_information)
+        val binding: ActivityChangeUserInformationBinding = DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
 
-        // 所在地
+        // エラーメッセージ
         viewModel.postalCodeErrorVisibility.value = 8
         viewModel.cityErrorVisibility.value = 8
         viewModel.streetErrorVisibility.value = 8
         viewModel.lastNameErrorVisibility.value = 8
         viewModel.firstNameErrorVisibility.value = 8
 
-        // 生年月日
+       // 生年月日入力のカレンダー設定
         calender.set(Calendar.YEAR, 1980)
         calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
         viewModel.birthday.value = String.format("%d/%02d/%02d", 1980, 1, 1)
     }
 
-    // 郵便番号・都道府県・住所・番地
-    override fun onClickNext(view: View) {
-        Log.v("POSTCODE", viewModel.postalCode.value ?: "")
-        user.postcode = viewModel.postalCode.value
-        Log.v("PREFECTURE", prefectureList.getString(viewModel.prefectureId.value ?: 0))
-        user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
-        Log.v("CITY", viewModel.city.value ?: "")
-        user.city = viewModel.city.value
-        Log.v("STREET", viewModel.street.value ?: "")
-        user.street = viewModel.street.value
-
-        val intent: Intent = Intent(this@ChangeInformationActivity, RegisterPhoneActivity::class.java)
-        intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-
-    }
-
+    // 所在地
     override fun onFocusChanged(view: View, hasFocus: Boolean) {
         if(!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
             Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
@@ -113,21 +93,11 @@ class ChangeInformationActivity : AppCompatActivity(), ChangeInformationEventHan
         return 0
     }
 
-    // 性別
-    override fun onClickMale(view: View) {
-        Log.v("GENDER", "male")
-        user.gender = Gender.MALE
-    }
-    override fun onClickFemale(view: View) {
-        Log.v("GENDER", "female")
-        user.gender = Gender.FEMALE
-    }
-
     // 生年月日
     override fun onClickEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
         val dpd = DatePickerDialog(
-            this@ChangeInformationActivity, date, calender
+            this@ChangeUserInformationActivity, date, calender
                 .get(Calendar.YEAR), calender.get(Calendar.MONTH),
             calender.get(Calendar.DAY_OF_MONTH)
         )
@@ -140,72 +110,70 @@ class ChangeInformationActivity : AppCompatActivity(), ChangeInformationEventHan
         dpd.show()
     }
 
-    // 職業選択
-    override fun onClickUnemployed(view: View) {
-        user.jobStatus = "unemployed"
+    // 性別
+    override fun onClickMale(view: View) {
+        user.gender = Gender.MALE
     }
-    override fun onClickHomemaker(view: View) {
-        user.jobStatus= "homemaker"
+    override fun onClickFemale(view: View) {
+        user.gender = Gender.FEMALE
     }
-    override fun onClickFreelancer(view: View) {
-        user.jobStatus = "freelancer"
-    }
-    override fun onClickStudent(view: View) {
-        user.jobStatus = "student"
-    }
-    override fun onClickPartTime(view: View) {
-        user.jobStatus = "part_time"
-    }
-    override fun onClickEmployee(view: View) {
-        user.jobStatus = "employee"
-    }
-    override fun onClickSelfEmployed(view: View) {
-        user.jobStatus = "self_employed"
-    }
-    override fun onClickOtherJob(view: View) {
-        user.jobStatus = "other_job"
-    }
+
 
     override fun onClickRegister(view: View) {
-        val list: MutableList<String> = mutableListOf()
-        if(viewModel.interestedSmartPhone.value ?: false){ list.add("smart_phone") }
-        if(viewModel.interestedCleaning.value ?: false){ list.add("cleaning") }
-        if(viewModel.interestedWalk.value ?: false){ list.add("walk") }
-        if(viewModel.interestedBicycle.value ?: false){ list.add("bicycle") }
-        if(viewModel.interestedCar.value ?: false){ list.add("car") }
-        user.wishWorks = list
-        Log.v("WISHWORK", list.toString())
+        // パスワード
+        user.password = viewModel.password.value
+        // 氏名
+        user.lastName = viewModel.lastName.value
+        user.firstName = viewModel.firstName.value
+        // 生年月日
+        user.dateOfBirth = viewModel.birthday.value
+        // 所在地
+        user.postcode = viewModel.postalCode.value
+        user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
+        user.city = viewModel.city.value
+        user.street = viewModel.street.value
+        // 電話番号
+        user.phoneNumber = viewModel.phone.value
+        // 職業
+        user.jobStatus = job_status_list.getString(viewModel.jobStatusId.value ?: 0)
+        // やりたいこと
+        val wishWorks: MutableList<String> = mutableListOf()
+        if(viewModel.interestedSmartPhone.value ?: false){ wishWorks.add("smart_phone") }
+        if(viewModel.interestedCleaning.value ?: false){ wishWorks.add("cleaning") }
+        if(viewModel.interestedWalk.value ?: false){ wishWorks.add("walk") }
+        if(viewModel.interestedBicycle.value ?: false){ wishWorks.add("bicycle") }
+        if(viewModel.interestedCar.value ?: false){ wishWorks.add("car") }
+        user.wishWorks = wishWorks
+
         // ユーザ登録Apiの呼び出し
-        Api(this).updateUser(user) {
-            Log.v("DEBUG", "ユーザ登録： userId=${it}")
-            // 登録完了画面へ遷移
-            val intent: Intent = Intent(this@ChangeInformationActivity, RegisterFinishedActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
+//        Api(this).updateUser(user) {
+//            Log.v("DEBUG", "ユーザ登録： userId=${it}")
+//            // 登録完了画面へ遷移
+//            val intent: Intent = Intent(this@ChangeInformationActivity, RegisterFinishedActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+//        }
     }
-
-    override fun onClickTermsOfService(view: View) {
-        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(termsOfServiceURLString)
-        }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onClickPrivacyPolicy(view: View) {
-        val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + "/pdf/privacy_policy.pdf"
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(privacyPolicyURLString)
-        }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
 }
 
-class ChangeInformationViewModel: ViewModel() {
+class ChangeUserInformationViewModel: ViewModel() {
+    // パスワード
+    val password: MutableLiveData<String> = MutableLiveData()
+    val errorMsg: MutableLiveData<String> = MutableLiveData()
+    val errorVisibility: MutableLiveData<Int> = MutableLiveData()
+    // 氏名
+    val lastName: MutableLiveData<String> = MutableLiveData()
+    val lastNameErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val lastNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val firstName: MutableLiveData<String> = MutableLiveData()
+    val firstNameErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val firstNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    // 生年月日
+    val birthday: MutableLiveData<String> = MutableLiveData()
+    // 性別
+    val male: MutableLiveData<Boolean> = MutableLiveData()
+    val female: MutableLiveData<Boolean> = MutableLiveData()
+    // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeErrorMsg: MutableLiveData<String> = MutableLiveData()
     val postalCodeErrorVisibility: MutableLiveData<Int> = MutableLiveData()
@@ -216,35 +184,48 @@ class ChangeInformationViewModel: ViewModel() {
     val street: MutableLiveData<String> = MutableLiveData()
     val streetErrorMsg: MutableLiveData<String> = MutableLiveData()
     val streetErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val birthday: MutableLiveData<String> = MutableLiveData()
-
-    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(postalCode) { result.value = isValid() }
-        result.addSource(prefectureId) { result.value = isValid() }
-        result.addSource(city) { result.value = isValid() }
-        result.addSource(street) { result.value = isValid() }
-    }
-
+    // 電話番号
+    val phone: MutableLiveData<String> = MutableLiveData()
+    val phoneerrorMsg: MutableLiveData<String> = MutableLiveData()
+    val phoneerrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    // 職業
+    val jobStatusId: MutableLiveData<Int> = MutableLiveData()
+    // やりたい仕事
     val interestedSmartPhone: MutableLiveData<Boolean> = MutableLiveData()
     val interestedCleaning: MutableLiveData<Boolean> = MutableLiveData()
     val interestedWalk: MutableLiveData<Boolean> = MutableLiveData()
     val interestedBicycle: MutableLiveData<Boolean> = MutableLiveData()
     val interestedCar: MutableLiveData<Boolean> = MutableLiveData()
 
-    val isRegisterButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(interestedSmartPhone) {result.value = isValid()}
-        result.addSource(interestedCleaning) {result.value = isValid()}
-        result.addSource(interestedWalk) {result.value = isValid()}
-        result.addSource(interestedBicycle) {result.value = isValid()}
-        result.addSource(interestedCar) {result.value = isValid()}
+    // 登録ボタン押下
+    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(lastName) { result.value = isValid() }
+        result.addSource(firstName) { result.value = isValid() }
+        result.addSource(birthday) { result.value = isValid() }
+//        result.addSource(gender) { result.value = isValid() }
+        result.addSource(phone) { result.value = isValid() }
+        result.addSource(jobStatusId) { result.value = isValid() }
+//        result.addSource(Wish) { result.value = isValid() }
+        result.addSource(postalCode) { result.value = isValid() }
+        result.addSource(prefectureId) { result.value = isValid() }
+        result.addSource(city) { result.value = isValid() }
+        result.addSource(street) { result.value = isValid() }
     }
 
-    val lastName: MutableLiveData<String> = MutableLiveData()
-    val lastNameErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val lastNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val firstName: MutableLiveData<String> = MutableLiveData()
-    val firstNameErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val firstNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    // バリデーションルール
+    private fun isValid(): Boolean {
+        var valid = true
+        valid = isValidPostalCode() && valid
+        valid = isValidPrefecture() && valid
+        valid = isValidCity() && valid
+        valid = isValidStreet() && valid
+        valid = isValidFirstName() && valid
+        valid = isValidLastName() && valid
+        valid = isValidPassword() && valid
+        valid = isValidPhoneNumber() && valid
+
+        return valid
+    }
 
     private fun isValidLastName(): Boolean {
         var valid = true
@@ -286,16 +267,6 @@ class ChangeInformationViewModel: ViewModel() {
         return valid
     }
 
-    private fun isValid(): Boolean {
-        var valid = true
-        valid = isValidPostalCode() && valid
-        valid = isValidPrefecture() && valid
-        valid = isValidCity() && valid
-        valid = isValidStreet() && valid
-
-        return valid
-    }
-
     private fun isValidPostalCode(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
@@ -318,7 +289,6 @@ class ChangeInformationViewModel: ViewModel() {
             postalCodeErrorVisibility.value = 8
 
         }
-
         return valid
     }
 
@@ -366,23 +336,62 @@ class ChangeInformationViewModel: ViewModel() {
         return valid
     }
 
+    private fun isValidPassword(): Boolean {
+        var valid = true
+        val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
+        val alPattern = Pattern.compile("^(.*[A-z]+.*)")
+        val numPattern = Pattern.compile("^(.*[0-9]+.*)")
+
+        if (valid && password.value?.isBlank() ?:true) {
+            valid = false
+            errorMsg.value = ""
+            errorVisibility.value = 8
+        }else if(valid && !(pattern.matcher(password.value).find())) {
+            valid = false
+            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+            errorVisibility.value = 0
+        }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
+            valid = false
+            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+            errorVisibility.value = 0
+        } else {
+            valid = true
+            errorMsg.value = ""
+            errorVisibility.value = 8
+        }
+        return valid
+    }
+
+    private fun isValidPhoneNumber(): Boolean {
+        var valid = true
+        val pattern = Pattern.compile("^([0-9])")
+
+        if (valid && phone.value?.isBlank() ?:true) {
+            valid = false
+            errorMsg.value = ""
+            errorVisibility.value = 8
+        }else if(valid && !(pattern.matcher(phone.value).find())) {
+            valid = false
+            errorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
+            errorVisibility.value = 0
+        }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
+            valid = false
+            errorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
+            errorVisibility.value = 0
+        } else {
+            valid = true
+            errorMsg.value = ""
+            errorVisibility.value = 8
+        }
+
+        return valid
+    }
 }
 
-interface ChangeInformationEventHandlers {
-    fun onClickMale(view: View)
-    fun onClickFemale(view: View)
-    fun onClickNext(view: View)
+interface ChangeUserInformationEventHandlers {
     fun onFocusChanged(view: View, hasFocus: Boolean)
     fun onClickEditView(view: View)
-    fun onClickUnemployed(view: View)
-    fun onClickHomemaker(view: View)
-    fun onClickFreelancer(view: View)
-    fun onClickStudent(view: View)
-    fun onClickPartTime(view: View)
-    fun onClickEmployee(view: View)
-    fun onClickSelfEmployed(view: View)
-    fun onClickOtherJob(view: View)
     fun onClickRegister(view: View)
-    fun onClickTermsOfService(view: View)
-    fun onClickPrivacyPolicy(view: View)
+    fun onClickMale(view: View)
+    fun onClickFemale(view: View)
 }

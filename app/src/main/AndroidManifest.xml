@@ -112,7 +112,7 @@
             android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
         <!-- 設定画面関連 -->
         <activity
-            android:name=".presenters.activities.ChangeInformationActivity"
+            android:name=".presenters.activities.ChangeUserInformationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 会員情報変更 -->
         <!-- ============================================================ -->
