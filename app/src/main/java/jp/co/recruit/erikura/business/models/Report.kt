@@ -17,6 +17,7 @@ data class Report (
     var jobId: Int = 0,
     var workingMinute: Int? = null,
     var additionalComment: String? = null,
+    var additionalPhotoAsset: MediaItem? = null,
     var additionalReportPhotoUrl: String? = null,
     var additionalReportPhotoWillDelete: Boolean = false,
     var additionalReportPhotoToken: String? = null,

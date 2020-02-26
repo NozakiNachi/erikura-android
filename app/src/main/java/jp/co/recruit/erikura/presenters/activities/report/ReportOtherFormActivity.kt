@@ -68,6 +68,7 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
         imageView.setImageDrawable(null)
         viewModel.addPhotoButtonVisibility.value = View.VISIBLE
         viewModel.removePhotoButtonVisibility.value = View.GONE
+        viewModel.otherPhoto = MediaItem()
     }
 
     override fun onRequestPermissionsResult(
@@ -127,6 +128,7 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
                     viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                     val imageView: ImageView = findViewById(R.id.report_other_image)
                     item.loadImage(this, imageView)
+                    viewModel.otherPhoto = item
                 }
 
                 cursor?.close()
@@ -136,7 +138,14 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
     }
 
     override fun onClickNext(view: View) {
-        // FIXME: 案件評価画面へ遷移
+        job.report?.let {
+            if (viewModel.otherPhoto.contentUri != null) {
+                it.additionalPhotoAsset = viewModel.otherPhoto
+                it.additionalComment = viewModel.comment.value
+            }
+            // FIXME: 案件評価画面へ遷移
+        }
+
     }
 }
 
@@ -147,14 +156,26 @@ class ReportOtherFormViewModel: ViewModel() {
     val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
     val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
+    var otherPhoto: MediaItem = MediaItem()
+
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(addPhotoButtonVisibility) {result.value = isValid()}
         result.addSource(comment) { result.value = isValid()  }
     }
 
     private fun isValid(): Boolean {
         var valid = true
-        valid = isValidComment() && valid
+        if (addPhotoButtonVisibility.value == View.VISIBLE && comment.value.isNullOrBlank()) {
+            valid = true
+        }else {
+            valid = isValidPhoto() && valid
+            valid = isValidComment() && valid
+        }
         return valid
+    }
+
+    private fun isValidPhoto(): Boolean {
+        return otherPhoto.contentUri != null
     }
 
     private fun isValidComment(): Boolean {
