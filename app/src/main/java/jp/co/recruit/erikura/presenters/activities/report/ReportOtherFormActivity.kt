@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -26,7 +27,7 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportOtherFormViewModel::class.java)
     }
-    private val RESULT_PICK_IMAGEFILE = 1000
+
     var job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,40 +88,50 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
 
     private fun moveToGallery() {
         val intent = Intent()
-        intent.action = Intent.ACTION_GET_CONTENT
+        intent.action = Intent.ACTION_OPEN_DOCUMENT
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "image/*"
-        startActivityForResult(intent, ErikuraApplication.instance.REQUEST_CODE_CHOOSE )
+        startActivityForResult(intent, 1000 )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        //FIXME: resultCodeが-1でPermissionDenied
-        val uriString = data!!.data.toString().replace("%3A", "/")
-        val uri:Uri = Uri.parse(uriString)
-        var cursor = this.contentResolver.query(
-            uri,
-            arrayOf(
-                MediaStore.Files.FileColumns._ID,
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.SIZE
-            ),
-            MediaStore.MediaColumns.SIZE + ">0",
-            arrayOf<String>(),
-            "datetaken DESC"
-        )
-        cursor?.moveToFirst()
-        cursor?.let {
-            val item = MediaItem.from(cursor)
-            viewModel.addPhotoButtonVisibility.value = View.GONE
-            viewModel.removePhotoButtonVisibility.value = View.VISIBLE
-            val imageView: ImageView = findViewById(R.id.report_other_image)
-            item.loadImage(this, imageView)
-        }
+        if (resultCode == Activity.RESULT_OK) {
+            val uri = data?.data
+            uri?.let {
+                val cursor = this.contentResolver.query(
+                    uri,
+                    arrayOf(
+                        MediaStore.Files.FileColumns._ID,
+                        MediaStore.MediaColumns.DISPLAY_NAME,
+                        MediaStore.MediaColumns.MIME_TYPE,
+                        MediaStore.MediaColumns.SIZE
+                    ),
+                    MediaStore.MediaColumns.SIZE + ">0",
+                    arrayOf<String>(),
+                    "datetaken DESC"
+                )
 
-        cursor?.close()
+                cursor?.moveToFirst()
+                cursor?.let {
+                    // val item = MediaItem.from(cursor)
+                    // MEMO: cursorを渡すとIDの値が0になるので手動で値を入れています
+                    val uriString = uri.toString()
+                    val arr = uriString.split("%3A")
+                    val id = arr.last().toLong()
+                    val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
+                    val size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
+                    val item = MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
+                    viewModel.addPhotoButtonVisibility.value = View.GONE
+                    viewModel.removePhotoButtonVisibility.value = View.VISIBLE
+                    val imageView: ImageView = findViewById(R.id.report_other_image)
+                    item.loadImage(this, imageView)
+                }
+
+                cursor?.close()
+            }
+        }
 
     }
 
