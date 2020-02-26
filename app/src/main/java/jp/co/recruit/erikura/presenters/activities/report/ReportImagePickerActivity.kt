@@ -54,13 +54,16 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         binding.viewModel = viewModel
         binding.handlers = this
 
+    }
+
+    override fun onStart() {
+        super.onStart()
         if(ErikuraApplication.instance.hasStoragePermission(this)) {
             displayImagePicker()
         }
         else {
             ErikuraApplication.instance.requestStoragePermission(this)
         }
-
     }
 
     private fun displayImagePicker() {
@@ -115,6 +118,9 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
             ErikuraApplication.instance.REQUEST_PERMISSION -> {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     displayImagePicker()
+                }else {
+                    val dialog = StorageAccessConfirmDialogFragment()
+                    dialog.show(supportFragmentManager, "confirm")
                 }
             }
         }

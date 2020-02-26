@@ -62,6 +62,9 @@
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
 
+    <!-- 会員情報変更成功モーダル -->
+    <string name="change_user_information_success">会員情報を変更しました。</string>
+
     <!-- 案件詳細画面 -->
     <string name="jobDetails_workingTime">作業時間（目安）</string>
     <string name="jobDetails_fee">報酬（税込）</string>
@@ -126,6 +129,9 @@
     <string name="report_image_picker_caption">作業報告</string>
     <string name="report_image_picker_note">実施箇所の写真を全て選んでください。</string>
 
+    <!-- ストレージアクセス確認モーダル -->
+    <string name="storage_access_confirm_caption">作業報告のため、写真へのアクセスを許可してください。</string>
+
     <!-- 作業報告箇所画面 -->
     <string name="report_form_caption">実施箇所（%1$d/%2$d）</string>
     <string name="report_form_note">この写真の報告を記入してください。</string>
@@ -138,8 +144,10 @@
     <string name="report_other_form_caption">マニュアル外報告(任意)</string>
     <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
 
-    <!-- 会員情報変更成功モーダル -->
-    <string name="change_user_information_success">会員情報を変更しました。</string>
+    <!-- 作業報告評価画面 -->
+    <string name="report_evaluation_caption">案件の評価（任意）</string>
+    <string name="report_evaluation_note">今回の仕事はいかがでしたか？</string>
+    <string name="report_evaluation_memo">※頂いたフィードバックは、今後のサービス向上に役立てられます</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -215,6 +223,7 @@
     <string name="logout">ログアウト</string>
     <string name="registration">登録</string>
     <string name="remove_photo">写真を削除</string>
+    <string name="open_settings">設定アプリを開く</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
