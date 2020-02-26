@@ -93,9 +93,16 @@
                     android:layout_height="62dp"
                     style="@style/passwordField"
                     android:layout_marginLeft="20dp"
-
+                    android:text="@={viewModel.password}"
                     android:hint="@string/register_password_hint" />
-
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.passwordErrorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.passwordErrorMsg}"
+                    />
 
                 <TextView
                     android:layout_width="320dp"
@@ -136,7 +143,16 @@
                     android:layout_height="62dp"
                     style="@style/passwordField"
                     android:layout_marginLeft="20dp"
+                    android:text="@={viewModel.verificationPassword}"
                     android:hint="@string/register_password_hint" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.verificationPasswordErrorMsg}"
+                    />
                 <TextView
                     android:layout_width="320dp"
                     android:layout_height="30dp"
@@ -434,9 +450,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.phoneerrorVisibility}"
+                    android:visibility="@{viewModel.phoneErrorVisibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.phoneerrorMsg}"
+                    android:text="@={viewModel.phoneErrorMsg}"
                     />
 
                 <!--職業(セレクトボックス作成)-->
@@ -538,6 +554,7 @@
                     android:checked="@={viewModel.interestedCar}"
                     />
                 <Button
+                    android:id="@+id/change_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="30dp"

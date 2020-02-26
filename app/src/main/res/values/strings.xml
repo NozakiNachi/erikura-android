@@ -138,6 +138,9 @@
     <string name="report_other_form_caption">マニュアル外報告(任意)</string>
     <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
 
+    <!-- 会員情報変更成功モーダル -->
+    <string name="change_user_information_success">会員情報を変更しました。</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -171,6 +174,7 @@
     <string name="phone_count_error">電話番号は10桁、または11桁で入力してください。</string>
     <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
     <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
+    <string name="password_verificationPassword_match_error">パスワードとパスワード(確認)の値が一致しません。</string>
 
     <!-- ボタンのラベル -->
     <string name="registerFree">会員登録（無料）</string>

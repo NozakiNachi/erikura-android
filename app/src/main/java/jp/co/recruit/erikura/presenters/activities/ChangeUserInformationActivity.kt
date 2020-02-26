@@ -1,10 +1,12 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.app.ActivityOptions
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -87,10 +89,35 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             viewModel.CurrentPhoneNumber.value = user.phoneNumber
             viewModel.CurrentJobStatus.value = user.jobStatus
 
-            // FIXME: 都道府県・職業の現在登録値をViewに初期表示
-            // FIXME: やりたい仕事の現在登録値取得・Viewに初期表示
+            // やりたい仕事のチェックボタン初期表示
+            val wishWorkList: MutableList<String> = mutableListOf()
+            wishWorkList.add(user.wishWorks.getOrNull(0).toString())
+            wishWorkList.add(user.wishWorks.getOrNull(1).toString())
+            wishWorkList.add(user.wishWorks.getOrNull(2).toString())
+            wishWorkList.add(user.wishWorks.getOrNull(3).toString())
+            wishWorkList.add(user.wishWorks.getOrNull(4).toString())
 
-            // 性別のラジオボタンチェック
+            if(wishWorkList.contains("smart_phone")){
+                binding.wishWorkSmartPhone.isChecked = true
+            }
+            if(wishWorkList.contains("cleaning")) {
+                binding.wishWorkCleaning.isChecked = true
+            }
+            if(wishWorkList.contains("walk")) {
+                binding.wishWorkWalk.isChecked = true
+            }
+            if(wishWorkList.contains("bicycle"))
+            {
+                binding.wishWorkBicycle.isChecked = true
+            }
+            if(wishWorkList.contains("car")) {
+                binding.wishWorkCar.isChecked = true
+            }
+
+
+            // FIXME: 都道府県・職業の現在登録値をViewに初期表示
+
+            // 性別のラジオボタン初期表示
             if(viewModel.CurrentGender.value == "male"){
                 binding.maleButton.isChecked = true
             }else{
@@ -210,8 +237,15 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
 
         // 会員情報変更Apiの呼び出し
         Api(this).updateUser(user) {
-            // FIXME: 画面遷移先の確認
-            val intent = Intent(this, MypageActivity::class.java)
+            // FIXME: ダイアログを出して設定画面に遷移
+            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
+            binding.lifecycleOwner = this
+
+            val dialog = AlertDialog.Builder(this)
+                .setView(binding.root)
+                .show()
+
+            val intent = Intent(this,ConfigurationActivity::class.java)
             // 戻るボタンの無効化
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
@@ -232,12 +266,15 @@ class ChangeUserInformationViewModel: ViewModel() {
     val CurrentStreet: MutableLiveData<String> = MutableLiveData()
     val CurrentPhoneNumber: MutableLiveData<String> = MutableLiveData()
     val CurrentJobStatus: MutableLiveData<String> = MutableLiveData()
-    // val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
+    val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
 
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
-    val errorMsg: MutableLiveData<String> = MutableLiveData()
-    val errorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val verificationPassword: MutableLiveData<String> = MutableLiveData()
+    val passwordErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val passwordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val verificationPasswordErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val verificationPasswordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
     val lastNameErrorMsg: MutableLiveData<String> = MutableLiveData()
@@ -262,8 +299,8 @@ class ChangeUserInformationViewModel: ViewModel() {
     val streetErrorVisibility: MutableLiveData<Int> = MutableLiveData()
     // 電話番号
     val phone: MutableLiveData<String> = MutableLiveData()
-    val phoneerrorMsg: MutableLiveData<String> = MutableLiveData()
-    val phoneerrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val phoneErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val phoneErrorVisibility: MutableLiveData<Int> = MutableLiveData()
     // 職業
     val jobStatusId: MutableLiveData<Int> = MutableLiveData()
     // やりたい仕事
@@ -420,20 +457,23 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && password.value?.isBlank() ?:true) {
             valid = false
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            passwordErrorMsg.value = ""
+            passwordErrorVisibility.value = 8
         }else if(valid && !(pattern.matcher(password.value).find())) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-            errorVisibility.value = 0
+            passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+            passwordErrorVisibility.value = 0
         }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-            errorVisibility.value = 0
+            passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+            passwordErrorVisibility.value = 0
+        }else if(valid && password.value !== verificationPassword.value) {
+            passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+            passwordErrorVisibility.value = 0
         } else {
             valid = true
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            passwordErrorMsg.value = ""
+            passwordErrorVisibility.value = 8
         }
         return valid
     }
@@ -444,20 +484,20 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && phone.value?.isBlank() ?:true) {
             valid = false
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            phoneErrorMsg.value = ""
+            phoneErrorVisibility.value = 8
         }else if(valid && !(pattern.matcher(phone.value).find())) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-            errorVisibility.value = 0
+            phoneErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
+            phoneErrorVisibility.value = 0
         }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
-            errorVisibility.value = 0
+            phoneErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
+            phoneErrorVisibility.value = 0
         } else {
             valid = true
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            phoneErrorMsg.value = ""
+            phoneErrorVisibility.value = 8
         }
 
         return valid
