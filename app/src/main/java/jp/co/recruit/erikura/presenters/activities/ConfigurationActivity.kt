@@ -36,7 +36,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     // FIXME: アイコンのファイル名書き換え
     var menuItems: List<MenuItem> = listOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
-            val intent = Intent(this, ChangeInformationActivity::class.java)
+            val intent = Intent(this, ChangeUserInformationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {

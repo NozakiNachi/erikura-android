@@ -1,6 +1,8 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -32,7 +34,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
     // 都道府県のリスト
     val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
     // 職業のリスト
-    val job_status_list = ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_list)
+    val job_status_id_list = ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
     // 生年月日入力のカレンダー設定
     val calender: Calendar = Calendar.getInstance()
@@ -42,7 +44,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             calender.set(Calendar.MONTH, monthOfYear)
             calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            viewModel.birthday.value =
+            viewModel.dateOfBirth.value =
                 String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
         }
 
@@ -68,7 +70,23 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         calender.set(Calendar.YEAR, 1980)
         calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
-        viewModel.birthday.value = String.format("%d/%02d/%02d", 1980, 1, 1)
+        viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", 1980, 1, 1)
+
+        // 変更するユーザーの現在の登録値を取得
+        Api(this).user(){
+            user = it
+            viewModel.CurrentLastName.value = user.lastName
+            viewModel.CurrentFirstName.value = user.firstName
+            viewModel.CurrentdateOfBirth.value = user.dateOfBirth
+//            viewModel.CurrentGender.value = user.gender
+            viewModel.CurrentPostalCode.value = user.postcode
+            viewModel.CurrentPrefecture.value = user.prefecture
+            viewModel.CurrentCity.value = user.city
+            viewModel.CurrentStreet.value = user.street
+            viewModel.CurrentPhoneNumber.value = user.phoneNumber
+            viewModel.CurrentJobStatus.value = user.jobStatus
+//            viewModel.CurrentWishWorks.value = user.wishWorks
+        }
     }
 
     // 所在地
@@ -123,19 +141,51 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         // パスワード
         user.password = viewModel.password.value
         // 氏名
-        user.lastName = viewModel.lastName.value
-        user.firstName = viewModel.firstName.value
+        if(viewModel.lastName.value == null){
+            user.lastName = viewModel.CurrentLastName.value
+        }else{
+            user.lastName = viewModel.lastName.value
+        }
+        if(viewModel.firstName.value == null){
+            user.firstName = viewModel.CurrentFirstName.value
+        }else{
+            user.firstName = viewModel.firstName.value
+        }
         // 生年月日
-        user.dateOfBirth = viewModel.birthday.value
+        if(viewModel.dateOfBirth.value == null){
+            user.dateOfBirth = viewModel.CurrentdateOfBirth.value
+        }else{
+            user.dateOfBirth = viewModel.dateOfBirth.value
+        }
         // 所在地
-        user.postcode = viewModel.postalCode.value
-        user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
-        user.city = viewModel.city.value
-        user.street = viewModel.street.value
+        if(viewModel.postalCode.value == null){
+            user.postcode = viewModel.CurrentPostalCode.value
+        }else{
+            user.postcode = viewModel.postalCode.value
+        }
+        if(viewModel.prefectureId.value == null || viewModel.prefectureId.value == 0){
+            user.prefecture = viewModel.CurrentPrefecture.value
+        }else{
+            user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
+        }
+        if(viewModel.city.value == null){
+            user.city = viewModel.CurrentCity.value
+        }else{
+            user.city = viewModel.city.value
+        }
+        if(viewModel.street.value == null){
+            user.street = viewModel.CurrentStreet.value
+        }else{
+            user.street = viewModel.street.value
+        }
         // 電話番号
-        user.phoneNumber = viewModel.phone.value
+        if(viewModel.phone.value == null){
+            user.phoneNumber = viewModel.CurrentPhoneNumber.value
+        }else{
+            user.phoneNumber = viewModel.phone.value
+        }
         // 職業
-        user.jobStatus = job_status_list.getString(viewModel.jobStatusId.value ?: 0)
+        user.jobStatus = job_status_id_list.getString(viewModel.jobStatusId.value ?: 0)
         // やりたいこと
         val wishWorks: MutableList<String> = mutableListOf()
         if(viewModel.interestedSmartPhone.value ?: false){ wishWorks.add("smart_phone") }
@@ -145,18 +195,31 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         if(viewModel.interestedCar.value ?: false){ wishWorks.add("car") }
         user.wishWorks = wishWorks
 
-        // ユーザ登録Apiの呼び出し
-//        Api(this).updateUser(user) {
-//            Log.v("DEBUG", "ユーザ登録： userId=${it}")
-//            // 登録完了画面へ遷移
-//            val intent: Intent = Intent(this@ChangeInformationActivity, RegisterFinishedActivity::class.java)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-//        }
+        // 会員情報変更Apiの呼び出し
+        Api(this).updateUser(user) {
+            // FIXME: 画面遷移先の確認
+            val intent = Intent(this, MypageActivity::class.java)
+            // 戻るボタンの無効化
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
     }
 }
 
 class ChangeUserInformationViewModel: ViewModel() {
+    // 現在の登録値
+    val CurrentLastName: MutableLiveData<String> = MutableLiveData()
+    val CurrentFirstName: MutableLiveData<String> = MutableLiveData()
+    val CurrentdateOfBirth: MutableLiveData<String> = MutableLiveData()
+    val CurrentGender: MutableLiveData<String> = MutableLiveData()
+    val CurrentPostalCode: MutableLiveData<String> = MutableLiveData()
+    val CurrentPrefecture: MutableLiveData<String> = MutableLiveData()
+    val CurrentCity: MutableLiveData<String> = MutableLiveData()
+    val CurrentStreet: MutableLiveData<String> = MutableLiveData()
+    val CurrentPhoneNumber: MutableLiveData<String> = MutableLiveData()
+    val CurrentJobStatus: MutableLiveData<String> = MutableLiveData()
+    val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
+
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
     val errorMsg: MutableLiveData<String> = MutableLiveData()
@@ -169,7 +232,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     val firstNameErrorMsg: MutableLiveData<String> = MutableLiveData()
     val firstNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
     // 生年月日
-    val birthday: MutableLiveData<String> = MutableLiveData()
+    val dateOfBirth: MutableLiveData<String> = MutableLiveData()
     // 性別
     val male: MutableLiveData<Boolean> = MutableLiveData()
     val female: MutableLiveData<Boolean> = MutableLiveData()
@@ -201,7 +264,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(lastName) { result.value = isValid() }
         result.addSource(firstName) { result.value = isValid() }
-        result.addSource(birthday) { result.value = isValid() }
+        result.addSource(dateOfBirth) { result.value = isValid() }
 //        result.addSource(gender) { result.value = isValid() }
         result.addSource(phone) { result.value = isValid() }
         result.addSource(jobStatusId) { result.value = isValid() }

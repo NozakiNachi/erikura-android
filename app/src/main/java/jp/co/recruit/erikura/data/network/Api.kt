@@ -166,16 +166,14 @@ class Api(var context: Context) {
         }
     }
 
-//    fun updateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
-//        executeObservable(
-//            erikuraApiService.updateUser(user),
-//            onError = onError
-//        ) { body ->
-//            val session = UserSession(userId = body.id, token = body.accessToken)
-//            userSession = session
-//            onComplete(session)
-//        }
-//    }
+    fun updateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit)  {
+        executeObservable(
+            erikuraApiService.updateUser(user),
+            onError = onError
+        ) { body ->
+            onComplete()
+        }
+    }
 
     fun user(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (user: User) -> Unit) {
         executeObservable(
