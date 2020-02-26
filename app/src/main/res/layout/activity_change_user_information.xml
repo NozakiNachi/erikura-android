@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.ChangeInformationViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.ChangeUserInformationViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.ChangeInformationEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.ChangeUserInformationEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -66,13 +66,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     >
-                    <!--FIXME: 登録しているメールアドレスを表示-->
                     <TextView
                         android:id="@+id/register_mail_address"
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="FIXME: 登録しているメールアドレスを表示" />
+                        android:text="@={viewModel.CurrentEmail}" />
                 </LinearLayout>
 
                 <!--パスワード-->
@@ -94,7 +93,10 @@
                     android:layout_height="62dp"
                     style="@style/passwordField"
                     android:layout_marginLeft="20dp"
+
                     android:hint="@string/register_password_hint" />
+
+
                 <TextView
                     android:layout_width="320dp"
                     android:layout_height="17dp"
@@ -175,6 +177,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="62dp"
                             android:hint="@string/register_last_name_hint"
+                            android:text="@={viewModel.CurrentLastName}"
                             />
                     </LinearLayout>
                     <LinearLayout
@@ -185,10 +188,10 @@
                             style="@style/textField"
                             android:layout_height="62dp"
                             android:hint="@string/register_first_name_hint"
+                            android:text="@={viewModel.CurrentFirstName}"
                             />
                     </LinearLayout>
                 </LinearLayout>
-
 
                 <!--生年月日-->
                 <LinearLayout
@@ -209,6 +212,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
+                    android:onClick="@{handlers::onClickEditView}"
+                    android:text="@={viewModel.CurrentdateOfBirth}"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -248,6 +253,7 @@
                                 android:paddingLeft="10dp"
                                 style="@style/buttonWithCheckBox"
                                 android:text="@string/male"
+                                android:onClick="@{handlers::onClickMale}"
                                 >
                             </RadioButton>
                             <RadioButton
@@ -258,6 +264,7 @@
                                 android:paddingLeft="10dp"
                                 style="@style/buttonWithCheckBox"
                                 android:text="@string/female"
+                                android:onClick="@{handlers::onClickFemale}"
                                 >
                             </RadioButton>
                     </RadioGroup>
@@ -286,6 +293,8 @@
                         android:layout_height="62dp"
                         android:hint="@string/register_postal_code_hint"
                         android:inputType="number"
+                        android:text="@={viewModel.CurrentPostalCode}"
+                        android:onFocusChanged="@{handlers::onFocusChanged}"
                         />
                 </LinearLayout>
                 <TextView
@@ -300,7 +309,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    />
+                    android:text="@={viewModel.postalCodeErrorMsg}"
+                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
 
                 <!-- 都道府県 -->
                 <LinearLayout
@@ -324,6 +334,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/prefecture_list"
                     android:spinnerMode="dialog"
+                    android:selectedItemPosition="@={viewModel.prefectureId}"
                     />
 
                 <!-- ご住所 -->
@@ -345,12 +356,15 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_city_hint"
+                    android:text="@={viewModel.CurrentCity}"
                     />
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:text="@={viewModel.cityErrorMsg}"
+                    android:visibility="@{viewModel.cityErrorVisibility}"
                     />
 
                 <!-- 番地以降 -->
@@ -374,12 +388,15 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_street_hint"
+                    android:text="@={viewModel.CurrentStreet}"
                     />
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:text="@={viewModel.streetErrorMsg}"
+                    android:visibility="@{viewModel.streetErrorVisibility}"
                     />
 
 
@@ -402,8 +419,10 @@
                     android:layout_height="62dp"
                     style="@style/textField"
                     android:layout_marginTop="10dp"
+                    android:text="@={viewModel.CurrentPhoneNumber}"
                     android:hint="@string/register_phone_hint"
                     android:inputType="number"/>
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -415,7 +434,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.phoneerrorVisibility}"
                     style="@style/errorField"
+                    android:text="@={viewModel.phoneerrorMsg}"
                     />
 
                 <!--職業(セレクトボックス作成)-->
@@ -432,7 +453,7 @@
                         android:text="職業" />
                 </LinearLayout>
                 <Spinner
-                    android:id="@+id/job"
+                    android:id="@+id/job_status_list"
                     style="@style/spinnerField"
                     android:layout_marginTop="10dp"
                     android:layout_alignParentStart="true"
@@ -440,6 +461,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/job_status_list"
                     android:spinnerMode="dialog"
+                    android:selectedItemPosition="@={viewModel.jobStatusId}"
                     />
 
 
@@ -458,6 +480,7 @@
                 </LinearLayout>
 
                 <CheckBox
+                    android:id="@+id/wishWork_smartPhone"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -465,9 +488,11 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/smartPhone"
+                    android:checked="@={viewModel.interestedSmartPhone}"
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_cleaning"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -475,9 +500,11 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/cleaning"
+                    android:checked="@={viewModel.interestedCleaning}"
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_walk"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -485,9 +512,11 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/walk"
+                    android:checked="@={viewModel.interestedWalk}"
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_bicycle"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -495,15 +524,18 @@
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/bicycle"
+                    android:checked="@={viewModel.interestedBicycle}"
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_car"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:paddingLeft="10dp"
                     style="@style/buttonWithCheckBox"
                     android:text="@string/car"
+                    android:checked="@={viewModel.interestedCar}"
                     />
                 <Button
                     android:layout_width="match_parent"
@@ -512,6 +544,7 @@
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
+                    android:onClick="@{handlers::onClickRegister}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"

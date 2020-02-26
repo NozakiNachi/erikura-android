@@ -305,6 +305,18 @@
         <item>その他</item>
     </string-array>
 
+    <string-array name="job_status_id_list">
+        <item>@string/please_select</item>
+        <item>unemployed</item>
+        <item>homemaker</item>
+        <item>freelancer</item>
+        <item>student</item>
+        <item>part_time</item>
+        <item>employee</item>
+        <item>self_employed</item>
+        <item>other_job</item>
+    </string-array>
+
     <!-- 作業後の状態 -->
     <string-array name="summary_evaluation">
         <item>@string/please_select</item>
