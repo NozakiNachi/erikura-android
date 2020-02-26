@@ -210,6 +210,7 @@
     <string name="add_photo">写真の追加</string>
     <string name="logout">ログアウト</string>
     <string name="registration">登録</string>
+    <string name="remove_photo">写真を削除</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

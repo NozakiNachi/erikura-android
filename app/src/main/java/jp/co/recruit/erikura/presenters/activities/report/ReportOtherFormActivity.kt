@@ -7,6 +7,7 @@ import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,8 +16,10 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import android.provider.MediaStore
 
 
 class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandlers {
@@ -59,6 +62,13 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
 
     }
 
+    override fun onClickRemovePhoto(view: View) {
+        val imageView: ImageView = findViewById(R.id.report_other_image)
+        imageView.setImageDrawable(null)
+        viewModel.addPhotoButtonVisibility.value = View.VISIBLE
+        viewModel.removePhotoButtonVisibility.value = View.GONE
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -80,12 +90,38 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
         intent.action = Intent.ACTION_GET_CONTENT
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "image/*"
-        startActivityForResult(intent, RESULT_PICK_IMAGEFILE )
+        startActivityForResult(intent, ErikuraApplication.instance.REQUEST_CODE_CHOOSE )
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // 写真を選択するとここに来るはず。。。。
+
+        //FIXME: resultCodeが-1でPermissionDenied
+        val uriString = data!!.data.toString().replace("%3A", "/")
+        val uri:Uri = Uri.parse(uriString)
+        var cursor = this.contentResolver.query(
+            uri,
+            arrayOf(
+                MediaStore.Files.FileColumns._ID,
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.SIZE
+            ),
+            MediaStore.MediaColumns.SIZE + ">0",
+            arrayOf<String>(),
+            "datetaken DESC"
+        )
+        cursor?.moveToFirst()
+        cursor?.let {
+            val item = MediaItem.from(cursor)
+            viewModel.addPhotoButtonVisibility.value = View.GONE
+            viewModel.removePhotoButtonVisibility.value = View.VISIBLE
+            val imageView: ImageView = findViewById(R.id.report_other_image)
+            item.loadImage(this, imageView)
+        }
+
+        cursor?.close()
+
     }
 
     override fun onClickNext(view: View) {
@@ -94,6 +130,8 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
 }
 
 class ReportOtherFormViewModel: ViewModel() {
+    val addPhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val removePhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val comment: MutableLiveData<String> = MutableLiveData()
     val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
     val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -130,5 +168,6 @@ class ReportOtherFormViewModel: ViewModel() {
 interface ReportOtherFormEventHandlers {
     fun onClickNext(view: View)
     fun onClickAddPhotoButton(view: View)
+    fun onClickRemovePhoto(view: View)
     fun onClickManual(view: View)
 }
