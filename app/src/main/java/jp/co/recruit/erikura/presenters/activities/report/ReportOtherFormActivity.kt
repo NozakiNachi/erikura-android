@@ -143,7 +143,10 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
                 it.additionalPhotoAsset = viewModel.otherPhoto
                 it.additionalComment = viewModel.comment.value
             }
-            // FIXME: 案件評価画面へ遷移
+
+            val intent= Intent(this, ReportEvaluationActivity::class.java)
+            intent.putExtra("job", job)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
 
     }

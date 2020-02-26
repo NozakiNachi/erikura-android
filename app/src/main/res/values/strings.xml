@@ -138,6 +138,11 @@
     <string name="report_other_form_caption">マニュアル外報告(任意)</string>
     <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
 
+    <!-- 作業報告評価画面 -->
+    <string name="report_evaluation_caption">案件の評価（任意）</string>
+    <string name="report_evaluation_note">今回の仕事はいかがでしたか？</string>
+    <string name="report_evaluation_memo">※頂いたフィードバックは、今後のサービス向上に役立てられます</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
