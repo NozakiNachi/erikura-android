@@ -66,13 +66,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     >
-                    <!--FIXME: 登録しているメールアドレスを表示-->
                     <TextView
                         android:id="@+id/register_mail_address"
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="FIXME: 登録しているメールアドレスを表示" />
+                        android:text="@={viewModel.CurrentEmail}" />
                 </LinearLayout>
 
                 <!--パスワード-->
@@ -96,8 +95,6 @@
                     android:layout_marginLeft="20dp"
 
                     android:hint="@string/register_password_hint" />
-
-
 
 
                 <TextView
@@ -464,7 +461,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/job_status_list"
                     android:spinnerMode="dialog"
-                    android:selectedItemPosition="@={viewModel.JobStatusId}"
+                    android:selectedItemPosition="@={viewModel.jobStatusId}"
                     />
 
 
@@ -483,6 +480,7 @@
                 </LinearLayout>
 
                 <CheckBox
+                    android:id="@+id/wishWork_smartPhone"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -494,6 +492,7 @@
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_cleaning"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -505,6 +504,7 @@
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_walk"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -516,6 +516,7 @@
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_bicycle"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
@@ -527,6 +528,7 @@
                     />
 
                 <CheckBox
+                    android:id="@+id/wishWork_car"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"

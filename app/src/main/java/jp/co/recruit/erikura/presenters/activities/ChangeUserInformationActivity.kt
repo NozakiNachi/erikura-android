@@ -66,7 +66,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         viewModel.lastNameErrorVisibility.value = 8
         viewModel.firstNameErrorVisibility.value = 8
 
-       // 生年月日入力のカレンダー設定
+        // 生年月日入力のカレンダー設定
         calender.set(Calendar.YEAR, 1980)
         calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
@@ -75,17 +75,27 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         // 変更するユーザーの現在の登録値を取得
         Api(this).user(){
             user = it
+            viewModel.CurrentEmail.value = user.email
             viewModel.CurrentLastName.value = user.lastName
             viewModel.CurrentFirstName.value = user.firstName
             viewModel.CurrentdateOfBirth.value = user.dateOfBirth
-//            viewModel.CurrentGender.value = user.gender
+            viewModel.CurrentGender.value = user.gender?.value
             viewModel.CurrentPostalCode.value = user.postcode
             viewModel.CurrentPrefecture.value = user.prefecture
             viewModel.CurrentCity.value = user.city
             viewModel.CurrentStreet.value = user.street
             viewModel.CurrentPhoneNumber.value = user.phoneNumber
             viewModel.CurrentJobStatus.value = user.jobStatus
-//            viewModel.CurrentWishWorks.value = user.wishWorks
+
+            // FIXME: 都道府県・職業の現在登録値をViewに初期表示
+            // FIXME: やりたい仕事の現在登録値取得・Viewに初期表示
+
+            // 性別のラジオボタンチェック
+            if(viewModel.CurrentGender.value == "male"){
+                binding.maleButton.isChecked = true
+            }else{
+                binding.femaleButton.isChecked = true
+            }
         }
     }
 
@@ -136,7 +146,6 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         user.gender = Gender.FEMALE
     }
 
-
     override fun onClickRegister(view: View) {
         // パスワード
         user.password = viewModel.password.value
@@ -185,7 +194,11 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             user.phoneNumber = viewModel.phone.value
         }
         // 職業
-        user.jobStatus = job_status_id_list.getString(viewModel.jobStatusId.value ?: 0)
+        if(viewModel.jobStatusId.value == null || viewModel.jobStatusId.value == 0){
+            user.jobStatus = viewModel.CurrentJobStatus.value
+        }else{
+            user.jobStatus = job_status_id_list.getString(viewModel.jobStatusId.value ?: 0)
+        }
         // やりたいこと
         val wishWorks: MutableList<String> = mutableListOf()
         if(viewModel.interestedSmartPhone.value ?: false){ wishWorks.add("smart_phone") }
@@ -208,6 +221,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
 
 class ChangeUserInformationViewModel: ViewModel() {
     // 現在の登録値
+    val CurrentEmail: MutableLiveData<String> = MutableLiveData()
     val CurrentLastName: MutableLiveData<String> = MutableLiveData()
     val CurrentFirstName: MutableLiveData<String> = MutableLiveData()
     val CurrentdateOfBirth: MutableLiveData<String> = MutableLiveData()
@@ -218,7 +232,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     val CurrentStreet: MutableLiveData<String> = MutableLiveData()
     val CurrentPhoneNumber: MutableLiveData<String> = MutableLiveData()
     val CurrentJobStatus: MutableLiveData<String> = MutableLiveData()
-    val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
+    // val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
 
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
@@ -234,8 +248,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     // 生年月日
     val dateOfBirth: MutableLiveData<String> = MutableLiveData()
     // 性別
-    val male: MutableLiveData<Boolean> = MutableLiveData()
-    val female: MutableLiveData<Boolean> = MutableLiveData()
+    val gender: MutableLiveData<Boolean> = MutableLiveData()
     // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeErrorMsg: MutableLiveData<String> = MutableLiveData()
@@ -265,10 +278,10 @@ class ChangeUserInformationViewModel: ViewModel() {
         result.addSource(lastName) { result.value = isValid() }
         result.addSource(firstName) { result.value = isValid() }
         result.addSource(dateOfBirth) { result.value = isValid() }
-//        result.addSource(gender) { result.value = isValid() }
+        result.addSource(gender) { result.value = isValid() }
         result.addSource(phone) { result.value = isValid() }
         result.addSource(jobStatusId) { result.value = isValid() }
-//        result.addSource(Wish) { result.value = isValid() }
+        // result.addSource(WishWorks) { result.value = isValid() }
         result.addSource(postalCode) { result.value = isValid() }
         result.addSource(prefectureId) { result.value = isValid() }
         result.addSource(city) { result.value = isValid() }
