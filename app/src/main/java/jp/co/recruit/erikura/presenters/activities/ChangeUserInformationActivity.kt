@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -237,19 +238,14 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
 
         // 会員情報変更Apiの呼び出し
         Api(this).updateUser(user) {
-            // FIXME: ダイアログを出して設定画面に遷移
-            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
-            binding.lifecycleOwner = this
-
-            val dialog = AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
-
-            val intent = Intent(this,ConfigurationActivity::class.java)
-            // 戻るボタンの無効化
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            // FIXME: ダイアログの表示時間を調整
+            val dialog = AlertDialog.Builder(this).apply {
+                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_change_user_information_success, null, false)
+                setView(binding.root)
+            }.create()
+            dialog.show()
         }
+        finish()
     }
 }
 
