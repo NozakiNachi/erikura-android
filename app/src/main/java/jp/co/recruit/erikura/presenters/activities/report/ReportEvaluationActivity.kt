@@ -33,6 +33,14 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
         binding.handlers = this
     }
 
+    override fun onClickGood(view: View) {
+
+    }
+
+    override fun onClickBad(view: View) {
+
+    }
+
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
             val termsOfServiceURLString = job.manualUrl
@@ -51,6 +59,8 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
 }
 
 class ReportEvaluationViewModel: ViewModel() {
+    val good: MutableLiveData<Boolean> = MutableLiveData()
+    val bad: MutableLiveData<Boolean> = MutableLiveData()
     val comment: MutableLiveData<String> = MutableLiveData()
     val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
     val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -58,5 +68,7 @@ class ReportEvaluationViewModel: ViewModel() {
 
 interface ReportEvaluationEventHandler {
     fun onClickNext(view: View)
+    fun onClickGood(view: View)
+    fun onClickBad(view: View)
     fun onClickManual(view: View)
 }
