@@ -37,7 +37,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
     // 都道府県のリスト
     val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
     // 職業のリスト
-    val job_status_id_list = ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
+    val jobStatusIdList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
     // 生年月日入力のカレンダー設定
     val calender: Calendar = Calendar.getInstance()
@@ -50,7 +50,6 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             viewModel.dateOfBirth.value =
                 String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
         }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -84,11 +83,16 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             viewModel.CurrentdateOfBirth.value = user.dateOfBirth
             viewModel.CurrentGender.value = user.gender?.value
             viewModel.CurrentPostalCode.value = user.postcode
-            viewModel.CurrentPrefecture.value = user.prefecture
+//            viewModel.CurrentPrefectureId.value = user.prefecture
             viewModel.CurrentCity.value = user.city
             viewModel.CurrentStreet.value = user.street
             viewModel.CurrentPhoneNumber.value = user.phoneNumber
-            viewModel.CurrentJobStatus.value = user.jobStatus
+ //           viewModel.CurrentJobStatusId.value = user.jobStatus
+
+            // 都道府県のプルダウン初期表示
+            viewModel.CurrentPrefectureId.value = getPrefectureId(user.prefecture ?: "")
+            // 職業のプルダウン初期表示
+            viewModel.CurrentJobStatusId.value = getJobStatusId(user.jobStatus ?: "")
 
             // やりたい仕事のチェックボタン初期表示
             val wishWorkList: MutableList<String> = mutableListOf()
@@ -114,9 +118,6 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             if(wishWorkList.contains("car")) {
                 binding.wishWorkCar.isChecked = true
             }
-
-
-            // FIXME: 都道府県・職業の現在登録値をViewに初期表示
 
             // 性別のラジオボタン初期表示
             if(viewModel.CurrentGender.value == "male"){
@@ -174,6 +175,16 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         user.gender = Gender.FEMALE
     }
 
+    // 職業
+    private fun getJobStatusId(jobStatus: String): Int {
+        for (i in 0..8) {
+            if(jobStatusIdList.getString(i).equals(jobStatus)) {
+                return i
+            }
+        }
+        return 0
+    }
+
     override fun onClickRegister(view: View) {
         // パスワード
         user.password = viewModel.password.value
@@ -200,11 +211,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         }else{
             user.postcode = viewModel.postalCode.value
         }
-        if(viewModel.prefectureId.value == null || viewModel.prefectureId.value == 0){
-            user.prefecture = viewModel.CurrentPrefecture.value
-        }else{
-            user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
-        }
+        user.prefecture = prefectureList.getString(viewModel.CurrentPrefectureId.value ?: 0)
         if(viewModel.city.value == null){
             user.city = viewModel.CurrentCity.value
         }else{
@@ -222,11 +229,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             user.phoneNumber = viewModel.phone.value
         }
         // 職業
-        if(viewModel.jobStatusId.value == null || viewModel.jobStatusId.value == 0){
-            user.jobStatus = viewModel.CurrentJobStatus.value
-        }else{
-            user.jobStatus = job_status_id_list.getString(viewModel.jobStatusId.value ?: 0)
-        }
+        user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
         // やりたいこと
         val wishWorks: MutableList<String> = mutableListOf()
         if(viewModel.interestedSmartPhone.value ?: false){ wishWorks.add("smart_phone") }
@@ -257,11 +260,11 @@ class ChangeUserInformationViewModel: ViewModel() {
     val CurrentdateOfBirth: MutableLiveData<String> = MutableLiveData()
     val CurrentGender: MutableLiveData<String> = MutableLiveData()
     val CurrentPostalCode: MutableLiveData<String> = MutableLiveData()
-    val CurrentPrefecture: MutableLiveData<String> = MutableLiveData()
+    val CurrentPrefectureId: MutableLiveData<Int> = MutableLiveData()
     val CurrentCity: MutableLiveData<String> = MutableLiveData()
     val CurrentStreet: MutableLiveData<String> = MutableLiveData()
     val CurrentPhoneNumber: MutableLiveData<String> = MutableLiveData()
-    val CurrentJobStatus: MutableLiveData<String> = MutableLiveData()
+    val CurrentJobStatusId: MutableLiveData<Int> = MutableLiveData()
     val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
 
     // パスワード

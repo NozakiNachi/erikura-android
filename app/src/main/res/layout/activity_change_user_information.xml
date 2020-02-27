@@ -350,7 +350,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/prefecture_list"
                     android:spinnerMode="dialog"
-                    android:selectedItemPosition="@={viewModel.prefectureId}"
+                    android:selectedItemPosition="@={viewModel.CurrentPrefectureId}"
                     />
 
                 <!-- ご住所 -->
@@ -477,7 +477,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/job_status_list"
                     android:spinnerMode="dialog"
-                    android:selectedItemPosition="@={viewModel.jobStatusId}"
+                    android:selectedItemPosition="@={viewModel.CurrentJobStatusId}"
                     />
 
 
