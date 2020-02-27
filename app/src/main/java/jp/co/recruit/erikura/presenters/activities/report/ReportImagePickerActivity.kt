@@ -67,7 +67,7 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
     }
 
     private fun displayImagePicker() {
-        adapter = ImagePickerAdapter(this).also {
+        adapter = ImagePickerAdapter(this, job).also {
             it.onClickListener = object: ImagePickerAdapter.OnClickListener {
                 override fun onClick(item: MediaItem, isChecked: Boolean) {
                     onImageSelected(item, isChecked)
@@ -167,11 +167,22 @@ class ReportImagePickerViewModel: ViewModel() {
 
 class ImagePickerCellViewModel: ViewModel() {
     val checked = MutableLiveData<Boolean>(false)
+
+    fun loadData(job: Job, item: MediaItem) {
+        job.report?.outputSummaries?.let {
+            it.forEach {
+                val uri = it.photoAsset?.contentUri
+                if (item.contentUri == uri) {
+                    checked.value = true
+                }
+            }
+        }
+    }
 }
 
 class ImagePickerViewHolder(val binding: FragmentReportImagePickerCellBinding): RecyclerView.ViewHolder(binding.root)
 
-class ImagePickerAdapter(val activity: FragmentActivity): RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
+class ImagePickerAdapter(val activity: FragmentActivity, val job: Job): RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
 
     var onClickListener: OnClickListener? = null
 
@@ -228,6 +239,7 @@ class ImagePickerAdapter(val activity: FragmentActivity): RecyclerViewCursorAdap
             }
         }
         item.loadImage(activity, cellView.imageView)
+        binding.viewModel!!.loadData(job, item)
     }
 
     interface OnClickListener {

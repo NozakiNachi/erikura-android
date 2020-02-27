@@ -170,13 +170,37 @@
                     android:background="@drawable/background_triangle" />
 
                 <!-- 評価ボタン -->
+                <LinearLayout
+                    android:layout_width="290dp"
+                    android:layout_height="140dp"
+                    android:layout_gravity="center"
+                    android:orientation="horizontal">
+                    <ToggleButton
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="30dp"
+                        android:checked="@={viewModel.good}"
+                        android:onClick="@{handlers::onClickGood}"
+                        android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"
+                        style="@style/goodButton"/>
+                    <ToggleButton
+                        android:layout_width="120dp"
+                        android:layout_height="120dp"
+                        android:layout_gravity="center"
+                        android:checked="@={viewModel.bad}"
+                        android:onClick="@{handlers::onClickBad}"
+                        android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"
+                        style="@style/badButton"/>
+                </LinearLayout>
 
                 <!-- コメント記入 -->
                 <TextView
                     style="@style/fieldLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="30dp"
                     android:text="@string/comment" />
 
                 <EditText

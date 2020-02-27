@@ -201,6 +201,20 @@
         <item name="android:background">@drawable/favorite_button</item>
     </style>
 
+    <!-- goodボタン -->
+    <style name="goodButton">
+        <item name="android:textOn"></item>
+        <item name="android:textOff"></item>
+        <item name="android:background">@drawable/good_button</item>
+    </style>
+
+    <!-- badボタン -->
+    <style name="badButton">
+        <item name="android:textOn"></item>
+        <item name="android:textOff"></item>
+        <item name="android:background">@drawable/bad_button</item>
+    </style>
+
     <!-- 履歴ポップアップ -->
     <style name="historyPopupListViewStyle">
         <item name="android:divider">@color/silver</item>
