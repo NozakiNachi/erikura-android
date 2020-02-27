@@ -7,9 +7,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
@@ -34,11 +36,11 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
     }
 
     override fun onClickGood(view: View) {
-
+        viewModel.bad.value = false
     }
 
     override fun onClickBad(view: View) {
-
+        viewModel.good.value = false
     }
 
     override fun onClickManual(view: View) {
@@ -53,7 +55,17 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
     }
 
     override fun onClickNext(view: View) {
-        //FIXME: 作業報告確認画面へ遷移
+        job.report?.let {
+            if (viewModel.good.value?: false) {
+                it.evaluation = "good"
+            }else if (viewModel.bad.value?: false) {
+                it.evaluation = "bad"
+            }else {
+                it.evaluation = null
+            }
+            it.comment = viewModel.comment.value
+            //FIXME: 作業報告確認画面へ遷移
+        }
     }
 
 }
@@ -64,6 +76,24 @@ class ReportEvaluationViewModel: ViewModel() {
     val comment: MutableLiveData<String> = MutableLiveData()
     val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
     val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+
+    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(comment) { result.value = isValid()  }
+    }
+
+    private fun isValid(): Boolean {
+        var valid = true
+        if (valid && comment.value?.length?: 0 > 5000) {
+            valid = false
+            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+            commentErrorVisibility.value = View.VISIBLE
+        }else {
+            valid = true
+            commentErrorMsg.value = ""
+            commentErrorVisibility.value = View.GONE
+        }
+        return valid
+    }
 }
 
 interface ReportEvaluationEventHandler {
