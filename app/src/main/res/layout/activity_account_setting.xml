@@ -1,35 +1,373 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presenters.activities.mypage.AccountSettingActivity">
+    xmlns:tools="http://schemas.android.com/tools">
+
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.mypage.AccountSettingViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.AccountSettingViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.mypage.AccountSettingHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.AccountSettingEventHandlers" />
     </data>
 
-    <ScrollView
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@color/white"
+            android:fillViewport="true">
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                style="@style/label_w2"
-                android:textSize="22dp"
-                android:text="口座情報登録・変更"/>
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        style="@style/label_w2"
+                        android:textSize="22dp"
+                        android:text="口座情報登録・変更"/>
+                </LinearLayout>
 
-            <!-- FIXME: 実装 -->
-        </LinearLayout>
-    </ScrollView>
+                <!--銀行名-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="銀行名" />
+                </LinearLayout>
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:hint="例)みずほ"
+                    android:text="@={viewModel.CurrentLastName}"
+                    />
+                <TextView
+                    android:layout_width="320dp"
+                    android:layout_height="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="※入力中に表示される候補から選択してください。"
+                    android:textColor="@color/blackTwo"
+                    android:textSize="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.verificationPasswordErrorMsg}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
+                    />
+
+                <!-- 銀行コード -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="銀行コード" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    <EditText
+                        style="@style/textField"
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:hint="例)1234"
+                        android:inputType="number"
+                        android:text="@={viewModel.CurrentPostalCode}"
+
+                        />
+                </LinearLayout>
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.postalCodeErrorMsg}"
+                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+
+                <!--支店名-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="支店名" />
+                </LinearLayout>
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:hint="例)銀座"
+                    android:text="@={viewModel.CurrentLastName}"
+                    />
+                <TextView
+                    android:layout_width="320dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="※入力中に表示される候補から選択してください。"
+                    android:textColor="@color/blackTwo"
+                    android:textSize="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.verificationPasswordErrorMsg}"
+                    />
+
+                <!-- 支店コード -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="支店コード" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    <EditText
+                        style="@style/textField"
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:hint="例)1234567"
+                        android:inputType="number"
+                        android:text="@={viewModel.CurrentPostalCode}"
+
+                        />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="320dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="※半角数字で入力してください。"
+                    android:textColor="@color/blackTwo"
+                    android:textSize="12dp" />
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.postalCodeErrorMsg}"
+                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+
+                <!-- 口座番号 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="口座番号" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+                    <EditText
+                        style="@style/textField"
+                        android:layout_width="match_parent"
+                        android:layout_height="62dp"
+                        android:hint="例)1234567"
+                        android:inputType="number"
+                        android:text="@={viewModel.CurrentPostalCode}"
+
+                        />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="320dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="※半角数字で入力してください。"
+                    android:textColor="@color/blackTwo"
+                    android:textSize="12dp" />
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.postalCodeErrorMsg}"
+                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+
+                <!-- 口座番号 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="口座番号" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp">
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        style="@style/tertiaryButton"
+                        android:text="普通"
+
+                        />
+                    <Button
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="0dp"
+                        style="@style/tertiaryButton"
+                        android:text="当座"
+
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:layout_marginRight="20dp"
+                    android:weightSum="2">
+                    <Button
+                        android:layout_width="0dp"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginTop="10dp"
+                        style="@style/tertiaryButton"
+                        android:text="貯蓄"
+
+                        />
+                </LinearLayout>
+
+                <!--銀行名-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp">
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="銀行名" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="90dp">
+                    <LinearLayout
+                        android:layout_width="150dp"
+                        android:layout_height="91dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="20dp"
+                            >
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="70dp"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="0dp"
+                                style="@style/textField"
+                                android:hint="@string/register_last_name_hint"
+                                android:text="@={viewModel.CurrentLastName}"
+                                />
+                            <EditText
+                                android:layout_width="match_parent"
+                                android:layout_height="70dp"
+                                android:layout_weight="1"
+                                android:layout_marginLeft="0dp"
+                                style="@style/textField"
+                                android:hint="@string/register_first_name_hint"
+                                android:text="@={viewModel.CurrentFirstName}"
+                                />
+                        </LinearLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <TextView
+                    android:layout_width="320dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:text="※全角カタカナで入力してください。"
+                    android:textColor="@color/blackTwo"
+                    android:textSize="12dp" />
+
+                <!--登録ボタン-->
+                <Button
+                    android:id="@+id/change_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="40dp"
+                    style="@style/primaryButton"
+                    android:text="@string/registration"
+
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp" />
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

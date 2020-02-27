@@ -170,7 +170,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="30dp"
+                    >
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -179,35 +180,33 @@
                         android:drawablePadding="10dp"
                         android:text="氏名 （姓・名）" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="70dp">
-                    <LinearLayout
-                        android:layout_width="150dp"
-                        android:layout_height="71dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    >
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
-                        <EditText
-                            style="@style/textField"
-                            android:layout_width="match_parent"
-                            android:layout_height="62dp"
-                            android:hint="@string/register_last_name_hint"
-                            android:text="@={viewModel.CurrentLastName}"
-                            />
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="150dp"
-                        android:layout_height="72dp"
-                        android:layout_weight="1">
-                        <EditText
-                            style="@style/textField"
-                            android:layout_height="62dp"
-                            android:hint="@string/register_first_name_hint"
-                            android:text="@={viewModel.CurrentFirstName}"
-                            />
-                    </LinearLayout>
+                        android:layout_marginLeft="0dp"
+                        style="@style/textField"
+                        android:hint="@string/register_last_name_hint"
+                        android:text="@={viewModel.CurrentLastName}"
+                        />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="0dp"
+                        style="@style/textField"
+                        android:hint="@string/register_first_name_hint"
+                        android:text="@={viewModel.CurrentFirstName}"
+                        />
                 </LinearLayout>
+
 
                 <!--生年月日-->
                 <LinearLayout
@@ -261,28 +260,28 @@
                         android:layout_width="wrap_content"
                         android:orientation="horizontal"
                         android:id="@+id/GenderGroup">
-                            <RadioButton
-                                android:id="@+id/male_button"
-                                android:layout_width="140dp"
-                                android:layout_height="70dp"
-                                android:layout_marginTop="10dp"
-                                android:paddingLeft="10dp"
-                                style="@style/buttonWithCheckBox"
-                                android:text="@string/male"
-                                android:onClick="@{handlers::onClickMale}"
-                                >
-                            </RadioButton>
-                            <RadioButton
-                                android:id="@+id/female_button"
-                                android:layout_width="140dp"
-                                android:layout_height="70dp"
-                                android:layout_marginTop="10dp"
-                                android:paddingLeft="10dp"
-                                style="@style/buttonWithCheckBox"
-                                android:text="@string/female"
-                                android:onClick="@{handlers::onClickFemale}"
-                                >
-                            </RadioButton>
+                        <RadioButton
+                            android:id="@+id/male_button"
+                            android:layout_width="140dp"
+                            android:layout_height="70dp"
+                            android:layout_marginTop="10dp"
+                            android:paddingLeft="10dp"
+                            style="@style/buttonWithCheckBox"
+                            android:text="@string/male"
+                            android:onClick="@{handlers::onClickMale}"
+                            >
+                        </RadioButton>
+                        <RadioButton
+                            android:id="@+id/female_button"
+                            android:layout_width="140dp"
+                            android:layout_height="70dp"
+                            android:layout_marginTop="10dp"
+                            android:paddingLeft="10dp"
+                            style="@style/buttonWithCheckBox"
+                            android:text="@string/female"
+                            android:onClick="@{handlers::onClickFemale}"
+                            >
+                        </RadioButton>
                     </RadioGroup>
                 </LinearLayout>
 

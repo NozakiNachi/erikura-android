@@ -40,7 +40,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {
-            val intent = Intent(this, ConfigurationActivity::class.java)
+            val intent = Intent(this, AccountSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {
