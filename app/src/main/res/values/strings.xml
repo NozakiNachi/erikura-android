@@ -149,6 +149,11 @@
     <string name="report_evaluation_note">今回の仕事はいかがでしたか？</string>
     <string name="report_evaluation_memo">※頂いたフィードバックは、今後のサービス向上に役立てられます</string>
 
+    <!-- 作業報告確認画面 -->
+    <string name="report_confirm_caption">作業報告の確認</string>
+    <string name="report_confirm_note">「完了」すると作業報告が送信されます。</string>
+    <string name="report_confirm_form_list">実施箇所の一覧</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -224,6 +229,10 @@
     <string name="registration">登録</string>
     <string name="remove_photo">写真を削除</string>
     <string name="open_settings">設定アプリを開く</string>
+    <string name="complete">完了</string>
+    <string name="edit_working_time">作業時間を編集</string>
+    <string name="edit_other_form">マニュアル外の報告を編集</string>
+    <string name="edit_evaluation">案件の評価を編集</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
