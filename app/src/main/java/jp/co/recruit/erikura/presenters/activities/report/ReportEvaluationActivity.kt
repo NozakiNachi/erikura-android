@@ -65,6 +65,9 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
             }
             it.comment = viewModel.comment.value
             //FIXME: 作業報告確認画面へ遷移
+            val intent= Intent(this, ReportConfirmActivity::class.java)
+            intent.putExtra("job", job)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 

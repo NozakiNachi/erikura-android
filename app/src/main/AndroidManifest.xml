@@ -22,7 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.report.ReportEvaluationActivity"></activity>
+        <activity android:name=".presenters.activities.report.ReportConfirmActivity"></activity>
+        <activity android:name=".presenters.activities.report.ReportEvaluationActivity" />
         <activity android:name=".presenters.activities.report.ReportOtherFormActivity" />
         <activity android:name=".presenters.activities.report.ReportWorkingTimeActivity" />
         <activity android:name=".presenters.activities.mypage.PaymentInformationActivity" />

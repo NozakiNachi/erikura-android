@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presenters.activities.report.ReportConfirmActivity">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportConfirmViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportConfirmEventHandlers" />
+    </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/white"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/paleGrey"
+                    android:orientation="vertical">
+
+                    <!-- 進行度表示 -->
+                    <!-- FIXME: カスタムViewへの切り出し -->
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="30dp"
+                        android:layout_marginTop="106dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center"
+                            android:layout_marginLeft="25dp"
+                            android:layout_marginRight="25dp"
+                            android:background="@color/black" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:orientation="horizontal">
+
+                            <!--                            <Button-->
+                            <!--                                android:layout_width="30dp"-->
+                            <!--                                android:layout_height="30dp"-->
+                            <!--                                android:background="@drawable/background_progress_circle"-->
+                            <!--                                android:text="1" />-->
+
+                            <Button
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_gravity="center"
+                                android:background="@drawable/background_progress_circle" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="right">
+
+                                <!--                                <Button-->
+                                <!--                                    android:layout_width="30dp"-->
+                                <!--                                    android:layout_height="30dp"-->
+                                <!--                                    android:background="@drawable/background_progress_circle"-->
+                                <!--                                    android:text="2" />-->
+
+                                <Button
+                                    android:layout_width="14dp"
+                                    android:layout_height="14dp"
+                                    android:layout_gravity="center"
+                                    android:background="@drawable/background_progress_circle" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="right">
+
+<!--                                <Button-->
+<!--                                    android:layout_width="30dp"-->
+<!--                                    android:layout_height="30dp"-->
+<!--                                    android:background="@drawable/background_progress_circle"-->
+<!--                                    android:text="3" />-->
+
+                                                                <Button
+                                                                    android:layout_width="14dp"
+                                                                    android:layout_height="14dp"
+                                                                    android:layout_gravity="center"
+                                                                    android:background="@drawable/background_progress_circle" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="right">
+
+                                                                <Button
+                                                                    android:layout_width="30dp"
+                                                                    android:layout_height="30dp"
+                                                                    android:background="@drawable/background_progress_circle"
+                                                                    android:text="4" />
+
+<!--                                <Button-->
+<!--                                    android:layout_width="14dp"-->
+<!--                                    android:layout_height="14dp"-->
+<!--                                    android:layout_gravity="center"-->
+<!--                                    android:background="@drawable/background_progress_circle" />-->
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </FrameLayout>
+
+                    <!-- ラベル -->
+                    <TextView
+                        style="@style/titleLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:text="@string/report_confirm_caption" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:text="@string/report_confirm_note"
+                        android:textColor="@color/black" />
+
+                </LinearLayout>
+
+                <!-- 白い三角 -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_triangle" />
+
+                <!-- 実施箇所の一覧 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:text="@string/report_confirm_form_list" />
+
+                <!-- 実施箇所 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:text="@string/report_form_caption" />
+
+                <!-- 作業時間 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:text="@string/report_working_time_caption" />
+
+                <!-- マニュアル外報告 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:text="@string/report_other_form_caption" />
+
+                <!-- 案件の評価 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="20dp"
+                    android:text="@string/report_evaluation_caption" />
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- 次へボタン -->
+        <Button
+            style="@style/nextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="0dp"
+            android:text="@string/complete"
+            android:onClick="@{handlers::onClickComplete}" />
+
+        <!-- マニュアルボタン -->
+        <Button
+            style="@style/secondaryButton"
+            android:layout_width="110dp"
+            android:layout_height="70dp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginBottom="30dp"
+            android:onClick="@{handlers::onClickManual}"
+            android:text="@string/manual"
+            android:textSize="14dp" />
+    </FrameLayout>
+</layout>
