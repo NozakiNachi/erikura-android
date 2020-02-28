@@ -52,7 +52,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickEditOtherForm(view: View) {
-        // FIXME: マニュアル外報告編集画面へ遷移
+        val intent= Intent(this, ReportOtherFormActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putExtra("fromConfirm", true)
+        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
     }
 
     override fun onClickEditWorkingTime(view: View) {

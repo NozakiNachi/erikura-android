@@ -29,17 +29,27 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
     }
 
     var job = Job()
+    var fromConfirm = false
+    var fromGallery = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_other_form)
 
-        job = intent.getParcelableExtra<Job>("job")
-
         val binding: ActivityReportOtherFormBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_other_form)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        if(!fromGallery) {
+            loadData()
+        }
+        fromGallery = false
     }
 
     override fun onClickManual(view: View) {
@@ -64,11 +74,11 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
     }
 
     override fun onClickRemovePhoto(view: View) {
+        viewModel.otherPhoto = MediaItem()
         val imageView: ImageView = findViewById(R.id.report_other_image)
         imageView.setImageDrawable(null)
         viewModel.addPhotoButtonVisibility.value = View.VISIBLE
         viewModel.removePhotoButtonVisibility.value = View.GONE
-        viewModel.otherPhoto = MediaItem()
     }
 
     override fun onRequestPermissionsResult(
@@ -96,6 +106,25 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "image/*"
         startActivityForResult(intent, 1000 )
+    }
+
+    private fun loadData() {
+        job.report?.let {
+            val item = it.additionalPhotoAsset?: MediaItem()
+            val comment = it.additionalComment
+            if (item.contentUri != null) {
+                viewModel.addPhotoButtonVisibility.value = View.GONE
+                viewModel.removePhotoButtonVisibility.value = View.VISIBLE
+                val imageView: ImageView = findViewById(R.id.report_other_image)
+                item.loadImage(this, imageView)
+                viewModel.otherPhoto = item
+                viewModel.comment.value = comment
+            }else {
+                viewModel.addPhotoButtonVisibility.value = View.VISIBLE
+                viewModel.removePhotoButtonVisibility.value = View.GONE
+                viewModel.otherPhoto = MediaItem()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,18 +167,25 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
             }
         }
 
+        fromGallery = true
+
     }
 
     override fun onClickNext(view: View) {
         job.report?.let {
-            if (viewModel.otherPhoto.contentUri != null) {
-                it.additionalPhotoAsset = viewModel.otherPhoto
-                it.additionalComment = viewModel.comment.value
-            }
+            it.additionalPhotoAsset = viewModel.otherPhoto
+            it.additionalComment = viewModel.comment.value
 
-            val intent= Intent(this, ReportEvaluationActivity::class.java)
-            intent.putExtra("job", job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            if (fromConfirm) {
+                val intent= Intent()
+                intent.putExtra("job", job)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }else {
+                val intent= Intent(this, ReportEvaluationActivity::class.java)
+                intent.putExtra("job", job)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
         }
 
     }
