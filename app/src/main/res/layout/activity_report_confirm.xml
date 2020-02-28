@@ -249,6 +249,17 @@
                     android:textSize="20dp"
                     android:text="@string/report_other_form_caption" />
 
+                <ImageView
+                    android:id="@+id/report_confirm_other_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="305dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/white"
+                    android:visibility="@{viewModel.otherFormImageVisibility}"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

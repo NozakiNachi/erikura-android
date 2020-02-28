@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
@@ -88,6 +90,14 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         job.report?.let {
             val minute = it.workingMinute?: 0
             viewModel.workingTime.value = if(minute == 0){""}else {"${minute}分"}
+            val item = it.additionalPhotoAsset?: MediaItem()
+            if (item.contentUri != null) {
+                val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
+                item.loadImage(this, imageView)
+                viewModel.otherFormImageVisibility.value = View.VISIBLE
+            }else {
+                viewModel.otherFormImageVisibility.value = View.GONE
+            }
             val additionalComment = it.additionalComment?: ""
             viewModel.otherFormComment.value = additionalComment
             val comment = it.comment?: ""
@@ -98,6 +108,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
 
 class ReportConfirmViewModel: ViewModel() {
     val workingTime: MutableLiveData<String> = MutableLiveData()
+    val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 }
