@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
@@ -31,6 +32,11 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+        loadData()
     }
 
     override fun onClickComplete(view: View) {
@@ -63,10 +69,23 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
+
+    private fun loadData() {
+        job.report?.let {
+            val minute = it.workingMinute?: 0
+            viewModel.workingTime.value = if(minute == 0){""}else {"${minute}分"}
+            val additionalComment = it.additionalComment?: ""
+            viewModel.otherFormComment.value = additionalComment
+            val comment = it.comment?: ""
+            viewModel.evaluationComment.value = comment
+        }
+    }
 }
 
 class ReportConfirmViewModel: ViewModel() {
-
+    val workingTime: MutableLiveData<String> = MutableLiveData()
+    val otherFormComment: MutableLiveData<String> = MutableLiveData()
+    val evaluationComment: MutableLiveData<String> = MutableLiveData()
 }
 
 interface ReportConfirmEventHandlers {

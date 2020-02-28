@@ -230,6 +230,9 @@
     <string name="remove_photo">写真を削除</string>
     <string name="open_settings">設定アプリを開く</string>
     <string name="complete">完了</string>
+    <string name="edit_working_time">作業時間を編集</string>
+    <string name="edit_other_form">マニュアル外の報告を編集</string>
+    <string name="edit_evaluation">案件の評価を編集</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
