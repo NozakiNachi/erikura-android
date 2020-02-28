@@ -103,6 +103,14 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             }
             val additionalComment = it.additionalComment?: ""
             viewModel.otherFormComment.value = additionalComment
+            val evaluation = it.evaluation?: ""
+            when(evaluation) {
+                "good" ->
+                    viewModel.evaluate.value = true
+                "bad" ->
+                    viewModel.evaluate.value = false
+            }
+            viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty()) {View.GONE} else {View.VISIBLE}
             val comment = it.comment?: ""
             viewModel.evaluationComment.value = comment
         }
@@ -113,6 +121,8 @@ class ReportConfirmViewModel: ViewModel() {
     val workingTime: MutableLiveData<String> = MutableLiveData()
     val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
+    val evaluate: MutableLiveData<Boolean> = MutableLiveData()
+    val evaluateButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 }
 
