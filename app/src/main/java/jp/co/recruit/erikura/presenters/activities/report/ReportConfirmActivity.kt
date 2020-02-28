@@ -1,11 +1,12 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,21 +22,18 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         ViewModelProvider(this).get(ReportConfirmViewModel::class.java)
     }
     var job = Job()
+    private val EDIT_DATA: Int = 1001
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_confirm)
 
-        job = intent.getParcelableExtra<Job>("job")
-
         val binding: ActivityReportConfirmBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_confirm)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-    }
 
-    override fun onStart() {
-        super.onStart()
+        job = intent.getParcelableExtra<Job>("job")
         loadData()
     }
 
@@ -56,7 +54,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickEditWorkingTime(view: View) {
-        // FIXME: 作業時間編集画面へ遷移
+        val intent= Intent(this, ReportWorkingTimeActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putExtra("fromConfirm", true)
+        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
     }
 
     override fun onClickManual(view: View) {
@@ -67,6 +68,19 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 data = Uri.parse(termsOfServiceURLString)
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == EDIT_DATA) {
+            if (resultCode == Activity.RESULT_OK) {
+                data?.let {
+                    job = data.getParcelableExtra<Job>("job")
+                    loadData()
+                }
+            }
         }
     }
 

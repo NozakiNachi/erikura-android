@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
@@ -23,19 +24,24 @@ class ReportWorkingTimeActivity : AppCompatActivity(), ReportWorkingTimeEventHan
     }
 
     var job = Job()
+    var fromConfirm = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_working_time)
 
-        job = intent.getParcelableExtra<Job>("job")
-
         val binding: ActivityReportWorkingTimeBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_working_time)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+    }
 
+    override fun onStart() {
+        super.onStart()
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
         createTimeItems()
+        loadData()
     }
 
     override fun onClickManual(view: View) {
@@ -52,9 +58,16 @@ class ReportWorkingTimeActivity : AppCompatActivity(), ReportWorkingTimeEventHan
     override fun onClickNext(view: View) {
         job.report?.let {
             it.workingMinute = viewModel.timeSelectedItem
-            val intent= Intent(this, ReportOtherFormActivity::class.java)
-            intent.putExtra("job", job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            if (fromConfirm) {
+                val intent= Intent()
+                intent.putExtra("job", job)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }else {
+                val intent= Intent(this, ReportOtherFormActivity::class.java)
+                intent.putExtra("job", job)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
         }
     }
 
@@ -70,10 +83,17 @@ class ReportWorkingTimeActivity : AppCompatActivity(), ReportWorkingTimeEventHan
         }
         viewModel.timeItems.value = times
     }
+
+    private fun loadData() {
+        job.report?.let {
+            viewModel.timeId.value = it.workingMinute?: 0
+        }
+    }
 }
 
 class ReportWorkingTimeViewModel: ViewModel() {
     val timeItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
+    val timeId: MutableLiveData<Int> = MutableLiveData()
     var timeSelectedItem: Int = 0
 }
 
