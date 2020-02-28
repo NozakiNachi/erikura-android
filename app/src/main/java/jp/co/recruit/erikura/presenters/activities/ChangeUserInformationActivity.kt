@@ -77,22 +77,20 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         // 変更するユーザーの現在の登録値を取得
         Api(this).user(){
             user = it
-            viewModel.CurrentEmail.value = user.email
-            viewModel.CurrentLastName.value = user.lastName
-            viewModel.CurrentFirstName.value = user.firstName
-            viewModel.CurrentdateOfBirth.value = user.dateOfBirth
-            viewModel.CurrentGender.value = user.gender?.value
-            viewModel.CurrentPostalCode.value = user.postcode
-//            viewModel.CurrentPrefectureId.value = user.prefecture
-            viewModel.CurrentCity.value = user.city
-            viewModel.CurrentStreet.value = user.street
-            viewModel.CurrentPhoneNumber.value = user.phoneNumber
- //           viewModel.CurrentJobStatusId.value = user.jobStatus
+            viewModel.email.value = user.email
+            viewModel.lastName.value = user.lastName
+            viewModel.firstName.value = user.firstName
+            viewModel.dateOfBirth.value = user.dateOfBirth
+            viewModel.gender.value = user.gender?.value
+            viewModel.postalCode.value = user.postcode
+            viewModel.city.value = user.city
+            viewModel.street.value = user.street
+            viewModel.phone.value = user.phoneNumber
 
             // 都道府県のプルダウン初期表示
-            viewModel.CurrentPrefectureId.value = getPrefectureId(user.prefecture ?: "")
+            viewModel.prefectureId.value = getPrefectureId(user.prefecture ?: "")
             // 職業のプルダウン初期表示
-            viewModel.CurrentJobStatusId.value = getJobStatusId(user.jobStatus ?: "")
+            viewModel.jobStatusId.value = getJobStatusId(user.jobStatus ?: "")
 
             // やりたい仕事のチェックボタン初期表示
             val wishWorkList: MutableList<String> = mutableListOf()
@@ -120,7 +118,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             }
 
             // 性別のラジオボタン初期表示
-            if(viewModel.CurrentGender.value == "male"){
+            if(viewModel.gender.value == "male"){
                 binding.maleButton.isChecked = true
             }else{
                 binding.femaleButton.isChecked = true
@@ -189,45 +187,17 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         // パスワード
         user.password = viewModel.password.value
         // 氏名
-        if(viewModel.lastName.value == null){
-            user.lastName = viewModel.CurrentLastName.value
-        }else{
-            user.lastName = viewModel.lastName.value
-        }
-        if(viewModel.firstName.value == null){
-            user.firstName = viewModel.CurrentFirstName.value
-        }else{
-            user.firstName = viewModel.firstName.value
-        }
+        user.lastName = viewModel.lastName.value
+        user.firstName = viewModel.firstName.value
         // 生年月日
-        if(viewModel.dateOfBirth.value == null){
-            user.dateOfBirth = viewModel.CurrentdateOfBirth.value
-        }else{
-            user.dateOfBirth = viewModel.dateOfBirth.value
-        }
+        user.dateOfBirth = viewModel.dateOfBirth.value
         // 所在地
-        if(viewModel.postalCode.value == null){
-            user.postcode = viewModel.CurrentPostalCode.value
-        }else{
-            user.postcode = viewModel.postalCode.value
-        }
-        user.prefecture = prefectureList.getString(viewModel.CurrentPrefectureId.value ?: 0)
-        if(viewModel.city.value == null){
-            user.city = viewModel.CurrentCity.value
-        }else{
-            user.city = viewModel.city.value
-        }
-        if(viewModel.street.value == null){
-            user.street = viewModel.CurrentStreet.value
-        }else{
-            user.street = viewModel.street.value
-        }
+        user.postcode = viewModel.postalCode.value
+        user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
+        user.city = viewModel.city.value
+        user.street = viewModel.street.value
         // 電話番号
-        if(viewModel.phone.value == null){
-            user.phoneNumber = viewModel.CurrentPhoneNumber.value
-        }else{
-            user.phoneNumber = viewModel.phone.value
-        }
+        user.phoneNumber = viewModel.phone.value
         // 職業
         user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
         // やりたいこと
@@ -253,20 +223,8 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
 }
 
 class ChangeUserInformationViewModel: ViewModel() {
-    // 現在の登録値
-    val CurrentEmail: MutableLiveData<String> = MutableLiveData()
-    val CurrentLastName: MutableLiveData<String> = MutableLiveData()
-    val CurrentFirstName: MutableLiveData<String> = MutableLiveData()
-    val CurrentdateOfBirth: MutableLiveData<String> = MutableLiveData()
-    val CurrentGender: MutableLiveData<String> = MutableLiveData()
-    val CurrentPostalCode: MutableLiveData<String> = MutableLiveData()
-    val CurrentPrefectureId: MutableLiveData<Int> = MutableLiveData()
-    val CurrentCity: MutableLiveData<String> = MutableLiveData()
-    val CurrentStreet: MutableLiveData<String> = MutableLiveData()
-    val CurrentPhoneNumber: MutableLiveData<String> = MutableLiveData()
-    val CurrentJobStatusId: MutableLiveData<Int> = MutableLiveData()
-    val CurrentWishWorks: MutableLiveData<String> = MutableLiveData()
-
+    // メールアドレス
+    val email: MutableLiveData<String> = MutableLiveData()
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
     val verificationPassword: MutableLiveData<String> = MutableLiveData()
@@ -284,7 +242,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     // 生年月日
     val dateOfBirth: MutableLiveData<String> = MutableLiveData()
     // 性別
-    val gender: MutableLiveData<Boolean> = MutableLiveData()
+    val gender: MutableLiveData<String> = MutableLiveData()
     // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeErrorMsg: MutableLiveData<String> = MutableLiveData()
@@ -310,7 +268,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     val interestedCar: MutableLiveData<Boolean> = MutableLiveData()
 
     // 登録ボタン押下
-    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+    val isChangeButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(lastName) { result.value = isValid() }
         result.addSource(firstName) { result.value = isValid() }
         result.addSource(dateOfBirth) { result.value = isValid() }

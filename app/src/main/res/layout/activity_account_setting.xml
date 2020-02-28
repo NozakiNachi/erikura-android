@@ -61,7 +61,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:hint="例)みずほ"
-                    android:text="@={viewModel.CurrentLastName}"
+                    android:text="@={viewModel.bankName}"
                     />
                 <TextView
                     android:layout_width="320dp"
@@ -73,9 +73,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
+
                     style="@style/errorField"
-                    android:text="@={viewModel.verificationPasswordErrorMsg}"
+                    android:text="@={viewModel.verificationBankNameErrorMsg}"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -106,7 +106,7 @@
                         android:layout_height="62dp"
                         android:hint="例)1234"
                         android:inputType="number"
-                        android:text="@={viewModel.CurrentPostalCode}"
+                        android:text="@={viewModel.bankNumber}"
 
                         />
                 </LinearLayout>
@@ -115,8 +115,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.postalCodeErrorMsg}"
-                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+                    android:text="@={viewModel.verificationBankNumberErrorVisibility}"
+                    />
 
                 <!--支店名-->
                 <LinearLayout
@@ -136,7 +136,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:hint="例)銀座"
-                    android:text="@={viewModel.CurrentLastName}"
+                    android:text="@={viewModel.branchOfficeName}"
                     />
                 <TextView
                     android:layout_width="320dp"
@@ -153,9 +153,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
+
                     style="@style/errorField"
-                    android:text="@={viewModel.verificationPasswordErrorMsg}"
+                    android:text="@={viewModel.verificationBranchOfficeNameErrorMsg}"
                     />
 
                 <!-- 支店コード -->
@@ -181,7 +181,7 @@
                         android:layout_height="62dp"
                         android:hint="例)1234567"
                         android:inputType="number"
-                        android:text="@={viewModel.CurrentPostalCode}"
+                        android:text="@={viewModel.branchOfficeNumber}"
 
                         />
                 </LinearLayout>
@@ -197,8 +197,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.postalCodeErrorMsg}"
-                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+                    android:text="@={viewModel.verificationBranchOfficeNumberErrorMsg}"
+                    />
 
                 <!-- 口座番号 -->
                 <LinearLayout
@@ -223,7 +223,7 @@
                         android:layout_height="62dp"
                         android:hint="例)1234567"
                         android:inputType="number"
-                        android:text="@={viewModel.CurrentPostalCode}"
+                        android:text="@={viewModel.accountNumber}"
 
                         />
                 </LinearLayout>
@@ -239,8 +239,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.postalCodeErrorMsg}"
-                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+                    android:text="@={viewModel.verificationAccountNumberErrorMsg}"
+                    />
 
                 <!-- 口座番号 -->
                 <LinearLayout
@@ -255,46 +255,53 @@
                         android:drawablePadding="10dp"
                         android:text="口座番号" />
                 </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <RadioGroup
                     android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginTop="10dp">
-                    <Button
+                    android:id="@+id/AccountGroup">
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="70dp"
-                        android:layout_weight="1"
-                        android:layout_marginRight="10dp"
-                        style="@style/tertiaryButton"
-                        android:text="普通"
-
-                        />
-                    <Button
+                        android:layout_height="90dp">
+                        <RadioButton
+                            android:id="@+id/normal_button"
+                            android:layout_width="140dp"
+                            android:layout_height="70dp"
+                            android:layout_marginTop="10dp"
+                            android:paddingLeft="10dp"
+                            style="@style/buttonWithCheckBox"
+                            android:text="普通"
+                            android:onClick="@{handlers::onClickNormal}"
+                            >
+                        </RadioButton>
+                        <RadioButton
+                            android:id="@+id/current_button"
+                            android:layout_width="140dp"
+                            android:layout_height="70dp"
+                            android:layout_marginTop="10dp"
+                            android:paddingLeft="10dp"
+                            style="@style/buttonWithCheckBox"
+                            android:text="当座"
+                            android:onClick="@{handlers::onClickCurrent}"
+                            >
+                        </RadioButton>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="70dp"
-                        android:layout_weight="1"
-                        android:layout_marginLeft="0dp"
-                        style="@style/tertiaryButton"
-                        android:text="当座"
-
-                        />
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="horizontal"
-                    android:layout_marginRight="20dp"
-                    android:weightSum="2">
-                    <Button
-                        android:layout_width="0dp"
-                        android:layout_height="70dp"
-                        android:layout_weight="1"
-                        android:layout_marginTop="10dp"
-                        style="@style/tertiaryButton"
-                        android:text="貯蓄"
-
-                        />
-                </LinearLayout>
+                        android:layout_height="90dp">
+                        <RadioButton
+                            android:id="@+id/savings_button"
+                            android:layout_width="140dp"
+                            android:layout_height="70dp"
+                            android:layout_marginTop="10dp"
+                            android:paddingLeft="10dp"
+                            style="@style/buttonWithCheckBox"
+                            android:text="貯蓄"
+                            android:onClick="@{handlers::onClickSavings}"
+                            >
+                        </RadioButton>
+                    </LinearLayout>
+                </RadioGroup>
 
                 <!--銀行名-->
                 <LinearLayout
@@ -331,7 +338,7 @@
                                 android:layout_marginLeft="0dp"
                                 style="@style/textField"
                                 android:hint="@string/register_last_name_hint"
-                                android:text="@={viewModel.CurrentLastName}"
+                                android:text="@={viewModel.accountHolderFamily}"
                                 />
                             <EditText
                                 android:layout_width="match_parent"
@@ -340,7 +347,7 @@
                                 android:layout_marginLeft="0dp"
                                 style="@style/textField"
                                 android:hint="@string/register_first_name_hint"
-                                android:text="@={viewModel.CurrentFirstName}"
+                                android:text="@={viewModel.accountHolder}"
                                 />
                         </LinearLayout>
                     </LinearLayout>

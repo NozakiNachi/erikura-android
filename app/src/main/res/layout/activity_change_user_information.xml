@@ -71,7 +71,7 @@
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@={viewModel.CurrentEmail}" />
+                        android:text="@={viewModel.email}" />
                 </LinearLayout>
 
                 <!--パスワード-->
@@ -194,7 +194,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/textField"
                         android:hint="@string/register_last_name_hint"
-                        android:text="@={viewModel.CurrentLastName}"
+                        android:text="@={viewModel.lastName}"
                         />
                     <EditText
                         android:layout_width="match_parent"
@@ -203,7 +203,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/textField"
                         android:hint="@string/register_first_name_hint"
-                        android:text="@={viewModel.CurrentFirstName}"
+                        android:text="@={viewModel.firstName}"
                         />
                 </LinearLayout>
 
@@ -228,7 +228,7 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:onClick="@{handlers::onClickEditView}"
-                    android:text="@={viewModel.CurrentdateOfBirth}"
+                    android:text="@={viewModel.dateOfBirth}"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -308,7 +308,7 @@
                         android:layout_height="62dp"
                         android:hint="@string/register_postal_code_hint"
                         android:inputType="number"
-                        android:text="@={viewModel.CurrentPostalCode}"
+                        android:text="@={viewModel.postalCode}"
                         android:onFocusChanged="@{handlers::onFocusChanged}"
                         />
                 </LinearLayout>
@@ -349,7 +349,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/prefecture_list"
                     android:spinnerMode="dialog"
-                    android:selectedItemPosition="@={viewModel.CurrentPrefectureId}"
+                    android:selectedItemPosition="@={viewModel.prefectureId}"
                     />
 
                 <!-- ご住所 -->
@@ -371,7 +371,7 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_city_hint"
-                    android:text="@={viewModel.CurrentCity}"
+                    android:text="@={viewModel.city}"
                     />
                 <TextView
                     style="@style/errorField"
@@ -403,7 +403,7 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_street_hint"
-                    android:text="@={viewModel.CurrentStreet}"
+                    android:text="@={viewModel.street}"
                     />
                 <TextView
                     style="@style/errorField"
@@ -434,7 +434,7 @@
                     android:layout_height="62dp"
                     style="@style/textField"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.CurrentPhoneNumber}"
+                    android:text="@={viewModel.phone}"
                     android:hint="@string/register_phone_hint"
                     android:inputType="number"/>
 
@@ -476,7 +476,7 @@
                     android:layout_alignParentTop="true"
                     android:entries="@array/job_status_list"
                     android:spinnerMode="dialog"
-                    android:selectedItemPosition="@={viewModel.CurrentJobStatusId}"
+                    android:selectedItemPosition="@={viewModel.jobStatusId}"
                     />
 
 
@@ -561,6 +561,7 @@
                     style="@style/primaryButton"
                     android:text="@string/registration"
                     android:onClick="@{handlers::onClickRegister}"
+                    android:enabled="@{viewModel.isChangeButtonEnabled()}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"

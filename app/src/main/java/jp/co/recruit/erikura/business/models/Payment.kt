@@ -1,14 +1,14 @@
 package jp.co.recruit.erikura.business.models
 
 data class Payment(
-    var bankName: String?,
-    var bankNumber: String?,
-    var branchOfficeName: String?,
-    var branchOfficeNumber: String?,
-    var accountType: String?,
-    var accountNumber: String?,
-    var accountHolderFamily: String?,
-    var accountHolder: String?
+    var bankName: String? = null,
+    var bankNumber: String? = null,
+    var branchOfficeName: String? = null,
+    var branchOfficeNumber: String? = null,
+    var accountType: String? = null,
+    var accountNumber: String? = null,
+    var accountHolderFamily: String? = null,
+    var accountHolder: String? = null
 ) {
     // validate?
 }

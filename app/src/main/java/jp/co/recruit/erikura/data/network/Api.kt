@@ -184,6 +184,15 @@ class Api(var context: Context) {
         }
     }
 
+    fun payment(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (payment: Payment) -> Unit) {
+        executeObservable(
+            erikuraApiService.payment(),
+            onError = onError
+        ) { payment ->
+            onComplete(payment)
+        }
+    }
+
     fun reloadJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (job: Job) -> Unit) {
         executeObservable(
             erikuraApiService.reloadJob(job.id),
