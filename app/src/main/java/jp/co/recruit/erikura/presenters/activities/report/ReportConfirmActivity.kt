@@ -48,7 +48,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickEditEvaluation(view: View) {
-        // FIXME: 評価編集画面へ遷移
+        val intent= Intent(this, ReportEvaluationActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putExtra("fromConfirm", true)
+        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
     }
 
     override fun onClickEditOtherForm(view: View) {
