@@ -249,6 +249,17 @@
                     android:textSize="20dp"
                     android:text="@string/report_other_form_caption" />
 
+                <ImageView
+                    android:id="@+id/report_confirm_other_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="305dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/white"
+                    android:visibility="@{viewModel.otherFormImageVisibility}"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -310,6 +321,16 @@
                     android:textSize="20dp"
                     android:text="@string/report_evaluation_caption" />
 
+                <!-- 評価ボタン -->
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center"
+                    android:enabled="@{viewModel.evaluate}"
+                    android:background="@drawable/evaluate_button"
+                    android:visibility="@{viewModel.evaluateButtonVisibility}" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -359,6 +380,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="110dp"
                     android:onClick="@{handlers::onClickEditEvaluation}"
                     android:text="@string/edit_evaluation" />
             </LinearLayout>

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
@@ -22,17 +23,23 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
         ViewModelProvider(this).get(ReportEvaluationViewModel::class.java)
     }
     var job = Job()
+    var fromConfirm = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_evaluation)
 
-        job = intent.getParcelableExtra<Job>("job")
-
         val binding: ActivityReportEvaluationBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_evaluation)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        loadData()
     }
 
     override fun onClickGood(view: View) {
@@ -64,10 +71,37 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
                 it.evaluation = null
             }
             it.comment = viewModel.comment.value
-            //FIXME: 作業報告確認画面へ遷移
-            val intent= Intent(this, ReportConfirmActivity::class.java)
-            intent.putExtra("job", job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            if (fromConfirm) {
+                val intent= Intent()
+                intent.putExtra("job", job)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }else {
+                val intent= Intent(this, ReportConfirmActivity::class.java)
+                intent.putExtra("job", job)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+        }
+    }
+
+    private fun loadData() {
+        job.report?.let {
+            val evaluation = it.evaluation
+            when(evaluation) {
+                "good" -> {
+                    viewModel.good.value = true
+                    viewModel.bad.value = false
+                }
+                "bad" -> {
+                    viewModel.good.value = false
+                    viewModel.bad.value = true
+                }
+                else -> {
+                    viewModel.good.value = false
+                    viewModel.bad.value = false
+                }
+            }
+            viewModel.comment.value = it.comment
         }
     }
 
