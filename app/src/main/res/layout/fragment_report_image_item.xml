@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://app.erikura.net/">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.report.ReportImageItemViewModel" />
+    </data>
+    <ImageView
+        android:id="@+id/report_image_item"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:scaleType="centerCrop"
+        android:background="@color/white"/>
+</layout>

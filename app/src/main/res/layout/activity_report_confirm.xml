@@ -169,12 +169,22 @@
                     android:textSize="20dp"
                     android:text="@string/report_confirm_form_list" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/report_confirm_report_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="3"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    />
+
                 <!-- 実施箇所 -->
                 <TextView
                     style="@style/titleLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     android:textSize="20dp"
                     android:text="@string/report_form_caption" />
 
