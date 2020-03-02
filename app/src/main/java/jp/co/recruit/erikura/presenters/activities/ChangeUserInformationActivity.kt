@@ -212,15 +212,11 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
 
         // 会員情報変更Apiの呼び出し
         Api(this).updateUser(user) {
-            // FIXME: ダイアログの表示
-            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
-            binding.lifecycleOwner = this
-
-            val dialog = AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
+            val intent = Intent(this, ConfigurationActivity::class.java)
+            intent.putExtra("onClickChangeUserInformationFragment", true)
+            startActivity(intent)
+            finish()
         }
-        finish()
     }
 }
 

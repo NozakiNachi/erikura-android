@@ -47,12 +47,12 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         binding.viewModel = viewModel
 
 //        // エラーメッセージ
-//        viewModel.postalCodeErrorVisibility.value = 8
-//        viewModel.cityErrorVisibility.value = 8
+//        viewModel.bankNameErrorVisibility.value = 8
+//        viewModel.bankNumberErrorVisibility.value = 8
 //        viewModel.streetErrorVisibility.value = 8
 //        viewModel.lastNameErrorVisibility.value = 8
 //        viewModel.firstNameErrorVisibility.value = 8
-//
+
         // 変更するユーザーの現在の登録値を取得
         Api(this).payment() {
             payment = it
@@ -120,72 +120,69 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
         // 口座情報登録Apiの呼び出し
         Api(this).updatePayment(payment) {
-//            // FIXME: ダイアログの表示時間を調整
-                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
-                binding.lifecycleOwner = this
+            //            // FIXME: ダイアログの表示時間を調整
+            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
+            binding.lifecycleOwner = this
 
-                val dialog = AlertDialog.Builder(this)
-                    .setView(binding.root)
-                    .show()
+            val dialog = AlertDialog.Builder(this)
+                .setView(binding.root)
+                .show()
             finish()
         }
     }
 }
 
-    class AccountSettingViewModel: ViewModel() {
-        // 銀行名
-        val bankName: MutableLiveData<String> = MutableLiveData()
-        val verificationBankNameErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationBankNameErrorMsg: MutableLiveData<String> = MutableLiveData()
+class AccountSettingViewModel: ViewModel() {
+    // 銀行名
+    val bankName: MutableLiveData<String> = MutableLiveData()
+    val bankNameErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val bankNameErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 銀行コード
-        val bankNumber: MutableLiveData<String> = MutableLiveData()
-        val verificationBankNumberErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationBankNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
+    // 銀行コード
+    val bankNumber: MutableLiveData<String> = MutableLiveData()
+    val bankNumberErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val bankNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 支店名
-        val branchOfficeName: MutableLiveData<String> = MutableLiveData()
-        val verificationBranchOfficeNameErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationBranchOfficeNameErrorMsg: MutableLiveData<String> = MutableLiveData()
+    // 支店名
+    val branchOfficeName: MutableLiveData<String> = MutableLiveData()
+    val branchOfficeNameErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val branchOfficeNameErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 支店コード
-        val branchOfficeNumber: MutableLiveData<String> = MutableLiveData()
-        val verificationBranchOfficeNumberErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationBranchOfficeNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
+    // 支店コード
+    val branchOfficeNumber: MutableLiveData<String> = MutableLiveData()
+    val branchOfficeNumberErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val branchOfficeNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 口座番号
-        val accountNumber: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountNumberErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
+    // 口座番号
+    val accountNumber: MutableLiveData<String> = MutableLiveData()
+    val accountNumberErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val accountNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 口座タイプ
-        val accountType: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountTypeErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountTypeErrorMsg: MutableLiveData<String> = MutableLiveData()
+    // 口座タイプ
+    val accountType: MutableLiveData<String> = MutableLiveData()
+    val accountTypeErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val accountTypeErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 銀行名
-        val accountHolderFamily: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountHolderFamilyErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountHolderFamilyErrorMsg: MutableLiveData<String> = MutableLiveData()
-        val accountHolder: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountHolderErrorVisibility: MutableLiveData<String> = MutableLiveData()
-        val verificationAccountHolderErrorMsg: MutableLiveData<String> = MutableLiveData()
+    // 銀行名
+    val accountHolderFamily: MutableLiveData<String> = MutableLiveData()
+    val accountHolderFamilyErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val accountHolderFamilyErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val accountHolder: MutableLiveData<String> = MutableLiveData()
+    val accountHolderErrorVisibility: MutableLiveData<String> = MutableLiveData()
+    val accountHolderErrorMsg: MutableLiveData<String> = MutableLiveData()
 
-        // 登録ボタン押下
-        val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-            //        result.addSource(lastName) { result.value = isValid() }
-//        result.addSource(firstName) { result.value = isValid() }
-//        result.addSource(dateOfBirth) { result.value = isValid() }
-//        result.addSource(gender) { result.value = isValid() }
-//        result.addSource(phone) { result.value = isValid() }
-//        result.addSource(jobStatusId) { result.value = isValid() }
-//        // result.addSource(WishWorks) { result.value = isValid() }
-//        result.addSource(postalCode) { result.value = isValid() }
-//        result.addSource(prefectureId) { result.value = isValid() }
-//        result.addSource(city) { result.value = isValid() }
-//        result.addSource(street) { result.value = isValid() }
-        }
-
+//    // 登録ボタン押下
+//    val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+//        result.addSource(bankName) { result.value = isValid() }
+//        result.addSource(bankNumber) { result.value = isValid() }
+//        result.addSource(branchOfficeName) { result.value = isValid() }
+//        result.addSource(branchOfficeNumber) { result.value = isValid() }
+//        result.addSource(accountNumber) { result.value = isValid() }
+//        result.addSource(accountType) { result.value = isValid() }
+//        result.addSource(accountHolder) { result.value = isValid() }
+//        result.addSource(accountHolderFamily) { result.value = isValid() }
+//    }
+//
 //    // バリデーションルール
 //    private fun isValid(): Boolean {
 //        var valid = true
@@ -194,53 +191,58 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 //        valid = isValidCity() && valid
 //        valid = isValidStreet() && valid
 //        valid = isValidFirstName() && valid
-//        valid = isValidLastName() && valid
+//        valid = isValidBankName() && valid
 //        valid = isValidPassword() && valid
-//        valid = isValidPhoneNumber() && valid
+//        valid = isValidBankNumber() && valid
+//
+//        return valid
+//    }
+//
+//    private fun isValidBankName(): Boolean {
+//        var valid = true
+//
+//        if (valid && bankName.value?.isBlank() ?:true) {
+//            valid = false
+//            bankNameErrorMsg.value = ""
+//            bankNameErrorVisibility.value = 8
+//        } else if (valid && !(bankName.value?.length ?: 0 <= 30)) {
+//            valid = false
+//            bankNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
+//            bankNameErrorVisibility.value = 0
+//        } else {
+//            valid = true
+//            bankNameErrorMsg.value = ""
+//            bankNameErrorVisibility.value = 8
+//        }
+//
+//        return valid
+//    }
+//
+//    private fun isValidBankNumber(): Boolean {
+//        var valid = true
+//        val pattern = Pattern.compile("^([0-9])")
+//
+//        if (valid && bankName.value?.isBlank() ?:true) {
+//            valid = false
+//            bankNameErrorMsg.value = ""
+//            bankNameErrorVisibility.value = 8
+//        }else if(valid && !(pattern.matcher(bankName.value).find())) {
+//            valid = false
+//            bankNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
+//            bankNameErrorVisibility.value = 0
+//        }else if(valid && !(bankName.value?.length ?: 0 == 10 || bankName.value?.length ?: 0 == 11)) {
+//            valid = false
+//            bankNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
+//            bankNameErrorVisibility.value = 0
+//        } else {
+//            valid = true
+//            bankNameErrorMsg.value = ""
+//            bankNameErrorVisibility.value = 8
+//        }
 //
 //        return valid
 //    }
 
-//    private fun isValidLastName(): Boolean {
-//        var valid = true
-//
-//        if (valid && lastName.value?.isBlank() ?:true) {
-//            valid = false
-//            lastNameErrorMsg.value = ""
-//            lastNameErrorVisibility.value = 8
-//        } else if (valid && !(lastName.value?.length ?: 0 <= 30)) {
-//            valid = false
-//            lastNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
-//            lastNameErrorVisibility.value = 0
-//        } else {
-//            valid = true
-//            lastNameErrorMsg.value = ""
-//            lastNameErrorVisibility.value = 8
-//        }
-//
-//        return valid
-//    }
-//
-//    private fun isValidFirstName(): Boolean {
-//        var valid = true
-//
-//        if (valid && firstName.value?.isBlank() ?:true) {
-//            valid = false
-//            firstNameErrorMsg.value = ""
-//            firstNameErrorVisibility.value = 8
-//        } else if (valid && !(firstName.value?.length ?: 0 <= 30)) {
-//            valid = false
-//            firstNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
-//            firstNameErrorVisibility.value = 0
-//        } else {
-//            valid = true
-//            firstNameErrorMsg.value = ""
-//            firstNameErrorVisibility.value = 8
-//        }
-//
-//        return valid
-//    }
-//
 //    private fun isValidPostalCode(): Boolean {
 //        var valid = true
 //        val pattern = Pattern.compile("^([0-9])")
@@ -338,37 +340,14 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 //        }
 //        return valid
 //    }
-//
-//    private fun isValidPhoneNumber(): Boolean {
-//        var valid = true
-//        val pattern = Pattern.compile("^([0-9])")
-//
-//        if (valid && phone.value?.isBlank() ?:true) {
-//            valid = false
-//            phoneErrorMsg.value = ""
-//            phoneErrorVisibility.value = 8
-//        }else if(valid && !(pattern.matcher(phone.value).find())) {
-//            valid = false
-//            phoneErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-//            phoneErrorVisibility.value = 0
-//        }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
-//            valid = false
-//            phoneErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
-//            phoneErrorVisibility.value = 0
-//        } else {
-//            valid = true
-//            phoneErrorMsg.value = ""
-//            phoneErrorVisibility.value = 8
-//        }
-//
-//        return valid
-//    }
-    }
 
-    interface AccountSettingEventHandlers {
-        fun onClickOrdinary(view: View)
-        fun onClickCurrent(view: View)
-        fun onClickSavings(view: View)
-        fun onClickRegister(view: View)
+
+}
+
+interface AccountSettingEventHandlers {
+    fun onClickOrdinary(view: View)
+    fun onClickCurrent(view: View)
+    fun onClickSavings(view: View)
+    fun onClickRegister(view: View)
 //        fun onFocusChanged(view: View, hasFocus: Boolean)
-    }
+}

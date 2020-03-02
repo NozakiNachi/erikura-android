@@ -27,6 +27,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
+    var fromChangeUserInformationFragment: Boolean = false
 
     private val viewModel: ConfigurationViewModel by lazy {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
@@ -82,6 +83,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             }
         })
         configuration_recycler_view.adapter = adapter
+
+        fromChangeUserInformationFragment = intent.getBooleanExtra("onClickChangeUserInformationFragment", false)
     }
 
     class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
@@ -116,6 +119,19 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
 
         override fun getItemCount() = menuItems.size
+    }
+
+    //
+    override fun onStart() {
+        super.onStart()
+        if(fromChangeUserInformationFragment) {
+            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
+            binding.lifecycleOwner = this
+
+            AlertDialog.Builder(this)
+                .setView(binding.root)
+                .show()
+        }
     }
 
     // ログアウトリンク
