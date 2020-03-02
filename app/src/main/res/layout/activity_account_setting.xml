@@ -73,7 +73,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:visibility="@{viewModel.bankNameErrorVisibility}"
                     style="@style/errorField"
                     android:text="@={viewModel.bankNameErrorMsg}"
                     />
@@ -111,12 +111,16 @@
                         />
                 </LinearLayout>
                 <TextView
-                    style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-
+                    android:visibility="@{viewModel.bankNumberErrorVisibility}"
+                    style="@style/errorField"
                     android:text="@={viewModel.bankNumberErrorMsg}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
                     />
 
                 <!--支店名-->
@@ -154,9 +158,14 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:visibility="@{viewModel.branchOfficeNameErrorVisibility}"
                     style="@style/errorField"
                     android:text="@={viewModel.branchOfficeNameErrorMsg}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
                     />
 
                 <!-- 支店コード -->
@@ -199,7 +208,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.branchOfficeNumberErrorMsg}"
-
+                    android:visibility="@{viewModel.branchOfficeNumberErrorVisibility}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
                     />
 
                 <!-- 口座番号 -->
@@ -241,10 +255,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-
+                    android:text="@={viewModel.accountNumberErrorMsg}"
+                    android:visibility="@{viewModel.accountNumberErrorVisibility}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
                     />
 
-                <!-- 口座番号 -->
+                <!-- 口座種別 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -359,6 +379,32 @@
                     android:text="※全角カタカナで入力してください。"
                     android:textColor="@color/blackTwo"
                     android:textSize="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.accountHolderFamilyErrorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.accountHolderFamilyErrorMsg}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.accountHolderErrorVisibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.accountHolderErrorMsg}"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
+                    />
 
                 <!--登録ボタン-->
                 <Button
@@ -369,7 +415,7 @@
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
-                    android:onClick="@{handlers::onClickRegister}"
+                    android:onClick="@{handlers::onClickSetting}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"

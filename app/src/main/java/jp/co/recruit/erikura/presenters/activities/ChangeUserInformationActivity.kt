@@ -225,9 +225,9 @@ class ChangeUserInformationViewModel: ViewModel() {
     val email: MutableLiveData<String> = MutableLiveData()
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
-    val verificationPassword: MutableLiveData<String> = MutableLiveData()
     val passwordErrorMsg: MutableLiveData<String> = MutableLiveData()
     val passwordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val verificationPassword: MutableLiveData<String> = MutableLiveData()
     val verificationPasswordErrorMsg: MutableLiveData<String> = MutableLiveData()
     val verificationPasswordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
     // 氏名
@@ -448,9 +448,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     }
 
     private fun isValidWishWorks(): Boolean {
-        //return !(wishWalk.value == 0 || wishWalk.value == null)
         return interestedSmartPhone.value ?:false || interestedCleaning.value ?:false || interestedWalk.value ?:false || interestedBicycle.value ?:false || interestedCar.value ?:false
-        //return !(interestedSmartPhone.value == null && interestedCleaning.value == null && interestedWalk.value == null && interestedBicycle.value == null && interestedCar.value == null)
     }
 
     private fun isValidPhoneNumber(): Boolean {
