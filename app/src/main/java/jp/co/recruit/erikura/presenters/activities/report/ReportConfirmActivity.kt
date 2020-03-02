@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
@@ -44,7 +45,13 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
 
         job = intent.getParcelableExtra<Job>("job")
 
-        reportImageAdapter = ReportImageAdapter(this, listOf())
+        reportImageAdapter = ReportImageAdapter(this, listOf()).also {
+            it.onClickListener =  object: ReportImageAdapter.OnClickListener {
+                override fun onClick(view: View) {
+                    onClickAddPhotoButton(view)
+                }
+            }
+        }
         val reportImageView: RecyclerView = findViewById(R.id.report_confirm_report_images)
         reportImageView.adapter = reportImageAdapter
 
@@ -55,8 +62,13 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         // FIXME: 作業報告完了処理
     }
 
-    override fun onClickAddPhotoButton(view: View) {
-        // FIXME: ギャラリーへのアクセス
+    fun onClickAddPhotoButton(view: View) {
+        if(ErikuraApplication.instance.hasStoragePermission(this)) {
+            moveToGallery()
+        }
+        else {
+            ErikuraApplication.instance.requestStoragePermission(this)
+        }
     }
 
     override fun onClickEditEvaluation(view: View) {
@@ -104,6 +116,14 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         }
     }
 
+    private fun moveToGallery() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_OPEN_DOCUMENT
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "image/*"
+        startActivityForResult(intent, 2000 )
+    }
+
     private fun loadData() {
         job.report?.let {
             reportImageAdapter.summaries = it.outputSummaries
@@ -144,7 +164,6 @@ class ReportConfirmViewModel: ViewModel() {
 
 interface ReportConfirmEventHandlers {
     fun onClickComplete(view: View)
-    fun onClickAddPhotoButton(view: View)
     fun onClickEditOtherForm(view: View)
     fun onClickEditWorkingTime(view: View)
     fun onClickEditEvaluation(view: View)
@@ -169,6 +188,8 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
 class ReportImageViewHolder(val binding: FragmentReportImageItemBinding): RecyclerView.ViewHolder(binding.root)
 
 class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>): RecyclerView.Adapter<ReportImageViewHolder>() {
+    var onClickListener: OnClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportImageViewHolder {
         val binding = DataBindingUtil.inflate<FragmentReportImageItemBinding>(
             LayoutInflater.from(parent.context),
@@ -198,7 +219,16 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
             holder.binding.viewModel = ReportImageItemViewModel(activity, view, summaries[position].photoAsset)
         }else {
             holder.binding.viewModel = ReportImageItemViewModel(activity, view, null)
+            holder.binding.root.setOnClickListener {
+                onClickListener?.apply {
+                    onClick(view)
+                }
+            }
         }
 
+    }
+
+    interface OnClickListener {
+        fun onClick(view: View)
     }
 }
