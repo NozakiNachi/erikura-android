@@ -77,8 +77,7 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         }
     }
 
-    // FIXME: 口座タイプの値の名称は正しいか
-    // 口座タイプ
+    // 口座種別
     override fun onClickNormal(view: View) {
         payment.accountType = "normal"
     }
@@ -91,24 +90,22 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
     override fun onClickRegister(view: View) {
         // 口座情報登録Apiの呼び出し
-//        Api(this).payment(payment) {
-//            // FIXME: ダイアログの表示時間を調整
-//            val dialog = AlertDialog.Builder(this).apply {
-//                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(
-//                    LayoutInflater.from(context),
-//                    R.layout.dialog_change_user_information_success,
-//                    null,
-//                    false
-//                )
-//                setView(binding.root)
-//            }.create()
-//            dialog.show()
-        //}
-//        finish()
+        Api(this).updatePayment(payment) {
+            // FIXME: ダイアログの表示時間を調整
+            val dialog = AlertDialog.Builder(this).apply {
+                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(context),
+                    R.layout.dialog_change_user_information_success,
+                    null,
+                    false
+                )
+                setView(binding.root)
+            }.create()
+            dialog.show()
+        }
+        finish()
     }
 }
-
-
 
     class AccountSettingViewModel: ViewModel() {
         // 銀行名
