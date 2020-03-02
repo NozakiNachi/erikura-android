@@ -255,23 +255,23 @@
                         android:drawablePadding="10dp"
                         android:text="口座種別" />
                 </LinearLayout>
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/AccountGroup">
+
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
+                        <RadioGroup
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:id="@+id/AccountGroup">
                         <RadioButton
-                            android:id="@+id/normal_button"
+                            android:id="@+id/ordinary_button"
                             android:layout_width="140dp"
                             android:layout_height="70dp"
                             android:layout_marginTop="10dp"
                             android:paddingLeft="10dp"
                             style="@style/buttonWithCheckBox"
                             android:text="普通"
-                            android:orientation="horizontal"
-                            android:onClick="@{handlers::onClickNormal}"
+                            android:onClick="@{handlers::onClickOrdinary}"
                             >
                         </RadioButton>
                         <RadioButton
@@ -282,14 +282,10 @@
                             android:paddingLeft="10dp"
                             style="@style/buttonWithCheckBox"
                             android:text="当座"
-                            android:orientation="horizontal"
                             android:onClick="@{handlers::onClickCurrent}"
                             >
                         </RadioButton>
-                    </LinearLayout>
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+
                         <RadioButton
                             android:id="@+id/savings_button"
                             android:layout_width="140dp"
@@ -301,8 +297,10 @@
                             android:onClick="@{handlers::onClickSavings}"
                             >
                         </RadioButton>
+                        </RadioGroup>
                     </LinearLayout>
-                </RadioGroup>
+
+
 
                 <!--銀行名-->
                 <LinearLayout
@@ -370,6 +368,7 @@
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
+                    android:onClick="@{handlers::onClickRegister}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"

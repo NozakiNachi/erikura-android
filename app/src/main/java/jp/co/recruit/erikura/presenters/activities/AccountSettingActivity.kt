@@ -65,45 +65,70 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
             viewModel.accountNumber.value = payment.accountNumber
             viewModel.accountHolderFamily.value = payment.accountHolderFamily
             viewModel.accountHolder.value = payment.accountHolder
-        }
 
-        // 口座タイプのラジオボタン初期表示
-        if (viewModel.accountType.value == "normal") {
-            binding.normalButton.isChecked = true
-        } else if (viewModel.accountType.value == "current") {
-            binding.currentButton.isChecked = true
-        } else if (viewModel.accountType.value == "savings") {
-            binding.savingsButton.isChecked = true
+            // 口座タイプのラジオボタン初期表示
+            if (viewModel.accountType.value == "ordinary_account") {
+                binding.ordinaryButton.isChecked = true
+            } else if (viewModel.accountType.value == "current_account") {
+                binding.currentButton.isChecked = true
+            } else if (viewModel.accountType.value == "savings") {
+                binding.savingsButton.isChecked = true
+            }
         }
     }
+
+//    // 銀行名
+//    override fun onFocusChanged(view: View, hasFocus: Boolean) {
+////        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 7) {
+////            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+////                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+////                viewModel.city.value = city
+////                viewModel.street.value = street
+////
+////                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+////                streetEditText.requestFocus()
+////            }
+////        }
+//        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 3) {
+//            Api(this).bank(viewModel.bankNumber.value ?: "") { ->
+////                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+////                streetEditText.requestFocus()
+//            }
+//        }
+//    }
 
     // 口座種別
-    override fun onClickNormal(view: View) {
-        payment.accountType = "normal"
+    override fun onClickOrdinary(view: View) {
+        payment.accountType = "ordinary_account"
     }
     override fun onClickCurrent(view: View) {
-        payment.accountType = "current"
+        payment.accountType = "current_account"
     }
     override fun onClickSavings(view: View) {
         payment.accountType = "savings"
     }
 
+    // FIXME: HolderとFamilyの区別
     override fun onClickRegister(view: View) {
+        payment.bankName = viewModel.bankName.value
+        payment.bankNumber = viewModel.bankNumber.value
+        payment.branchOfficeName = viewModel.branchOfficeName.value
+        payment.branchOfficeNumber = viewModel.branchOfficeNumber.value
+        payment.accountNumber = viewModel.accountNumber.value
+        payment.accountHolder = viewModel.accountHolder.value
+        payment.accountHolderFamily = viewModel.accountHolderFamily.value
+
         // 口座情報登録Apiの呼び出し
         Api(this).updatePayment(payment) {
-            // FIXME: ダイアログの表示時間を調整
-            val dialog = AlertDialog.Builder(this).apply {
-                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(
-                    LayoutInflater.from(context),
-                    R.layout.dialog_change_user_information_success,
-                    null,
-                    false
-                )
-                setView(binding.root)
-            }.create()
-            dialog.show()
+//            // FIXME: ダイアログの表示時間を調整
+                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
+                binding.lifecycleOwner = this
+
+                val dialog = AlertDialog.Builder(this)
+                    .setView(binding.root)
+                    .show()
+            finish()
         }
-        finish()
     }
 }
 
@@ -341,8 +366,9 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
     }
 
     interface AccountSettingEventHandlers {
-        fun onClickNormal(view: View)
+        fun onClickOrdinary(view: View)
         fun onClickCurrent(view: View)
         fun onClickSavings(view: View)
         fun onClickRegister(view: View)
+//        fun onFocusChanged(view: View, hasFocus: Boolean)
     }

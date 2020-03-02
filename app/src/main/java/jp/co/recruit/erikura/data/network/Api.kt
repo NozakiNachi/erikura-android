@@ -155,6 +155,18 @@ class Api(var context: Context) {
         }
     }
 
+    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.bank(bankName),
+            onError = onError
+        ) { body ->
+//            val bankNumber = body.bankNumber
+//            val branchOfficeName = body.branchOfficeName
+//            val branchOfficeNumber = body.branchOfficeNumber
+            onComplete()
+        }
+    }
+
     fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
         executeObservable(
             erikuraApiService.initialUpdateUser(user),
