@@ -154,9 +154,14 @@ interface ReportConfirmEventHandlers {
 // 実施箇所の一覧
 class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?): ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_image_item)
+    val imageVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val addPhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     init {
-        mediaItem?.let {
+        if (mediaItem != null) {
             mediaItem.loadImage(activity, imageView)
+        }else {
+            imageVisibility.value = View.GONE
+            addPhotoButtonVisibility.value = View.VISIBLE
         }
     }
 }
@@ -183,12 +188,17 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
     }
 
     override fun getItemCount(): Int {
-        return summaries.count()
+        return summaries.count()+1
     }
 
     override fun onBindViewHolder(holder: ReportImageViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
-        holder.binding.viewModel = ReportImageItemViewModel(activity, view, summaries[position].photoAsset)
+        if (position < summaries.count()) {
+            holder.binding.viewModel = ReportImageItemViewModel(activity, view, summaries[position].photoAsset)
+        }else {
+            holder.binding.viewModel = ReportImageItemViewModel(activity, view, null)
+        }
+
     }
 }
