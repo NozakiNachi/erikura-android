@@ -169,6 +169,7 @@
                     android:layout_marginTop="10dp"
                     android:entries="@{viewModel.timeItems}"
                     android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onTimeSelected(parent, view, position, id)}}"
+                    android:selectedItemPosition="@={viewModel.timeId}"
                     android:spinnerMode="dialog" />
             </LinearLayout>
         </ScrollView>

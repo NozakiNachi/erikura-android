@@ -86,6 +86,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             viewModel.city.value = user.city
             viewModel.street.value = user.street
             viewModel.phone.value = user.phoneNumber
+            viewModel.wishWalk.value = user.wishWorks.size
 
             // 都道府県のプルダウン初期表示
             viewModel.prefectureId.value = getPrefectureId(user.prefecture ?: "")
@@ -212,13 +213,14 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         // 会員情報変更Apiの呼び出し
         Api(this).updateUser(user) {
             // FIXME: ダイアログの表示時間を調整
-            val dialog = AlertDialog.Builder(this).apply {
-                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(context), R.layout.dialog_change_user_information_success, null, false)
-                setView(binding.root)
-            }.create()
-            dialog.show()
+                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
+                binding.lifecycleOwner = this
+
+                val dialog = AlertDialog.Builder(this)
+                    .setView(binding.root)
+                    .show()
+            finish()
         }
-        finish()
     }
 }
 
@@ -266,6 +268,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     val interestedWalk: MutableLiveData<Boolean> = MutableLiveData()
     val interestedBicycle: MutableLiveData<Boolean> = MutableLiveData()
     val interestedCar: MutableLiveData<Boolean> = MutableLiveData()
+    val wishWalk: MutableLiveData<Int> = MutableLiveData()
 
     // 登録ボタン押下
     val isChangeButtonEnabled = MediatorLiveData<Boolean>().also { result ->
@@ -273,27 +276,33 @@ class ChangeUserInformationViewModel: ViewModel() {
         result.addSource(firstName) { result.value = isValid() }
         result.addSource(dateOfBirth) { result.value = isValid() }
         result.addSource(gender) { result.value = isValid() }
-        result.addSource(phone) { result.value = isValid() }
-        result.addSource(jobStatusId) { result.value = isValid() }
-        // result.addSource(WishWorks) { result.value = isValid() }
         result.addSource(postalCode) { result.value = isValid() }
         result.addSource(prefectureId) { result.value = isValid() }
         result.addSource(city) { result.value = isValid() }
         result.addSource(street) { result.value = isValid() }
+        result.addSource(phone) { result.value = isValid() }
+        result.addSource(jobStatusId) { result.value = isValid() }
+        result.addSource(wishWalk) { result.value = isValid() }
+        result.addSource(interestedSmartPhone) {result.value = isValid()}
+        result.addSource(interestedCleaning) {result.value = isValid()}
+        result.addSource(interestedWalk) {result.value = isValid()}
+        result.addSource(interestedBicycle) {result.value = isValid()}
+        result.addSource(interestedCar) {result.value = isValid()}
     }
-
-    // バリデーションルール
+    //
+//    // バリデーションルール
     private fun isValid(): Boolean {
         var valid = true
+//      valid = isValidPassword() && valid
+        valid = isValidFirstName() && valid
+        valid = isValidLastName() && valid
         valid = isValidPostalCode() && valid
         valid = isValidPrefecture() && valid
         valid = isValidCity() && valid
         valid = isValidStreet() && valid
-        valid = isValidFirstName() && valid
-        valid = isValidLastName() && valid
-        valid = isValidPassword() && valid
         valid = isValidPhoneNumber() && valid
-
+        valid = isValidJobStatus() && valid
+        valid = isValidWishWorks() && valid
         return valid
     }
 
@@ -362,8 +371,14 @@ class ChangeUserInformationViewModel: ViewModel() {
         return valid
     }
 
+    // FIXME: プルダウン初期値取得の不具合が解決したら動作確認
     private fun isValidPrefecture(): Boolean {
-        return !(prefectureId.value == 0)
+        return !(prefectureId.value == 0 || prefectureId.value == null)
+    }
+
+    // FIXME: プルダウン初期値取得の不具合が解決したら動作確認
+    private fun isValidJobStatus() : Boolean {
+        return !(jobStatusId.value == 0 || jobStatusId.value == null)
     }
 
     private fun isValidCity(): Boolean {
@@ -433,6 +448,12 @@ class ChangeUserInformationViewModel: ViewModel() {
             passwordErrorVisibility.value = 8
         }
         return valid
+    }
+
+    private fun isValidWishWorks(): Boolean {
+        //return !(wishWalk.value == 0 || wishWalk.value == null)
+        return interestedSmartPhone.value ?:false || interestedCleaning.value ?:false || interestedWalk.value ?:false || interestedBicycle.value ?:false || interestedCar.value ?:false
+        //return !(interestedSmartPhone.value == null && interestedCleaning.value == null && interestedWalk.value == null && interestedBicycle.value == null && interestedCar.value == null)
     }
 
     private fun isValidPhoneNumber(): Boolean {

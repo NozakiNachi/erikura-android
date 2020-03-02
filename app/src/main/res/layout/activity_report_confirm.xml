@@ -169,12 +169,22 @@
                     android:textSize="20dp"
                     android:text="@string/report_confirm_form_list" />
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/report_confirm_report_images"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="3"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    />
+
                 <!-- 実施箇所 -->
                 <TextView
                     style="@style/titleLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="20dp"
                     android:textSize="20dp"
                     android:text="@string/report_form_caption" />
 
@@ -249,6 +259,17 @@
                     android:textSize="20dp"
                     android:text="@string/report_other_form_caption" />
 
+                <ImageView
+                    android:id="@+id/report_confirm_other_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="305dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:background="@color/white"
+                    android:visibility="@{viewModel.otherFormImageVisibility}"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -310,6 +331,16 @@
                     android:textSize="20dp"
                     android:text="@string/report_evaluation_caption" />
 
+                <!-- 評価ボタン -->
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center"
+                    android:enabled="@{viewModel.evaluate}"
+                    android:background="@drawable/evaluate_button"
+                    android:visibility="@{viewModel.evaluateButtonVisibility}" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -359,6 +390,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginBottom="110dp"
                     android:onClick="@{handlers::onClickEditEvaluation}"
                     android:text="@string/edit_evaluation" />
             </LinearLayout>

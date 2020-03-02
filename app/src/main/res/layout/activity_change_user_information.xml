@@ -561,7 +561,7 @@
                     style="@style/primaryButton"
                     android:text="@string/registration"
                     android:onClick="@{handlers::onClickRegister}"
-                    android:enabled="@{viewModel.isChangeButtonEnabled()}"
+                    android:enabled="@{viewModel.isChangeButtonEnabled}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"
