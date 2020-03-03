@@ -3,7 +3,6 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -66,15 +65,16 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
             // 口座タイプのラジオボタン初期表示
             if (viewModel.accountType.value == "ordinary_account") {
-                binding.ordinaryButton.isChecked = true
+                viewModel.ordinary_button.value = true
             } else if (viewModel.accountType.value == "current_account") {
-                binding.currentButton.isChecked = true
+                viewModel.current_button.value = true
             } else if (viewModel.accountType.value == "savings") {
-                binding.savingsButton.isChecked = true
+                viewModel.savings_button.value = true
             }
         }
     }
 
+      // FIXME: フォーカス機能
 //    // 銀行名
 //    override fun onFocusChanged(view: View, hasFocus: Boolean) {
 //        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 7) {
@@ -97,21 +97,9 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 //        }
 //    }
 
-    // 口座種別
-    override fun onClickOrdinary(view: View) {
-        payment.accountType = "ordinary_account"
-    }
-
-    override fun onClickCurrent(view: View) {
-        payment.accountType = "current_account"
-    }
-
-    override fun onClickSavings(view: View) {
-        payment.accountType = "savings"
-    }
-
     // FIXME: HolderとFamilyの区別
     override fun onClickSetting(view: View) {
+        payment.accountType = "current_account"
         payment.bankName = viewModel.bankName.value
         payment.bankNumber = viewModel.bankNumber.value
         payment.branchOfficeName = viewModel.branchOfficeName.value
@@ -120,21 +108,25 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         payment.accountHolder = viewModel.accountHolder.value
         payment.accountHolderFamily = viewModel.accountHolderFamily.value
 
+        if (viewModel.ordinary_button.value == true) {
+            payment.accountType = "ordinary_account"
+        }else if(viewModel.current_button.value == true) {
+            payment.accountType = "current_account"
+        }else if(viewModel.savings_button.value == true) {
+            payment.accountType = "savings"
+        }
+
         // 口座情報登録Apiの呼び出し
         Api(this).updatePayment(payment) {
+            val intent = Intent(this, ConfigurationActivity::class.java)
+
             if (viewModel.settingFragment.value == "register") {
-                val intent = Intent(this, ConfigurationActivity::class.java)
                 intent.putExtra("onClickRegisterAccountFragment", true)
-                startActivity(intent)
-                finish()
-            } else {
-                if (viewModel.settingFragment.value == null) {
-                    val intent = Intent(this, ConfigurationActivity::class.java)
-                    intent.putExtra("onClickChangeAccountFragment", true)
-                    startActivity(intent)
-                    finish()
-                }
+            } else if(viewModel.settingFragment.value == null) {
+                intent.putExtra("onClickChangeAccountFragment", true)
             }
+            startActivity(intent)
+            finish()
         }
     }
 }
@@ -170,6 +162,9 @@ class AccountSettingViewModel: ViewModel() {
 
     // 口座タイプ
     val accountType: MutableLiveData<String> = MutableLiveData()
+    val ordinary_button: MutableLiveData<Boolean> = MutableLiveData()
+    val current_button: MutableLiveData<Boolean> = MutableLiveData()
+    val savings_button: MutableLiveData<Boolean> = MutableLiveData()
 
     // 銀行名
     val accountHolderFamily: MutableLiveData<String> = MutableLiveData()
@@ -190,7 +185,7 @@ class AccountSettingViewModel: ViewModel() {
         result.addSource(accountHolder) { result.value = isValid() }
         result.addSource(accountHolderFamily) { result.value = isValid() }
     }
-//
+
     // バリデーションルール
     private fun isValid(): Boolean {
         var valid = true
@@ -357,9 +352,6 @@ class AccountSettingViewModel: ViewModel() {
 }
 
 interface AccountSettingEventHandlers {
-    fun onClickOrdinary(view: View)
-    fun onClickCurrent(view: View)
-    fun onClickSavings(view: View)
     fun onClickSetting(view: View)
 //    fun onFocusChanged(view: View, hasFocus: Boolean)
 }

@@ -48,6 +48,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp">
+
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -56,13 +57,14 @@
                         android:drawablePadding="10dp"
                         android:text="銀行名" />
                 </LinearLayout>
+
                 <EditText
                     style="@style/textField"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:hint="例)みずほ"
-                    android:text="@={viewModel.bankName}"
-                    />
+                    android:text="@={viewModel.bankName}" />
+
                 <TextView
                     android:layout_width="320dp"
                     android:layout_height="20dp"
@@ -70,24 +72,25 @@
                     android:text="※入力中に表示される候補から選択してください。"
                     android:textColor="@color/blackTwo"
                     android:textSize="12dp" />
+
                 <TextView
+                    style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.bankNameErrorVisibility}"
-                    style="@style/errorField"
                     android:text="@={viewModel.bankNameErrorMsg}"
-                    />
+                    android:visibility="@{viewModel.bankNameErrorVisibility}" />
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     style="@style/errorField"
-                    />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <!-- 銀行コード -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp">
+
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -96,10 +99,11 @@
                         android:drawablePadding="10dp"
                         android:text="銀行コード" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
+
                     <EditText
                         style="@style/textField"
                         android:layout_width="match_parent"
@@ -110,24 +114,25 @@
 
                         />
                 </LinearLayout>
+
                 <TextView
+                    style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.bankNumberErrorVisibility}"
-                    style="@style/errorField"
                     android:text="@={viewModel.bankNumberErrorMsg}"
-                    />
+                    android:visibility="@{viewModel.bankNumberErrorVisibility}" />
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     style="@style/errorField"
-                    />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <!--支店名-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp">
+
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -136,13 +141,14 @@
                         android:drawablePadding="10dp"
                         android:text="支店名" />
                 </LinearLayout>
+
                 <EditText
                     style="@style/textField"
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:hint="例)銀座"
-                    android:text="@={viewModel.branchOfficeName}"
-                    />
+                    android:text="@={viewModel.branchOfficeName}" />
+
                 <TextView
                     android:layout_width="320dp"
                     android:layout_height="30dp"
@@ -150,29 +156,30 @@
                     android:text="※入力中に表示される候補から選択してください。"
                     android:textColor="@color/blackTwo"
                     android:textSize="12dp" />
+
                 <TextView
+                    style="@style/errorField"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/errorField"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="@{viewModel.branchOfficeNameErrorVisibility}"
-                    style="@style/errorField"
                     android:text="@={viewModel.branchOfficeNameErrorMsg}"
-                    />
+                    android:visibility="@{viewModel.branchOfficeNameErrorVisibility}" />
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     style="@style/errorField"
-                    />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <!-- 支店コード -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp">
+
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -181,19 +188,20 @@
                         android:drawablePadding="10dp"
                         android:text="支店コード" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
+
                     <EditText
                         style="@style/textField"
                         android:layout_width="match_parent"
                         android:layout_height="62dp"
                         android:hint="例)1234567"
                         android:inputType="number"
-                        android:text="@={viewModel.branchOfficeNumber}"
-                        />
+                        android:text="@={viewModel.branchOfficeNumber}" />
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="320dp"
                     android:layout_height="30dp"
@@ -201,25 +209,26 @@
                     android:text="※半角数字で入力してください。"
                     android:textColor="@color/blackTwo"
                     android:textSize="12dp" />
+
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.branchOfficeNumberErrorMsg}"
-                    android:visibility="@{viewModel.branchOfficeNumberErrorVisibility}"
-                    />
+                    android:visibility="@{viewModel.branchOfficeNumberErrorVisibility}" />
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     style="@style/errorField"
-                    />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <!-- 口座番号 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp">
+
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -228,10 +237,11 @@
                         android:drawablePadding="10dp"
                         android:text="口座番号" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    >
+                    android:layout_height="wrap_content">
+
                     <EditText
                         style="@style/textField"
                         android:layout_width="match_parent"
@@ -242,6 +252,7 @@
 
                         />
                 </LinearLayout>
+
                 <TextView
                     android:layout_width="320dp"
                     android:layout_height="30dp"
@@ -249,25 +260,26 @@
                     android:text="※半角数字で入力してください。"
                     android:textColor="@color/blackTwo"
                     android:textSize="12dp" />
+
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.accountNumberErrorMsg}"
-                    android:visibility="@{viewModel.accountNumberErrorVisibility}"
-                    />
+                    android:visibility="@{viewModel.accountNumberErrorVisibility}" />
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     style="@style/errorField"
-                    />
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
                 <!-- 口座種別 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp">
+
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -276,13 +288,12 @@
                         android:drawablePadding="10dp"
                         android:text="口座種別" />
                 </LinearLayout>
-                <RadioGroup
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:id="@+id/AccountGroup">
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+
+                <jp.co.recruit.erikura.presenters.activities.ToggleButtonGroupTableLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:id="@+id/radGroup1">
+                    <TableRow>
                         <RadioButton
                             android:id="@+id/ordinary_button"
                             android:layout_width="140dp"
@@ -292,11 +303,9 @@
                             style="@style/buttonWithCheckBox"
                             android:text="普通"
                             android:orientation="horizontal"
-                            android:onClick="@{handlers::onClickOrdinary}"
-                            >
-                        </RadioButton>
-                        <RadioButton
-                            android:id="@+id/current_button"
+                            android:checked="@={viewModel.ordinary_button}"
+                             />
+                        <RadioButton android:id="@+id/current_button"
                             android:layout_width="140dp"
                             android:layout_height="70dp"
                             android:layout_marginTop="10dp"
@@ -304,10 +313,10 @@
                             style="@style/buttonWithCheckBox"
                             android:text="当座"
                             android:orientation="horizontal"
-                            android:onClick="@{handlers::onClickCurrent}"
-                            >
-                        </RadioButton>
-
+                            android:checked="@={viewModel.current_button}"
+                             />
+                    </TableRow>
+                    <TableRow>
                         <RadioButton
                             android:id="@+id/savings_button"
                             android:layout_width="140dp"
@@ -316,11 +325,11 @@
                             android:paddingLeft="10dp"
                             style="@style/buttonWithCheckBox"
                             android:text="貯蓄"
-                            android:onClick="@{handlers::onClickSavings}"
-                            >
-                        </RadioButton>
-                    </LinearLayout>
-                </RadioGroup>
+                            android:orientation="horizontal"
+                            android:checked="@={viewModel.savings_button}"
+                             />
+                    </TableRow>
+                </jp.co.recruit.erikura.presenters.activities.ToggleButtonGroupTableLayout>
 
                 <!--銀行名-->
                 <LinearLayout
