@@ -60,7 +60,17 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         val reportImageView: RecyclerView = findViewById(R.id.report_confirm_report_images)
         reportImageView.adapter = reportImageAdapter
 
-        reportSummaryAdapter = ReportSummaryAdapter(this, listOf())
+        reportSummaryAdapter = ReportSummaryAdapter(this, listOf()).also {
+            it.onClickListener = object: ReportSummaryAdapter.OnClickListener {
+                override fun onClickEditButton(view: View, position: Int) {
+                    editSummary(view, position)
+                }
+
+                override fun onClickRemoveButton(view: View, position: Int) {
+                    removeSummary(view, position)
+                }
+            }
+        }
         val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
         reportSummaryView.adapter = reportSummaryAdapter
 
@@ -77,6 +87,24 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         }
         else {
             ErikuraApplication.instance.requestStoragePermission(this)
+        }
+    }
+
+    fun editSummary(view: View, position: Int) {
+        val intent= Intent(this, ReportFormActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putExtra("pictureIndex", position)
+        intent.putExtra("fromConfirm", true)
+        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
+    }
+
+    fun removeSummary(view: View, position: Int) {
+        job.report?.let {
+            var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+            outputSummaryList = it.outputSummaries.toMutableList()
+            outputSummaryList.removeAt(position)
+            it.outputSummaries = outputSummaryList
+            loadData()
         }
     }
 
@@ -342,9 +370,22 @@ class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<O
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
         holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position)
+        val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
+        editButton.setOnClickListener {
+            onClickListener?.apply {
+                onClickEditButton(view, position)
+            }
+        }
+        val removeButton = holder.binding.root.findViewById<Button>(R.id.remove_report_summary_item)
+        removeButton.setOnClickListener {
+            onClickListener?.apply {
+                onClickRemoveButton(view, position)
+            }
+        }
     }
 
     interface OnClickListener {
-        fun onClick(view: View)
+        fun onClickEditButton(view: View, position: Int)
+        fun onClickRemoveButton(view: View, position: Int)
     }
 }

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
@@ -27,6 +28,7 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     }
 
     var job = Job()
+    var fromConfirm = false
     var pictureIndex = 0
     var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
 
@@ -34,14 +36,18 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_form)
 
-        job = intent.getParcelableExtra<Job>("job")
-        pictureIndex = intent.getIntExtra("pictureIndex", 0)
-        outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
-
         val binding: ActivityReportFormBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_form)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+        job = intent.getParcelableExtra<Job>("job")
+        pictureIndex = intent.getIntExtra("pictureIndex", 0)
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
 
         setup()
     }
@@ -59,7 +65,12 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
             summary.comment = viewModel.comment.value
 
             var nextIndex = pictureIndex + 1
-            if (nextIndex < summaries.size) {
+            if (fromConfirm) {
+                val intent= Intent()
+                intent.putExtra("job", job)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }else if (nextIndex < summaries.size) {
                 val intent= Intent(this, ReportFormActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", nextIndex)
@@ -107,6 +118,7 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         viewModel.title.value = ErikuraApplication.instance.getString(R.string.report_form_caption, pictureIndex+1, max)
         createSummaryItems()
         createImage()
+        loadDate()
     }
 
     private fun createSummaryItems() {
@@ -128,15 +140,41 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
             }
         }
     }
+
+    private fun loadDate() {
+        var summaryIndex = job.summaryTitles.count() + 1
+        job.report?.let {
+            val summary = it.outputSummaries[pictureIndex]
+            job.summaryTitles.forEachIndexed { index, s ->
+                if (s == summary.place) {
+                    summaryIndex = index + 1
+                }
+            }
+            viewModel.summaryId.value = if (summary.place.isNullOrEmpty()){0} else {summaryIndex}
+            if (summaryIndex == job.summaryTitles.count() + 1) {
+                viewModel.summary.value = summary.place
+                viewModel.summaryEditVisibility.value = View.VISIBLE
+            }
+            var statuses = ErikuraApplication.instance.getResources().getStringArray(R.array.summary_evaluation)
+            statuses.forEachIndexed { index, s ->
+                if (s == summary.evaluation) {
+                    viewModel.statusId.value = index
+                }
+            }
+            viewModel.comment.value = summary.comment
+        }
+    }
 }
 
 class ReportFormViewModel: ViewModel() {
     val title: MutableLiveData<String> = MutableLiveData()
     val summaryItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
+    val summaryId: MutableLiveData<Int> = MutableLiveData()
     val summaryEditVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryErrorMsg: MutableLiveData<String> = MutableLiveData()
     val summaryErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val statusId: MutableLiveData<Int> = MutableLiveData()
     val comment: MutableLiveData<String> = MutableLiveData()
     val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
     val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
