@@ -25,6 +25,7 @@ import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
+import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 
@@ -36,6 +37,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     private val EDIT_DATA: Int = 1001
     private val GET_FILE: Int = 2001
     private lateinit var reportImageAdapter: ReportImageAdapter
+    private lateinit var reportSummaryAdapter: ReportSummaryAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         }
         val reportImageView: RecyclerView = findViewById(R.id.report_confirm_report_images)
         reportImageView.adapter = reportImageAdapter
+
+        reportSummaryAdapter = ReportSummaryAdapter(this, listOf())
+        val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
+        reportSummaryView.adapter = reportSummaryAdapter
 
         loadData()
     }
@@ -177,6 +183,8 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             // 実施箇所の更新
             reportImageAdapter.summaries = it.outputSummaries
             reportImageAdapter.notifyDataSetChanged()
+            reportSummaryAdapter.summaries = it.outputSummaries
+            reportSummaryAdapter.notifyDataSetChanged()
             // 作業時間の更新
             val minute = it.workingMinute?: 0
             viewModel.workingTime.value = if(minute == 0){""}else {"${minute}分"}
@@ -288,3 +296,55 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
 }
 
 // 実施箇所
+class ReportSummaryItemViewModel(activity: Activity, view: View, summary: OutputSummary, summariesCount: Int, position: Int): ViewModel() {
+    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
+    val summaryTitle: MutableLiveData<String> = MutableLiveData()
+    val summaryName: MutableLiveData<String> = MutableLiveData()
+    val summaryStatus: MutableLiveData<String> = MutableLiveData()
+    val summaryComment: MutableLiveData<String> = MutableLiveData()
+    val editSummaryButtonText: MutableLiveData<String> = MutableLiveData()
+    val removeSummaryButtonText: MutableLiveData<String> = MutableLiveData()
+    init {
+        summary.photoAsset?.let {
+            it.loadImage(activity, imageView)
+        }
+
+        summaryTitle.value = ErikuraApplication.instance.getString(R.string.report_form_caption, position+1, summariesCount)
+        summaryName.value = summary.place
+        summaryStatus.value = summary.evaluation
+        summaryComment.value = summary.comment
+        editSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.edit_summary, position+1)
+        removeSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.remove_summary, position+1)
+    }
+}
+
+class ReportSummaryViewHolder(val binding: FragmentReportSummaryItemBinding): RecyclerView.ViewHolder(binding.root)
+
+class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>): RecyclerView.Adapter<ReportSummaryViewHolder>() {
+    var onClickListener: OnClickListener? = null
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportSummaryViewHolder {
+        val binding = DataBindingUtil.inflate<FragmentReportSummaryItemBinding>(
+            LayoutInflater.from(parent.context),
+            R.layout.fragment_report_summary_item,
+            parent,
+            false
+        )
+
+        return ReportSummaryViewHolder(binding)
+    }
+
+    override fun getItemCount(): Int {
+        return summaries.count()
+    }
+
+    override fun onBindViewHolder(holder: ReportSummaryViewHolder, position: Int) {
+        val view = holder.binding.root
+        holder.binding.lifecycleOwner = activity
+        holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position)
+    }
+
+    interface OnClickListener {
+        fun onClick(view: View)
+    }
+}
