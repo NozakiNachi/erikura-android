@@ -15,7 +15,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presenters.fragments.ReportedJobDetails">
+        tools:context=".presenters.fragments.ReportedJobDetailsFragment">
 
         <!-- TODO: Update blank fragment layout -->
         <ScrollView
@@ -110,7 +110,7 @@
                 <!--実施箇所表示-->
                 <!--リサイクルビューで表示-->
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/jobsList_"
+                    android:id="@+id/ImplementedLocationList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
