@@ -192,7 +192,6 @@
                         android:hint="例)1234567"
                         android:inputType="number"
                         android:text="@={viewModel.branchOfficeNumber}"
-
                         />
                 </LinearLayout>
                 <TextView
@@ -416,6 +415,7 @@
                     style="@style/primaryButton"
                     android:text="@string/registration"
                     android:onClick="@{handlers::onClickSetting}"
+                    android:enabled="@{viewModel.isSettingButtonEnabled}"
                     />
                 <LinearLayout
                     android:layout_width="match_parent"

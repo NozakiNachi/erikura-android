@@ -285,8 +285,8 @@ class ChangeUserInformationViewModel: ViewModel() {
         result.addSource(interestedBicycle) {result.value = isValid()}
         result.addSource(interestedCar) {result.value = isValid()}
     }
-    //
-//    // バリデーションルール
+
+//     バリデーションルール
     private fun isValid(): Boolean {
         var valid = true
 //      valid = isValidPassword() && valid
