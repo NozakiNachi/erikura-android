@@ -158,6 +158,10 @@
     <string name="report_confirm_note">「完了」すると作業報告が送信されます。</string>
     <string name="report_confirm_form_list">実施箇所の一覧</string>
 
+    <!-- 作業報告ステータス画面 -->
+    <string name="report_status">作業報告のステータス</string>
+    <string name="report_rejected_comment">差し戻しコメント</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>

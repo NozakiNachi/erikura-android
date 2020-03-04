@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:background="@color/white"
@@ -255,7 +255,7 @@
                     style="@style/titleLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="40dp"
                     android:textSize="20dp"
                     android:text="@string/report_other_form_caption" />
 
@@ -327,7 +327,7 @@
                     style="@style/titleLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="40dp"
                     android:textSize="20dp"
                     android:text="@string/report_evaluation_caption" />
 
@@ -394,7 +394,7 @@
                     android:onClick="@{handlers::onClickEditEvaluation}"
                     android:text="@string/edit_evaluation" />
             </LinearLayout>
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <!-- 次へボタン -->
         <Button
