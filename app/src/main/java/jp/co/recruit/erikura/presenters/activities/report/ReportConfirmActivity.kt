@@ -72,6 +72,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             }
         }
         val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
+        reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
 
         loadData()
