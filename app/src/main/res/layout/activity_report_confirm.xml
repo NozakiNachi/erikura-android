@@ -405,7 +405,8 @@
             android:layout_marginTop="40dp"
             android:layout_marginRight="0dp"
             android:text="@string/complete"
-            android:onClick="@{handlers::onClickComplete}" />
+            android:onClick="@{handlers::onClickComplete}"
+            android:enabled="@{viewModel.isCompleteButtonEnabled()}"/>
 
         <!-- マニュアルボタン -->
         <Button
