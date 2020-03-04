@@ -48,7 +48,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         val timeLabel = TimeLabelFragment(job, user)
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
-        //作業報告ステータス
+        val reportedJobStatus = ReportedJobStatusFragment(activity, job?.report)
         //作業報告ボタン
         //作業削除ボタン
         //実施箇所表示
@@ -63,7 +63,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         //FIXME: 作業報告ステータス
-        //transaction.add(R.id.jobDetails_作業報告ステータス, 作業報告ステータス, "作業報告ステータス")
+        transaction.add(R.id.jobDetails_reportedJobStatus, reportedJobStatus, "reportedJobStatus")
         //FIXME: 作業報告編集ボタン
         //transaction.add(R.id.jobDetails_作業報告編集Button, 作業報告編集Button, "作業報告編集Button")
         //FIXME: 作業報告削除ボタン
@@ -90,6 +90,10 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         transaction.commit()
     }
 }
+
+//interface ReportedJobDetailsHandler {
+//    fun onClickClose(view: View)
+//}
 
 class ReportedJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()

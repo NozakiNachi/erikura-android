@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
+import jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragment
 
 
 class JobDetailsActivity : AppCompatActivity() {
@@ -95,8 +96,7 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = FinishedJobDetailsFragment(this, job, user)
             }
             JobStatus.Reported -> {
-                // FIXME: 作業報告済み画面
-                fragment = NormalJobDetailsFragment(this, job, user)
+                fragment = ReportedJobDetailsFragment(this, job, user)
             }
             else -> {
                 fragment = NormalJobDetailsFragment(this, job, user)
