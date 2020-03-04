@@ -26,6 +26,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
+import jp.co.recruit.erikura.presenters.activities.MypageActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
@@ -292,8 +293,13 @@ class ListViewActivity : AppCompatActivity(), ListViewHandlers {
                 finish()
             }
             R.id.tab_menu_mypage -> {
-                // FIXME: 画面遷移の実装
-                Toast.makeText(this, "マイページ画面に遷移", Toast.LENGTH_LONG).show()
+                Intent(this, MypageActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(
+                        intent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                    )
+                }
             }
         }
         return true

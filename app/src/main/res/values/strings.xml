@@ -159,6 +159,10 @@
     <string name="report_confirm_form_list">実施箇所の一覧</string>
     <string name="report_confirm_remove_summary">実施箇所%1$dを削除しますか？</string>
 
+    <!-- 作業報告ステータス画面 -->
+    <string name="report_status">作業報告のステータス</string>
+    <string name="report_rejected_comment">差し戻しコメント</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
