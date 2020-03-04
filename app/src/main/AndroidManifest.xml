@@ -27,7 +27,6 @@
         <activity android:name=".presenters.activities.report.ReportOtherFormActivity" />
         <activity android:name=".presenters.activities.report.ReportWorkingTimeActivity" />
         <activity android:name=".presenters.activities.mypage.PaymentInformationActivity" />
-        <activity android:name=".presenters.activities.mypage.AccountSettingActivity" />
         <activity android:name=".presenters.activities.report.ReportFormActivity" />
         <activity android:name=".presenters.activities.errors.LoginRequiredActivity" />
         <activity android:name=".presenters.activities.report.ReportImagePickerActivity" />
@@ -121,6 +120,10 @@
             android:name=".presenters.activities.AccountSettingActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 口座情報登録更新 -->
+        <activity
+            android:name=".presenters.activities.NotificationSettingActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- 通知設定 -->
         <!-- ============================================================ -->
         <!-- 新規会員登録関連 -->
         <activity

@@ -88,6 +88,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             viewModel.phone.value = user.phoneNumber
             viewModel.wishWalk.value = user.wishWorks.size
 
+            // FIXME: 数回に1回初期値がプルダウンに表示されない不具合あり。
             // 都道府県のプルダウン初期表示
             viewModel.prefectureId.value = getPrefectureId(user.prefecture ?: "")
             // 職業のプルダウン初期表示

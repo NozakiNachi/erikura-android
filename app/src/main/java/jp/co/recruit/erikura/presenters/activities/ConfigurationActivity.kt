@@ -45,7 +45,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {
-            val intent = Intent(this, RegisterEmailActivity::class.java)
+            val intent = Intent(this, NotificationSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, true) {
