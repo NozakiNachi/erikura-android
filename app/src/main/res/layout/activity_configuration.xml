@@ -18,23 +18,19 @@
         android:layout_height="match_parent"
         android:background="@color/white"
         android:fillViewport="true">
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
             <TextView
-                android:id="@+id/editText"
-                style="@style/titleLabel"
-                android:layout_width="390dp"
-                android:layout_height="48dp"
-                android:layout_marginLeft="10.5dp"
-                android:layout_marginTop="10.5dp"
-                android:layout_marginBottom="1.5dp"
-                android:textColor="@color/blackTwo"
-                android:textSize="20dp"
-                android:text="設定" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                style="@style/label_w2"
+                android:textSize="22dp"
+                android:text="設定"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/configuration_recycler_view"
                 android:layout_width="match_parent"

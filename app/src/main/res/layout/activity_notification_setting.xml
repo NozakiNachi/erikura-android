@@ -57,6 +57,13 @@
                         android:textSize="22dp"
                         android:text="メール通知設定"/>
                 </LinearLayout>
+
+                <View
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -66,7 +73,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
                         <Switch
-                            android:id="@+id/switch1"
+                            android:id="@+id/allow_remind_mail_reception"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
@@ -78,35 +85,43 @@
                             android:showText="false"
                             android:theme="@style/CustomSwitch"
                             android:thumb="@drawable/switch_thumb"
-                            android:track="@drawable/switch_track" />
+                            android:track="@drawable/switch_track"
+                            android:onClick="@{handlers::onAllowRemindMailReception}"
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
                             >
-                        <TextView
-                            style="@style/label_w2"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-
-                            android:layout_marginRight="20dp"
-                            android:text="リマインドメール"
-                            android:textSize="16dp" />
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="30dp"
-                            android:layout_marginLeft="10dp"
-                            android:layout_marginRight="20dp"
-                            style="@style/label_w2"
-                            android:textSize="12dp"
-                            android:text="納期間近の案件があった場合のリマインドメール"/>
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="リマインドメール"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="納期間近の案件があった場合のリマインドメール"/>
                         </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
 
+                <View
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -117,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
                         <Switch
-                            android:id="@+id/switch2"
+                            android:id="@+id/allow_info_mail_reception"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
@@ -126,13 +141,16 @@
                             android:theme="@style/CustomSwitch"
                             android:thumb="@drawable/switch_thumb"
                             android:track="@drawable/switch_track"
-                            android:background="@drawable/switch_track"/>
+                            android:background="@drawable/switch_track"
+                            android:onClick="@{handlers::onAllowInfoMailReception}"
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
                             >
                             <TextView
                                 style="@style/label_w2"
@@ -155,6 +173,11 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <View
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -170,6 +193,13 @@
                         android:textSize="22dp"
                         android:text="プッシュ通知設定"/>
                 </LinearLayout>
+
+                <View
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -179,7 +209,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
                         <Switch
-                            android:id="@+id/switch3"
+                            android:id="@+id/allow_remind_push_reception"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
@@ -188,13 +218,16 @@
                             android:showText="false"
                             android:theme="@style/CustomSwitch"
                             android:thumb="@drawable/switch_thumb"
-                            android:track="@drawable/switch_track" />
+                            android:track="@drawable/switch_track"
+                            android:onClick="@{handlers::onAllowRemindPushReception}"
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
                             >
                             <TextView
                                 style="@style/label_w2"
@@ -217,6 +250,12 @@
                     </LinearLayout>
                 </LinearLayout>
 
+                <View
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -227,7 +266,7 @@
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
                         <Switch
-                            android:id="@+id/switch4"
+                            android:id="@+id/allow_info_push_reception"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
@@ -236,13 +275,16 @@
                             android:theme="@style/CustomSwitch"
                             android:thumb="@drawable/switch_thumb"
                             android:track="@drawable/switch_track"
-                            android:background="@drawable/switch_track"/>
+                            android:background="@drawable/switch_track"
+                            android:onClick="@{handlers::onAllowInfoPushReception}"
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
                             >
                             <TextView
                                 style="@style/label_w2"
@@ -263,6 +305,11 @@
                                 android:text="****説明文が入ります。説明文が入ります。"/>
                         </RelativeLayout>
                     </LinearLayout>
+                    <View
+                        android:layout_height="1px"
+                        android:layout_width="match_parent"
+                        android:background="#d6e4e2"
+                        />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
