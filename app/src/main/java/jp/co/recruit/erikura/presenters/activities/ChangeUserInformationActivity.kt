@@ -88,6 +88,7 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             viewModel.phone.value = user.phoneNumber
             viewModel.wishWalk.value = user.wishWorks.size
 
+            // FIXME: 数回に1回初期値がプルダウンに表示されない不具合あり。
             // 都道府県のプルダウン初期表示
             viewModel.prefectureId.value = getPrefectureId(user.prefecture ?: "")
             // 職業のプルダウン初期表示
@@ -212,13 +213,9 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
 
         // 会員情報変更Apiの呼び出し
         Api(this).updateUser(user) {
-            // FIXME: ダイアログの表示時間を調整
-                val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
-                binding.lifecycleOwner = this
-
-                val dialog = AlertDialog.Builder(this)
-                    .setView(binding.root)
-                    .show()
+            val intent = Intent(this, ConfigurationActivity::class.java)
+            intent.putExtra("onClickChangeUserInformationFragment", true)
+            startActivity(intent)
             finish()
         }
     }
@@ -229,9 +226,9 @@ class ChangeUserInformationViewModel: ViewModel() {
     val email: MutableLiveData<String> = MutableLiveData()
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
-    val verificationPassword: MutableLiveData<String> = MutableLiveData()
     val passwordErrorMsg: MutableLiveData<String> = MutableLiveData()
     val passwordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val verificationPassword: MutableLiveData<String> = MutableLiveData()
     val verificationPasswordErrorMsg: MutableLiveData<String> = MutableLiveData()
     val verificationPasswordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
     // 氏名
@@ -289,8 +286,8 @@ class ChangeUserInformationViewModel: ViewModel() {
         result.addSource(interestedBicycle) {result.value = isValid()}
         result.addSource(interestedCar) {result.value = isValid()}
     }
-    //
-//    // バリデーションルール
+
+//     バリデーションルール
     private fun isValid(): Boolean {
         var valid = true
 //      valid = isValidPassword() && valid
@@ -306,6 +303,7 @@ class ChangeUserInformationViewModel: ViewModel() {
         return valid
     }
 
+    // FIXME: 足りないバリデーションルールがないか確認
     private fun isValidLastName(): Boolean {
         var valid = true
 
@@ -451,9 +449,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     }
 
     private fun isValidWishWorks(): Boolean {
-        //return !(wishWalk.value == 0 || wishWalk.value == null)
         return interestedSmartPhone.value ?:false || interestedCleaning.value ?:false || interestedWalk.value ?:false || interestedBicycle.value ?:false || interestedCar.value ?:false
-        //return !(interestedSmartPhone.value == null && interestedCleaning.value == null && interestedWalk.value == null && interestedBicycle.value == null && interestedCar.value == null)
     }
 
     private fun isValidPhoneNumber(): Boolean {

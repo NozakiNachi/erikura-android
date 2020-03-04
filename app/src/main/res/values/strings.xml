@@ -65,6 +65,10 @@
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を変更しました。</string>
 
+    <!-- 口座情報登録成功モーダル -->
+    <string name="register_account_success">口座情報を登録しました。</string>
+    <string name="change_account_success">口座情報を変更しました。</string>
+
     <!-- 案件詳細画面 -->
     <string name="jobDetails_workingTime">作業時間（目安）</string>
     <string name="jobDetails_fee">報酬（税込）</string>
@@ -171,9 +175,10 @@
     <string name="summary_select">箇所</string>
     <string name="summary_input">箇所（自由記述）</string>
     <string name="summary_status">作業後の状態</string>
+    <string name="summary_status2">作業後の\n状態</string>
     <string name="comment">コメント</string>
 
-    <!-- 入力フィールドのエラーメッセージ -->
+    <!-- 会員情報入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
     <string name="password_count_error">6文字以上の半角英数で入力してください。</string>
     <string name="password_pattern_error">英字、数字をそれぞれ1文字上入力してください。</string>
@@ -188,6 +193,33 @@
     <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
     <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
     <string name="password_verificationPassword_match_error">パスワードとパスワード(確認)の値が一致しません。</string>
+
+    <!-- 口座情報入力フィールドのエラーメッセージ -->
+    <string name="bank_name_count_error">銀行名は30文字以内で入力してください。</string>
+    <string name="bank_number_count_error">銀行コードは4文字で入力してください。</string>
+    <string name="bank_number_format_error">銀行コードの形式が正しくありません。</string>
+    <string name="branch_official_name_count_error">支店名は30文字以内で入力してください。</string>
+    <string name="branch_official_number_count_error">支店コードは3文字で入力してください。</string>
+    <string name="branch_official_number_format_error">支店コードの形式が正しくありません。</string>
+    <string name="account_number_count_error">口座番号は7文字で入力してください。</string>
+    <string name="account_number_format_error">口座番号の形式が正しくありません。</string>
+    <string name="account_holder_count_error">名義人名(セイ)は30文字以内で入力してください。</string>
+    <string name="account_holder_family_count_error">名義人名(メイ)は30文字以内で入力してください。</string>
+
+<!--    <string name="email_format_error">メールアドレスの形式が正しくありません。</string>-->
+<!--    <string name="password_count_error">6文字以上の半角英数で入力してください。</string>-->
+<!--    <string name="password_pattern_error">英字、数字をそれぞれ1文字上入力してください。</string>-->
+<!--    <string name="last_name_count_error">姓は30文字以内で入力してください。</string>-->
+<!--    <string name="first_name_count_error">名は30文字以内で入力してください。</string>-->
+<!--    <string name="postal_code_pattern_error">郵便番号はハイフンを含めずに入力してください。</string>-->
+<!--    <string name="postal_code_count_error">郵便番号は7桁で入力してください。</string>-->
+<!--    <string name="city_count_error">ご住所は20文字以内で入力してください。</string>-->
+<!--    <string name="street_count_error">番地以降は100文字以内で入力してください。</string>-->
+<!--    <string name="phone_pattern_error">電話番号はハイフンを含めずに入力してください。</string>-->
+<!--    <string name="phone_count_error">電話番号は10桁、または11桁で入力してください。</string>-->
+<!--    <string name="summary_count_error">箇所は50文字以内で入力してください。</string>-->
+<!--    <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>-->
+<!--    <string name="password_verificationPassword_match_error">パスワードとパスワード(確認)の値が一致しません。</string>-->
 
     <!-- ボタンのラベル -->
     <string name="registerFree">会員登録（無料）</string>
@@ -233,6 +265,8 @@
     <string name="edit_working_time">作業時間を編集</string>
     <string name="edit_other_form">マニュアル外の報告を編集</string>
     <string name="edit_evaluation">案件の評価を編集</string>
+    <string name="edit_summary">実施箇所%1$dを編集</string>
+    <string name="remove_summary">実施箇所%1$dを削除</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
