@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -74,32 +75,32 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         }
     }
 
-      // FIXME: フォーカス機能
-//    // 銀行名
-//    override fun onFocusChanged(view: View, hasFocus: Boolean) {
-//        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 7) {
-//            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-//                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-//                viewModel.city.value = city
-//                viewModel.street.value = street
-//
-//                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-//                streetEditText.requestFocus()
-//            }
-//        }
-//        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 3) {
-//            Api(this).bank(viewModel.bankName.value ?: "") { bankNumber ->
-//                viewModel.bankNumber.value = bankNumber
-//
-//                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-//                streetEditText.requestFocus()
-//            }
-//        }
-//    }
+    // 銀行名フォーカス機能
+    override fun onBankNameFocusChanged(view: View, hasFocus: Boolean) {
+        if(!hasFocus && viewModel.bankName.value !== null) {
+            Api(this).bank(viewModel.bankName.value ?: "") { bankNumber ->
+                viewModel.bankNumber.value = bankNumber
+
+                val streetEditText = findViewById<EditText>(R.id.branch_office_name)
+                streetEditText.requestFocus()
+            }
+        }
+    }
+
+    // 支店名フォーカス機能
+    override fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean) {
+        if(!hasFocus && viewModel.branchOfficeName.value !== null) {
+            Api(this).branch(viewModel.branchOfficeName.value ?: "",viewModel.bankNumber.value ?: "") { branchOfficeNumber ->
+                viewModel.branchOfficeNumber.value = branchOfficeNumber
+
+                val streetEditText = findViewById<EditText>(R.id.account_name)
+                streetEditText.requestFocus()
+            }
+        }
+    }
 
     // FIXME: HolderとFamilyの区別
     override fun onClickSetting(view: View) {
-        payment.accountType = "current_account"
         payment.bankName = viewModel.bankName.value
         payment.bankNumber = viewModel.bankNumber.value
         payment.branchOfficeName = viewModel.branchOfficeName.value
@@ -353,5 +354,6 @@ class AccountSettingViewModel: ViewModel() {
 
 interface AccountSettingEventHandlers {
     fun onClickSetting(view: View)
-//    fun onFocusChanged(view: View, hasFocus: Boolean)
+    fun onBankNameFocusChanged(view: View, hasFocus: Boolean)
+    fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
 }

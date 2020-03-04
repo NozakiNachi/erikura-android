@@ -157,16 +157,41 @@ class Api(var context: Context) {
         }
     }
 
-    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
+    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (bankNumber: String?) -> Unit) {
         executeObservable(
             erikuraApiService.bank(bankName),
             onError = onError
         ) { body ->
-//            val bankNumber = body.bankNumber
-//            val branchOfficeName = body.branchOfficeName
-//            val branchOfficeNumber = body.branchOfficeNumber
-            //onComplete(bankNumber)
-            onComplete()
+            var bankNumber: String? = null
+
+            for (i in body) {
+                var number = i.get(0)
+                var name = i.get(1)
+
+                if (name == bankName) {
+                    bankNumber = number
+                }
+            }
+            onComplete(bankNumber)
+        }
+    }
+
+    fun branch(branchOfficeName: String, bankNumber:String,  onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (branchOfficeNumber: String?) -> Unit) {
+        executeObservable(
+            erikuraApiService.branch(branchOfficeName, bankNumber),
+            onError = onError
+        ) { body ->
+            var branchOfficeNumber: String? = null
+
+            for (i in body) {
+                var number = i.get(0)
+                var name = i.get(1)
+
+                if (name == branchOfficeName) {
+                    branchOfficeNumber = number
+                }
+            }
+            onComplete(branchOfficeNumber)
         }
     }
 
@@ -258,7 +283,7 @@ class Api(var context: Context) {
                     distance = 0,
                     floorAsc = 0,
                     floorDesc = 0
-            )),
+                )),
             onError = onError
         ){ body ->
             val id = body.entryId
