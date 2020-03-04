@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -65,41 +66,51 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
             // 口座タイプのラジオボタン初期表示
             if (viewModel.accountType.value == "ordinary_account") {
-                viewModel.ordinary_button.value = true
+                binding.ordinaryButton.isChecked = true
             } else if (viewModel.accountType.value == "current_account") {
-                viewModel.current_button.value = true
+                binding.currentButton.isChecked = true
             } else if (viewModel.accountType.value == "savings") {
-                viewModel.savings_button.value = true
+                binding.savingsButton.isChecked = true
             }
         }
     }
 
-      // FIXME: フォーカス機能
-//    // 銀行名
-//    override fun onFocusChanged(view: View, hasFocus: Boolean) {
-//        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 7) {
-//            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-//                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-//                viewModel.city.value = city
-//                viewModel.street.value = street
-//
-//                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-//                streetEditText.requestFocus()
-//            }
-//        }
-//        if(!hasFocus && viewModel.bankName.value?.length ?: 0 == 3) {
-//            Api(this).bank(viewModel.bankName.value ?: "") { bankNumber ->
-//                viewModel.bankNumber.value = bankNumber
-//
-//                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-//                streetEditText.requestFocus()
-//            }
-//        }
-//    }
+    // 銀行名フォーカス機能
+    override fun onBankNameFocusChanged(view: View, hasFocus: Boolean) {
+        if(!hasFocus && viewModel.bankName.value !== null) {
+            Api(this).bank(viewModel.bankName.value ?: "") { bankNumber ->
+                viewModel.bankNumber.value = bankNumber
 
-    // FIXME: HolderとFamilyの区別
-    override fun onClickSetting(view: View) {
+                val streetEditText = findViewById<EditText>(R.id.branch_office_name)
+                streetEditText.requestFocus()
+            }
+        }
+    }
+
+    // 支店名フォーカス機能
+    override fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean) {
+        if(!hasFocus && viewModel.branchOfficeName.value !== null) {
+            Api(this).branch(viewModel.branchOfficeName.value ?: "",viewModel.bankNumber.value ?: "") { branchOfficeNumber ->
+                viewModel.branchOfficeNumber.value = branchOfficeNumber
+
+                val streetEditText = findViewById<EditText>(R.id.account_name)
+                streetEditText.requestFocus()
+            }
+        }
+    }
+
+    // 口座種別
+    override fun onOrdinaryButton(view: View) {
+        payment.accountType = "ordinary_account"
+    }
+    override fun onCurrentButton(view: View) {
         payment.accountType = "current_account"
+    }
+    override fun onSavingsButton(view: View) {
+        payment.accountType = "savings"
+    }
+
+    override fun onClickSetting(view: View) {
         payment.bankName = viewModel.bankName.value
         payment.bankNumber = viewModel.bankNumber.value
         payment.branchOfficeName = viewModel.branchOfficeName.value
@@ -107,14 +118,6 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         payment.accountNumber = viewModel.accountNumber.value
         payment.accountHolder = viewModel.accountHolder.value
         payment.accountHolderFamily = viewModel.accountHolderFamily.value
-
-        if (viewModel.ordinary_button.value == true) {
-            payment.accountType = "ordinary_account"
-        }else if(viewModel.current_button.value == true) {
-            payment.accountType = "current_account"
-        }else if(viewModel.savings_button.value == true) {
-            payment.accountType = "savings"
-        }
 
         // 口座情報登録Apiの呼び出し
         Api(this).updatePayment(payment) {
@@ -200,6 +203,8 @@ class AccountSettingViewModel: ViewModel() {
         return valid
     }
 
+
+    // FIXME: 足りないバリデーションルールがないか確認
     private fun isValidBankName(): Boolean {
         var valid = true
 
@@ -353,5 +358,9 @@ class AccountSettingViewModel: ViewModel() {
 
 interface AccountSettingEventHandlers {
     fun onClickSetting(view: View)
-//    fun onFocusChanged(view: View, hasFocus: Boolean)
+    fun onOrdinaryButton(view: View)
+    fun onCurrentButton(view: View)
+    fun onSavingsButton(view: View)
+    fun onBankNameFocusChanged(view: View, hasFocus: Boolean)
+    fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
 }

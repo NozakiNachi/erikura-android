@@ -157,6 +157,7 @@
     <string name="report_confirm_caption">作業報告の確認</string>
     <string name="report_confirm_note">「完了」すると作業報告が送信されます。</string>
     <string name="report_confirm_form_list">実施箇所の一覧</string>
+    <string name="report_confirm_remove_summary">実施箇所%1$dを削除しますか？</string>
 
     <!-- 作業報告ステータス画面 -->
     <string name="report_status">作業報告のステータス</string>
@@ -271,6 +272,7 @@
     <string name="edit_evaluation">案件の評価を編集</string>
     <string name="edit_summary">実施箇所%1$dを編集</string>
     <string name="remove_summary">実施箇所%1$dを削除</string>
+    <string name="remove">削除</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

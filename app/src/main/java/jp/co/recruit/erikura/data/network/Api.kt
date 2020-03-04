@@ -99,15 +99,23 @@ class Api(var context: Context) {
         }
     }
 
-//    fun notificationSetting(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (notice: List<notice>) -> Unit) {
-//        val observable = erikuraApiService.notificationSetting(
-//            //
-//        )
-//        executeObservable(observable, onError = onError) {
-//            val notices = it.notices
-//            onComplete(notices)
-//        }
-//    }
+    fun notificationSetting(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (notificationSetting: NotificationSetting) -> Unit) {
+        executeObservable(
+            erikuraApiService.notificationSetting(),
+            onError = onError
+        ) { notificationSetting ->
+            onComplete(notificationSetting)
+        }
+    }
+
+    fun updateNotificationSetting(notificationSetting: NotificationSetting, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit)  {
+        executeObservable(
+            erikuraApiService.updateNotificationSetting(notificationSetting),
+            onError = onError
+        ) { body ->
+            onComplete()
+        }
+    }
 
     fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         val observable = erikuraApiService.searchJob(
@@ -157,16 +165,41 @@ class Api(var context: Context) {
         }
     }
 
-    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
+    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (bankNumber: String?) -> Unit) {
         executeObservable(
             erikuraApiService.bank(bankName),
             onError = onError
         ) { body ->
-//            val bankNumber = body.bankNumber
-//            val branchOfficeName = body.branchOfficeName
-//            val branchOfficeNumber = body.branchOfficeNumber
-            //onComplete(bankNumber)
-            onComplete()
+            var bankNumber: String? = null
+
+            for (i in body) {
+                var number = i.get(0)
+                var name = i.get(1)
+
+                if (name == bankName) {
+                    bankNumber = number
+                }
+            }
+            onComplete(bankNumber)
+        }
+    }
+
+    fun branch(branchOfficeName: String, bankNumber:String,  onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (branchOfficeNumber: String?) -> Unit) {
+        executeObservable(
+            erikuraApiService.branch(branchOfficeName, bankNumber),
+            onError = onError
+        ) { body ->
+            var branchOfficeNumber: String? = null
+
+            for (i in body) {
+                var number = i.get(0)
+                var name = i.get(1)
+
+                if (name == branchOfficeName) {
+                    branchOfficeNumber = number
+                }
+            }
+            onComplete(branchOfficeNumber)
         }
     }
 
@@ -258,7 +291,7 @@ class Api(var context: Context) {
                     distance = 0,
                     floorAsc = 0,
                     floorDesc = 0
-            )),
+                )),
             onError = onError
         ){ body ->
             val id = body.entryId
