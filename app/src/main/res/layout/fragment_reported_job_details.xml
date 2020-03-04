@@ -6,13 +6,12 @@
 
     <data>
 
-<!--        <variable-->
-<!--            name="viewModel"-->
-<!--            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentViewModel" />-->
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentViewModel" />
     </data>
 
-    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".presenters.fragments.ReportedJobDetailsFragment">
@@ -162,7 +161,8 @@
                         android:lineSpacingExtra="10dp"
                         android:textSize="14dp"
                         android:textColor="@color/black"
-                        android:text="@{viewModel.tool}" />
+                        />
+                    <!--                        android:text="@{viewModel.tool}"-->
                 </LinearLayout>
 
                 <!--運営からの評価-->
@@ -187,16 +187,18 @@
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_gravity="center"
-                    android:checked="@={viewModel.good}"
                     android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"
                     style="@style/goodButton"/>
+                <!--                    android:checked="@={viewModel.good}"-->
+
                 <FrameLayout
                     android:layout_width="120dp"
                     android:layout_height="120dp"
                     android:layout_gravity="center"
-                    android:checked="@={viewModel.bad}"
                     android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"
                     style="@style/badButton"/>
+                <!--                    android:checked="@={viewModel.bad}"-->
+
 
                 <!--コメント-->
                 <LinearLayout
@@ -220,7 +222,9 @@
                         android:lineSpacingExtra="10dp"
                         android:textSize="14dp"
                         android:textColor="@color/black"
-                        android:text="@{viewModel.tool}" />
+                        />
+                    <!--                        android:text="@{viewModel.tool}" -->
+
                 </LinearLayout>
 
             </LinearLayout>

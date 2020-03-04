@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-    <!--    <data>-->
-    <!--        <variable-->
-    <!--            name="viewModel"-->
-    <!--            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobStatusFragmentViewModel" />-->
+        <data>
+            <variable
+                name="viewModel"
+                type="jp.co.recruit.erikura.presenters.fragments.ReportedJobStatusFragmentViewModel" />
     <!--        <variable-->
     <!--            name="handlers"-->
     <!--            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobStatusFragmentEventHandlers" />-->
-    <!--    </data>-->
+        </data>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -73,9 +73,9 @@
                     android:layout_marginBottom="20dp"
                     android:layout_weight="3"
                     android:gravity="left"
-                    android:text="@{viewModel.comment}"
                     android:textColor="@color/black"
                     android:textSize="14dp" />
+                <!--                    android:text="@{viewModel.comment}"-->
 
             </LinearLayout>
             <!--確認待ち-->
