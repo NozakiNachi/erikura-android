@@ -291,47 +291,63 @@
                         android:text="口座種別" />
                 </LinearLayout>
 
-                <jp.co.recruit.erikura.presenters.activities.ToggleButtonGroupTableLayout
-                    xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:id="@+id/radGroup1">
-                    <TableRow>
-                        <RadioButton
-                            android:id="@+id/ordinary_button"
-                            android:layout_width="140dp"
-                            android:layout_height="70dp"
-                            android:layout_marginTop="10dp"
-                            android:paddingLeft="10dp"
-                            style="@style/buttonWithCheckBox"
-                            android:text="普通"
+                <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    >
+                    <jp.co.recruit.erikura.presenters.activities.TableRadioGroup
+                        android:id="@+id/table"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        >
+                        <TableRow
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            >
+                            <RadioButton
+                                android:id="@+id/ordinary_button"
+                                android:layout_width="140dp"
+                                android:layout_height="70dp"
+                                android:layout_marginTop="10dp"
+                                android:paddingLeft="10dp"
+                                style="@style/buttonWithCheckBox"
+                                android:text="普通"
+                                android:orientation="horizontal"
+                                android:onClick="@{handlers::onOrdinaryButton}"
+                                />
+                            <RadioButton
+                                android:id="@+id/current_button"
+                                android:layout_width="140dp"
+                                android:layout_height="70dp"
+                                android:layout_marginTop="10dp"
+                                android:paddingLeft="10dp"
+                                style="@style/buttonWithCheckBox"
+                                android:text="当座"
+                                android:orientation="horizontal"
+                                android:onClick="@{handlers::onCurrentButton}"
+                                />
+                        </TableRow>
+                        <TableRow
+                            android:id="@+id/group2"
                             android:orientation="horizontal"
-                            android:checked="@={viewModel.ordinary_button}"
-                            />
-                        <RadioButton android:id="@+id/current_button"
-                            android:layout_width="140dp"
-                            android:layout_height="70dp"
-                            android:layout_marginTop="10dp"
-                            android:paddingLeft="10dp"
-                            style="@style/buttonWithCheckBox"
-                            android:text="当座"
-                            android:orientation="horizontal"
-                            android:checked="@={viewModel.current_button}"
-                            />
-                    </TableRow>
-                    <TableRow>
-                        <RadioButton
-                            android:id="@+id/savings_button"
-                            android:layout_width="140dp"
-                            android:layout_height="70dp"
-                            android:layout_marginTop="10dp"
-                            android:paddingLeft="10dp"
-                            style="@style/buttonWithCheckBox"
-                            android:text="貯蓄"
-                            android:orientation="horizontal"
-                            android:checked="@={viewModel.savings_button}"
-                            />
-                    </TableRow>
-                </jp.co.recruit.erikura.presenters.activities.ToggleButtonGroupTableLayout>
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            >
+                            <RadioButton
+                                android:id="@+id/savings_button"
+                                android:layout_width="140dp"
+                                android:layout_height="70dp"
+                                android:layout_marginTop="10dp"
+                                android:paddingLeft="10dp"
+                                style="@style/buttonWithCheckBox"
+                                android:text="貯蓄"
+                                android:orientation="horizontal"
+                                android:onClick="@{handlers::onSavingsButton}"
+                                />
+                        </TableRow>
+                    </jp.co.recruit.erikura.presenters.activities.TableRadioGroup>
+                </LinearLayout>
 
                 <!--銀行名-->
                 <LinearLayout

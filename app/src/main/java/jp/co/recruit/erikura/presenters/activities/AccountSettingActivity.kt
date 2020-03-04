@@ -66,11 +66,11 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
             // 口座タイプのラジオボタン初期表示
             if (viewModel.accountType.value == "ordinary_account") {
-                viewModel.ordinary_button.value = true
+                binding.ordinaryButton.isChecked = true
             } else if (viewModel.accountType.value == "current_account") {
-                viewModel.current_button.value = true
+                binding.currentButton.isChecked = true
             } else if (viewModel.accountType.value == "savings") {
-                viewModel.savings_button.value = true
+                binding.savingsButton.isChecked = true
             }
         }
     }
@@ -99,7 +99,17 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         }
     }
 
-    // FIXME: HolderとFamilyの区別
+    // 口座種別
+    override fun onOrdinaryButton(view: View) {
+        payment.accountType = "ordinary_account"
+    }
+    override fun onCurrentButton(view: View) {
+        payment.accountType = "current_account"
+    }
+    override fun onSavingsButton(view: View) {
+        payment.accountType = "savings"
+    }
+
     override fun onClickSetting(view: View) {
         payment.bankName = viewModel.bankName.value
         payment.bankNumber = viewModel.bankNumber.value
@@ -108,14 +118,6 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         payment.accountNumber = viewModel.accountNumber.value
         payment.accountHolder = viewModel.accountHolder.value
         payment.accountHolderFamily = viewModel.accountHolderFamily.value
-
-        if (viewModel.ordinary_button.value == true) {
-            payment.accountType = "ordinary_account"
-        }else if(viewModel.current_button.value == true) {
-            payment.accountType = "current_account"
-        }else if(viewModel.savings_button.value == true) {
-            payment.accountType = "savings"
-        }
 
         // 口座情報登録Apiの呼び出し
         Api(this).updatePayment(payment) {
@@ -201,6 +203,8 @@ class AccountSettingViewModel: ViewModel() {
         return valid
     }
 
+
+    // FIXME: 足りないバリデーションルールがないか確認
     private fun isValidBankName(): Boolean {
         var valid = true
 
@@ -354,6 +358,9 @@ class AccountSettingViewModel: ViewModel() {
 
 interface AccountSettingEventHandlers {
     fun onClickSetting(view: View)
+    fun onOrdinaryButton(view: View)
+    fun onCurrentButton(view: View)
+    fun onSavingsButton(view: View)
     fun onBankNameFocusChanged(view: View, hasFocus: Boolean)
     fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
 }
