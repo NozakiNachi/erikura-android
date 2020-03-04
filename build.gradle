@@ -5,6 +5,7 @@ buildscript {
     repositories {
         google()
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -12,6 +13,8 @@ buildscript {
         classpath "io.realm:realm-gradle-plugin:6.0.2"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+        classpath 'com.google.gms:google-services:4.3.3'
+        classpath 'io.fabric.tools:gradle:1.+'
     }
 }
 
@@ -19,7 +22,10 @@ allprojects {
     repositories {
         google()
         jcenter()
-        
+        mavenCentral()
+        maven { url 'https://plaidev.github.io/karte-tracker-android/maven-repo' }
+        maven { url 'https://s3.amazonaws.com/fabric-artifacts-private/internal-snapshots' }
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 

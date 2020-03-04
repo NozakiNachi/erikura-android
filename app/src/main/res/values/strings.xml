@@ -175,6 +175,7 @@
     <string name="summary_select">箇所</string>
     <string name="summary_input">箇所（自由記述）</string>
     <string name="summary_status">作業後の状態</string>
+    <string name="summary_status2">作業後の\n状態</string>
     <string name="comment">コメント</string>
 
     <!-- 会員情報入力フィールドのエラーメッセージ -->
@@ -264,6 +265,8 @@
     <string name="edit_working_time">作業時間を編集</string>
     <string name="edit_other_form">マニュアル外の報告を編集</string>
     <string name="edit_evaluation">案件の評価を編集</string>
+    <string name="edit_summary">実施箇所%1$dを編集</string>
+    <string name="remove_summary">実施箇所%1$dを削除</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -382,4 +385,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- Firebase crashlytics-->
+    <string name="com.crashlytics.useFirebaseAppId">true</string>
 </resources>

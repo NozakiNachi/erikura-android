@@ -16,6 +16,7 @@ import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
@@ -67,6 +68,7 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
+            Tracking.identify(body.userId)
             onComplete(session)
         }
     }
@@ -175,6 +177,7 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
+            Tracking.identify(body.userId)
             onComplete(session)
         }
     }
@@ -452,15 +455,23 @@ class Api(var context: Context) {
         }
     }
 
-    private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
+    fun pushEndpoint(fcmToken: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(erikuraApiService.pushEndpoint(PushEndpointRequest(ios_fcm_token = fcmToken)), showProgress = false, onError = onError) { response ->
+            onComplete(response.result)
+        }
+    }
+
+    private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, showProgress: Boolean = true, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
-        showProgressAlert()
+        if (showProgress)
+            showProgressAlert()
         observable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onComplete = {
-                    hideProgressAlert()
+                    if (showProgress)
+                        hideProgressAlert()
                 },
                 onNext = { response: Response<ApiResponse<T>> ->
                     if (response.isSuccessful) {

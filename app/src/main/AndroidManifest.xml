@@ -56,7 +56,8 @@
             android:screenOrientation="portrait" /> <!-- 案件検索画面 -->
         <activity
             android:name=".presenters.activities.job.SearchJobActivity"
-            android:screenOrientation="portrait" /> <!-- ============================================================ -->
+            android:screenOrientation="portrait" />
+        <!-- ============================================================ -->
         <!-- 案件詳細関連 -->
         <activity
             android:name=".presenters.activities.job.JobDetailsActivity"
@@ -97,11 +98,13 @@
                     android:scheme="erikura" />
                 <data android:pathPrefix="/places/" />
             </intent-filter>
-        </activity> <!-- ============================================================ -->
+        </activity>
+        <!-- ============================================================ -->
         <!-- 応募済みの仕事関連 -->
         <activity
             android:name=".presenters.activities.OwnJobsActivity"
-            android:screenOrientation="portrait" /> <!-- ============================================================ -->
+            android:screenOrientation="portrait" />
+        <!-- ============================================================ -->
         <!-- マイページ関連 -->
         <activity
             android:name=".presenters.activities.MypageActivity"
@@ -172,11 +175,30 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".presenters.activities.registration.RegisterFinishedActivity"
-            android:screenOrientation="portrait" /> <!-- ============================================================ -->
+            android:screenOrientation="portrait" />
+        <!-- ============================================================ -->
         <!-- その他 -->
         <activity
             android:name=".presenters.activities.WebViewActivity"
-            android:screenOrientation="portrait" /> <!-- ============================================================ -->
+            android:screenOrientation="portrait" />
+
+        <service
+            android:name=".services.ErikuraMessagingService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+<!--        FIXME: アプリのアイコン設定 -->
+<!--        <meta-data-->
+<!--            android:name="com.google.firebase.messaging.default_notification_icon"-->
+<!--            android:resource="@drawable/...."/>-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/colorAccent" />
+
+        <!-- ============================================================ -->
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").

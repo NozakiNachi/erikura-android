@@ -199,6 +199,7 @@
                     android:layout_marginTop="10dp"
                     android:entries="@{viewModel.summaryItems}"
                     android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onSummarySelected(parent, view, position, id)}}"
+                    android:selectedItemPosition="@={viewModel.summaryId}"
                     android:spinnerMode="dialog" />
 
                 <!-- 箇所自由記入 -->
@@ -273,6 +274,7 @@
                     android:layout_marginTop="10dp"
                     android:entries="@array/summary_evaluation"
                     android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onEvaluationSelected(parent, view, position, id)}}"
+                    android:selectedItemPosition="@={viewModel.statusId}"
                     android:spinnerMode="dialog" />
 
                 <!-- コメント記入 -->
