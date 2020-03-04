@@ -68,14 +68,17 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 }
 
                 override fun onClickRemoveButton(view: View, position: Int) {
-                    removeSummary(view, position)
+                    showRemoveSummary(view, position)
                 }
             }
         }
         val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
         reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
+    }
 
+    override fun onStart() {
+        super.onStart()
         loadData()
     }
 
@@ -100,7 +103,12 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
     }
 
-    fun removeSummary(view: View, position: Int) {
+    fun showRemoveSummary(view: View, position: Int) {
+        val dialog = SummaryRemoveDialogFragment(job, position)
+        dialog.show(supportFragmentManager, "Remove")
+    }
+
+    fun removeSummary(job: Job, position: Int) {
         job.report?.let {
             var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
             outputSummaryList = it.outputSummaries.toMutableList()
@@ -193,10 +201,6 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 }
             }
 
-        }
-
-        if (resultCode == Activity.RESULT_OK) {
-            loadData()
         }
     }
 
