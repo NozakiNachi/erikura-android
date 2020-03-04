@@ -145,20 +145,24 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         var summaryIndex = job.summaryTitles.count() + 1
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]
+            viewModel.summarySelectedItem = null
             job.summaryTitles.forEachIndexed { index, s ->
                 if (s == summary.place) {
                     summaryIndex = index + 1
+                    viewModel.summarySelectedItem = s
                 }
             }
             viewModel.summaryId.value = if (summary.place.isNullOrEmpty()){0} else {summaryIndex}
             if (summaryIndex == job.summaryTitles.count() + 1) {
                 viewModel.summary.value = summary.place
+                viewModel.summarySelectedItem = ErikuraApplication.instance.getString(R.string.other_hint)
                 viewModel.summaryEditVisibility.value = View.VISIBLE
             }
             var statuses = ErikuraApplication.instance.getResources().getStringArray(R.array.summary_evaluation)
             statuses.forEachIndexed { index, s ->
                 if (s == summary.evaluation) {
                     viewModel.statusId.value = index
+                    viewModel.evaluationSelectedItem = s
                 }
             }
             viewModel.comment.value = summary.comment
