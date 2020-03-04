@@ -23,6 +23,7 @@
             android:background="@color/white"
             android:visibility="@{viewModel.imageVisibility}"/>
         <Button
+            android:id="@+id/report_image_add_photo_button"
             style="?android:attr/borderlessButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

@@ -241,4 +241,14 @@
         <item name="android:textOff"></item>
         <item name="android:background">@drawable/background_tick_button</item>
     </style>
+
+    <!-- 通知設定ボタン -->
+    <style name="CustomSwitch" parent="Theme.AppCompat.Light">
+        <!--ボタンON時のボタンの通り道（透明度30%）・ボタンとタッチフィードバックカラー-->
+        <item name="colorControlActivated">#ff0000</item>
+        <!--ボタンOFF時のボタンの通り道（透明度30%）-->
+        <item name="android:colorForeground">#4CD964</item>
+        <!-- OFFボタンを押したときのタッチフィードバックカラー -->
+        <item name="colorControlHighlight">#ffff00</item>
+    </style>
 </resources>

@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,27 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
 
         // ErikuraConfig を読み込みます
         ErikuraConfig.load(this)
+
+        /*
+            // 通知のIntentから表示させたいFragmentのIDを得る
+    // この実装では、通知に{"fragment":"info"}というKVが含まれていたら、info画面を表示させようとしている
+    // リフレクション使えば条件分岐は不要ですが(^^ゞ
+    private int onIntent(Intent intent) {
+        if (intent != null && "info".equals(intent.getStringExtra(ARG_FRAGMENT))) {
+            return R.id.info;
+        } else {
+            return 0;
+        }
+    }
+         */
+
+        val intent = getIntent()
+        if (intent != null) {
+            val data = intent.getStringExtra("extra")
+            Log.v("TEST", data ?: "")
+            // FIXME: JSON をパースして適切なActivityに遷移させる
+            // FIXME: すでにプロセスが存在する場合の対策の実装
+        }
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")

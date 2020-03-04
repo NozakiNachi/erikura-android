@@ -18,7 +18,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
-import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
@@ -27,13 +26,15 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
+    var fromChangeUserInformationFragment: Boolean = false
+    var fromChangeAccountFragment: Boolean = false
+    var fromRegisterAccountFragment: Boolean = false
 
     private val viewModel: ConfigurationViewModel by lazy {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
 
     // FIXME: 正しいリンク先の作成
-    // FIXME: アイコンのファイル名書き換え
     var menuItems: List<MenuItem> = listOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
@@ -44,7 +45,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {
-            val intent = Intent(this, RegisterEmailActivity::class.java)
+            val intent = Intent(this, NotificationSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, true) {
@@ -82,6 +83,10 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             }
         })
         configuration_recycler_view.adapter = adapter
+
+        fromChangeUserInformationFragment = intent.getBooleanExtra("onClickChangeUserInformationFragment", false)
+        fromChangeAccountFragment = intent.getBooleanExtra("onClickChangeAccountFragment", false)
+        fromRegisterAccountFragment = intent.getBooleanExtra("onClickRegisterAccountFragment", false)
     }
 
     class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
@@ -116,6 +121,33 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
 
         override fun getItemCount() = menuItems.size
+    }
+
+    //
+    override fun onStart() {
+        super.onStart()
+        if(fromChangeUserInformationFragment) {
+            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
+            binding.lifecycleOwner = this
+
+            AlertDialog.Builder(this)
+                .setView(binding.root)
+                .show()
+        }else if(fromRegisterAccountFragment){
+            val binding: DialogRegisterAccountSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_register_account_success, null, false)
+            binding.lifecycleOwner = this
+
+            AlertDialog.Builder(this)
+                .setView(binding.root)
+                .show()
+        }else if(fromChangeAccountFragment){
+            val binding: DialogChangeAccountSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_account_success, null, false)
+            binding.lifecycleOwner = this
+
+            AlertDialog.Builder(this)
+                .setView(binding.root)
+                .show()
+        }
     }
 
     // ログアウトリンク
