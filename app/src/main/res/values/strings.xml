@@ -163,6 +163,9 @@
     <string name="report_status">作業報告のステータス</string>
     <string name="report_rejected_comment">差し戻しコメント</string>
 
+    <!-- 作業報告の削除モーダル-->
+    <string name="report_remove_caption">作業報告を削除しますか？</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>

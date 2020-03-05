@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.ActivityOptions
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,7 +14,7 @@ import jp.co.recruit.erikura.presenters.activities.report.ReportConfirmActivity
 
 
 
-class ReportedJobEditButtonFragment(val job: Job?) : Fragment(), ReportedJobEditButtonFragmentEventHandlers {
+class ReportedJobEditButtonFragment(private val job: Job?) : Fragment(), ReportedJobEditButtonFragmentEventHandlers {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

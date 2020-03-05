@@ -10,7 +10,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentReportedJobRemoveButtonBinding
 
 
-class ReportedJobRemoveButtonFragment(val job: Job?) : Fragment(), ReportedJobRemoveButtonFragmentEventHandlers {
+class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), ReportedJobRemoveButtonFragmentEventHandlers {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,7 +23,8 @@ class ReportedJobRemoveButtonFragment(val job: Job?) : Fragment(), ReportedJobRe
     }
 
     override fun onClickReportedJobRemoveButton(view: View) {
-
+        val dialog = ReportedJobRemoveDialogFragment(job)
+        dialog.show(childFragmentManager, "Remove")
     }
 }
 
