@@ -33,6 +33,7 @@ import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import kotlinx.android.synthetic.main.activity_mypage.*
 import jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationActivity
+import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 import java.util.*
 
 class MypageActivity : AppCompatActivity(), MypageEventHandlers {
@@ -58,8 +59,10 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         },
         MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
             // FIXME: 正しいリンク先の作成
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            Intent(this, OwnJobsActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
         },
         MypageItem(3, "設定", R.drawable.ic_preferences, true) {
             val intent = Intent(this, ConfigurationActivity::class.java)
