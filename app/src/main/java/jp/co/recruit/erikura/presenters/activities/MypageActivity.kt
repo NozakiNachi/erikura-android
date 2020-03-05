@@ -99,6 +99,8 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
             }
         })
         mypage_recycler_view.adapter = adapter
+        val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        mypage_recycler_view.addItemDecoration(itemDecoration)
     }
 
     class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Adapter<MypageAdapter.ViewHolder>()
