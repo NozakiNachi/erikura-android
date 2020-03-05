@@ -104,11 +104,19 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     fun showRemoveSummary(view: View, position: Int) {
-        val dialog = SummaryRemoveDialogFragment(job, position)
+        val dialog = SummaryRemoveDialogFragment(position).also {
+            it.onClickListener = object: SummaryRemoveDialogFragment.OnClickListener {
+                override fun onClickRemoveButton() {
+                    removeSummary(position)
+                    it.dismiss()
+                }
+            }
+        }
+
         dialog.show(supportFragmentManager, "Remove")
     }
 
-    fun removeSummary(job: Job, position: Int) {
+    fun removeSummary(position: Int) {
         job.report?.let {
             var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
             outputSummaryList = it.outputSummaries.toMutableList()

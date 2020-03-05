@@ -7,9 +7,6 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.report.SummaryRemoveViewModel" />
-        <variable
-            name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.report.SummaryRemoveEventHandlers" />
     </data>
     <ScrollView
         android:layout_width="match_parent"
@@ -31,6 +28,7 @@
                 android:textSize="22dp" />
 
             <Button
+                android:id="@+id/summary_remove_button"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="20dp"
@@ -38,7 +36,6 @@
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
                 android:text="@string/remove"
-                android:onClick="@{handlers::onClickRemoveButton}"
                 />
 
         </LinearLayout>
