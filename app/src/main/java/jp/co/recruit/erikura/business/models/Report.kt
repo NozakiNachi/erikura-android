@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.business.models
 
+import android.app.Activity
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -130,4 +131,10 @@ data class Report (
         return valid
     }
      */
+
+
+    // 画像アップロード処理
+    fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
+
+    }
 }

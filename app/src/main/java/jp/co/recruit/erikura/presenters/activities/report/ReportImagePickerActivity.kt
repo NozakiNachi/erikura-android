@@ -150,7 +150,11 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         }
         job.report?.let { report ->
             report.outputSummaries = outputSummaryList
-            // FIXME: 画像のアップロード処理開始
+            outputSummaryList.forEach { outputSummary ->
+                report.uploadPhoto(this, job, outputSummary.photoAsset){
+                    outputSummary.beforeCleaningPhotoToken = it
+                }
+            }
         }
 
         val intent= Intent(this, ReportFormActivity::class.java)
