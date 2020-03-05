@@ -5,9 +5,6 @@
             <variable
                 name="viewModel"
                 type="jp.co.recruit.erikura.presenters.fragments.ReportedJobStatusFragmentViewModel" />
-    <!--        <variable-->
-    <!--            name="handlers"-->
-    <!--            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobStatusFragmentEventHandlers" />-->
         </data>
     <FrameLayout
         android:layout_width="match_parent"
@@ -18,13 +15,12 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@drawable/background_round_topaz" >
 
             <TextView
-                android:layout_width="160dp"
-                android:layout_height="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_weight="3"
@@ -42,20 +38,24 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
                     android:gravity="center"
                     android:textColor="@color/coral"
-                    android:textSize="22dp"/>
+                    android:textSize="22dp"
+                    android:text="差し戻し" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="18dp"
                     android:background="@color/silverTwo" />
 
                 <TextView
-                    android:layout_width="128dp"
-                    android:layout_height="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_weight="3"
@@ -74,8 +74,8 @@
                     android:layout_weight="3"
                     android:gravity="left"
                     android:textColor="@color/black"
-                    android:textSize="14dp" />
-                <!--                    android:text="@{viewModel.comment}"-->
+                    android:textSize="14dp"
+                    android:text="@{viewModel.reportRejectComment}"/>
 
             </LinearLayout>
             <!--確認待ち-->
@@ -88,9 +88,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center"
                     android:textColor="@color/warmGrey"
-                    android:textSize="22dp"/>
+                    android:textSize="22dp"
+                    android:text="確認待ち"/>
             </LinearLayout>
             <!--確認済み-->
             <LinearLayout
@@ -102,9 +106,13 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center"
                     android:textColor="@color/topaz"
-                    android:textSize="22dp"/>
+                    android:textSize="22dp"
+                    android:text="確認済み"/>
             </LinearLayout>
 
         </LinearLayout>

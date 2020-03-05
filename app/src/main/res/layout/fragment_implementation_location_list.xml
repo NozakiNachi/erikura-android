@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+<!--    <data>-->
+<!--        <variable-->
+<!--            name="viewModel"-->
+<!--            type="jp.co.recruit.erikura.presenters.fragments.JobDetailsViewFragmentViewModel" />-->
+<!--        <variable-->
+<!--            name="handlers"-->
+<!--            type="jp.co.recruit.erikura.presenters.fragments.JobDetailsViewFragmentEventHandlers" />-->
+<!--    </data>-->
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.ImplementationLocationList">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- ラベル -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:textSize="20dp"/>
+<!--                android:text="@{viewModel.title}"-->
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!--コメント-->
+                    <TextView
+                        android:id="@+id/job_list_item_comment"
+                        style="@style/label_w2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="18dp"
+                        android:background="@drawable/background_roundrect_topaz"
+                        android:drawableLeft="@drawable/icon_comment_10"
+                        android:drawablePadding="2dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/black"
+                        android:textSize="12dp" />
+                    <!--                        android:text="@{viewModel.commentText}"-->
+<!--                    android:visibility="@{viewModel.commentVisible}"-->
+
+                    <!--いいね-->
+                    <TextView
+                        android:id="@+id/job_list_item_good"
+                        style="@style/label_w2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="18dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@drawable/background_roundrect_topaz"
+                        android:drawableLeft="@drawable/icon_good_10"
+                        android:drawablePadding="2dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/black"
+                        android:textSize="12dp" />
+<!--                    android:text="@{viewModel.goodText}"-->
+<!--                    android:visibility="@{viewModel.goodVisible}"-->
+
+                </LinearLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- 箇所画像 -->
+            <ImageView
+                android:id="@+id/report_form_image"
+                android:layout_width="180dp"
+                android:layout_height="305dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/white" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/silver" />
+            <!-- 箇所-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:gravity="center"
+                    android:text="@string/location"
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:lineSpacingExtra="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
+<!--                android:text="@{viewModel.tool}"-->
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/silver" />
+            <!-- コメント -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:gravity="center"
+                    android:text="@string/comment"
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:lineSpacingExtra="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
+<!--                android:text="@{viewModel.tool}"-->
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginBottom="20dp"
+                android:background="@color/silver" />
+
+            <!-- 運営からの評価-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_round_topaz"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_weight="3"
+                    android:gravity="left"
+                    android:text="@string/evaluation_from_management"
+                    android:textColor="@color/black"
+                    android:textSize="16dp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="18dp"
+                    android:layout_marginBottom="19.5dp"
+                    android:background="@color/silverTwo" />
+
+                <!-- report.client_comments-->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="33dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="3"
+                    android:gravity="left"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
+
+                <!-- report.client_comments_created_at-->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="36dp"
+                    android:layout_marginBottom="20dp"
+                    android:layout_weight="3"
+                    android:gravity="left"
+                    android:text=""
+                    android:textColor="@color/warmGrey"
+                    android:textSize="12dp" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+</layout>

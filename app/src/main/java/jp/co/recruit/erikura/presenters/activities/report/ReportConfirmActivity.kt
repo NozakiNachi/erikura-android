@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
+import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
@@ -67,14 +68,17 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 }
 
                 override fun onClickRemoveButton(view: View, position: Int) {
-                    removeSummary(view, position)
+                    showRemoveSummary(view, position)
                 }
             }
         }
         val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
         reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
+    }
 
+    override fun onStart() {
+        super.onStart()
         loadData()
     }
 
@@ -99,7 +103,20 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
     }
 
-    fun removeSummary(view: View, position: Int) {
+    fun showRemoveSummary(view: View, position: Int) {
+        val dialog = SummaryRemoveDialogFragment(position).also {
+            it.onClickListener = object: SummaryRemoveDialogFragment.OnClickListener {
+                override fun onClickRemoveButton() {
+                    removeSummary(position)
+                    it.dismiss()
+                }
+            }
+        }
+
+        dialog.show(supportFragmentManager, "Remove")
+    }
+
+    fun removeSummary(position: Int) {
         job.report?.let {
             var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
             outputSummaryList = it.outputSummaries.toMutableList()
@@ -193,10 +210,6 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             }
 
         }
-
-        if (resultCode == Activity.RESULT_OK) {
-            loadData()
-        }
     }
 
     private fun moveToGallery() {
@@ -239,6 +252,8 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty()) {View.GONE} else {View.VISIBLE}
             val comment = it.comment?: ""
             viewModel.evaluationComment.value = comment
+
+            viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
         }
     }
 }
@@ -250,6 +265,24 @@ class ReportConfirmViewModel: ViewModel() {
     val evaluate: MutableLiveData<Boolean> = MutableLiveData()
     val evaluateButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
+
+    val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
+
+    fun isValid(report: Report): Boolean {
+        var valid = true
+        if (report.outputSummaries.count() > 0) {
+            report.outputSummaries.forEach {
+                valid = valid && isValidSummary(it)
+            }
+        }else {
+            valid = false
+        }
+        return valid
+    }
+
+    private fun isValidSummary(summary: OutputSummary): Boolean {
+        return summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank()
+    }
 }
 
 interface ReportConfirmEventHandlers {

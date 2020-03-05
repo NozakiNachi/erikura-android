@@ -13,11 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.business.models.ReportStatus
 import jp.co.recruit.erikura.databinding.FragmentReportedJobStatusBinding
-import jp.co.recruit.erikura.R
 import androidx.appcompat.app.AppCompatActivity
 
 
-class ReportedJobStatusFragment (private val activity: AppCompatActivity, val report: Report,val reportStatus: ReportStatus) : Fragment() {
+class ReportedJobStatusFragment (private val activity: AppCompatActivity, val report: Report?) : Fragment() {
     private val viewModel: ReportedJobStatusFragmentViewModel by lazy {
         ViewModelProvider(this).get(ReportedJobStatusFragmentViewModel::class.java)
     }
@@ -28,7 +27,12 @@ class ReportedJobStatusFragment (private val activity: AppCompatActivity, val re
     ): View? {
         // Inflate the layout for this fragment
         container?.removeAllViews()
-        viewModel.reportStatus = report.status
+        if (report != null) {
+            viewModel.reportStatus = report.status
+            if (report.rejectComment != null) {
+                viewModel.reportRejectComment = report.rejectComment
+            }
+        }
         val binding = FragmentReportedJobStatusBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         binding.viewModel = viewModel
@@ -37,7 +41,10 @@ class ReportedJobStatusFragment (private val activity: AppCompatActivity, val re
 }
 
 class ReportedJobStatusFragmentViewModel: ViewModel() {
-
+    var reportRejectComment: String? = null
+    val acceptedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val rejectedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val unconfirmedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     var reportStatus: ReportStatus = ReportStatus.Unconfirmed
         set(reportStatus) {
             field = reportStatus
@@ -59,8 +66,4 @@ class ReportedJobStatusFragmentViewModel: ViewModel() {
                 }
             }
         }
-
-    val acceptedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    val rejectedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    val unconfirmedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 }

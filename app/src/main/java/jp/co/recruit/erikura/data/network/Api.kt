@@ -372,8 +372,8 @@ class Api(var context: Context) {
             erikuraApiService.placeFavoriteShow(placeId),
             onError = onError
         ) { body ->
-            val result = body.result
-            onComplete(result)
+            val resultId = body.result
+            onComplete(resultId)
         }
     }
 
@@ -589,5 +589,15 @@ class Api(var context: Context) {
 
     private fun isDestroyed(): Boolean {
         return (context as? Activity)?.isDestroyed ?: true
+    }
+
+    fun deleteReport(JobId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.deleteReport(DeleteReportRequest(JobId)),
+            onError = onError
+        ) { body ->
+            val reportId = body.reportId
+            onComplete()
+        }
     }
 }

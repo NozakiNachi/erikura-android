@@ -45,12 +45,14 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
+        //×ボタン
         val timeLabel = TimeLabelFragment(job, user)
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
-        //作業報告ステータス
-        //作業報告ボタン
-        //作業削除ボタン
+        val reportedJobStatus = ReportedJobStatusFragment(activity, job?.report)
+        val reportedJobEditButton = ReportedJobEditButtonFragment(job)
+        val reportedJobRemoveButton = ReportedJobRemoveButtonFragment(job)
+        val jobDetailsView = JobDetailsViewFragment(job)
         //実施箇所表示
         //作業時間
         //マニュアル外の報告
@@ -59,15 +61,14 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         //運営からの評価
         //案件の評価
 
+        //FIXME:　×ボタン
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
-        //FIXME: 作業報告ステータス
-        //transaction.add(R.id.jobDetails_作業報告ステータス, 作業報告ステータス, "作業報告ステータス")
-        //FIXME: 作業報告編集ボタン
-        //transaction.add(R.id.jobDetails_作業報告編集Button, 作業報告編集Button, "作業報告編集Button")
-        //FIXME: 作業報告削除ボタン
-        //transaction.add(R.id.jobDetails_作業報告削除Button, 作業報告削除Button, "作業報告削除Button")
+        transaction.add(R.id.jobDetails_reportedJobStatus, reportedJobStatus, "reportedJobStatus")
+        transaction.add(R.id.reportedJobEditButton, reportedJobEditButton, "reportedJobEditButton")
+        transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton, "reportedJobRemoveButton")
+        transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
         //FIXME: 実施箇所表示
         val implementedLocationList: RecyclerView = activity!!.findViewById(R.id.ImplementedLocationList)
         implementedLocationList.setHasFixedSize(true)
@@ -90,6 +91,10 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         transaction.commit()
     }
 }
+
+//interface ReportedJobDetailsHandler {
+//    fun onClickClose(view: View)
+//}
 
 class ReportedJobDetailsFragmentViewModel: ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
