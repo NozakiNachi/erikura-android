@@ -45,6 +45,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
+        //×ボタン
         val timeLabel = TimeLabelFragment(job, user)
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
@@ -60,6 +61,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         //運営からの評価
         //案件の評価
 
+        //FIXME:　×ボタン
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")

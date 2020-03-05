@@ -166,6 +166,10 @@
     <!-- 作業報告の削除モーダル-->
     <string name="report_remove_caption">作業報告を削除しますか？</string>
 
+    <!--　作業報告済み仕事詳細画面-->
+    <string name="location">箇所</string>
+    <string name="evaluation_from_management">運営からの評価</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>

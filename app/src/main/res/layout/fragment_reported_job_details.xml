@@ -39,6 +39,7 @@
                     android:background="@{viewModel.bitmapDrawable}"
                     android:orientation="vertical">
 
+<!--                    FIXME:×ボタン-->
 <!--                    <ImageButton-->
 <!--                        android:layout_width="30dp"-->
 <!--                        android:layout_height="30dp"-->
@@ -98,14 +99,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="20dp"
                     />
-                <!--FIXME: Fragment未作成 ボタンはマニュアル表示ボタンをもとにする-->
-                <FrameLayout
-                    android:id="@+id/jobDetails_"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginRight="20dp" />
+
                 <!--作業報告を編集ボタン-->
                 <FrameLayout
                     android:id="@+id/reportedJobEditButton"
