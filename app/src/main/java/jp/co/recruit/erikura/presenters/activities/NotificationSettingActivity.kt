@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -57,6 +56,12 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         }
     }
 
+    // 戻るボタン押下時に通知設定を保存
+    override fun onDestroy() {
+        super.onDestroy()
+        Api(this).updateNotificationSetting(notificationSetting) {}
+    }
+
     // 通知のスイッチ切替
     override fun onAllowRemindMailReception(view: View) {
         if (viewModel.allowRemindMailReception.value == true){
@@ -66,7 +71,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
             viewModel.allowRemindMailReception.value =true
             notificationSetting.allowRemindMailReception = true
         }
-        onNotificationSetting()
     }
     override fun onAllowInfoMailReception(view: View) {
         if (viewModel.allowInfoMailReception.value == true){
@@ -76,7 +80,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
             viewModel.allowInfoMailReception.value = true
             notificationSetting.allowInfoMailReception = true
         }
-        onNotificationSetting()
     }
     override fun onAllowRemindPushReception(view: View) {
         if (viewModel.allowRemindPushReception.value == true){
@@ -86,7 +89,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
             viewModel.allowRemindPushReception.value = true
             notificationSetting.allowRemindPushReception = true
         }
-        onNotificationSetting()
     }
     override fun onAllowInfoPushReception(view: View) {
         if (viewModel.allowInfoPushReception.value == true){
@@ -96,13 +98,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
             viewModel.allowInfoPushReception.value = true
             notificationSetting.allowInfoPushReception = true
         }
-        onNotificationSetting()
-    }
-
-    override fun onNotificationSetting() {
-        // 通知設定登録Apiの呼び出し
-        Api(this).updateNotificationSetting(notificationSetting) {
-        }
     }
 }
 
@@ -111,7 +106,6 @@ interface NotificationSettingEventHandlers {
     fun onAllowInfoMailReception(view: View)
     fun onAllowRemindPushReception(view: View)
     fun onAllowInfoPushReception(view: View)
-    fun onNotificationSetting()
 }
 
 class NotificationSettingViewModel: ViewModel() {

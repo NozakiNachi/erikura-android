@@ -78,7 +78,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
+                    android:layout_marginTop="20dp"
                     >
                     <TextView
                         style="@style/fieldLabel"
@@ -113,11 +113,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/errorField"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.passwordErrorVisibility}"
                     style="@style/errorField"
@@ -128,7 +123,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    >
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -154,11 +149,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    style="@style/errorField"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
                     style="@style/errorField"
@@ -169,7 +159,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp"
                     >
                     <TextView
                         style="@style/fieldLabel"
@@ -222,7 +211,6 @@
                     android:text="@={viewModel.firstNameErrorMsg}"
                     />
 
-
                 <!--生年月日-->
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -268,35 +256,31 @@
                         android:text="性別" />
                 </LinearLayout>
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="90dp">
                     <RadioGroup
+                        android:id="@+id/GenderGroup"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:orientation="horizontal"
-                        android:id="@+id/GenderGroup">
+                        android:orientation="horizontal">
                         <RadioButton
                             android:id="@+id/male_button"
+                            style="@style/buttonWithCheckBox"
                             android:layout_width="140dp"
                             android:layout_height="70dp"
                             android:layout_marginTop="10dp"
-                            android:paddingLeft="10dp"
-                            style="@style/buttonWithCheckBox"
-                            android:text="@string/male"
                             android:onClick="@{handlers::onClickMale}"
-                            >
-                        </RadioButton>
+                            android:paddingLeft="10dp"
+                            android:text="@string/male"/>
                         <RadioButton
                             android:id="@+id/female_button"
+                            style="@style/buttonWithCheckBox"
                             android:layout_width="140dp"
                             android:layout_height="70dp"
                             android:layout_marginTop="10dp"
-                            android:paddingLeft="10dp"
-                            style="@style/buttonWithCheckBox"
-                            android:text="@string/female"
                             android:onClick="@{handlers::onClickFemale}"
-                            >
-                        </RadioButton>
+                            android:paddingLeft="5dp"
+                            android:text="@string/female"/>
                     </RadioGroup>
                 </LinearLayout>
 
@@ -346,7 +330,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="20dp"
+                    >
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -401,7 +386,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="20dp"
+                    >
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="wrap_content"
@@ -434,7 +420,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="20dp"
+                    >
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

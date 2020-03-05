@@ -110,6 +110,7 @@
                                 android:layout_marginTop="30dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
                                 android:textSize="12dp"
                                 android:text="納期間近の案件があった場合のリマインドメール"/>
@@ -118,6 +119,7 @@
                 </LinearLayout>
 
                 <View
+                    android:layout_marginTop="10dp"
                     android:layout_height="1px"
                     android:layout_width="match_parent"
                     android:background="#d6e4e2"
@@ -166,6 +168,7 @@
                                 android:layout_marginTop="30dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
                                 android:textSize="10.5dp"
                                 android:text="会員様限定のお仕事情報などを記載したお知らせメール。"/>
@@ -174,6 +177,7 @@
                 </LinearLayout>
 
                 <View
+                    android:layout_marginTop="10dp"
                     android:layout_height="1px"
                     android:layout_width="match_parent"
                     android:background="#d6e4e2"
@@ -245,12 +249,14 @@
                                 android:layout_marginRight="20dp"
                                 style="@style/label_w2"
                                 android:textSize="12dp"
+                                android:layout_marginBottom="10dp"
                                 android:text="****説明文が入ります。説明文が入ります。"/>
                         </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
 
                 <View
+                    android:layout_marginTop="10dp"
                     android:layout_height="1px"
                     android:layout_width="match_parent"
                     android:background="#d6e4e2"
@@ -300,12 +306,14 @@
                                 android:layout_marginTop="30dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
                                 android:textSize="12dp"
                                 android:text="****説明文が入ります。説明文が入ります。"/>
                         </RelativeLayout>
                     </LinearLayout>
                     <View
+                        android:layout_marginTop="10dp"
                         android:layout_height="1px"
                         android:layout_width="match_parent"
                         android:background="#d6e4e2"

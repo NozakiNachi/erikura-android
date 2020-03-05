@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -20,6 +21,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import kotlinx.android.synthetic.main.activity_mypage.*
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
@@ -83,6 +85,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             }
         })
         configuration_recycler_view.adapter = adapter
+        val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+        configuration_recycler_view.addItemDecoration(itemDecoration)
 
         fromChangeUserInformationFragment = intent.getBooleanExtra("onClickChangeUserInformationFragment", false)
         fromChangeAccountFragment = intent.getBooleanExtra("onClickChangeAccountFragment", false)
