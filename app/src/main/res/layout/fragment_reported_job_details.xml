@@ -39,17 +39,17 @@
                     android:background="@{viewModel.bitmapDrawable}"
                     android:orientation="vertical">
 
-                    <ImageButton
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        android:layout_marginTop="60dp"
-                        android:layout_marginLeft="20dp"
-                        android:src="@drawable/cross_3x"
-                        android:background="#00000000"
-                        android:onClick="@{handler::onClickClose}"
-                        />
+<!--                    <ImageButton-->
+<!--                        android:layout_width="30dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        app:layout_constraintTop_toTopOf="parent"-->
+<!--                        app:layout_constraintLeft_toLeftOf="parent"-->
+<!--                        android:layout_marginTop="60dp"-->
+<!--                        android:layout_marginLeft="20dp"-->
+<!--                        android:src="@drawable/cross_3x"-->
+<!--                        android:background="#00000000"-->
+<!--                        android:onClick="@{handler::onClickClose}"-->
+<!--                        />-->
 
                     <!-- 時間表示ラベル -->
                     <FrameLayout
@@ -108,14 +108,14 @@
                     android:layout_marginRight="20dp" />
                 <!--作業報告を編集ボタン-->
                 <FrameLayout
-                    android:id="@+id/jobDetails"
+                    android:id="@+id/reportedJobEditButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp" />
 
                 <!--作業報告を削除ボタン-->
                 <FrameLayout
-                    android:id="@+id/jobDetails_D"
+                    android:id="@+id/reportedJobRemoveButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp" />

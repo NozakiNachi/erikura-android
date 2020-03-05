@@ -13,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.business.models.ReportStatus
 import jp.co.recruit.erikura.databinding.FragmentReportedJobStatusBinding
-import jp.co.recruit.erikura.R
 import androidx.appcompat.app.AppCompatActivity
 
 
