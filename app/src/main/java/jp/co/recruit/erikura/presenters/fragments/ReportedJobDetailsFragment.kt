@@ -49,10 +49,9 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
         val reportedJobStatus = ReportedJobStatusFragment(activity, job?.report)
-        //作業報告ボタン
         val reportedJobEditButton = ReportedJobEditButtonFragment(job)
-        //作業削除ボタン
         val reportedJobRemoveButton = ReportedJobRemoveButtonFragment(job)
+        val jobDetailsView = JobDetailsViewFragment(job)
         //実施箇所表示
         //作業時間
         //マニュアル外の報告
@@ -64,12 +63,10 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
-        //FIXME: 作業報告ステータス
         transaction.add(R.id.jobDetails_reportedJobStatus, reportedJobStatus, "reportedJobStatus")
-        //FIXME: 作業報告編集ボタン
         transaction.add(R.id.reportedJobEditButton, reportedJobEditButton, "reportedJobEditButton")
-        //FIXME: 作業報告削除ボタン
         transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton, "reportedJobRemoveButton")
+        transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
         //FIXME: 実施箇所表示
         val implementedLocationList: RecyclerView = activity!!.findViewById(R.id.ImplementedLocationList)
         implementedLocationList.setHasFixedSize(true)
