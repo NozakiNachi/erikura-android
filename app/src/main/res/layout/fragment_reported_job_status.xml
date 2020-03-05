@@ -75,7 +75,7 @@
                     android:gravity="left"
                     android:textColor="@color/black"
                     android:textSize="14dp"
-                    android:text="@{viewModel.reportComment}"/>
+                    android:text="@{viewModel.reportRejectComment}"/>
 
             </LinearLayout>
             <!--確認待ち-->

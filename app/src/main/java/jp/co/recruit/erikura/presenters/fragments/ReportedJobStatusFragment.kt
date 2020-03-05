@@ -29,8 +29,8 @@ class ReportedJobStatusFragment (private val activity: AppCompatActivity, val re
         container?.removeAllViews()
         if (report != null) {
             viewModel.reportStatus = report.status
-            if (report.comment != null) {
-                viewModel.reportComment = report.comment
+            if (report.rejectComment != null) {
+                viewModel.reportRejectComment = report.rejectComment
             }
         }
         val binding = FragmentReportedJobStatusBinding.inflate(inflater, container, false)
@@ -41,7 +41,7 @@ class ReportedJobStatusFragment (private val activity: AppCompatActivity, val re
 }
 
 class ReportedJobStatusFragmentViewModel: ViewModel() {
-    var reportComment: String? = null
+    var reportRejectComment: String? = null
     val acceptedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val rejectedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val unconfirmedVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
