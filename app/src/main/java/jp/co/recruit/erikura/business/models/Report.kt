@@ -2,9 +2,15 @@ package jp.co.recruit.erikura.business.models
 
 import android.app.Activity
 import android.os.Parcelable
+import jp.co.recruit.erikura.data.network.Api
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import java.util.*
+import java.util.concurrent.Executor
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
+
 
 enum class ReportStatus {
     Unconfirmed,
@@ -135,6 +141,29 @@ data class Report (
 
     // 画像アップロード処理
     fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
+        // 画像リサイズ処理
+        item?.let {
+            item.resizeImage(activity, 640, 640)
+        }
+
+        val corePoolSize = 1  //スレッド数
+        val maximumPoolSize = 1  //最大スレッド数
+        val keepAliveTime: Long = 120  //スレッド数がコアより大きい場合、アイドルスレッドが破棄されるまでの時間。
+
+        val executor: Executor = ThreadPoolExecutor(
+            corePoolSize,
+            maximumPoolSize,
+            keepAliveTime,
+            TimeUnit.SECONDS,  //KeepAliveTimeの単位
+            LinkedBlockingQueue()
+        )
+
+        executor.execute {
+            // 画像アップロード処理
+            Api(activity).imageUpload(item!!) {
+                onComplete(it)
+            }
+        }
 
     }
 }

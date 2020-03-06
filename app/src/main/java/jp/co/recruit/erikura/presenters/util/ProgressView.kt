@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import jp.co.recruit.erikura.R
 
 
@@ -25,12 +27,17 @@ class ProgressView : FrameLayout {
         View.inflate(context, R.layout.progress_view, this)
 
         if (attrs != null) {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.ProgressView)
-            if (a.hasValue(R.styleable.ProgressView_progress)) {
-                var progress = a.getInt(R.styleable.ProgressView_progress, 1)
+            var progress = 0
+            val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ProgressView)
+            if (typedArray.hasValue(R.styleable.ProgressView_progress)) {
+                progress = typedArray.getInt(R.styleable.ProgressView_progress, 1)
             }
 
             // ボタンの切り替え
+            when(progress) {
+
+            }
+
         }
 
     }
