@@ -175,6 +175,14 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
         job.report?.let {
             it.additionalPhotoAsset = viewModel.otherPhoto
             it.additionalComment = viewModel.comment.value
+            if (it.additionalPhotoAsset != null) {
+                it.additionalReportPhotoWillDelete = false
+                it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
+                    it.additionalReportPhotoToken = token
+                }
+            }else {
+                it.additionalReportPhotoWillDelete = true
+            }
 
             if (fromConfirm) {
                 val intent= Intent()

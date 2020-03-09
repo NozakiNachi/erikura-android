@@ -143,7 +143,7 @@ data class Report (
         val completable = Completable.fromAction {
             // 画像リサイズ処理
             item?.let {
-                item.resizeImage(activity, 10, 10) { bytes ->
+                item.resizeImage(activity, 640, 640) { bytes ->
                     // 画像アップロード処理
                     Api(activity).imageUpload(item, bytes) { token ->
                         onComplete(token)
