@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.business.models.OperatorComment
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
@@ -358,7 +359,16 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
 }
 
 // 実施箇所
-class ReportSummaryItemViewModel(activity: Activity, view: View, summary: OutputSummary, summariesCount: Int, position: Int): ViewModel() {
+class ReportSummaryItemViewModel(activity: Activity, view: View, val summary: OutputSummary, summariesCount: Int, position: Int, jobDetails: Boolean): ViewModel() {
+
+    val goodExist: Boolean get() = summary.operatorLikes
+    val commentCount: Int get() = summary.operatorComments.count()
+    val hasComment: Boolean get() = commentCount > 0
+    val goodVisible: Int get() = if (goodExist) { View.VISIBLE } else { View.GONE }
+    val commentVisible: Int get() = if (hasComment) { View.VISIBLE } else { View.GONE }
+    val buttonsVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val evaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
     val summaryTitle: MutableLiveData<String> = MutableLiveData()
     val summaryName: MutableLiveData<String> = MutableLiveData()
@@ -366,6 +376,7 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, summary: Output
     val summaryComment: MutableLiveData<String> = MutableLiveData()
     val editSummaryButtonText: MutableLiveData<String> = MutableLiveData()
     val removeSummaryButtonText: MutableLiveData<String> = MutableLiveData()
+    val summaryOperatorComment: MutableLiveData<List<OperatorComment>> = MutableLiveData()
     init {
         summary.photoAsset?.let {
             it.loadImage(activity, imageView)
@@ -377,12 +388,19 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, summary: Output
         summaryComment.value = summary.comment
         editSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.edit_summary, position+1)
         removeSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.remove_summary, position+1)
+        summaryOperatorComment.value = summary.operatorComments
+
+        if (jobDetails) {
+            buttonsVisible.value = View.GONE
+            evaluationVisible.value = View.VISIBLE
+            goodCommentsVisible.value = View.VISIBLE
+        }
     }
 }
 
 class ReportSummaryViewHolder(val binding: FragmentReportSummaryItemBinding): RecyclerView.ViewHolder(binding.root)
 
-class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>): RecyclerView.Adapter<ReportSummaryViewHolder>() {
+class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>, val jobDetails: Boolean = false): RecyclerView.Adapter<ReportSummaryViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportSummaryViewHolder {
@@ -403,7 +421,7 @@ class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<O
     override fun onBindViewHolder(holder: ReportSummaryViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
-        holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position)
+        holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position, jobDetails)
         val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
         editButton.setOnClickListener {
             onClickListener?.apply {
