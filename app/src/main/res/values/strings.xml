@@ -401,5 +401,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!-- Firebase crashlytics-->
-    <string name="com.crashlytics.useFirebaseAppId">true</string>
+    <string name="com.crashlytics.useFirebaseAppId" translatable="false">true</string>
+
+    <string name="default_notification_channel_id" translatable="false">erikura_default_channel</string>
+    <string name="default_notification_channel_name">エリクラ</string>
+    <string name="default_notification_channel_description">エリクラからの通知</string>
 </resources>

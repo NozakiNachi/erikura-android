@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import jp.co.recruit.erikura.services.NotificationData
 
 class StartActivity : AppCompatActivity(), StartEventHandlers {
     lateinit var video: VideoView
@@ -26,25 +27,17 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
         // ErikuraConfig を読み込みます
         ErikuraConfig.load(this)
 
-        /*
-            // 通知のIntentから表示させたいFragmentのIDを得る
-    // この実装では、通知に{"fragment":"info"}というKVが含まれていたら、info画面を表示させようとしている
-    // リフレクション使えば条件分岐は不要ですが(^^ゞ
-    private int onIntent(Intent intent) {
-        if (intent != null && "info".equals(intent.getStringExtra(ARG_FRAGMENT))) {
-            return R.id.info;
-        } else {
-            return 0;
-        }
-    }
-         */
-
         val intent = getIntent()
         if (intent != null) {
-            val data = intent.getStringExtra("extra")
-            Log.v("TEST", data ?: "")
-            // FIXME: JSON をパースして適切なActivityに遷移させる
-            // FIXME: すでにプロセスが存在する場合の対策の実装
+            intent.getStringExtra("extra")?.let { data ->
+                NotificationData.fromJSON(data)?.openURI?.let { uri ->
+                    val intent = Intent(Intent.ACTION_VIEW, uri)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                    return
+                }
+            }
         }
 
         // エラーメッセージを受け取る

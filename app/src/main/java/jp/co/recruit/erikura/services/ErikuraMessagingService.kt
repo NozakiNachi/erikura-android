@@ -1,68 +1,121 @@
 package jp.co.recruit.erikura.services
 
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
+import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.presenters.activities.StartActivity
+import java.net.URI
 
 class ErikuraMessagingService : FirebaseMessagingService() {
-    override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        super.onMessageReceived(remoteMessage)
+    companion object {
+        fun createChannel(context: Context) {
+            // Android 8.0 以降の場合のみチャンネル作成を行います
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
 
-        /*
-        if (remoteMessage.data.isNotEmpty()) {
-            Log.v(TAG, "Message data payload: ${remoteMessage.data}")
+            val channelId = context.getString(R.string.default_notification_channel_id)
+            val channelName = context.getString(R.string.default_notification_channel_name)
+            val channelDescription = context.getString(R.string.default_notification_channel_description)
+            val groupId = "erikura_notification"
+            val groupName = "エリクラ通知"
 
-            scheduleJob()
-        }
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        remoteMessage.notification?.let {
-            Log.v(TAG, "Message Notification Body: ${it.body}")
-        }
-         */
+            val group = NotificationChannelGroup(groupId, groupName)
+            notificationManager.createNotificationChannelGroup(group)
 
-        val handler = Handler(Looper.getMainLooper())
-        handler.post {
-            Toast.makeText(ErikuraApplication.instance, remoteMessage.notification?.body ?: "通知がありました", Toast.LENGTH_LONG).show()
-        }
-
-        // FIXME: data["extra"] で JSON データが取得できそう
-
-        // FIXME: URL をパースする必要があるのか？
-        val intent = Intent(this, StartActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-        val channelId = "Default"
-        val builder = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(remoteMessage.notification?.title)
-            .setContentText(remoteMessage.notification?.body)
-            .setAutoCancel(true)
-            .setContentIntent(pendingIntent)
-        val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(channelId, "Default channel", NotificationManager.IMPORTANCE_DEFAULT)
+            val channel = NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH)
+            channel.description = channelDescription
+            channel.group = group.id
+            channel.enableVibration(true)
+            channel.enableLights(true)
+            channel.setShowBadge(true)
+            channel.lockscreenVisibility = Notification.VISIBILITY_PUBLIC
             notificationManager.createNotificationChannel(channel)
         }
-        notificationManager.notify(0, builder.build())
     }
 
 
+    override fun onMessageReceived(remoteMessage: RemoteMessage) {
+        super.onMessageReceived(remoteMessage)
+
+        // 通知内のデータを取得しておきます
+        val notificationData = NotificationData.fromJSON(remoteMessage.data["extra"])
+        val openURI = notificationData?.openURI
+        openURI?.also {
+            // URL が指定されているので、URL をもとに開くための通知を行います
+            val intent = Intent(Intent.ACTION_VIEW, it)
+            notify(remoteMessage.notification?.title, remoteMessage.notification?.body, intent)
+        } ?: run {
+            // URL が指定されていないので、エリクラを起動するための通知を行います
+            val intent = Intent(this, StartActivity::class.java)
+            notify(remoteMessage.notification?.title, remoteMessage.notification?.body, intent)
+        }
+    }
+
+    fun notify(title: CharSequence?, body: CharSequence?, intent: Intent) {
+        val channelId = getString(R.string.default_notification_channel_id)
+
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val notification = NotificationCompat.Builder(this, channelId)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            //.setLargeIcon(resources.getDrawable(R.mipmap.ic_launcher).toBitmap())
+            .setContentTitle(title)
+            .setContentText(body)
+            .setShowWhen(true)
+            .setWhen(System.currentTimeMillis())
+            .setAutoCancel(true)
+            .setDefaults(NotificationCompat.DEFAULT_ALL)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setContentIntent(pendingIntent)
+            .build()
+
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(0, notification)
+    }
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         Tracking.refreshFcmToken(token)
+    }
+}
+
+data class NotificationData(val open: String? = null) {
+    companion object {
+        val gson = GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+            .serializeNulls()
+            .create()
+
+        fun fromJSON(jsonString: String?): NotificationData? {
+            return jsonString?.let {
+                gson.fromJson(it, NotificationData::class.java)
+            }
+        }
+    }
+
+    val openURI: Uri? get() {
+        return open?.let {
+            if (it.startsWith("/")) {
+                return Uri.parse("erikura://${it}")
+            }
+            else {
+                return Uri.parse(it)
+            }
+        }
     }
 }
