@@ -9,236 +9,240 @@
     </data>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-        <TextView
-            style="@style/titleLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="0dp"
-            android:textSize="20dp"
-            android:text="@{viewModel.summaryTitle}" />
-
-            <!--コメント-->
-            <TextView
-                android:id="@+id/job_list_item_comment"
-                style="@style/label_w2"
+            android:padding="20dp"
+            android:orientation="vertical">
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="18dp"
-                android:background="@drawable/background_roundrect_topaz"
-                android:drawableLeft="@drawable/icon_comment_10"
-                android:drawablePadding="2dp"
-                android:paddingLeft="8dp"
-                android:paddingTop="3dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="3dp"
-                android:textColor="@color/black"
-                android:textSize="12dp"
-                android:text="@{viewModel.commentText}"
-                android:visibility="@{viewModel.commentVisible}"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:textSize="20dp"
+                    android:text="@{viewModel.summaryTitle}" />
 
-            <!--いいね-->
-            <TextView
-                android:id="@+id/job_list_item_good"
-                style="@style/label_w2"
-                android:layout_width="wrap_content"
-                android:layout_height="18dp"
-                android:layout_marginLeft="6dp"
-                android:background="@drawable/background_roundrect_topaz"
-                android:drawableLeft="@drawable/icon_good_10"
-                android:drawablePadding="2dp"
-                android:paddingLeft="8dp"
-                android:paddingTop="3dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="3dp"
-                android:textColor="@color/black"
-                android:textSize="12dp"
-                android:text="@{viewModel.goodText}"
-                android:visibility="@{viewModel.goodVisible}"/>
+                <!--コメント-->
+                <TextView
+                    android:id="@+id/job_list_item_comment"
+                    style="@style/label_w2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:background="@drawable/background_roundrect_topaz"
+                    android:drawableLeft="@drawable/icon_comment_10"
+                    android:drawablePadding="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/black"
+                    android:textSize="12dp"
+                    android:text="@{viewModel.commentText}"
+                    android:visibility="@{viewModel.commentVisible}"/>
 
+                <!--いいね-->
+                <TextView
+                    android:id="@+id/job_list_item_good"
+                    style="@style/label_w2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="18dp"
+                    android:layout_marginLeft="6dp"
+                    android:background="@drawable/background_roundrect_topaz"
+                    android:drawableLeft="@drawable/icon_good_10"
+                    android:drawablePadding="2dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="3dp"
+                    android:textColor="@color/black"
+                    android:textSize="12dp"
+                    android:text="@{viewModel.goodText}"
+                    android:visibility="@{viewModel.goodVisible}"/>
+
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/report_summary_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="305dp"
+                android:layout_marginTop="20dp"
+                android:background="@color/white" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="20dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/silver"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:textSize="14dp"
+                        android:textColor="@color/black"
+                        android:text="@string/summary_select" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="10dp"
+                        android:textSize="14dp"
+                        android:textColor="@color/black"
+                        android:text="@{viewModel.summaryName}" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/silver"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:textSize="14dp"
+                        android:textColor="@color/black"
+                        android:text="@string/summary_status2" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="10dp"
+                        android:textSize="14dp"
+                        android:textColor="@color/black"
+                        android:text="@{viewModel.summaryStatus}" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/silver"/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="3"
+                        android:gravity="center"
+                        android:textSize="14dp"
+                        android:textColor="@color/black"
+                        android:text="@string/comment" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:lineSpacingExtra="10dp"
+                        android:textSize="14dp"
+                        android:textColor="@color/black"
+                        android:text="@{viewModel.summaryComment}" />
+                </LinearLayout>
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/silver"/>
+
+            </LinearLayout>
+            <Button
+                android:id="@+id/edit_report_summary_item"
+                style="@style/tertiaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:text="@{viewModel.editSummaryButtonText}"
+                android:visibility="@{viewModel.buttonsVisible}"/>
+            <Button
+                android:id="@+id/remove_report_summary_item"
+                style="@style/tertiaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:text="@{viewModel.removeSummaryButtonText}"
+                android:visibility="@{viewModel.buttonsVisible}"/>
         </LinearLayout>
-        <ImageView
-            android:id="@+id/report_summary_item_image"
-            android:layout_width="match_parent"
-            android:layout_height="305dp"
-            android:layout_marginTop="20dp"
-            android:background="@color/white" />
+        <!-- 運営からの評価-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/background_round_topaz"
             android:orientation="vertical"
-            android:layout_marginTop="20dp">
+            android:visibility="@{viewModel.evaluationVisible}">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="3"
+                android:gravity="left"
+                android:text="@string/evaluation_from_management"
+                android:textColor="@color/black"
+                android:textSize="16dp" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/silver"/>
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="18dp"
+                android:layout_marginBottom="19.5dp"
+                android:background="@color/silverTwo" />
 
-            <LinearLayout
+            <!-- report.client_comments-->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:text="@string/summary_select" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:lineSpacingExtra="10dp"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:text="@{viewModel.summaryName}" />
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/silver"/>
-            <LinearLayout
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="33dp"
+                android:layout_marginBottom="8dp"
+                android:layout_weight="3"
+                android:gravity="left"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="14dp" />
+
+            <!-- report.client_comments_created_at-->
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="36dp"
                 android:layout_marginBottom="20dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:text="@string/summary_status2" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:lineSpacingExtra="10dp"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:text="@{viewModel.summaryStatus}" />
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/silver"/>
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:text="@string/comment" />
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:lineSpacingExtra="10dp"
-                    android:textSize="14dp"
-                    android:textColor="@color/black"
-                    android:text="@{viewModel.summaryComment}" />
-            </LinearLayout>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/silver"/>
+                android:layout_weight="3"
+                android:gravity="left"
+                android:text=""
+                android:textColor="@color/warmGrey"
+                android:textSize="12dp" />
 
         </LinearLayout>
-        <Button
-            android:id="@+id/edit_report_summary_item"
-            style="@style/tertiaryButton"
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:text="@{viewModel.editSummaryButtonText}"
-            android:visibility="@{viewModel.buttonsVisible}"/>
-        <Button
-            android:id="@+id/remove_report_summary_item"
-            style="@style/tertiaryButton"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:text="@{viewModel.removeSummaryButtonText}"
-            android:visibility="@{viewModel.buttonsVisible}"/>
-    </LinearLayout>
-    <!-- 運営からの評価-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:background="@drawable/background_round_topaz"
-        android:orientation="vertical"
-        android:visibility="@{viewModel.evaluationVisible}">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_weight="3"
-            android:gravity="left"
-            android:text="@string/evaluation_from_management"
-            android:textColor="@color/black"
-            android:textSize="16dp" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="18dp"
-            android:layout_marginBottom="19.5dp"
-            android:background="@color/silverTwo" />
-
-        <!-- report.client_comments-->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="33dp"
-            android:layout_marginBottom="8dp"
-            android:layout_weight="3"
-            android:gravity="left"
-            android:text=""
-            android:textColor="@color/black"
-            android:textSize="14dp" />
-
-        <!-- report.client_comments_created_at-->
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="36dp"
-            android:layout_marginBottom="20dp"
-            android:layout_weight="3"
-            android:gravity="left"
-            android:text=""
-            android:textColor="@color/warmGrey"
-            android:textSize="12dp" />
-
     </LinearLayout>
 </layout>
