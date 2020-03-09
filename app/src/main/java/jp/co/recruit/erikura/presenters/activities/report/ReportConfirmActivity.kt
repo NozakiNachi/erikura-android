@@ -377,9 +377,6 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, val summary: Ou
     val editSummaryButtonText: MutableLiveData<String> = MutableLiveData()
     val removeSummaryButtonText: MutableLiveData<String> = MutableLiveData()
     val summaryOperatorComment: MutableLiveData<List<OperatorComment>> = MutableLiveData()
-    val commentText: MutableLiveData<String> = MutableLiveData()
-    val goodText: MutableLiveData<String> = MutableLiveData()
-
 
     init {
         summary.photoAsset?.let {
