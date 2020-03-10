@@ -18,6 +18,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -26,6 +27,7 @@ import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.business.models.OperatorComment
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
@@ -41,6 +43,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     private val GET_FILE: Int = 2001
     private lateinit var reportImageAdapter: ReportImageAdapter
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
+    private val realm: Realm get() = ErikuraApplication.realm
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -235,7 +238,47 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     private fun saveReport() {
-        print("save report!!")
+        // 画像アップロード中だった場合画像アップロード中ですモーダルの表示
+        // アップロードが完了しているかの判定
+        // token取得処理
+        job.report?.let {report ->
+            report.outputSummaries.forEach { summary ->
+                summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+            }
+            report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+        }
+
+        if (isCompletedUploadPhotos()) {
+            // アップロードが完了しているので作業報告保存処理の実施
+            print("save report")
+        }else {
+            // アップロードが完了していないので画像アップロード中のモーダル表示
+            // モーダル表示後アップロード完了でｏｋコールバック受け取り作業報告API呼びだし
+            // モーダル表示後2分経過でNGコールバック受け取り画像アップロード失敗表示
+            print("now uploading")
+        }
+
+
+    }
+
+    private fun getPhotoToken(url: String): String {
+        var token = ""
+        realm.executeTransaction { realm ->
+            var photo = realm.where(PhotoToken::class.java).equalTo("url", url).equalTo("jobId", job.id).findFirst()
+            token = photo?.token?: ""
+        }
+        return token
+    }
+
+    private fun isCompletedUploadPhotos(): Boolean {
+        var completed = true
+        completed = completed && job.report?.isUploadCompleted?: true
+        job.report?.let { report ->
+            report.outputSummaries.forEach { summary ->
+                completed = completed && summary.isUploadCompleted
+            }
+        }
+        return completed
     }
 
     private fun missingPlaces(): List<String> {

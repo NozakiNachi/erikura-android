@@ -23,12 +23,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -40,6 +42,7 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         ViewModelProvider(this).get(ReportImagePickerViewModel::class.java)
     }
     private lateinit var adapter: ImagePickerAdapter
+    private val realm: Realm get() = ErikuraApplication.realm
     var job: Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -152,15 +155,25 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
             report.outputSummaries = outputSummaryList
             outputSummaryList.forEach { outputSummary ->
                 report.uploadPhoto(this, job, outputSummary.photoAsset){
-                    outputSummary.beforeCleaningPhotoToken = it
+//                    outputSummary.beforeCleaningPhotoToken = it
+                    addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), it)
                 }
             }
+
         }
 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+    }
+
+    private fun addPhotoToken(url: String, token: String) {
+        realm.executeTransaction { realm ->
+            var photo = realm.createObject(PhotoToken::class.java, url)
+            photo.jobId = job.id
+            photo.token = token
+        }
     }
 }
 

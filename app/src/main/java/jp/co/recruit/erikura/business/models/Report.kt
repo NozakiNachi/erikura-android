@@ -61,8 +61,16 @@ data class Report (
         }
     }
 
+    val isUploadCompleted: Boolean get() {
+        if (additionalPhotoAsset?.contentUri == null) {
+            return true
+        }else {
+            return !additionalReportPhotoToken.isNullOrBlank()
+        }
+    }
+
     /*
-    var isUploadCompleted: Bool {
+        var isUploadCompleted2: Boolean {
         get {
             guard additionalReportPhotoAsset != nil else { return true }
             if let token = additionalReportPhotoToken, !token.isEmpty {
@@ -146,6 +154,7 @@ data class Report (
                 item.resizeImage(activity, 640, 640) { bytes ->
                     // 画像アップロード処理
                     Api(activity).imageUpload(item, bytes) { token ->
+                        outputSummaries[0].beforeCleaningPhotoToken = token
                         onComplete(token)
                     }
                 }
