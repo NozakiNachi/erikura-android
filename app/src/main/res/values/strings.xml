@@ -158,6 +158,9 @@
     <string name="report_confirm_note">「完了」すると作業報告が送信されます。</string>
     <string name="report_confirm_form_list">実施箇所の一覧</string>
     <string name="report_confirm_remove_summary">実施箇所%1$dを削除しますか？</string>
+    <string name="report_confirm_over_limit">このお仕事は実施可能な期間を過ぎております</string>
+    <string name="report_confirm_missing_places">実施箇所に以下の箇所が含まれていません。</string>
+    <string name="report_confirm_missing_places2">現地に存在しなかった場合を除き、報告は必須です。\n作業報告を完了してよろしいですか？</string>
 
     <!-- 作業報告ステータス画面 -->
     <string name="report_status">作業報告のステータス</string>

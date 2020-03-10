@@ -25,6 +25,7 @@ import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.business.models.OperatorComment
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
@@ -84,7 +85,27 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickComplete(view: View) {
-        // FIXME: 作業報告完了処理
+        if(job.isReportCreatable || job.isReportEditable) {
+            val missingPlaces = missingPlaces()
+            if (missingPlaces.isEmpty()) {
+                saveReport()
+            }else {
+                val dialog = MissingPlaceConfirmDialogFragment(missingPlaces).also {
+                    it.onClickListener = object: MissingPlaceConfirmDialogFragment.OnClickListener {
+                        override fun onClickComplete() {
+                            saveReport()
+                            it.dismiss()
+                        }
+                    }
+                }
+
+                dialog.show(supportFragmentManager, "MissingPlace")
+            }
+        }else {
+            val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.report_confirm_over_limit))
+            Api(this).displayErrorAlert(errorMessages)
+        }
+
     }
 
     fun onClickAddPhotoButton(view: View) {
@@ -211,6 +232,27 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             }
 
         }
+    }
+
+    private fun saveReport() {
+        print("save report!!")
+    }
+
+    private fun missingPlaces(): List<String> {
+        var summaryTitles: MutableList<String> = job.summaryTitles.toMutableList()
+        var places: MutableList<String> = mutableListOf()
+        job.report?.let { report ->
+            report.outputSummaries.forEach { summary ->
+                places.add(summary.place?: "")
+            }
+        }
+        var missingPlaces: MutableList<String> = mutableListOf()
+        summaryTitles.forEachIndexed { index, s ->
+            if (!places.contains(s)) {
+                missingPlaces.add("(${index+1}) ${s}")
+            }
+        }
+        return missingPlaces
     }
 
     private fun moveToGallery() {
