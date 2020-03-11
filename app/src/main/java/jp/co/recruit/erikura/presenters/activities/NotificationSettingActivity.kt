@@ -11,6 +11,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.NotificationSetting
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
+import kotlinx.android.synthetic.main.activity_notification_setting.*
 
 
 class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEventHandlers {
@@ -57,8 +58,8 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
     }
 
     // 戻るボタン押下時に通知設定を保存
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         Api(this).updateNotificationSetting(notificationSetting) {}
     }
 
