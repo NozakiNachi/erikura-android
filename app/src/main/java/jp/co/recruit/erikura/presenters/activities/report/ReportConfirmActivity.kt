@@ -33,6 +33,7 @@ import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import java.util.*
 
 
@@ -93,12 +94,12 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         if(job.isReportCreatable || job.isReportEditable) {
             val missingPlaces = missingPlaces()
             if (missingPlaces.isEmpty()) {
-                saveReport()
+                checkPhotoToken()
             }else {
                 val dialog = MissingPlaceConfirmDialogFragment(missingPlaces).also {
                     it.onClickListener = object: MissingPlaceConfirmDialogFragment.OnClickListener {
                         override fun onClickComplete() {
-                            saveReport()
+                            checkPhotoToken()
                             it.dismiss()
                         }
                     }
@@ -224,6 +225,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         val item = MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
                         val summary = OutputSummary()
                         summary.photoAsset = item
+                        // FIXME: 画像アップロード処理の実行
                         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
                         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
                         outputSummaryList.add(summary)
@@ -239,7 +241,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         }
     }
 
-    private fun saveReport() {
+    private fun checkPhotoToken() {
         // アップロードが完了しているかの判定
         // token取得処理
         job.report?.let {report ->
@@ -250,13 +252,13 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         }
 
         if (isCompletedUploadPhotos()) {
-            // アップロードが完了しているので作業報告保存処理の実施
-            print("save report")
+            // アップロードが完了しているので作業報告を保存します
+            saveReport()
         }else {
             // 画像アップ中モーダル
-            val dialog = UploadingDialogFragment()
-            dialog.isCancelable = false
-            dialog.show(supportFragmentManager, "Uploading")
+            val uploadingDialog = UploadingDialogFragment()
+            uploadingDialog.isCancelable = false
+            uploadingDialog.show(supportFragmentManager, "Uploading")
             // timerで繰り返し処理
             val timer = Timer()
             val timerHandler = Handler()
@@ -266,26 +268,36 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                     if (viewModel.completedUploadPhotos) {
                         timer.cancel()
                         // FIXME: レポート保存処理
-                        print("save report")
-                        dialog.dismiss()
+                        uploadingDialog.dismiss()
+                        saveReport()
                     }else if(count > 120 ) {
                         timer.cancel()
-                        // FIXME: 画像アップロード失敗モーダル表示
-                        print("upload failed")
-                        dialog.dismiss()
+                        val failedDialog = UploadFailedDialogFragment().also {
+                            it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
+                                override fun onClickRetryButton() {
+                                    // FIXME: 再試行処理
+                                }
+                                override fun onClickRemoveButton() {
+                                    // レポートを削除して案件詳細画面へ遷移します
+                                    removeAllContents()
+                                }
+                            }
+                        }
+                        failedDialog.isCancelable = false
+                        failedDialog.show(supportFragmentManager, "UploadFailed")
+                        uploadingDialog.dismiss()
                     }else {
                         timerHandler.post(Runnable {
                             updateToken()
                             val (numPhotos, numUploadedPhotos) = updateProgress()
-                            dialog.numPhotos = numPhotos
-                            dialog.numUploadedPhotos = numUploadedPhotos
+                            uploadingDialog.numPhotos = numPhotos
+                            uploadingDialog.numUploadedPhotos = numUploadedPhotos
 
                             count++
                         })
                     }
                 }
             }, 1000, 1000) // 実行したい間隔(ミリ秒)
-            print("now uploading")
         }
     }
 
@@ -342,6 +354,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             }
         }
         return completed
+    }
+
+    private fun saveReport() {
+
     }
 
     private fun missingPlaces(): List<String> {
@@ -404,6 +420,18 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
 
             viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
         }
+    }
+
+    private fun retry() {
+
+    }
+
+    private fun removeAllContents() {
+        job.report = null
+        val intent= Intent(this, JobDetailsActivity::class.java)
+        intent.putExtra("job", job)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 

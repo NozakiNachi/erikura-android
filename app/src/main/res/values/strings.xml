@@ -166,6 +166,10 @@
     <string name="uploading_title">画像をアップ中です</string>
     <string name="uploading_progress">（　%1$d枚/%2$d枚 アップ完了）</string>
 
+    <!-- 画像アップロード不可モーダル -->
+    <string name="upload_failed_title">画像をアップできませんでした</string>
+    <string name="upload_failed_note">再度アップロードを試みますか？</string>
+
     <!-- 作業報告ステータス画面 -->
     <string name="report_status">作業報告のステータス</string>
     <string name="report_rejected_comment">差し戻しコメント</string>
@@ -289,6 +293,8 @@
     <string name="remove">削除</string>
     <string name="edit_job_reported">作業報告を編集</string>
     <string name="remove_job_reported">作業報告を削除</string>
+    <string name="retry">再試行</string>
+    <string name="remove_all_contents">入力内容をすべて破棄</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
