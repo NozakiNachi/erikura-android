@@ -93,27 +93,22 @@
                     android:layout_height="62dp"
                     style="@style/passwordField"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.password}"
                     android:hint="@string/register_password_hint" />
                 <TextView
-                    android:layout_width="320dp"
-                    android:layout_height="17dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:text="※パスワードを変更する場合は入力してください"
-                    android:textColor="@color/blackTwo"
-                    android:textSize="12dp" />
-                <TextView
-                    android:layout_width="320dp"
-                    android:layout_height="33dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="20dp"
-                    android:text="※6文字以上の半角英数で入力してください。"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:text="※パスワードを変更する場合は入力してください。\n\n※6文字以上の半角英数で入力してください。 "
                     android:textColor="@color/blackTwo"
                     android:textSize="12dp" />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.passwordErrorVisibility}"
                     style="@style/errorField"
@@ -124,10 +119,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
                     >
                     <TextView
                         style="@style/fieldLabel"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
                         android:drawablePadding="10dp"
@@ -138,12 +134,13 @@
                     android:layout_height="62dp"
                     style="@style/passwordField"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.verificationPassword}"
                     android:hint="@string/register_password_hint" />
                 <TextView
-                    android:layout_width="320dp"
-                    android:layout_height="30dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
@@ -152,7 +149,7 @@
                     android:textSize="12dp" />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
                     style="@style/errorField"
@@ -204,7 +201,7 @@
                 </LinearLayout>
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.lastNameErrorVisibility}"
                     style="@style/errorField"
@@ -212,7 +209,7 @@
                     />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.firstNameErrorVisibility}"
                     style="@style/errorField"
@@ -227,7 +224,7 @@
                     >
                     <TextView
                         style="@style/fieldLabel"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
                         android:drawablePadding="10dp"
@@ -274,20 +271,24 @@
                         <RadioButton
                             android:id="@+id/male_button"
                             style="@style/buttonWithCheckBox"
-                            android:layout_width="140dp"
+                            android:layout_width="match_parent"
                             android:layout_height="70dp"
-                            android:layout_marginTop="10dp"
-                            android:onClick="@{handlers::onClickMale}"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="4dp"
                             android:paddingLeft="10dp"
+                            android:onClick="@{handlers::onClickMale}"
                             android:text="@string/male"/>
                         <RadioButton
                             android:id="@+id/female_button"
                             style="@style/buttonWithCheckBox"
-                            android:layout_width="140dp"
+                            android:layout_width="match_parent"
                             android:layout_height="70dp"
-                            android:layout_marginTop="10dp"
-                            android:onClick="@{handlers::onClickFemale}"
+                            android:layout_weight="1"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginRight="20dp"
                             android:paddingLeft="5dp"
+                            android:onClick="@{handlers::onClickFemale}"
                             android:text="@string/female"/>
                     </RadioGroup>
                 </LinearLayout>
@@ -296,7 +297,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="40dp">
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="match_parent"
@@ -311,8 +312,6 @@
                     >
                     <EditText
                         style="@style/textField"
-                        android:layout_width="match_parent"
-                        android:layout_height="62dp"
                         android:hint="@string/register_postal_code_hint"
                         android:inputType="number"
                         android:text="@={viewModel.postalCode}"
@@ -329,7 +328,7 @@
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.postalCodeErrorMsg}"
                     android:visibility="@{viewModel.postalCodeErrorVisibility}" />
@@ -338,7 +337,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="40dp"
                     >
                     <TextView
                         style="@style/fieldLabel"
@@ -364,7 +363,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="40dp">
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="match_parent"
@@ -375,8 +374,6 @@
                 </LinearLayout>
                 <EditText
                     style="@style/textField"
-                    android:layout_width="match_parent"
-                    android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_city_hint"
                     android:text="@={viewModel.city}"
@@ -384,7 +381,7 @@
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.cityErrorMsg}"
                     android:visibility="@{viewModel.cityErrorVisibility}"
@@ -394,7 +391,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="40dp"
                     >
                     <TextView
                         style="@style/fieldLabel"
@@ -408,8 +405,6 @@
                 <EditText
                     android:id="@+id/registerAddress_street"
                     style="@style/textField"
-                    android:layout_width="match_parent"
-                    android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_street_hint"
                     android:text="@={viewModel.street}"
@@ -417,7 +412,7 @@
                 <TextView
                     style="@style/errorField"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.streetErrorMsg}"
                     android:visibility="@{viewModel.streetErrorVisibility}"
@@ -428,7 +423,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="40dp"
                     >
                     <TextView
                         android:layout_width="match_parent"
@@ -440,8 +435,6 @@
                 </LinearLayout>
 
                 <EditText
-                    android:layout_width="match_parent"
-                    android:layout_height="62dp"
                     style="@style/textField"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.phone}"
@@ -457,7 +450,7 @@
                     />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginTop="10dp"
                     android:visibility="@{viewModel.phoneErrorVisibility}"
                     style="@style/errorField"
@@ -468,7 +461,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="40dp">
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="match_parent"
@@ -494,7 +487,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="40dp">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

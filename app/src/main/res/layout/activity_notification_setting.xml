@@ -72,22 +72,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <Switch
-                            android:id="@+id/allow_remind_mail_reception"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginTop="10dp"
-                            android:paddingLeft="1dp"
-                            android:paddingTop="1dp"
-                            android:paddingBottom="1dp"
-                            android:background="@drawable/switch_track"
-                            android:showText="false"
-                            android:theme="@style/CustomSwitch"
-                            android:thumb="@drawable/switch_thumb"
-                            android:track="@drawable/switch_track"
-                            android:onClick="@{handlers::onAllowRemindMailReception}"
-                            />
+                        <FrameLayout
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp">
+                            <View
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_gray" />
+                            <View
+                                android:id="@+id/allow_remind_mail_reception_green"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_green" />
+                            <View
+                                android:id="@+id/allow_remind_mail_reception_white"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_white" />
+                            <ToggleButton
+                                android:id="@+id/allow_remind_mail_reception"
+                                android:layout_width="58dp"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:button="@drawable/toggle_btn"
+                                android:checked="true"
+                                android:textOff=""
+                                android:textOn=""
+                                android:onClick="@{handlers::onAllowRemindMailReception}"
+                                />
+                        </FrameLayout>
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
@@ -133,19 +147,35 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <Switch
-                            android:id="@+id/allow_info_mail_reception"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginLeft="20dp"
-                            android:showText="false"
-                            android:theme="@style/CustomSwitch"
-                            android:thumb="@drawable/switch_thumb"
-                            android:track="@drawable/switch_track"
-                            android:background="@drawable/switch_track"
-                            android:onClick="@{handlers::onAllowInfoMailReception}"
-                            />
+                        <FrameLayout
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp">
+                            <View
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_gray" />
+                            <View
+                                android:id="@+id/allow_info_mail_reception_green"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_green" />
+                            <View
+                                android:id="@+id/allow_info_mail_reception_white"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_white" />
+                            <ToggleButton
+                                android:id="@+id/allow_info_mail_reception"
+                                android:layout_width="58dp"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:button="@drawable/toggle_btn"
+                                android:checked="true"
+                                android:textOff=""
+                                android:textOn=""
+                                android:onClick="@{handlers::onAllowInfoMailReception}"/>
+                        </FrameLayout>
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
@@ -212,19 +242,37 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <Switch
-                            android:id="@+id/allow_remind_push_reception"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="20dp"
-                            android:layout_marginTop="10dp"
-                            android:background="@drawable/switch_track"
-                            android:showText="false"
-                            android:theme="@style/CustomSwitch"
-                            android:thumb="@drawable/switch_thumb"
-                            android:track="@drawable/switch_track"
-                            android:onClick="@{handlers::onAllowRemindPushReception}"
-                            />
+                        <FrameLayout
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp">
+                            <View
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_gray" />
+                            <View
+                                android:id="@+id/allow_remind_push_reception_green"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_green"
+
+                                />
+                            <View
+                                android:id="@+id/allow_remind_push_reception_white"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_white" />
+                            <ToggleButton
+                                android:id="@+id/allow_remind_push_reception"
+                                android:layout_width="58dp"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:button="@drawable/toggle_btn"
+                                android:textOff=""
+                                android:textOn=""
+                                android:onClick="@{handlers::onAllowRemindPushReception}"
+                                />
+                        </FrameLayout>
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
@@ -271,19 +319,36 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <Switch
-                            android:id="@+id/allow_info_push_reception"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginLeft="20dp"
-                            android:showText="false"
-                            android:theme="@style/CustomSwitch"
-                            android:thumb="@drawable/switch_thumb"
-                            android:track="@drawable/switch_track"
-                            android:background="@drawable/switch_track"
-                            android:onClick="@{handlers::onAllowInfoPushReception}"
-                            />
+                        <FrameLayout
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp">
+                            <View
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_gray" />
+                            <View
+                                android:id="@+id/allow_info_push_reception_green"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_green" />
+                            <View
+                                android:id="@+id/allow_info_push_reception_white"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/toggle_bg_white" />
+                            <ToggleButton
+                                android:id="@+id/allow_info_push_reception"
+                                android:layout_width="58dp"
+                                android:layout_height="wrap_content"
+                                android:background="@null"
+                                android:button="@drawable/toggle_btn"
+                                android:checked="true"
+                                android:textOff=""
+                                android:textOn=""
+                                android:onClick="@{handlers::onAllowInfoPushReception}"
+                                />
+                        </FrameLayout>
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
