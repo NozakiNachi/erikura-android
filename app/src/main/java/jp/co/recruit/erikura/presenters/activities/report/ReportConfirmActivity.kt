@@ -5,6 +5,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -18,16 +19,22 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.business.models.OperatorComment
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import java.util.*
 
 
 class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
@@ -39,6 +46,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     private val GET_FILE: Int = 2001
     private lateinit var reportImageAdapter: ReportImageAdapter
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
+    private val realm: Realm get() = ErikuraApplication.realm
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +91,27 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickComplete(view: View) {
-        // FIXME: 作業報告完了処理
+        if(job.isReportCreatable || job.isReportEditable) {
+            val missingPlaces = missingPlaces()
+            if (missingPlaces.isEmpty()) {
+                checkPhotoToken()
+            }else {
+                val dialog = MissingPlaceConfirmDialogFragment(missingPlaces).also {
+                    it.onClickListener = object: MissingPlaceConfirmDialogFragment.OnClickListener {
+                        override fun onClickComplete() {
+                            checkPhotoToken()
+                            it.dismiss()
+                        }
+                    }
+                }
+
+                dialog.show(supportFragmentManager, "MissingPlace")
+            }
+        }else {
+            val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.report_confirm_over_limit))
+            Api(this).displayErrorAlert(errorMessages)
+        }
+
     }
 
     fun onClickAddPhotoButton(view: View) {
@@ -202,6 +230,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         outputSummaryList.add(summary)
                         job.report?.let {
                             it.outputSummaries = outputSummaryList
+                            // FIXME: 画像アップロード処理の実行
+//                            it.uploadPhoto(this, job, summary.photoAsset){ token ->
+//                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
+//                            }
                         }
                     }
 
@@ -210,6 +242,151 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             }
 
         }
+    }
+
+    private fun checkPhotoToken() {
+        // アップロードが完了しているかの判定
+        // token取得処理
+        job.report?.let {report ->
+            report.outputSummaries.forEach { summary ->
+                summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+            }
+            report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+        }
+
+        if (isCompletedUploadPhotos()) {
+            // アップロードが完了しているので作業報告を保存します
+            saveReport()
+        }else {
+            // 画像アップ中モーダル
+            val uploadingDialog = UploadingDialogFragment()
+            uploadingDialog.isCancelable = false
+            uploadingDialog.show(supportFragmentManager, "Uploading")
+            // timerで繰り返し処理
+            val timer = Timer()
+            val timerHandler = Handler()
+            var count = 0
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    if (viewModel.completedUploadPhotos) {
+                        timer.cancel()
+                        uploadingDialog.dismiss()
+                        saveReport()
+                    }else if(count > 120 ) {
+                        timer.cancel()
+                        uploadingDialog.dismiss()
+                        val failedDialog = UploadFailedDialogFragment().also {
+                            it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
+                                override fun onClickRetryButton() {
+                                    it.dismiss()
+                                    retry()
+                                }
+                                override fun onClickRemoveButton() {
+                                    // レポートを削除して案件詳細画面へ遷移します
+                                    it.dismiss()
+                                    removeAllContents()
+                                }
+                            }
+                        }
+                        failedDialog.isCancelable = false
+                        failedDialog.show(supportFragmentManager, "UploadFailed")
+                    }else {
+                        timerHandler.post(Runnable {
+                            updateToken()
+                            val (numPhotos, numUploadedPhotos) = updateProgress()
+                            uploadingDialog.numPhotos = numPhotos
+                            uploadingDialog.numUploadedPhotos = numUploadedPhotos
+
+                            count++
+                        })
+                    }
+                }
+            }, 1000, 1000) // 実行したい間隔(ミリ秒)
+        }
+    }
+
+    // 1秒ごとに呼び出される処理
+    private fun updateToken() {
+        // token取得処理
+        job.report?.let {report ->
+            report.outputSummaries.forEach { summary ->
+                summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+            }
+            report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+        }
+        viewModel.completedUploadPhotos = isCompletedUploadPhotos()
+    }
+
+    private fun updateProgress(): Pair<Int, Int> {
+        var numPhotos = 0
+        var numUploadedPhotos = 0
+        job.report?.let { report ->
+            report.outputSummaries.forEach { summary ->
+                if (summary.photoAsset?.contentUri != null) {
+                    numPhotos++
+                    if (!summary.beforeCleaningPhotoToken.isNullOrBlank()) {
+                        numUploadedPhotos++
+                    }
+                }
+            }
+            if (report.additionalPhotoAsset?.contentUri != null) {
+                numPhotos++
+                if (!report.additionalReportPhotoToken.isNullOrBlank()) {
+                    numUploadedPhotos++
+                }
+            }
+        }
+
+        return Pair(numPhotos, numUploadedPhotos)
+    }
+
+    private fun addPhotoToken(url: String, token: String) {
+        realm.executeTransaction { realm ->
+            var photo = realm.createObject(PhotoToken::class.java, token)
+            photo.url = url
+            photo.jobId = job.id
+        }
+    }
+
+    private fun getPhotoToken(url: String): String {
+        var token = ""
+        realm.executeTransaction { realm ->
+            var photo = realm.where(PhotoToken::class.java).equalTo("url", url).equalTo("jobId", job.id).findFirst()
+            token = photo?.token?: ""
+        }
+        return token
+    }
+
+    private fun isCompletedUploadPhotos(): Boolean {
+        var completed = true
+        completed = completed && job.report?.isUploadCompleted?: true
+        job.report?.let { report ->
+            report.outputSummaries.forEach { summary ->
+                completed = completed && summary.isUploadCompleted
+            }
+        }
+        return completed
+    }
+
+    private fun saveReport() {
+
+    }
+
+    private fun missingPlaces(): List<String> {
+        var summaryTitles: MutableList<String> = job.summaryTitles.toMutableList()
+        var places: MutableList<String> = mutableListOf()
+        job.report?.let { report ->
+            report.outputSummaries.forEach { summary ->
+                places.add(summary.place?: "")
+            }
+        }
+        var missingPlaces: MutableList<String> = mutableListOf()
+        summaryTitles.forEachIndexed { index, s ->
+            if (!places.contains(s)) {
+                missingPlaces.add("(${index+1}) ${s}")
+            }
+        }
+        return missingPlaces
     }
 
     private fun moveToGallery() {
@@ -256,6 +433,77 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
         }
     }
+
+    private fun retry() {
+        // 画像アップ中モーダル
+        val uploadingDialog = UploadingDialogFragment()
+        uploadingDialog.isCancelable = false
+        uploadingDialog.show(supportFragmentManager, "Uploading")
+
+        job.report?.let { report ->
+            report.outputSummaries.forEach { outputSummary ->
+                report.uploadPhoto(this, job, outputSummary.photoAsset){ token ->
+                    addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), token)
+                }
+            }
+            if (report.additionalPhotoAsset != null) {
+                report.uploadPhoto(this, job, report.additionalPhotoAsset) { token ->
+                    addPhotoToken(report.additionalPhotoAsset?.contentUri.toString(), token)
+                }
+            }
+
+        }
+
+        // timerで繰り返し処理
+        val timer = Timer()
+        val timerHandler = Handler()
+        var count = 0
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                if (viewModel.completedUploadPhotos) {
+                    timer.cancel()
+                    uploadingDialog.dismiss()
+                    saveReport()
+                }else if(count > 120 ) {
+                    timer.cancel()
+                    uploadingDialog.dismiss()
+                    val failedDialog = UploadFailedDialogFragment().also {
+                        it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
+                            override fun onClickRetryButton() {
+                                it.dismiss()
+                                retry()
+                            }
+                            override fun onClickRemoveButton() {
+                                it.dismiss()
+                                // レポートを削除して案件詳細画面へ遷移します
+                                removeAllContents()
+                            }
+                        }
+                    }
+                    failedDialog.isCancelable = false
+                    failedDialog.show(supportFragmentManager, "UploadFailed")
+                }else {
+                    timerHandler.post(Runnable {
+                        updateToken()
+                        val (numPhotos, numUploadedPhotos) = updateProgress()
+                        uploadingDialog.numPhotos = numPhotos
+                        uploadingDialog.numUploadedPhotos = numUploadedPhotos
+
+                        count++
+                    })
+                }
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
+
+    }
+
+    private fun removeAllContents() {
+        job.report = null
+        val intent= Intent(this, JobDetailsActivity::class.java)
+        intent.putExtra("job", job)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+    }
 }
 
 class ReportConfirmViewModel: ViewModel() {
@@ -267,6 +515,8 @@ class ReportConfirmViewModel: ViewModel() {
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
+
+    var completedUploadPhotos = false
 
     fun isValid(report: Report): Boolean {
         var valid = true
@@ -358,7 +608,16 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
 }
 
 // 実施箇所
-class ReportSummaryItemViewModel(activity: Activity, view: View, summary: OutputSummary, summariesCount: Int, position: Int): ViewModel() {
+class ReportSummaryItemViewModel(activity: Activity, view: View, val summary: OutputSummary, summariesCount: Int, position: Int, jobDetails: Boolean): ViewModel() {
+
+    val goodExist: Boolean get() = summary.operatorLikes
+    val commentCount: Int get() = summary.operatorComments.count()
+    val hasComment: Boolean get() = commentCount > 0
+    val goodVisible: Int get() = if (goodExist) { View.VISIBLE } else { View.GONE }
+    val commentVisible: Int get() = if (hasComment) { View.VISIBLE } else { View.GONE }
+    val buttonsVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val evaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
     val summaryTitle: MutableLiveData<String> = MutableLiveData()
     val summaryName: MutableLiveData<String> = MutableLiveData()
@@ -366,6 +625,8 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, summary: Output
     val summaryComment: MutableLiveData<String> = MutableLiveData()
     val editSummaryButtonText: MutableLiveData<String> = MutableLiveData()
     val removeSummaryButtonText: MutableLiveData<String> = MutableLiveData()
+    val summaryOperatorComment: MutableLiveData<List<OperatorComment>> = MutableLiveData()
+
     init {
         summary.photoAsset?.let {
             it.loadImage(activity, imageView)
@@ -377,12 +638,19 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, summary: Output
         summaryComment.value = summary.comment
         editSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.edit_summary, position+1)
         removeSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.remove_summary, position+1)
+        summaryOperatorComment.value = summary.operatorComments
+
+        if (jobDetails) {
+            buttonsVisible.value = View.GONE
+            evaluationVisible.value = View.VISIBLE
+            goodCommentsVisible.value = View.VISIBLE
+        }
     }
 }
 
 class ReportSummaryViewHolder(val binding: FragmentReportSummaryItemBinding): RecyclerView.ViewHolder(binding.root)
 
-class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>): RecyclerView.Adapter<ReportSummaryViewHolder>() {
+class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>, val jobDetails: Boolean = false): RecyclerView.Adapter<ReportSummaryViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportSummaryViewHolder {
@@ -403,7 +671,7 @@ class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<O
     override fun onBindViewHolder(holder: ReportSummaryViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
-        holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position)
+        holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position, jobDetails)
         val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
         editButton.setOnClickListener {
             onClickListener?.apply {

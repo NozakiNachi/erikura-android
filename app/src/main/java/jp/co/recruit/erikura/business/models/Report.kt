@@ -1,9 +1,14 @@
 package jp.co.recruit.erikura.business.models
 
+import android.app.Activity
 import android.os.Parcelable
+import jp.co.recruit.erikura.data.network.Api
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import java.util.*
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.Completable
+
 
 enum class ReportStatus {
     Unconfirmed,
@@ -56,8 +61,16 @@ data class Report (
         }
     }
 
+    val isUploadCompleted: Boolean get() {
+        if (additionalPhotoAsset?.contentUri == null) {
+            return true
+        }else {
+            return !additionalReportPhotoToken.isNullOrBlank()
+        }
+    }
+
     /*
-    var isUploadCompleted: Bool {
+        var isUploadCompleted2: Boolean {
         get {
             guard additionalReportPhotoAsset != nil else { return true }
             if let token = additionalReportPhotoToken, !token.isEmpty {
@@ -130,4 +143,25 @@ data class Report (
         return valid
     }
      */
+
+
+    // 画像アップロード処理
+    fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
+
+        val completable = Completable.fromAction {
+            // 画像リサイズ処理
+            item?.let {
+                item.resizeImage(activity, 640, 640) { bytes ->
+                    // 画像アップロード処理
+                    Api(activity).imageUpload(item, bytes) { token ->
+                        outputSummaries[0].beforeCleaningPhotoToken = token
+                        onComplete(token)
+                    }
+                }
+            }
+        }
+            .subscribeOn(Schedulers.single())
+        completable.subscribe()
+
+    }
 }

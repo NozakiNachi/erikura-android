@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!--FIXME: 削除予定-->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-<!--    <data>-->
-<!--        <variable-->
-<!--            name="viewModel"-->
-<!--            type="jp.co.recruit.erikura.presenters.fragments.JobDetailsViewFragmentViewModel" />-->
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ImplementationLocationListViewModel" />
 <!--        <variable-->
 <!--            name="handlers"-->
 <!--            type="jp.co.recruit.erikura.presenters.fragments.JobDetailsViewFragmentEventHandlers" />-->
-<!--    </data>-->
+    </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presenters.fragments.ImplementationLocationList">
+        tools:context=".presenters.fragments.ImplementationLocationListFragment">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -30,13 +30,13 @@
                 android:layout_height="wrap_content">
 
                 <!-- ラベル -->
-                <TextView
-                    style="@style/titleLabel"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_marginBottom="20dp"
-                    android:textSize="20dp"/>
-<!--                android:text="@{viewModel.title}"-->
+<!--                <TextView-->
+<!--                    style="@style/titleLabel"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="20dp"-->
+<!--                    android:layout_marginBottom="20dp"-->
+<!--                    android:textSize="20dp"-->
+<!--                    android:text="@{viewModel.summaryTitle}"/>-->
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -59,9 +59,9 @@
                         android:paddingRight="8dp"
                         android:paddingBottom="3dp"
                         android:textColor="@color/black"
-                        android:textSize="12dp" />
-                    <!--                        android:text="@{viewModel.commentText}"-->
-<!--                    android:visibility="@{viewModel.commentVisible}"-->
+                        android:textSize="12dp"
+                        android:text="@{viewModel.commentText}"
+                        android:visibility="@{viewModel.commentVisible}"/>
 
                     <!--いいね-->
                     <TextView
@@ -78,9 +78,9 @@
                         android:paddingRight="8dp"
                         android:paddingBottom="3dp"
                         android:textColor="@color/black"
-                        android:textSize="12dp" />
-<!--                    android:text="@{viewModel.goodText}"-->
-<!--                    android:visibility="@{viewModel.goodVisible}"-->
+                        android:textSize="12dp"
+                        android:text="@{viewModel.goodText}"
+                        android:visibility="@{viewModel.goodVisible}"/>
 
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -121,8 +121,9 @@
                     android:layout_weight="1"
                     android:lineSpacingExtra="10dp"
                     android:textColor="@color/black"
-                    android:textSize="14dp" />
-<!--                android:text="@{viewModel.tool}"-->
+                    android:textSize="14dp"
+                    android:text="@{viewModel.summaryName}"/>
+
 
             </LinearLayout>
 
@@ -153,8 +154,8 @@
                     android:layout_weight="1"
                     android:lineSpacingExtra="10dp"
                     android:textColor="@color/black"
-                    android:textSize="14dp" />
-<!--                android:text="@{viewModel.tool}"-->
+                    android:textSize="14dp"
+                    android:text="@{viewModel.summaryComment}"/>
 
             </LinearLayout>
 
@@ -168,6 +169,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/background_round_topaz"
                 android:orientation="vertical">
 

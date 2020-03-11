@@ -20,6 +20,8 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.Request as HttpRequest
 import okhttp3.Response as HttpResponse
 import org.apache.commons.io.IOUtils
@@ -28,6 +30,8 @@ import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+
 
 class Api(var context: Context) {
     companion object {
@@ -383,6 +387,22 @@ class Api(var context: Context) {
             onError = onError
         ) { body ->
             onComplete(body.cancellationReasons)
+        }
+    }
+
+    fun imageUpload(item: MediaItem, bytes: ByteArray, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
+        val photo = RequestBody.create(item.mimeType.toMediaTypeOrNull(), bytes)
+        val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+            "photo",
+            "photo.jpg",
+            photo
+        ).build()
+
+        executeObservable(
+            erikuraApiService.imageUpload(requestBody),
+            onError = onError
+        ) { body ->
+            onComplete(body.photoToken)
         }
     }
 

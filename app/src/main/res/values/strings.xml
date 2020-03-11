@@ -158,6 +158,17 @@
     <string name="report_confirm_note">「完了」すると作業報告が送信されます。</string>
     <string name="report_confirm_form_list">実施箇所の一覧</string>
     <string name="report_confirm_remove_summary">実施箇所%1$dを削除しますか？</string>
+    <string name="report_confirm_over_limit">このお仕事は実施可能な期間を過ぎております</string>
+    <string name="report_confirm_missing_places">実施箇所に以下の箇所が含まれていません。</string>
+    <string name="report_confirm_missing_places2">現地に存在しなかった場合を除き、報告は必須です。\n作業報告を完了してよろしいですか？</string>
+
+    <!-- 画像アップ中モーダル -->
+    <string name="uploading_title">画像をアップ中です</string>
+    <string name="uploading_progress">（　%1$d枚/%2$d枚 アップ完了）</string>
+
+    <!-- 画像アップロード不可モーダル -->
+    <string name="upload_failed_title">画像をアップできませんでした</string>
+    <string name="upload_failed_note">再度アップロードを試みますか？</string>
 
     <!-- 作業報告ステータス画面 -->
     <string name="report_status">作業報告のステータス</string>
@@ -282,6 +293,8 @@
     <string name="remove">削除</string>
     <string name="edit_job_reported">作業報告を編集</string>
     <string name="remove_job_reported">作業報告を削除</string>
+    <string name="retry">再試行</string>
+    <string name="remove_all_contents">入力内容をすべて破棄</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

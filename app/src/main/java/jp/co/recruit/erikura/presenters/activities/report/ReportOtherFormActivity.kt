@@ -21,12 +21,15 @@ import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import android.provider.MediaStore
+import io.realm.Realm
+import jp.co.recruit.erikura.data.storage.PhotoToken
 
 
 class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportOtherFormViewModel::class.java)
     }
+    private val realm: Realm get() = ErikuraApplication.realm
 
     var job = Job()
     var fromConfirm = false
@@ -175,6 +178,15 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
         job.report?.let {
             it.additionalPhotoAsset = viewModel.otherPhoto
             it.additionalComment = viewModel.comment.value
+            if (it.additionalPhotoAsset != null) {
+                it.additionalReportPhotoWillDelete = false
+                it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
+//                    it.additionalReportPhotoToken = token
+                    addPhotoToken(it.additionalPhotoAsset?.contentUri.toString(), token)
+                }
+            }else {
+                it.additionalReportPhotoWillDelete = true
+            }
 
             if (fromConfirm) {
                 val intent= Intent()
@@ -188,6 +200,14 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
             }
         }
 
+    }
+
+    private fun addPhotoToken(url: String, token: String) {
+        realm.executeTransaction { realm ->
+            var photo = realm.createObject(PhotoToken::class.java, token)
+            photo.url = url
+            photo.jobId = job.id
+        }
     }
 }
 
