@@ -45,9 +45,6 @@ data class MediaItem(val id: Long = 0, val mimeType: String = "", val size: Long
                     resource: Bitmap,
                     transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
                 ) {
-//                    val fileName = "${resource.generationId}.jpg"
-//                    write(context, fileName, resource)
-//                    onComplete(fileName)
                     val outputStream = ByteArrayOutputStream()
                     resource.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
                     outputStream.close()
@@ -56,16 +53,4 @@ data class MediaItem(val id: Long = 0, val mimeType: String = "", val size: Long
                 }
             })
     }
-
-    fun write(context: Context, fileName: String?, bitmap: Bitmap) {
-        val outputStream: FileOutputStream
-        try {
-            outputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-            outputStream.close()
-        } catch (error: Exception) {
-            error.printStackTrace()
-        }
-    }
-
 }

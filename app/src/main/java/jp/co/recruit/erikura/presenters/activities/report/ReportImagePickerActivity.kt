@@ -170,9 +170,9 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
 
     private fun addPhotoToken(url: String, token: String) {
         realm.executeTransaction { realm ->
-            var photo = realm.createObject(PhotoToken::class.java, url)
+            var photo = realm.createObject(PhotoToken::class.java, token)
+            photo.url = url
             photo.jobId = job.id
-            photo.token = token
         }
     }
 }

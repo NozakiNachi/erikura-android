@@ -5,6 +5,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +33,7 @@ import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import java.util.*
 
 
 class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
@@ -238,7 +240,6 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     private fun saveReport() {
-        // 画像アップロード中だった場合画像アップロード中ですモーダルの表示
         // アップロードが完了しているかの判定
         // token取得処理
         job.report?.let {report ->
@@ -252,13 +253,75 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             // アップロードが完了しているので作業報告保存処理の実施
             print("save report")
         }else {
-            // アップロードが完了していないので画像アップロード中のモーダル表示
-            // モーダル表示後アップロード完了でｏｋコールバック受け取り作業報告API呼びだし
-            // モーダル表示後2分経過でNGコールバック受け取り画像アップロード失敗表示
+            // 画像アップ中モーダル
+            val dialog = UploadingDialogFragment()
+            dialog.isCancelable = false
+            dialog.show(supportFragmentManager, "Uploading")
+            // timerで繰り返し処理
+            val timer = Timer()
+            val timerHandler = Handler()
+            var count = 0
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    if (viewModel.completedUploadPhotos) {
+                        timer.cancel()
+                        // FIXME: レポート保存処理
+                        print("save report")
+                        dialog.dismiss()
+                    }else if(count > 120 ) {
+                        timer.cancel()
+                        // FIXME: 画像アップロード失敗モーダル表示
+                        print("upload failed")
+                        dialog.dismiss()
+                    }else {
+                        timerHandler.post(Runnable {
+                            updateToken()
+                            val (numPhotos, numUploadedPhotos) = updateProgress()
+                            dialog.numPhotos = numPhotos
+                            dialog.numUploadedPhotos = numUploadedPhotos
+
+                            count++
+                        })
+                    }
+                }
+            }, 1000, 1000) // 実行したい間隔(ミリ秒)
             print("now uploading")
         }
+    }
 
+    // 1秒ごとに呼び出される処理
+    private fun updateToken() {
+        // token取得処理
+        job.report?.let {report ->
+            report.outputSummaries.forEach { summary ->
+                summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+            }
+            report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+        }
+        viewModel.completedUploadPhotos = isCompletedUploadPhotos()
+    }
 
+    private fun updateProgress(): Pair<Int, Int> {
+        var numPhotos = 0
+        var numUploadedPhotos = 0
+        job.report?.let { report ->
+            report.outputSummaries.forEach { summary ->
+                if (summary.photoAsset?.contentUri != null) {
+                    numPhotos++
+                    if (!summary.beforeCleaningPhotoToken.isNullOrBlank()) {
+                        numUploadedPhotos++
+                    }
+                }
+            }
+            if (report.additionalPhotoAsset?.contentUri != null) {
+                numPhotos++
+                if (!report.additionalReportPhotoToken.isNullOrBlank()) {
+                    numUploadedPhotos++
+                }
+            }
+        }
+
+        return Pair(numPhotos, numUploadedPhotos)
     }
 
     private fun getPhotoToken(url: String): String {
@@ -353,6 +416,8 @@ class ReportConfirmViewModel: ViewModel() {
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
+
+    var completedUploadPhotos = false
 
     fun isValid(report: Report): Boolean {
         var valid = true

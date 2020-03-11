@@ -162,6 +162,10 @@
     <string name="report_confirm_missing_places">実施箇所に以下の箇所が含まれていません。</string>
     <string name="report_confirm_missing_places2">現地に存在しなかった場合を除き、報告は必須です。\n作業報告を完了してよろしいですか？</string>
 
+    <!-- 画像アップ中モーダル -->
+    <string name="uploading_title">画像をアップ中です</string>
+    <string name="uploading_progress">（　%1$d枚/%2$d枚 アップ完了）</string>
+
     <!-- 作業報告ステータス画面 -->
     <string name="report_status">作業報告のステータス</string>
     <string name="report_rejected_comment">差し戻しコメント</string>
