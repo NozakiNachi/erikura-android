@@ -225,12 +225,15 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         val item = MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
                         val summary = OutputSummary()
                         summary.photoAsset = item
-                        // FIXME: 画像アップロード処理の実行
                         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
                         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
                         outputSummaryList.add(summary)
                         job.report?.let {
                             it.outputSummaries = outputSummaryList
+                            // FIXME: 画像アップロード処理の実行
+//                            it.uploadPhoto(this, job, summary.photoAsset){ token ->
+//                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
+//                            }
                         }
                     }
 
@@ -267,25 +270,26 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 override fun run() {
                     if (viewModel.completedUploadPhotos) {
                         timer.cancel()
-                        // FIXME: レポート保存処理
                         uploadingDialog.dismiss()
                         saveReport()
                     }else if(count > 120 ) {
                         timer.cancel()
+                        uploadingDialog.dismiss()
                         val failedDialog = UploadFailedDialogFragment().also {
                             it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
                                 override fun onClickRetryButton() {
-                                    // FIXME: 再試行処理
+                                    it.dismiss()
+                                    retry()
                                 }
                                 override fun onClickRemoveButton() {
                                     // レポートを削除して案件詳細画面へ遷移します
+                                    it.dismiss()
                                     removeAllContents()
                                 }
                             }
                         }
                         failedDialog.isCancelable = false
                         failedDialog.show(supportFragmentManager, "UploadFailed")
-                        uploadingDialog.dismiss()
                     }else {
                         timerHandler.post(Runnable {
                             updateToken()
@@ -334,6 +338,14 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         }
 
         return Pair(numPhotos, numUploadedPhotos)
+    }
+
+    private fun addPhotoToken(url: String, token: String) {
+        realm.executeTransaction { realm ->
+            var photo = realm.createObject(PhotoToken::class.java, token)
+            photo.url = url
+            photo.jobId = job.id
+        }
     }
 
     private fun getPhotoToken(url: String): String {
@@ -423,6 +435,65 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     private fun retry() {
+        // 画像アップ中モーダル
+        val uploadingDialog = UploadingDialogFragment()
+        uploadingDialog.isCancelable = false
+        uploadingDialog.show(supportFragmentManager, "Uploading")
+
+        job.report?.let { report ->
+            report.outputSummaries.forEach { outputSummary ->
+                report.uploadPhoto(this, job, outputSummary.photoAsset){ token ->
+                    addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), token)
+                }
+            }
+            if (report.additionalPhotoAsset != null) {
+                report.uploadPhoto(this, job, report.additionalPhotoAsset) { token ->
+                    addPhotoToken(report.additionalPhotoAsset?.contentUri.toString(), token)
+                }
+            }
+
+        }
+
+        // timerで繰り返し処理
+        val timer = Timer()
+        val timerHandler = Handler()
+        var count = 0
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                if (viewModel.completedUploadPhotos) {
+                    timer.cancel()
+                    uploadingDialog.dismiss()
+                    saveReport()
+                }else if(count > 120 ) {
+                    timer.cancel()
+                    uploadingDialog.dismiss()
+                    val failedDialog = UploadFailedDialogFragment().also {
+                        it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
+                            override fun onClickRetryButton() {
+                                it.dismiss()
+                                retry()
+                            }
+                            override fun onClickRemoveButton() {
+                                it.dismiss()
+                                // レポートを削除して案件詳細画面へ遷移します
+                                removeAllContents()
+                            }
+                        }
+                    }
+                    failedDialog.isCancelable = false
+                    failedDialog.show(supportFragmentManager, "UploadFailed")
+                }else {
+                    timerHandler.post(Runnable {
+                        updateToken()
+                        val (numPhotos, numUploadedPhotos) = updateProgress()
+                        uploadingDialog.numPhotos = numPhotos
+                        uploadingDialog.numUploadedPhotos = numUploadedPhotos
+
+                        count++
+                    })
+                }
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
 
     }
 
