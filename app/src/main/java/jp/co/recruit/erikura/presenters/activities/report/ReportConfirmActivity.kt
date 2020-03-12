@@ -379,7 +379,9 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     private fun saveReport() {
-
+        Api(this).report(job) {
+            // FIXME: 作業報告完了モーダルの表示
+        }
     }
 
     private fun missingPlaces(): List<String> {

@@ -97,8 +97,11 @@ interface IErikuraApiService {
     @HTTP(method = "DELETE", path = "place_favorites/destroy", hasBody = true)
     fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
+    @POST("reports")
+    fun createReport(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
+
     @PATCH("reports")
-    fun report(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
+    fun updateReport(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
 
     // FIXME: download => OKHTTP で直接ダウンロードするのがいいのか
 
@@ -263,7 +266,7 @@ data class AbortJobRequest(
 data class ReportRequest(
     var jobId: Int,
     var outputSummariesAttributes: List<OutputSummaryRequest>,
-    var workingMinutes: Int?,
+    var workingMinute: Int?,
     var additionalComment: String?,
     var additionReportPhotoToken: String?,
     var evaluation: String,
