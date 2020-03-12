@@ -310,9 +310,13 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         // token取得処理
         job.report?.let {report ->
             report.outputSummaries.forEach { summary ->
-                summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+                if (summary.beforeCleaningPhotoToken.isNullOrBlank()) {
+                    summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+                }
             }
-            report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            if (report.additionalReportPhotoToken.isNullOrBlank()) {
+                report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            }
         }
         viewModel.completedUploadPhotos = isCompletedUploadPhotos()
     }
@@ -353,9 +357,15 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         realm.executeTransaction { realm ->
             var photo = realm.where(PhotoToken::class.java).equalTo("url", url).equalTo("jobId", job.id).findFirst()
             token = photo?.token?: ""
+            photo?.let {
+                // 該当データの削除
+                photo.deleteFromRealm()
+            }
         }
         return token
     }
+
+
 
     private fun isCompletedUploadPhotos(): Boolean {
         var completed = true
