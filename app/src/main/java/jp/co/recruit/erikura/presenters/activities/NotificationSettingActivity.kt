@@ -49,22 +49,22 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
 
             // 初期表示
             if (viewModel.allowRemindMailReception.value == true) {
-                animOn(false, "AllowRemindMailReception")
+                animOn("AllowRemindMailReception")
             }else{
                 binding.allowRemindMailReceptionGreen.setVisibility(View.GONE)
             }
             if (viewModel.allowInfoMailReception.value == true) {
-                animOn(false, "AllowInfoMailReception")
+                animOn("AllowInfoMailReception")
             } else{
                 binding.allowInfoMailReceptionGreen.setVisibility(View.GONE)
             }
             if (viewModel.allowRemindPushReception.value == true) {
-                animOn(false, "AllowRemindPushReception")
+                animOn("AllowRemindPushReception")
             }else{
                 binding.allowRemindPushReceptionGreen.setVisibility(View.GONE)
             }
             if (viewModel.allowInfoPushReception.value == true) {
-                animOn(false, "AllowInfoPushReception")
+                animOn("AllowInfoPushReception")
             }else{
                 binding.allowInfoPushReceptionGreen.setVisibility(View.GONE)
             }
@@ -82,48 +82,48 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         if (viewModel.allowRemindMailReception.value == true){
             viewModel.allowRemindMailReception.value = false
             notificationSetting.allowRemindMailReception = false
-            animOff(false, "AllowRemindMailReception")
+            animOff("AllowRemindMailReception")
         }else {
             viewModel.allowRemindMailReception.value =true
             notificationSetting.allowRemindMailReception = true
-            animOn(false, "AllowRemindMailReception")
+            animOn("AllowRemindMailReception")
         }
     }
     override fun onAllowInfoMailReception(view: View) {
         if (viewModel.allowInfoMailReception.value == true){
             viewModel.allowInfoMailReception.value = false
             notificationSetting.allowInfoMailReception = false
-            animOff(false, "AllowInfoMailReception")
+            animOff("AllowInfoMailReception")
         }else {
             viewModel.allowInfoMailReception.value = true
             notificationSetting.allowInfoMailReception = true
-            animOn(false, "AllowInfoMailReception")
+            animOn("AllowInfoMailReception")
         }
     }
     override fun onAllowRemindPushReception(view: View) {
         if (viewModel.allowRemindPushReception.value == true){
             viewModel.allowRemindPushReception.value = false
             notificationSetting.allowRemindPushReception = false
-            animOff(false, "AllowRemindPushReception")
+            animOff("AllowRemindPushReception")
         }else {
             viewModel.allowRemindPushReception.value = true
             notificationSetting.allowRemindPushReception = true
-            animOn(false, "AllowRemindPushReception")
+            animOn("AllowRemindPushReception")
         }
     }
     override fun onAllowInfoPushReception(view: View) {
         if (viewModel.allowInfoPushReception.value == true){
             viewModel.allowInfoPushReception.value = false
             notificationSetting.allowInfoPushReception = false
-            animOff(false, "AllowInfoPushReception")
+            animOff("AllowInfoPushReception")
         }else {
             viewModel.allowInfoPushReception.value = true
             notificationSetting.allowInfoPushReception = true
-            animOn(false, "AllowInfoPushReception")
+            animOn("AllowInfoPushReception")
         }
     }
 
-    private fun animOn(durationZero: Boolean, actionName: String) {
+    private fun animOn(actionName: String) {
         val btnAnim = AnimationUtils.loadAnimation(
             applicationContext, R.anim.toggle_btn_on
         )
@@ -133,13 +133,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         val bgGreenAnim = AnimationUtils.loadAnimation(
             applicationContext, R.anim.toggle_bg_green_on
         )
-
-        if (durationZero) {
-            btnAnim.setDuration(0)
-            bgWhiteAnim.setDuration(0)
-            bgGreenAnim.setDuration(0)
-        }
-
 
         if(actionName == "AllowRemindMailReception") {
             mTglBtn = findViewById<View>(R.id.allow_remind_mail_reception) as ToggleButton
@@ -171,7 +164,7 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
     }
 
 
-    private fun animOff(durationZero: Boolean, actionName: String) {
+    private fun animOff(actionName: String) {
         val btnAnim = AnimationUtils.loadAnimation(
             applicationContext, R.anim.toggle_btn_off
         )
@@ -181,12 +174,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         val bgGreenAnim = AnimationUtils.loadAnimation(
             applicationContext, R.anim.toggle_bg_green_off
         )
-
-        if (durationZero) {
-            btnAnim.setDuration(0)
-            bgWhiteAnim.setDuration(0)
-            bgGreenAnim.setDuration(0)
-        }
 
         if(actionName == "AllowRemindMailReception") {
             mTglBtn = findViewById<View>(R.id.allow_remind_mail_reception) as ToggleButton
