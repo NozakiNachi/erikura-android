@@ -314,6 +314,7 @@
                         style="@style/textField"
                         android:hint="@string/register_postal_code_hint"
                         android:inputType="number"
+                        android:layout_marginTop="10dp"
                         android:text="@={viewModel.postalCode}"
                         android:onFocusChanged="@{handlers::onFocusChanged}"
                         />
