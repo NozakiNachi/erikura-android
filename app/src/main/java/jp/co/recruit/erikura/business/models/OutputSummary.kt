@@ -23,4 +23,12 @@ data class OutputSummary(
     // photoAsset
     // isUploadCompleted
     // validate
+
+    val isUploadCompleted: Boolean get() {
+        if (photoAsset?.contentUri == null) {
+            return true
+        }else {
+            return !beforeCleaningPhotoToken.isNullOrBlank()
+        }
+    }
 }

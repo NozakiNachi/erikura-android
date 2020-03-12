@@ -102,9 +102,8 @@ interface IErikuraApiService {
 
     // FIXME: download => OKHTTP で直接ダウンロードするのがいいのか
 
-    @Multipart
     @POST("reports/image_upload")
-    fun imageUpload(@Part("photo") photo: RequestBody): ApiObservable<PhotoTokenResponse>
+    fun imageUpload(@Body photo: RequestBody): ApiObservable<PhotoTokenResponse>
 
     @HTTP(method = "DELETE", path = "reports", hasBody = true)
     fun deleteReport(@Body request: DeleteReportRequest): ApiObservable<ReportIdResponse>

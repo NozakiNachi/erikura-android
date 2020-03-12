@@ -67,6 +67,8 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
         viewModel.streetErrorVisibility.value = 8
         viewModel.lastNameErrorVisibility.value = 8
         viewModel.firstNameErrorVisibility.value = 8
+        viewModel.passwordErrorVisibility.value = 8
+        viewModel.verificationPasswordErrorVisibility.value = 8
 
         // 生年月日入力のカレンダー設定
         calender.set(Calendar.YEAR, 1980)
@@ -269,6 +271,8 @@ class ChangeUserInformationViewModel: ViewModel() {
 
     // 登録ボタン押下
     val isChangeButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(password) { result.value = isValid() }
+        result.addSource(verificationPassword) { result.value = isValid() }
         result.addSource(lastName) { result.value = isValid() }
         result.addSource(firstName) { result.value = isValid() }
         result.addSource(dateOfBirth) { result.value = isValid() }
@@ -287,10 +291,11 @@ class ChangeUserInformationViewModel: ViewModel() {
         result.addSource(interestedCar) {result.value = isValid()}
     }
 
-//     バリデーションルール
+    //     バリデーションルール
     private fun isValid(): Boolean {
         var valid = true
-//      valid = isValidPassword() && valid
+        valid = isValidPassword() && valid
+        valid = isValidVerificationPassword() && valid
         valid = isValidFirstName() && valid
         valid = isValidLastName() && valid
         valid = isValidPostalCode() && valid
@@ -425,25 +430,64 @@ class ChangeUserInformationViewModel: ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
-        if (valid && password.value?.isBlank() ?:true) {
-            valid = false
-            passwordErrorMsg.value = ""
-            passwordErrorVisibility.value = 8
-        }else if(valid && !(pattern.matcher(password.value).find())) {
+        if(valid && password.value !== null && !(pattern.matcher(password.value).find())) {
             valid = false
             passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
             passwordErrorVisibility.value = 0
-        }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
+        }else if(valid && password.value !== null && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
             valid = false
             passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
             passwordErrorVisibility.value = 0
-        }else if(valid && password.value !== verificationPassword.value) {
-            passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
-            passwordErrorVisibility.value = 0
+        }else if(valid && password.value == null) {
+            valid = true
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
+        }else if(valid && password.value == ""){
+            valid = true
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
         } else {
             valid = true
             passwordErrorMsg.value = ""
             passwordErrorVisibility.value = 8
+        }
+        return valid
+    }
+
+    private fun isValidVerificationPassword(): Boolean {
+        var valid = true
+        val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
+        val alPattern = Pattern.compile("^(.*[A-z]+.*)")
+        val numPattern = Pattern.compile("^(.*[0-9]+.*)")
+
+        if (valid && password.value !== null && verificationPassword.value == null) {
+            valid = false
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
+        } else if(valid && verificationPassword.value !== null && !(pattern.matcher(password.value).find())) {
+            valid = false
+            verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+            verificationPasswordErrorVisibility.value = 0
+        }else if(valid && verificationPassword.value !== null && (!(alPattern.matcher(verificationPassword.value).find()) || !(numPattern.matcher(verificationPassword.value).find()))) {
+            valid = false
+            verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+            verificationPasswordErrorVisibility.value = 0
+        }else if(valid && password.value !== null && verificationPassword.value !== null && password.value == verificationPassword.value) {
+            valid = true
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
+        }else if(valid && verificationPassword.value == null) {
+            valid = true
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
+        }else if(valid && verificationPassword.value == ""){
+            valid = true
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
+        } else {
+            valid = true
+            verificationPasswordErrorMsg.value = ""
+            verificationPasswordErrorVisibility.value = 8
         }
         return valid
     }

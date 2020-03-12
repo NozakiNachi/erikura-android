@@ -32,6 +32,7 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
+
 class Api(var context: Context) {
     companion object {
         var userSession: UserSession? = null
@@ -389,8 +390,8 @@ class Api(var context: Context) {
         }
     }
 
-    fun imageUpload(item: MediaItem, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
-        val photo = RequestBody.create(item.mimeType.toMediaTypeOrNull(), File("photo.jpg"))
+    fun imageUpload(item: MediaItem, bytes: ByteArray, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
+        val photo = RequestBody.create(item.mimeType.toMediaTypeOrNull(), bytes)
         val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
             "photo",
             "photo.jpg",

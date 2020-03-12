@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -11,11 +12,16 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.NotificationSetting
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
+import android.widget.ToggleButton
 
 
 class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEventHandlers {
 
     var notificationSetting: NotificationSetting = NotificationSetting()
+
+    var mTglBtn : ToggleButton? = null
+    var mTglBgWhite : View? = null
+    var mTglBgGreen : View? = null
 
     private val viewModel: NotificationSettingViewModel by lazy {
         ViewModelProvider(this).get(NotificationSettingViewModel::class.java)
@@ -26,7 +32,8 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         super.onCreate(savedInstanceState)
 
 
-        val binding: ActivityNotificationSettingBinding = DataBindingUtil.setContentView(this, R.layout.activity_notification_setting)
+        val binding: ActivityNotificationSettingBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_notification_setting)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
@@ -42,23 +49,31 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
 
             // 初期表示
             if (viewModel.allowRemindMailReception.value == true) {
-                binding.allowRemindMailReception.isChecked = true
+                animOn("AllowRemindMailReception")
+            }else{
+                binding.allowRemindMailReceptionGreen.setVisibility(View.GONE)
             }
             if (viewModel.allowInfoMailReception.value == true) {
-                binding.allowInfoMailReception.isChecked = true
+                animOn("AllowInfoMailReception")
+            } else{
+                binding.allowInfoMailReceptionGreen.setVisibility(View.GONE)
             }
             if (viewModel.allowRemindPushReception.value == true) {
-                binding.allowRemindPushReception.isChecked = true
+                animOn("AllowRemindPushReception")
+            }else{
+                binding.allowRemindPushReceptionGreen.setVisibility(View.GONE)
             }
             if (viewModel.allowInfoPushReception.value == true) {
-                binding.allowInfoPushReception.isChecked = true
+                animOn("AllowInfoPushReception")
+            }else{
+                binding.allowInfoPushReceptionGreen.setVisibility(View.GONE)
             }
         }
     }
 
     // 戻るボタン押下時に通知設定を保存
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onPause() {
+        super.onPause()
         Api(this).updateNotificationSetting(notificationSetting) {}
     }
 
@@ -67,37 +82,123 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         if (viewModel.allowRemindMailReception.value == true){
             viewModel.allowRemindMailReception.value = false
             notificationSetting.allowRemindMailReception = false
+            animOff("AllowRemindMailReception")
         }else {
             viewModel.allowRemindMailReception.value =true
             notificationSetting.allowRemindMailReception = true
+            animOn("AllowRemindMailReception")
         }
     }
     override fun onAllowInfoMailReception(view: View) {
         if (viewModel.allowInfoMailReception.value == true){
             viewModel.allowInfoMailReception.value = false
             notificationSetting.allowInfoMailReception = false
+            animOff("AllowInfoMailReception")
         }else {
             viewModel.allowInfoMailReception.value = true
             notificationSetting.allowInfoMailReception = true
+            animOn("AllowInfoMailReception")
         }
     }
     override fun onAllowRemindPushReception(view: View) {
         if (viewModel.allowRemindPushReception.value == true){
             viewModel.allowRemindPushReception.value = false
             notificationSetting.allowRemindPushReception = false
+            animOff("AllowRemindPushReception")
         }else {
             viewModel.allowRemindPushReception.value = true
             notificationSetting.allowRemindPushReception = true
+            animOn("AllowRemindPushReception")
         }
     }
     override fun onAllowInfoPushReception(view: View) {
         if (viewModel.allowInfoPushReception.value == true){
             viewModel.allowInfoPushReception.value = false
             notificationSetting.allowInfoPushReception = false
+            animOff("AllowInfoPushReception")
         }else {
             viewModel.allowInfoPushReception.value = true
             notificationSetting.allowInfoPushReception = true
+            animOn("AllowInfoPushReception")
         }
+    }
+
+    private fun animOn(actionName: String) {
+        val btnAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_btn_on
+        )
+        val bgWhiteAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_bg_white_on
+        )
+        val bgGreenAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_bg_green_on
+        )
+
+        if(actionName == "AllowRemindMailReception") {
+            mTglBtn = findViewById<View>(R.id.allow_remind_mail_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_remind_mail_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_remind_mail_reception_green) as View
+        }
+
+        if(actionName == "AllowInfoMailReception") {
+            mTglBtn = findViewById<View>(R.id.allow_info_mail_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_info_mail_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_info_mail_reception_green) as View
+
+        }
+        if(actionName == "AllowRemindPushReception") {
+            mTglBtn = findViewById<View>(R.id.allow_remind_push_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_remind_push_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_remind_push_reception_green) as View
+
+        }
+        if (actionName == "AllowInfoPushReception") {
+            mTglBtn = findViewById<View>(R.id.allow_info_push_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_info_push_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_info_push_reception_green) as View
+        }
+
+        mTglBtn?.startAnimation(btnAnim)
+        mTglBgWhite?.startAnimation(bgWhiteAnim)
+        mTglBgGreen?.startAnimation(bgGreenAnim)
+    }
+
+
+    private fun animOff(actionName: String) {
+        val btnAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_btn_off
+        )
+        val bgWhiteAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_bg_white_off
+        )
+        val bgGreenAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_bg_green_off
+        )
+
+        if(actionName == "AllowRemindMailReception") {
+            mTglBtn = findViewById<View>(R.id.allow_remind_mail_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_remind_mail_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_remind_mail_reception_green) as View
+        }
+        if(actionName == "AllowInfoMailReception") {
+            mTglBtn = findViewById<View>(R.id.allow_info_mail_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_info_mail_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_info_mail_reception_green) as View
+        }
+        if(actionName == "AllowRemindPushReception") {
+            mTglBtn = findViewById<View>(R.id.allow_remind_push_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_remind_push_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_remind_push_reception_green) as View
+        }
+        if(actionName == "AllowInfoPushReception") {
+            mTglBtn = findViewById<View>(R.id.allow_info_push_reception) as ToggleButton
+            mTglBgWhite = findViewById(R.id.allow_info_push_reception_white) as View
+            mTglBgGreen = findViewById(R.id.allow_info_push_reception_green) as View
+        }
+
+        mTglBtn?.startAnimation(btnAnim)
+        mTglBgWhite?.startAnimation(bgWhiteAnim)
+        mTglBgGreen?.startAnimation(bgGreenAnim)
     }
 }
 
