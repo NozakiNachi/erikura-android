@@ -255,7 +255,6 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:background="@drawable/toggle_bg_green"
-
                                 />
                             <View
                                 android:id="@+id/allow_remind_push_reception_white"
