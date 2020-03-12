@@ -656,7 +656,9 @@ class Api(var context: Context) {
                     )
                     setPositiveButton(R.string.common_buttons_close) { _, _ -> }
                 }.create()
-            alertDialog.show()
+            if (!isDestroyed()) {
+                alertDialog.show()
+            }
         }
     }
 

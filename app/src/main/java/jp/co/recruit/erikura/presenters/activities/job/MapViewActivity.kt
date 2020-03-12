@@ -11,11 +11,11 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -40,6 +40,7 @@ import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
+import kotlinx.android.synthetic.main.activity_map_view.*
 
 class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
@@ -51,6 +52,9 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     private val viewModel: MapViewViewModel by lazy {
         ViewModelProvider(this).get(MapViewViewModel::class.java)
+    }
+    private val coachViewModel: MapViewCoachViewModel by lazy {
+        ViewModelProvider(this).get(MapViewCoachViewModel::class.java)
     }
 
     private val locationManager: LocationManager = ErikuraApplication.locationManager
@@ -158,6 +162,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+        binding.coachViewModel = coachViewModel
 
         Realm.init(this)
 
@@ -204,6 +209,10 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(carouselView)
+
+        map_view_carousel_highlight.adapter = carouselView.adapter
+        map_view_carousel_highlight.addItemDecoration(ErikuraCarouselCellDecoration())
+        LinearSnapHelper().attachToRecyclerView(map_view_carousel_highlight)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -506,4 +515,44 @@ interface MapViewEventHandlers {
     fun onClickCarouselItem(job: Job)
 
     fun onNavigationItemSelected(item: MenuItem): Boolean
+}
+
+class MapViewCoachViewModel: ViewModel() {
+    // FIXME: コーチマーク表示済みかを保存します
+    val coach = MutableLiveData<Boolean>()
+    val step = MutableLiveData<Int>()
+
+    val step0Visibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(step) { result.value = if (it == 0) { View.VISIBLE } else { View.GONE } }
+    }
+    val step1Visibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(step) { result.value = if (it == 1) { View.VISIBLE } else { View.GONE } }
+    }
+    val coachVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(coach) { result.value = decideCoachVisibility() }
+        result.addSource(step) { result.value = decideCoachVisibility() }
+    }
+
+    init {
+        coach.value = false
+        step.value = 0
+    }
+
+    fun next() {
+        step.value = (step.value ?: 0) + 1
+    }
+
+    fun decideCoachVisibility(): Int {
+        // コーチマークが無効になっていれば、表示しない
+        if (!(coach.value ?: false)) return View.GONE
+        // 各ステップの表示が有効な場合は、表示する
+        if (step.value == 0) return View.VISIBLE
+        if (step.value == 1) return View.VISIBLE
+        // 全ステップが非表示なので、コーチマークは非表示に
+        return View.GONE
+    }
+
+    fun tap(view: View) {
+        this.next()
+    }
 }

@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.di.DaggerErikuraComponent
 import jp.co.recruit.erikura.di.ErikuraComponent
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.json.JSONObject
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
@@ -48,7 +49,10 @@ class ErikuraApplication : Application() {
         super.onCreate()
         instance = this
 
+        // トラッキングの初期化
         Tracking.initTrackers(this)
+        // 通知チャネルの初期化
+        ErikuraMessagingService.createChannel(this)
 
         UserSession.retrieve()?.let {
             Api.userSession = it

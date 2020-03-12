@@ -72,44 +72,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <FrameLayout
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:id="@+id/allowRemindMailReception"
                             android:layout_width="58dp"
                             android:layout_height="48dp"
-                            android:layout_marginLeft="20dp">
-                            <View
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_gray" />
-                            <View
-                                android:id="@+id/allow_remind_mail_reception_green"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_green" />
-                            <View
-                                android:id="@+id/allow_remind_mail_reception_white"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_white" />
-                            <ToggleButton
-                                android:id="@+id/allow_remind_mail_reception"
-                                android:layout_width="58dp"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:button="@drawable/toggle_btn"
-                                android:checked="true"
-                                android:textOff=""
-                                android:textOn=""
-                                android:onClick="@{handlers::onAllowRemindMailReception}"
-                                />
-                        </FrameLayout>
+                            android:layout_marginLeft="20dp"
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
-                            android:layout_height="70dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
-                            android:layout_marginBottom="1dp"
-                            >
+                            android:layout_marginBottom="1dp">
                             <TextView
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
@@ -142,44 +117,22 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-                        <FrameLayout
+                        android:orientation="horizontal">
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
                             android:layout_width="58dp"
                             android:layout_height="48dp"
-                            android:layout_marginLeft="20dp">
-                            <View
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_gray" />
-                            <View
-                                android:id="@+id/allow_info_mail_reception_green"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_green" />
-                            <View
-                                android:id="@+id/allow_info_mail_reception_white"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_white" />
-                            <ToggleButton
-                                android:id="@+id/allow_info_mail_reception"
-                                android:layout_width="58dp"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:button="@drawable/toggle_btn"
-                                android:checked="true"
-                                android:textOff=""
-                                android:textOn=""
-                                android:onClick="@{handlers::onAllowInfoMailReception}"/>
-                        </FrameLayout>
+                            android:layout_marginLeft="20dp"
+
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
-                            android:layout_height="70dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp"
@@ -202,6 +155,162 @@
                                 style="@style/label_w2"
                                 android:textSize="10.5dp"
                                 android:text="会員様限定のお仕事情報などを記載したお知らせメール。"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:id="@+id/allowR"
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp" />
+                        <RelativeLayout
+                            android:layout_weight="1.0"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
+                            >
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="応募再開メール"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="応募再開のお知らせメール。"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:id="@+id/a"
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp"
+
+                            />
+                        <RelativeLayout
+                            android:layout_weight="1.0"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
+                            >
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="お仕事依頼元からの「いいね」通知メール"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="お仕事依頼元から「いいね」があった場合のメール。"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:id="@+id/allowRemi"
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp"
+
+                            />
+                        <RelativeLayout
+                            android:layout_weight="1.0"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp"
+                            >
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="お仕事依頼元からの「コメント」通知メール"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="お仕事依頼元から「コメント」があった場合のメール。"/>
                         </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -237,46 +346,22 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <FrameLayout
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
                             android:layout_width="58dp"
                             android:layout_height="48dp"
-                            android:layout_marginLeft="20dp">
-                            <View
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_gray" />
-                            <View
-                                android:id="@+id/allow_remind_push_reception_green"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_green"
+                            android:layout_marginLeft="20dp"
 
-                                />
-                            <View
-                                android:id="@+id/allow_remind_push_reception_white"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_white" />
-                            <ToggleButton
-                                android:id="@+id/allow_remind_push_reception"
-                                android:layout_width="58dp"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:button="@drawable/toggle_btn"
-                                android:textOff=""
-                                android:textOn=""
-                                android:onClick="@{handlers::onAllowRemindPushReception}"
-                                />
-                        </FrameLayout>
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
-                            android:layout_height="70dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp"
@@ -287,7 +372,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
-                                android:text="*****プッシュ通知"
+                                android:text="リマインドプッシュ通知"
                                 android:textSize="16dp" />
                             <TextView
                                 android:layout_width="match_parent"
@@ -298,7 +383,7 @@
                                 style="@style/label_w2"
                                 android:textSize="12dp"
                                 android:layout_marginBottom="10dp"
-                                android:text="****説明文が入ります。説明文が入ります。"/>
+                                android:text="納期間近の案件があった場合のプッシュ通知。"/>
                         </RelativeLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -309,61 +394,34 @@
                     android:layout_width="match_parent"
                     android:background="#d6e4e2"
                     />
-
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
-                        <FrameLayout
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
                             android:layout_width="58dp"
                             android:layout_height="48dp"
-                            android:layout_marginLeft="20dp">
-                            <View
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_gray" />
-                            <View
-                                android:id="@+id/allow_info_push_reception_green"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_green" />
-                            <View
-                                android:id="@+id/allow_info_push_reception_white"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@drawable/toggle_bg_white" />
-                            <ToggleButton
-                                android:id="@+id/allow_info_push_reception"
-                                android:layout_width="58dp"
-                                android:layout_height="wrap_content"
-                                android:background="@null"
-                                android:button="@drawable/toggle_btn"
-                                android:checked="true"
-                                android:textOff=""
-                                android:textOn=""
-                                android:onClick="@{handlers::onAllowInfoPushReception}"
-                                />
-                        </FrameLayout>
+                            android:layout_marginLeft="20dp"
+                            />
                         <RelativeLayout
                             android:layout_weight="1.0"
                             android:layout_width="match_parent"
-                            android:layout_height="70dp"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="10dp"
                             android:layout_marginRight="6dp"
-                            android:layout_marginBottom="1dp"
-                            >
+                            android:layout_marginBottom="1dp">
                             <TextView
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
-                                android:text="****プッシュ通知"
+                                android:text="会員様限定のお知らせプッシュ通知"
                                 android:textSize="16dp" />
                             <TextView
                                 android:layout_width="match_parent"
@@ -374,16 +432,164 @@
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
                                 android:textSize="12dp"
-                                android:text="****説明文が入ります。説明文が入ります。"/>
+                                android:text="会員様限定のお仕事情報などを掲載したお知らせプッシュ通知。"/>
                         </RelativeLayout>
                     </LinearLayout>
-                    <View
-                        android:layout_marginTop="10dp"
-                        android:layout_height="1px"
-                        android:layout_width="match_parent"
-                        android:background="#d6e4e2"
-                        />
                 </LinearLayout>
+
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp"
+                            />
+                        <RelativeLayout
+                            android:layout_weight="1.0"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp">
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="応募再開プッシュ通知"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="応募再開のお知らせプッシュ通知。"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:id="@+id/allowRemilReception"
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp"
+                            />
+                        <RelativeLayout
+                            android:layout_weight="1.0"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp">
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="お仕事依頼元からの「いいね」プッシュ通知"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="お仕事依頼元から「いいね」があった場合のプッシュ通知。"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="19.5dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal" >
+                        <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
+                            android:id="@+id/allowRemindMception"
+                            android:layout_width="58dp"
+                            android:layout_height="48dp"
+                            android:layout_marginLeft="20dp"
+                            />
+                        <RelativeLayout
+                            android:layout_weight="1.0"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginRight="6dp"
+                            android:layout_marginBottom="1dp">
+                            <TextView
+                                style="@style/label_w2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:text="お仕事依頼元からの「コメント」プッシュ通知"
+                                android:textSize="16dp" />
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginLeft="10dp"
+                                android:layout_marginRight="20dp"
+                                android:layout_marginBottom="10dp"
+                                style="@style/label_w2"
+                                android:textSize="12dp"
+                                android:text="お仕事依頼元から「コメント」があった場合のプッシュ通知。"/>
+                        </RelativeLayout>
+                    </LinearLayout>
+                </LinearLayout>
+                <View
+                    android:layout_marginTop="10dp"
+                    android:layout_height="1px"
+                    android:layout_width="match_parent"
+                    android:background="#d6e4e2"
+                    android:layout_marginBottom="19.5dp"
+                    />
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
