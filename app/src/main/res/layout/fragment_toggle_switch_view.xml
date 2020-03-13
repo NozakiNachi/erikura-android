@@ -5,6 +5,9 @@
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.fragments.ToggleSwitchHandlers" />
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ToggleSwitchViewModel" />
     </data>
 
     <FrameLayout
@@ -32,7 +35,7 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:button="@drawable/toggle_btn"
-            android:checked="true"
+            android:checked="@={viewModel.notification_boolean}"
             android:textOff=""
             android:textOn=""
             android:onClick="@{handlers::onClick}"

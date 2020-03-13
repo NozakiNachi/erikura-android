@@ -49,12 +49,12 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginTop="38dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:layout_marginBottom="20dp"
+                        android:layout_marginBottom="19.5dp"
                         style="@style/label_w2"
-                        android:textSize="22dp"
+                        android:textSize="20dp"
                         android:text="メール通知設定"/>
                 </LinearLayout>
 
@@ -67,16 +67,18 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp">
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
                         <jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
-                            android:id="@+id/allowRemindMailReception"
+                            android:id="@+id/tryCha"
                             android:layout_width="58dp"
                             android:layout_height="48dp"
                             android:layout_marginLeft="20dp"
+
                             />
                         <RelativeLayout
                             android:layout_weight="1.0"
@@ -86,9 +88,11 @@
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp">
                             <TextView
+                                android:id="@+id/allow_remind_mail_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:text="リマインドメール"
@@ -96,10 +100,11 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
+                                android:layout_below="@+id/allow_remind_mail_reception_text"
                                 style="@style/label_w2"
                                 android:textSize="12dp"
                                 android:text="納期間近の案件があった場合のリマインドメール"/>
@@ -138,6 +143,7 @@
                             android:layout_marginBottom="1dp"
                             >
                             <TextView
+                                android:id="@+id/allow_info_mail_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -148,11 +154,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_info_mail_reception_text"
                                 android:textSize="10.5dp"
                                 android:text="会員様限定のお仕事情報などを記載したお知らせメール。"/>
                         </RelativeLayout>
@@ -188,6 +195,7 @@
                             android:layout_marginBottom="1dp"
                             >
                             <TextView
+                                android:id="@+id/allow_reopen_mail_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -198,11 +206,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_reopen_mail_reception_text"
                                 android:textSize="12dp"
                                 android:text="応募再開のお知らせメール。"/>
                         </RelativeLayout>
@@ -217,11 +226,13 @@
                     />
 
                 <LinearLayout
+                    android:id="@+id/la"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:layout_marginTop="19.5dp">
                     <LinearLayout
+                        android:id="@+id/le"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal" >
@@ -230,6 +241,7 @@
                             android:layout_width="58dp"
                             android:layout_height="48dp"
                             android:layout_marginLeft="20dp"
+                            android:layout_centerInParent="@+id/le"
 
                             />
                         <RelativeLayout
@@ -241,6 +253,7 @@
                             android:layout_marginBottom="1dp"
                             >
                             <TextView
+                                android:id="@+id/allow_commented_mail_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -251,7 +264,8 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_below="@+id/allow_commented_mail_reception_text"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
@@ -294,6 +308,7 @@
                             android:layout_marginBottom="1dp"
                             >
                             <TextView
+                                android:id="@+id/allow_liked_mail_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -304,11 +319,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_liked_mail_reception_text"
                                 android:textSize="12dp"
                                 android:text="お仕事依頼元から「コメント」があった場合のメール。"/>
                         </RelativeLayout>
@@ -328,12 +344,11 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginTop="39.5dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:layout_marginBottom="20dp"
                         style="@style/label_w2"
-                        android:textSize="22dp"
+                        android:textSize="20dp"
                         android:text="プッシュ通知設定"/>
                 </LinearLayout>
 
@@ -367,6 +382,7 @@
                             android:layout_marginBottom="1dp"
                             >
                             <TextView
+                                android:id="@+id/allow_remind_push_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -377,10 +393,11 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_remind_push_reception_text"
                                 android:textSize="12dp"
                                 android:layout_marginBottom="10dp"
                                 android:text="納期間近の案件があった場合のプッシュ通知。"/>
@@ -416,6 +433,7 @@
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp">
                             <TextView
+                                android:id="@+id/allow_info_push_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -426,11 +444,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_info_push_reception_text"
                                 android:textSize="12dp"
                                 android:text="会員様限定のお仕事情報などを掲載したお知らせプッシュ通知。"/>
                         </RelativeLayout>
@@ -465,6 +484,7 @@
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp">
                             <TextView
+                                android:id="@+id/allow_reopen_push_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -475,11 +495,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_reopen_push_reception_text"
                                 android:textSize="12dp"
                                 android:text="応募再開のお知らせプッシュ通知。"/>
                         </RelativeLayout>
@@ -514,6 +535,7 @@
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp">
                             <TextView
+                                android:id="@+id/allow_commented_push_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -524,11 +546,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_commented_push_reception_text"
                                 android:textSize="12dp"
                                 android:text="お仕事依頼元から「いいね」があった場合のプッシュ通知。"/>
                         </RelativeLayout>
@@ -563,6 +586,7 @@
                             android:layout_marginRight="6dp"
                             android:layout_marginBottom="1dp">
                             <TextView
+                                android:id="@+id/allow_liked_push_reception_text"
                                 style="@style/label_w2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -573,11 +597,12 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="30dp"
+                                android:layout_marginTop="10dp"
                                 android:layout_marginLeft="10dp"
                                 android:layout_marginRight="20dp"
                                 android:layout_marginBottom="10dp"
                                 style="@style/label_w2"
+                                android:layout_below="@+id/allow_liked_push_reception_text"
                                 android:textSize="12dp"
                                 android:text="お仕事依頼元から「コメント」があった場合のプッシュ通知。"/>
                         </RelativeLayout>
