@@ -34,6 +34,7 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
         ViewModelProvider(this).get(OwnJobsViewModel::class.java)
     }
     var fromReportCompleted = false
+    lateinit var viewPager: ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +78,7 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
                 return 3
             }
         }
-        val viewPager: ViewPager = findViewById(R.id.applied_jobs_view_pager)
+        viewPager = findViewById(R.id.applied_jobs_view_pager)
         viewPager.adapter = adapter
 //        viewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
 //            override fun onPageScrollStateChanged(state: Int) {
@@ -136,6 +137,7 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
         // FIXME: 報告済みタブへの切り替え
         fromReportCompleted = intent.getBooleanExtra("fromReportCompleted", false)
         if (fromReportCompleted) {
+            viewPager.setCurrentItem(2, true)
             val uploadingDialog = ReportCompletedDialogFragment()
             uploadingDialog.show(supportFragmentManager, "ReportCompleted")
             intent.putExtra("fromReportCompleted", false)
