@@ -1,8 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.os.Bundle
-import android.view.View
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -12,10 +10,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.NotificationSetting
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
-import android.widget.ToggleButton
-import jp.co.recruit.erikura.ErikuraApplication
-import jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
-import kotlinx.android.synthetic.main.activity_start.*
 
 
 class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEventHandlers {
@@ -54,7 +48,6 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
     // 戻るボタン押下時に通知設定を保存
     override fun onPause() {
         super.onPause()
-//        notificationSetting.allowRemindMailReception = true
         val notificationSetting = NotificationSetting()
         notificationSetting.allowRemindMailReception = viewModel.allowRemindMailReception.value ?: false
         notificationSetting.allowInfoMailReception = viewModel.allowInfoMailReception.value ?: false

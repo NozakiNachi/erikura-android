@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.content.Context
 import android.graphics.Rect
+import android.os.Bundle
 import android.util.AttributeSet
 import android.view.*
 import android.view.animation.AnimationUtils
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.JobQuery
+import jp.co.recruit.erikura.databinding.ActivityNotificationSettingBinding
 import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionItemBinding
 import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionLabelBinding
 import jp.co.recruit.erikura.databinding.FragmentToggleSwitchViewBinding
@@ -32,13 +34,14 @@ class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
         binding.handlers = this
     }
 
-    var isChecked: Boolean
+        var isChecked: Boolean
         get() {
             return this.notification.isChecked
         }
         set(value) {
             this.notification.isChecked = value
         }
+
 
     override fun onCheckedChanges(view: View, isChecked: Boolean) {
         if (isChecked) {
@@ -60,13 +63,13 @@ class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
             applicationContext, R.anim.toggle_bg_green_on
         )
 
-        var mTglBtn = findViewById<View>(R.id.notification) as ToggleButton
-        var mTglBgWhite = findViewById(R.id.white) as View
-        var mTglBgGreen = findViewById(R.id.green) as View
+        var TglBtn = findViewById<View>(R.id.notification) as ToggleButton
+        var TglBgWhite = findViewById(R.id.white) as View
+        var TglBgGreen = findViewById(R.id.green) as View
 
-        mTglBtn.startAnimation(btnAnim)
-        mTglBgWhite.startAnimation(bgWhiteAnim)
-        mTglBgGreen.startAnimation(bgGreenAnim)
+        TglBtn.startAnimation(btnAnim)
+        TglBgWhite.startAnimation(bgWhiteAnim)
+        TglBgGreen.startAnimation(bgGreenAnim)
     }
 
     private fun animOff() {
@@ -80,13 +83,13 @@ class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
             applicationContext, R.anim.toggle_bg_green_off
         )
 
-        var mTglBtn = findViewById<View>(R.id.notification) as ToggleButton
-        var mTglBgWhite = findViewById(R.id.white) as View
-        var mTglBgGreen = findViewById(R.id.green) as View
+        var TglBtn = findViewById<View>(R.id.notification) as ToggleButton
+        var TglBgWhite = findViewById(R.id.white) as View
+        var TglBgGreen = findViewById(R.id.green) as View
 
-        mTglBtn.startAnimation(btnAnim)
-        mTglBgWhite.startAnimation(bgWhiteAnim)
-        mTglBgGreen.startAnimation(bgGreenAnim)
+        TglBtn.startAnimation(btnAnim)
+        TglBgWhite.startAnimation(bgWhiteAnim)
+        TglBgGreen.startAnimation(bgGreenAnim)
     }
 }
 
