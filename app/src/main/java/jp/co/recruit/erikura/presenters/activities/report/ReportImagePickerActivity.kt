@@ -35,7 +35,10 @@ import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
+import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
+import java.util.*
+import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHandler {
     private val viewModel by lazy {
@@ -43,6 +46,8 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
     }
     private lateinit var adapter: ImagePickerAdapter
     private val realm: Realm get() = ErikuraApplication.realm
+    private val locationManager: LocationManager = ErikuraApplication.locationManager
+
     var job: Job = Job()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -145,6 +150,9 @@ class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHan
         viewModel.imageMap.forEach { (k, v) ->
             val summary = OutputSummary()
             summary.photoAsset = v
+            summary.photoTakedAt = Date()
+            summary.latitude = locationManager.latLng?.latitude
+            summary.longitude = locationManager.latLng?.longitude
             outputSummaryList.add(summary)
         }
 

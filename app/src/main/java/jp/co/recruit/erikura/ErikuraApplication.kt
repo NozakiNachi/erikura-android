@@ -24,6 +24,10 @@ import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.json.JSONObject
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
 
 
 class ErikuraApplication : Application() {
@@ -74,6 +78,10 @@ class ErikuraApplication : Application() {
         )
         ActivityCompat.requestPermissions(activity, permissions, REQUEST_PERMISSION)
     }
+
+    // 画像アップロード終了判定用スレッド
+    var lock = Thread()
+
 }
 
 object Tracking {

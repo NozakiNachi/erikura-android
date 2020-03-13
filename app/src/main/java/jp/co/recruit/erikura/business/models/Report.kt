@@ -8,6 +8,9 @@ import kotlinx.android.parcel.RawValue
 import java.util.*
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.Completable
+import jp.co.recruit.erikura.ErikuraApplication
+import okhttp3.internal.notifyAll
+import okhttp3.internal.wait
 
 
 enum class ReportStatus {
@@ -149,6 +152,7 @@ data class Report (
     fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
 
         val completable = Completable.fromAction {
+            //ErikuraApplication.instance.lock.wait()
             // 画像リサイズ処理
             item?.let {
                 item.resizeImage(activity, 640, 640) { bytes ->
@@ -156,6 +160,7 @@ data class Report (
                     Api(activity).imageUpload(item, bytes) { token ->
                         outputSummaries[0].beforeCleaningPhotoToken = token
                         onComplete(token)
+                       // ErikuraApplication.instance.lock.notifyAll()
                     }
                 }
             }

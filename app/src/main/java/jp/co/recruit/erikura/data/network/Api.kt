@@ -6,7 +6,6 @@ import android.content.Intent
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
@@ -31,6 +30,7 @@ import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import java.util.*
 
 
 class Api(var context: Context) {
@@ -378,6 +378,59 @@ class Api(var context: Context) {
         ) { body ->
             val resultId = body.result
             onComplete(resultId)
+        }
+    }
+
+    fun report(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (reportId: Int) -> Unit) {
+        val report = job.report!!
+        var outputSummaries: MutableList<OutputSummaryRequest> = mutableListOf()
+        report.outputSummaries.forEachIndexed { index, outputSummary ->
+            var outputSummaryRequest = OutputSummaryRequest(
+                index+1,
+                outputSummary.place?: "",
+                outputSummary.evaluationMap(),
+                outputSummary.latitude?: 0.0,
+                outputSummary.longitude?: 0.0,
+                outputSummary.photoTakedAt?: Date(),
+                outputSummary.comment?: "",
+                outputSummary.beforeCleaningPhotoToken?: "",
+                outputSummary.willDelete
+            )
+            outputSummaries.add(outputSummaryRequest)
+        }
+
+        if (report.id == null) {
+            executeObservable(
+                erikuraApiService.createReport(ReportRequest(
+                    job.id,
+                    outputSummaries,
+                    report.workingMinute,
+                    report.additionalComment,
+                    report.additionalReportPhotoToken,
+                    report.evaluation?: "unanswered",
+                    report.comment
+                )),
+                onError = onError
+            ) { body ->
+                val reportId = body.reportId
+                onComplete(reportId)
+            }
+        }else {
+            executeObservable(
+                erikuraApiService.updateReport(ReportRequest(
+                    job.id,
+                    outputSummaries,
+                    report.workingMinute?: 0,
+                    report.additionalComment?: "",
+                    report.additionalReportPhotoToken?: "",
+                    report.evaluation?: "unanswered",
+                    report.comment?: ""
+                )),
+                onError = onError
+            ) { body ->
+                val reportId = body.reportId
+                onComplete(reportId)
+            }
         }
     }
 
