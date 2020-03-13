@@ -13,6 +13,8 @@ import jp.co.recruit.erikura.business.models.NotificationSetting
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
 import android.widget.ToggleButton
+import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.presenters.fragments.ToggleSwitchView
 
 
 class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEventHandlers {
@@ -50,17 +52,17 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
             viewModel.allowLikedPushReception.value = notificationSetting.allowLikedPushReception
 
 
-//            // 初期表示
-//            if (viewModel.allowRemindMailReception.value == true) {
-//                animOn("AllowRemindMailReception")
-//            }else{
-//                binding.allowRemindMailReceptionGreen.setVisibility(View.GONE)
-//            }
-//            if (viewModel.allowInfoMailReception.value == true) {
-//                animOn("AllowInfoMailReception")
-//            } else{
-//                binding.allowInfoMailReceptionGreen.setVisibility(View.GONE)
-//            }
+            // 初期表示
+            if (viewModel.allowRemindMailReception.value == true) {
+                binding.allowRemindMailReception.isChecked = true
+            }else{
+                binding.allowRemindMailReception.isChecked = false
+            }
+            if (viewModel.allowInfoMailReception.value == true) {
+                binding.allowInfoMailReception.isChecked = true
+            }else{
+                binding.allowInfoMailReception.isChecked = false
+            }
 //            if (viewModel.allowRemindPushReception.value == true) {
 //                animOn("AllowRemindPushReception")
 //            }else{
@@ -77,6 +79,7 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
     // 戻るボタン押下時に通知設定を保存
     override fun onPause() {
         super.onPause()
+        notificationSetting.allowRemindMailReception = true
         Api(this).updateNotificationSetting(notificationSetting) {}
     }
 
@@ -170,6 +173,46 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
             viewModel.allowLikedPushReception.value = true
             notificationSetting.allowLikedPushReception = true
         }
+    }
+
+    fun animOn() {
+        val btnAnim = AnimationUtils.loadAnimation(
+            ErikuraApplication.applicationContext, R.anim.toggle_btn_on
+        )
+        val bgWhiteAnim = AnimationUtils.loadAnimation(
+            ErikuraApplication.applicationContext, R.anim.toggle_bg_white_on
+        )
+        val bgGreenAnim = AnimationUtils.loadAnimation(
+            ErikuraApplication.applicationContext, R.anim.toggle_bg_green_on
+        )
+
+        var mTglBtn = findViewById<View>(R.id.notification) as ToggleButton
+        var mTglBgWhite = findViewById(R.id.white) as View
+        var mTglBgGreen = findViewById(R.id.green) as View
+
+        mTglBtn.startAnimation(btnAnim)
+        mTglBgWhite.startAnimation(bgWhiteAnim)
+        mTglBgGreen.startAnimation(bgGreenAnim)
+    }
+
+    fun animOff() {
+        val btnAnim = AnimationUtils.loadAnimation(
+            ErikuraApplication.applicationContext, R.anim.toggle_btn_off
+        )
+        val bgWhiteAnim = AnimationUtils.loadAnimation(
+            ErikuraApplication.applicationContext, R.anim.toggle_bg_white_off
+        )
+        val bgGreenAnim = AnimationUtils.loadAnimation(
+            ErikuraApplication.applicationContext, R.anim.toggle_bg_green_off
+        )
+
+        var mTglBtn = findViewById<View>(R.id.notification) as ToggleButton
+        var mTglBgWhite = findViewById(R.id.white) as View
+        var mTglBgGreen = findViewById(R.id.green) as View
+
+        mTglBtn.startAnimation(btnAnim)
+        mTglBgWhite.startAnimation(bgWhiteAnim)
+        mTglBgGreen.startAnimation(bgGreenAnim)
     }
 }
 
