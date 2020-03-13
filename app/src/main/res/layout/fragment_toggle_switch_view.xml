@@ -34,7 +34,6 @@
             android:button="@drawable/toggle_btn"
             android:textOff=""
             android:textOn=""
-            android:onCheckedChanged="@{handlers::onCheckedChanges}"
             />
     </FrameLayout>
 </layout>

@@ -99,6 +99,7 @@ object ToggleSwitchAdapter {
     @JvmStatic fun setListeners(view: ToggleSwitchView, attrChange: InverseBindingListener) {
         attrChange?.let {
             view.notification.setOnCheckedChangeListener { buttonView, isChecked ->
+                view.onCheckedChanges(view, isChecked)
                 attrChange.onChange()
             }
         }
