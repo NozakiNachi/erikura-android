@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionLabelBinding
 import jp.co.recruit.erikura.databinding.FragmentToggleSwitchViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.ItemPicker
 import jp.co.recruit.erikura.presenters.activities.job.PickerItem
+import kotlinx.android.synthetic.main.fragment_toggle_switch_view.view.*
 import okhttp3.internal.notifyAll
 
 class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
@@ -36,7 +37,27 @@ class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
         var items: List<PickerItem<*>> = listOf()
     }
 
+    var isChecked: Boolean
+        get() {
+            return this.notification.isChecked
+        }
+        set(value) {
+            this.notification.isChecked = value
+            if (value) {
+                animOn()
+            }
+            else {
+                animOff()
+            }
+        }
+
     override fun onClick(view: View) {
+        if (this.notification.isChecked) {
+            animOff()
+        }
+        else {
+            animOn()
+        }
         // if(notification_boolean == true){
         // 現在通知がオンになっている状態
         // notification_settings.xmlのandroid:checkdから値を取得=notidication_booleanに格納
@@ -55,6 +76,11 @@ class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
         //}
 
 
+
+//        adapter.notifyAll()
+    }
+
+    fun animOn() {
         val btnAnim = AnimationUtils.loadAnimation(
             applicationContext, R.anim.toggle_btn_on
         )
@@ -72,8 +98,26 @@ class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
         mTglBtn.startAnimation(btnAnim)
         mTglBgWhite.startAnimation(bgWhiteAnim)
         mTglBgGreen.startAnimation(bgGreenAnim)
+    }
 
-//        adapter.notifyAll()
+    fun animOff() {
+        val btnAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_btn_off
+        )
+        val bgWhiteAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_bg_white_off
+        )
+        val bgGreenAnim = AnimationUtils.loadAnimation(
+            applicationContext, R.anim.toggle_bg_green_off
+        )
+
+        var mTglBtn = findViewById<View>(R.id.notification) as ToggleButton
+        var mTglBgWhite = findViewById(R.id.white) as View
+        var mTglBgGreen = findViewById(R.id.green) as View
+
+        mTglBtn.startAnimation(btnAnim)
+        mTglBgWhite.startAnimation(bgWhiteAnim)
+        mTglBgGreen.startAnimation(bgGreenAnim)
     }
 }
 
@@ -87,28 +131,23 @@ class ToggleSwitchViewModel: ViewModel() {
 
 
 object ToggleSwitchAdapter {
-    @BindingAdapter("items")
-    @JvmStatic fun setItems(view: ToggleSwitchView, items: List<PickerItem<*>>) {
-//        view.items = items
-    }
-
-    @BindingAdapter("valueAttrChanged")
-    @JvmStatic fun setListeners(view: NumberPicker, attrChange: InverseBindingListener) {
+    @BindingAdapter("checkedAttrChanged")
+    @JvmStatic fun setListeners(view: ToggleSwitchView, attrChange: InverseBindingListener) {
         attrChange?.let {
-            view.setOnValueChangedListener { picker: NumberPicker, oldValue: Int, newValue: Int ->
-                attrChange.onChange()
-            }
+//            view.setOnValueChangedListener { picker: NumberPicker, oldValue: Int, newValue: Int ->
+//                attrChange.onChange()
+//            }
         }
     }
 
-    @BindingAdapter("value")
-    @JvmStatic fun setValue(view: NumberPicker, value: Int) {
-        view.value = value
+    @BindingAdapter("checked")
+    @JvmStatic fun setValue(view: ToggleSwitchView, value: Boolean) {
+        view.isChecked = value
     }
 
-    @InverseBindingAdapter(attribute = "value")
-    @JvmStatic fun getValue(view: NumberPicker): Int {
-        return view.value
+    @InverseBindingAdapter(attribute = "checked")
+    @JvmStatic fun getValue(view: ToggleSwitchView): Boolean {
+        return view.isChecked
     }
 }
 
