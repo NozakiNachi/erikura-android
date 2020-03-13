@@ -34,9 +34,7 @@ class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEven
         binding.handlers = this
 
         // ユーザーの現在の通知設定を取得
-        Api(this).notificationSetting() {
-            notificationSetting = it
-
+        Api(this).notificationSetting() { notificationSetting ->
             // メール通知
             viewModel.allowRemindMailReception.value = notificationSetting.allowRemindMailReception
             viewModel.allowInfoMailReception.value = notificationSetting.allowInfoMailReception
