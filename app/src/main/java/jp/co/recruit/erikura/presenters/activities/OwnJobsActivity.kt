@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.report.ReportCompletedDialogFragment
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
@@ -32,6 +33,7 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
     private val viewModel: OwnJobsViewModel by lazy {
         ViewModelProvider(this).get(OwnJobsViewModel::class.java)
     }
+    var fromReportCompleted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,6 +132,16 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
 
     override fun onResume() {
         super.onResume()
+
+        // FIXME: 報告済みタブへの切り替え
+        fromReportCompleted = intent.getBooleanExtra("fromReportCompleted", false)
+        if (fromReportCompleted) {
+            val uploadingDialog = ReportCompletedDialogFragment()
+            uploadingDialog.show(supportFragmentManager, "ReportCompleted")
+            intent.putExtra("fromReportCompleted", false)
+            fromReportCompleted = false
+        }
+
         Api(this).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
             if (!jobs.isNullOrEmpty()) {
                 val transaction = supportFragmentManager.beginTransaction()

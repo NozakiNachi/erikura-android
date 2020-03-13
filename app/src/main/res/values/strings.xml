@@ -177,6 +177,10 @@
     <!-- 作業報告の削除モーダル-->
     <string name="report_remove_caption">作業報告を削除しますか？</string>
 
+    <!-- 作業報告完了モーダル -->
+    <string name="report_completed_title">作業報告が完了しました！</string>
+    <string name="report_completed_title2">続けて、振込用の口座を登録しましょう！</string>
+
     <!--　作業報告済み仕事詳細画面-->
     <string name="location">箇所</string>
     <string name="evaluation_from_management">運営からの評価</string>
@@ -295,6 +299,7 @@
     <string name="remove_job_reported">作業報告を削除</string>
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>
+    <string name="bank_registration">口座情報登録</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>

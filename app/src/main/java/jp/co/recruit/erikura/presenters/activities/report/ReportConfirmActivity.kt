@@ -32,6 +32,7 @@ import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import java.util.*
@@ -415,7 +416,12 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
 
     private fun saveReport() {
         Api(this).report(job) {
-            // FIXME: 作業報告完了モーダルの表示
+            Intent(this, OwnJobsActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("fromReportCompleted", true)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+
         }
     }
 
