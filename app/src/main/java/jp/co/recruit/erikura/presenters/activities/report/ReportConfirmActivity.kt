@@ -19,6 +19,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -279,39 +282,49 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
         }
 
-
-
         if (isCompletedUploadPhotos()) {
             // アップロードが完了しているので作業報告を保存します
             saveReport()
         } else {
+            // アップロードが完了するのを待ちます
+            waitUpload()
+        }
+    }
 
-            // 画像アップ中モーダルの表示
-//            val uploadingDialog = UploadingDialogFragment()
-//            uploadingDialog.isCancelable = false
-//            uploadingDialog.show(supportFragmentManager, "Uploading")
 
+
+    private fun waitUpload() {
+        // 画像アップ中モーダルの表示
+        val uploadingDialog = UploadingDialogFragment()
+        uploadingDialog.isCancelable = false
+        uploadingDialog.show(supportFragmentManager, "Uploading")
+
+
+        val completable = Completable.fromAction {
             var count = 0
             while (!isCompletedUploadPhotos()) {
                 if (count < 5) {
                     synchronized(ErikuraApplication.instance.uploadMonitor) {
-                        //                        this.runOnUiThread {
-//                            // 画像アップの進捗表示更新
-//                            val (numPhotos, numUploadedPhotos) = updateProgress()
-//                            uploadingDialog.numPhotos = numPhotos
-//                            uploadingDialog.numUploadedPhotos = numUploadedPhotos
-//                        }
+                        this.runOnUiThread {
+                            // 画像アップの進捗表示更新
+                            val (numPhotos, numUploadedPhotos) = updateProgress()
+                            uploadingDialog.numPhotos = numPhotos
+                            uploadingDialog.numUploadedPhotos = numUploadedPhotos
+                        }
                         ErikuraApplication.instance.uploadMonitor.wait(3000)
                     }
-                    // token 再取得処理
-                    updateToken()
+                    this.runOnUiThread {
+                        // token 再取得処理
+                        updateToken()
+                    }
                     count++
                 } else {
                     break
                 }
             }
 
-//            uploadingDialog.dismiss()
+            this.runOnUiThread { uploadingDialog.dismiss() }
+
             if (count >= 5) {
                 // 画像アップ不可モーダル表示
                 val failedDialog = UploadFailedDialogFragment().also {
@@ -334,8 +347,8 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 saveReport()
             }
         }
-
-
+            .subscribeOn(Schedulers.io())
+        completable.subscribe()
     }
 
 
@@ -496,11 +509,6 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     private fun retry() {
-        // 画像アップ中モーダル
-//        val uploadingDialog = UploadingDialogFragment()
-//        uploadingDialog.isCancelable = false
-//        uploadingDialog.show(supportFragmentManager, "Uploading")
-
         job.report?.let { report ->
             report.outputSummaries.forEach { outputSummary ->
                 report.uploadPhoto(this, job, outputSummary.photoAsset) { token ->
@@ -512,53 +520,8 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                     addPhotoToken(report.additionalPhotoAsset?.contentUri.toString(), token)
                 }
             }
-
         }
-
-        var count = 0
-        while (!isCompletedUploadPhotos()) {
-            if (count < 5) {
-                synchronized(ErikuraApplication.instance.uploadMonitor) {
-                    this.runOnUiThread {
-                        // 画像アップの進捗表示更新
-//                        val (numPhotos, numUploadedPhotos) = updateProgress()
-//                        uploadingDialog.numPhotos = numPhotos
-//                        uploadingDialog.numUploadedPhotos = numUploadedPhotos
-                    }
-                    ErikuraApplication.instance.uploadMonitor.wait(3000)
-                }
-                // token 再取得処理
-                updateToken()
-                count++
-            } else {
-                break
-            }
-        }
-
-//        uploadingDialog.dismiss()
-        if (count >= 5) {
-            // 画像アップ不可モーダル表示
-            val failedDialog = UploadFailedDialogFragment().also {
-                it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
-                    override fun onClickRetryButton() {
-                        it.dismiss()
-                        retry()
-                    }
-
-                    override fun onClickRemoveButton() {
-                        it.dismiss()
-                        // レポートを削除して案件詳細画面へ遷移します
-                        removeAllContents()
-                    }
-                }
-            }
-            failedDialog.isCancelable = false
-            failedDialog.show(supportFragmentManager, "UploadFailed")
-        } else {
-            saveReport()
-        }
-
-
+        waitUpload()
     }
 
     private fun removeAllContents() {
@@ -755,6 +718,8 @@ class ReportSummaryAdapter(
         val binding = DataBindingUtil.inflate<FragmentReportSummaryItemBinding>(
             LayoutInflater.from(parent.context),
             R.layout.fragment_report_summary_item,
+
+
             parent,
             false
         )

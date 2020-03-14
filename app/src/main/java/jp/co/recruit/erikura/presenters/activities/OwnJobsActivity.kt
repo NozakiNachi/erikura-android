@@ -134,7 +134,6 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
     override fun onResume() {
         super.onResume()
 
-        // FIXME: 報告済みタブへの切り替え
         fromReportCompleted = intent.getBooleanExtra("fromReportCompleted", false)
         if (fromReportCompleted) {
             viewPager.setCurrentItem(2, true)
