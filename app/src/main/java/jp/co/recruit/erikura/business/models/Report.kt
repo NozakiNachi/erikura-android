@@ -152,7 +152,6 @@ data class Report (
     fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
 
         val completable = Completable.fromAction {
-            //ErikuraApplication.instance.lock.wait()
             // 画像リサイズ処理
             item?.let {
                 item.resizeImage(activity, 640, 640) { bytes ->
@@ -160,7 +159,9 @@ data class Report (
                     Api(activity).imageUpload(item, bytes) { token ->
                         outputSummaries[0].beforeCleaningPhotoToken = token
                         onComplete(token)
-                       // ErikuraApplication.instance.lock.notifyAll()
+                        synchronized(ErikuraApplication.instance.uploadMonitor) {
+                            ErikuraApplication.instance.uploadMonitor.notifyAll()
+                        }
                     }
                 }
             }

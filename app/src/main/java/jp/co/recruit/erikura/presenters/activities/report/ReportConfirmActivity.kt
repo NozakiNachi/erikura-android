@@ -19,6 +19,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -32,6 +35,7 @@ import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import java.util.*
@@ -52,7 +56,8 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report_confirm)
 
-        val binding: ActivityReportConfirmBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_confirm)
+        val binding: ActivityReportConfirmBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_report_confirm)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
@@ -60,7 +65,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         job = intent.getParcelableExtra<Job>("job")
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
-            it.onClickListener =  object: ReportImageAdapter.OnClickListener {
+            it.onClickListener = object : ReportImageAdapter.OnClickListener {
                 override fun onClick(view: View) {
                     onClickAddPhotoButton(view)
                 }
@@ -70,7 +75,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         reportImageView.adapter = reportImageAdapter
 
         reportSummaryAdapter = ReportSummaryAdapter(this, listOf()).also {
-            it.onClickListener = object: ReportSummaryAdapter.OnClickListener {
+            it.onClickListener = object : ReportSummaryAdapter.OnClickListener {
                 override fun onClickEditButton(view: View, position: Int) {
                     editSummary(view, position)
                 }
@@ -91,49 +96,54 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickComplete(view: View) {
-        if(job.isReportCreatable || job.isReportEditable) {
+        if (job.isReportCreatable || job.isReportEditable) {
             val missingPlaces = missingPlaces()
             if (missingPlaces.isEmpty()) {
                 checkPhotoToken()
-            }else {
+            } else {
                 val dialog = MissingPlaceConfirmDialogFragment(missingPlaces).also {
-                    it.onClickListener = object: MissingPlaceConfirmDialogFragment.OnClickListener {
-                        override fun onClickComplete() {
-                            checkPhotoToken()
-                            it.dismiss()
+                    it.onClickListener =
+                        object : MissingPlaceConfirmDialogFragment.OnClickListener {
+                            override fun onClickComplete() {
+                                it.dismiss()
+                                checkPhotoToken()
+                            }
                         }
-                    }
                 }
 
                 dialog.show(supportFragmentManager, "MissingPlace")
             }
-        }else {
-            val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.report_confirm_over_limit))
+        } else {
+            val errorMessages =
+                mutableListOf(ErikuraApplication.instance.getString(R.string.report_confirm_over_limit))
             Api(this).displayErrorAlert(errorMessages)
         }
 
     }
 
     fun onClickAddPhotoButton(view: View) {
-        if(ErikuraApplication.instance.hasStoragePermission(this)) {
+        if (ErikuraApplication.instance.hasStoragePermission(this)) {
             moveToGallery()
-        }
-        else {
+        } else {
             ErikuraApplication.instance.requestStoragePermission(this)
         }
     }
 
     fun editSummary(view: View, position: Int) {
-        val intent= Intent(this, ReportFormActivity::class.java)
+        val intent = Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", position)
         intent.putExtra("fromConfirm", true)
-        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
+        startActivityForResult(
+            intent,
+            EDIT_DATA,
+            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+        )
     }
 
     fun showRemoveSummary(view: View, position: Int) {
         val dialog = SummaryRemoveDialogFragment(position).also {
-            it.onClickListener = object: SummaryRemoveDialogFragment.OnClickListener {
+            it.onClickListener = object : SummaryRemoveDialogFragment.OnClickListener {
                 override fun onClickRemoveButton() {
                     removeSummary(position)
                     it.dismiss()
@@ -155,28 +165,40 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickEditEvaluation(view: View) {
-        val intent= Intent(this, ReportEvaluationActivity::class.java)
+        val intent = Intent(this, ReportEvaluationActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("fromConfirm", true)
-        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
+        startActivityForResult(
+            intent,
+            EDIT_DATA,
+            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+        )
     }
 
     override fun onClickEditOtherForm(view: View) {
-        val intent= Intent(this, ReportOtherFormActivity::class.java)
+        val intent = Intent(this, ReportOtherFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("fromConfirm", true)
-        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
+        startActivityForResult(
+            intent,
+            EDIT_DATA,
+            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+        )
     }
 
     override fun onClickEditWorkingTime(view: View) {
-        val intent= Intent(this, ReportWorkingTimeActivity::class.java)
+        val intent = Intent(this, ReportWorkingTimeActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("fromConfirm", true)
-        startActivityForResult( intent, EDIT_DATA, ActivityOptions.makeSceneTransitionAnimation(this).toBundle() )
+        startActivityForResult(
+            intent,
+            EDIT_DATA,
+            ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+        )
     }
 
     override fun onClickManual(view: View) {
-        if(job?.manualUrl != null){
+        if (job?.manualUrl != null) {
             val termsOfServiceURLString = job.manualUrl
             val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
@@ -189,7 +211,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        when(requestCode) {
+        when (requestCode) {
             // 編集画面から戻ってきたとき
             EDIT_DATA -> {
                 data?.let {
@@ -220,13 +242,17 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         val uriString = uri.toString()
                         val arr = uriString.split("%3A")
                         val id = arr.last().toLong()
-                        val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
-                        val size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
-                        val item = MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
+                        val mimeType =
+                            cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
+                        val size =
+                            cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
+                        val item =
+                            MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
                         val summary = OutputSummary()
                         summary.photoAsset = item
                         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
-                        outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
+                        outputSummaryList =
+                            job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
                         outputSummaryList.add(summary)
                         job.report?.let {
                             it.outputSummaries = outputSummaryList
@@ -247,75 +273,97 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     private fun checkPhotoToken() {
         // アップロードが完了しているかの判定
         // token取得処理
-        job.report?.let {report ->
+        job.report?.let { report ->
             report.outputSummaries.forEach { summary ->
-                summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+                summary.beforeCleaningPhotoToken =
+                    getPhotoToken(summary.photoAsset?.contentUri.toString())
             }
-            report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            report.additionalReportPhotoToken =
+                getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
         }
 
         if (isCompletedUploadPhotos()) {
             // アップロードが完了しているので作業報告を保存します
             saveReport()
-        }else {
-            // 画像アップ中モーダル
-            val uploadingDialog = UploadingDialogFragment()
-            uploadingDialog.isCancelable = false
-            uploadingDialog.show(supportFragmentManager, "Uploading")
-            // timerで繰り返し処理
-            val timer = Timer()
-            val timerHandler = Handler()
-            var count = 0
-            timer.schedule(object : TimerTask() {
-                override fun run() {
-                    if (viewModel.completedUploadPhotos) {
-                        timer.cancel()
-                        uploadingDialog.dismiss()
-                        saveReport()
-                    }else if(count > 120 ) {
-                        timer.cancel()
-                        uploadingDialog.dismiss()
-                        val failedDialog = UploadFailedDialogFragment().also {
-                            it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
-                                override fun onClickRetryButton() {
-                                    it.dismiss()
-                                    retry()
-                                }
-                                override fun onClickRemoveButton() {
-                                    // レポートを削除して案件詳細画面へ遷移します
-                                    it.dismiss()
-                                    removeAllContents()
-                                }
-                            }
-                        }
-                        failedDialog.isCancelable = false
-                        failedDialog.show(supportFragmentManager, "UploadFailed")
-                    }else {
-                        timerHandler.post(Runnable {
-                            updateToken()
-                            val (numPhotos, numUploadedPhotos) = updateProgress()
-                            uploadingDialog.numPhotos = numPhotos
-                            uploadingDialog.numUploadedPhotos = numUploadedPhotos
-
-                            count++
-                        })
-                    }
-                }
-            }, 1000, 1000) // 実行したい間隔(ミリ秒)
+        } else {
+            // アップロードが完了するのを待ちます
+            waitUpload()
         }
     }
 
-    // 1秒ごとに呼び出される処理
+
+
+    private fun waitUpload() {
+        // 画像アップ中モーダルの表示
+        val uploadingDialog = UploadingDialogFragment()
+        uploadingDialog.isCancelable = false
+        uploadingDialog.show(supportFragmentManager, "Uploading")
+
+
+        val completable = Completable.fromAction {
+            var count = 0
+            while (!isCompletedUploadPhotos()) {
+                if (count < 5) {
+                    synchronized(ErikuraApplication.instance.uploadMonitor) {
+                        this.runOnUiThread {
+                            // 画像アップの進捗表示更新
+                            val (numPhotos, numUploadedPhotos) = updateProgress()
+                            uploadingDialog.numPhotos = numPhotos
+                            uploadingDialog.numUploadedPhotos = numUploadedPhotos
+                        }
+                        ErikuraApplication.instance.uploadMonitor.wait(3000)
+                    }
+                    this.runOnUiThread {
+                        // token 再取得処理
+                        updateToken()
+                    }
+                    count++
+                } else {
+                    break
+                }
+            }
+
+            this.runOnUiThread { uploadingDialog.dismiss() }
+
+            if (count >= 5) {
+                // 画像アップ不可モーダル表示
+                val failedDialog = UploadFailedDialogFragment().also {
+                    it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
+                        override fun onClickRetryButton() {
+                            it.dismiss()
+                            retry()
+                        }
+
+                        override fun onClickRemoveButton() {
+                            it.dismiss()
+                            // レポートを削除して案件詳細画面へ遷移します
+                            removeAllContents()
+                        }
+                    }
+                }
+                failedDialog.isCancelable = false
+                failedDialog.show(supportFragmentManager, "UploadFailed")
+            } else {
+                saveReport()
+            }
+        }
+            .subscribeOn(Schedulers.io())
+        completable.subscribe()
+    }
+
+
     private fun updateToken() {
         // token取得処理
-        job.report?.let {report ->
+        job.report?.let { report ->
             report.outputSummaries.forEach { summary ->
                 if (summary.beforeCleaningPhotoToken.isNullOrBlank()) {
-                    summary.beforeCleaningPhotoToken = getPhotoToken(summary.photoAsset?.contentUri.toString())
+                    summary.beforeCleaningPhotoToken =
+                        getPhotoToken(summary.photoAsset?.contentUri.toString())
                 }
             }
             if (report.additionalReportPhotoToken.isNullOrBlank()) {
-                report.additionalReportPhotoToken = getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+                report.additionalReportPhotoToken =
+                    getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
             }
         }
         viewModel.completedUploadPhotos = isCompletedUploadPhotos()
@@ -355,8 +403,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     private fun getPhotoToken(url: String): String {
         var token = ""
         realm.executeTransaction { realm ->
-            var photo = realm.where(PhotoToken::class.java).equalTo("url", url).equalTo("jobId", job.id).findFirst()
-            token = photo?.token?: ""
+            var photo =
+                realm.where(PhotoToken::class.java).equalTo("url", url).equalTo("jobId", job.id)
+                    .findFirst()
+            token = photo?.token ?: ""
             photo?.let {
                 // 該当データの削除
                 photo.deleteFromRealm()
@@ -366,10 +416,9 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
 
-
     private fun isCompletedUploadPhotos(): Boolean {
         var completed = true
-        completed = completed && job.report?.isUploadCompleted?: true
+        completed = completed && job.report?.isUploadCompleted ?: true
         job.report?.let { report ->
             report.outputSummaries.forEach { summary ->
                 completed = completed && summary.isUploadCompleted
@@ -380,7 +429,12 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
 
     private fun saveReport() {
         Api(this).report(job) {
-            // FIXME: 作業報告完了モーダルの表示
+            Intent(this, OwnJobsActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("fromReportCompleted", true)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+
         }
     }
 
@@ -389,13 +443,13 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         var places: MutableList<String> = mutableListOf()
         job.report?.let { report ->
             report.outputSummaries.forEach { summary ->
-                places.add(summary.place?: "")
+                places.add(summary.place ?: "")
             }
         }
         var missingPlaces: MutableList<String> = mutableListOf()
         summaryTitles.forEachIndexed { index, s ->
             if (!places.contains(s)) {
-                missingPlaces.add("(${index+1}) ${s}")
+                missingPlaces.add("(${index + 1}) ${s}")
             }
         }
         return missingPlaces
@@ -406,7 +460,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         intent.action = Intent.ACTION_OPEN_DOCUMENT
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "image/*"
-        startActivityForResult(intent, GET_FILE )
+        startActivityForResult(intent, GET_FILE)
     }
 
     private fun loadData() {
@@ -417,29 +471,37 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             reportSummaryAdapter.summaries = it.outputSummaries
             reportSummaryAdapter.notifyDataSetChanged()
             // 作業時間の更新
-            val minute = it.workingMinute?: 0
-            viewModel.workingTime.value = if(minute == 0){""}else {"${minute}分"}
+            val minute = it.workingMinute ?: 0
+            viewModel.workingTime.value = if (minute == 0) {
+                ""
+            } else {
+                "${minute}分"
+            }
             // マニュアル外報告の更新
-            val item = it.additionalPhotoAsset?: MediaItem()
+            val item = it.additionalPhotoAsset ?: MediaItem()
             if (item.contentUri != null) {
                 val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
                 item.loadImage(this, imageView)
                 viewModel.otherFormImageVisibility.value = View.VISIBLE
-            }else {
+            } else {
                 viewModel.otherFormImageVisibility.value = View.GONE
             }
-            val additionalComment = it.additionalComment?: ""
+            val additionalComment = it.additionalComment ?: ""
             viewModel.otherFormComment.value = additionalComment
             // 案件評価の更新
-            val evaluation = it.evaluation?: ""
-            when(evaluation) {
+            val evaluation = it.evaluation ?: ""
+            when (evaluation) {
                 "good" ->
                     viewModel.evaluate.value = true
                 "bad" ->
                     viewModel.evaluate.value = false
             }
-            viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty()) {View.GONE} else {View.VISIBLE}
-            val comment = it.comment?: ""
+            viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty()) {
+                View.GONE
+            } else {
+                View.VISIBLE
+            }
+            val comment = it.comment ?: ""
             viewModel.evaluationComment.value = comment
 
             viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
@@ -447,14 +509,9 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
     }
 
     private fun retry() {
-        // 画像アップ中モーダル
-        val uploadingDialog = UploadingDialogFragment()
-        uploadingDialog.isCancelable = false
-        uploadingDialog.show(supportFragmentManager, "Uploading")
-
         job.report?.let { report ->
             report.outputSummaries.forEach { outputSummary ->
-                report.uploadPhoto(this, job, outputSummary.photoAsset){ token ->
+                report.uploadPhoto(this, job, outputSummary.photoAsset) { token ->
                     addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), token)
                 }
             }
@@ -463,62 +520,20 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                     addPhotoToken(report.additionalPhotoAsset?.contentUri.toString(), token)
                 }
             }
-
         }
-
-        // timerで繰り返し処理
-        val timer = Timer()
-        val timerHandler = Handler()
-        var count = 0
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                if (viewModel.completedUploadPhotos) {
-                    timer.cancel()
-                    uploadingDialog.dismiss()
-                    saveReport()
-                }else if(count > 120 ) {
-                    timer.cancel()
-                    uploadingDialog.dismiss()
-                    val failedDialog = UploadFailedDialogFragment().also {
-                        it.onClickListener = object: UploadFailedDialogFragment.OnClickListener {
-                            override fun onClickRetryButton() {
-                                it.dismiss()
-                                retry()
-                            }
-                            override fun onClickRemoveButton() {
-                                it.dismiss()
-                                // レポートを削除して案件詳細画面へ遷移します
-                                removeAllContents()
-                            }
-                        }
-                    }
-                    failedDialog.isCancelable = false
-                    failedDialog.show(supportFragmentManager, "UploadFailed")
-                }else {
-                    timerHandler.post(Runnable {
-                        updateToken()
-                        val (numPhotos, numUploadedPhotos) = updateProgress()
-                        uploadingDialog.numPhotos = numPhotos
-                        uploadingDialog.numUploadedPhotos = numUploadedPhotos
-
-                        count++
-                    })
-                }
-            }
-        }, 1000, 1000) // 実行したい間隔(ミリ秒)
-
+        waitUpload()
     }
 
     private fun removeAllContents() {
         job.report = null
-        val intent= Intent(this, JobDetailsActivity::class.java)
+        val intent = Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 
-class ReportConfirmViewModel: ViewModel() {
+class ReportConfirmViewModel : ViewModel() {
     val workingTime: MutableLiveData<String> = MutableLiveData()
     val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
@@ -536,7 +551,7 @@ class ReportConfirmViewModel: ViewModel() {
             report.outputSummaries.forEach {
                 valid = valid && isValidSummary(it)
             }
-        }else {
+        } else {
             valid = false
         }
         return valid
@@ -556,23 +571,27 @@ interface ReportConfirmEventHandlers {
 }
 
 // 実施箇所の一覧
-class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?): ViewModel() {
+class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?) :
+    ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_image_item)
     val imageVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val addPhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+
     init {
         if (mediaItem != null) {
             mediaItem.loadImage(activity, imageView)
-        }else {
+        } else {
             imageVisibility.value = View.GONE
             addPhotoButtonVisibility.value = View.VISIBLE
         }
     }
 }
 
-class ReportImageViewHolder(val binding: FragmentReportImageItemBinding): RecyclerView.ViewHolder(binding.root)
+class ReportImageViewHolder(val binding: FragmentReportImageItemBinding) :
+    RecyclerView.ViewHolder(binding.root)
 
-class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>): RecyclerView.Adapter<ReportImageViewHolder>() {
+class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>) :
+    RecyclerView.Adapter<ReportImageViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportImageViewHolder {
@@ -584,7 +603,7 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         )
 
         val view = binding.root
-        val height = (parent.measuredWidth-40) / 3
+        val height = (parent.measuredWidth - 40) / 3
         (view.layoutParams as? RecyclerView.LayoutParams)?.let { layoutParams ->
             layoutParams.height = height
             view.layoutParams = layoutParams
@@ -594,17 +613,19 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
     }
 
     override fun getItemCount(): Int {
-        return summaries.count()+1
+        return summaries.count() + 1
     }
 
     override fun onBindViewHolder(holder: ReportImageViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
         if (position < summaries.count()) {
-            holder.binding.viewModel = ReportImageItemViewModel(activity, view, summaries[position].photoAsset)
-        }else {
+            holder.binding.viewModel =
+                ReportImageItemViewModel(activity, view, summaries[position].photoAsset)
+        } else {
             holder.binding.viewModel = ReportImageItemViewModel(activity, view, null)
-            val button = holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
+            val button =
+                holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
             button.setOnClickListener {
                 onClickListener?.apply {
                     onClick(view)
@@ -620,13 +641,30 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
 }
 
 // 実施箇所
-class ReportSummaryItemViewModel(activity: Activity, view: View, val summary: OutputSummary, summariesCount: Int, position: Int, jobDetails: Boolean): ViewModel() {
+class ReportSummaryItemViewModel(
+    activity: Activity,
+    view: View,
+    val summary: OutputSummary,
+    summariesCount: Int,
+    position: Int,
+    jobDetails: Boolean
+) : ViewModel() {
 
     val goodExist: Boolean get() = summary.operatorLikes
     val commentCount: Int get() = summary.operatorComments.count()
     val hasComment: Boolean get() = commentCount > 0
-    val goodVisible: Int get() = if (goodExist) { View.VISIBLE } else { View.GONE }
-    val commentVisible: Int get() = if (hasComment) { View.VISIBLE } else { View.GONE }
+    val goodVisible: Int
+        get() = if (goodExist) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    val commentVisible: Int
+        get() = if (hasComment) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
     val buttonsVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val evaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
@@ -644,12 +682,18 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, val summary: Ou
             it.loadImage(activity, imageView)
         }
 
-        summaryTitle.value = ErikuraApplication.instance.getString(R.string.report_form_caption, position+1, summariesCount)
+        summaryTitle.value = ErikuraApplication.instance.getString(
+            R.string.report_form_caption,
+            position + 1,
+            summariesCount
+        )
         summaryName.value = summary.place
         summaryStatus.value = summary.evaluation
         summaryComment.value = summary.comment
-        editSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.edit_summary, position+1)
-        removeSummaryButtonText.value = ErikuraApplication.instance.getString(R.string.remove_summary, position+1)
+        editSummaryButtonText.value =
+            ErikuraApplication.instance.getString(R.string.edit_summary, position + 1)
+        removeSummaryButtonText.value =
+            ErikuraApplication.instance.getString(R.string.remove_summary, position + 1)
         summaryOperatorComment.value = summary.operatorComments
 
         if (jobDetails) {
@@ -660,15 +704,22 @@ class ReportSummaryItemViewModel(activity: Activity, view: View, val summary: Ou
     }
 }
 
-class ReportSummaryViewHolder(val binding: FragmentReportSummaryItemBinding): RecyclerView.ViewHolder(binding.root)
+class ReportSummaryViewHolder(val binding: FragmentReportSummaryItemBinding) :
+    RecyclerView.ViewHolder(binding.root)
 
-class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>, val jobDetails: Boolean = false): RecyclerView.Adapter<ReportSummaryViewHolder>() {
+class ReportSummaryAdapter(
+    val activity: FragmentActivity,
+    var summaries: List<OutputSummary>,
+    val jobDetails: Boolean = false
+) : RecyclerView.Adapter<ReportSummaryViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportSummaryViewHolder {
         val binding = DataBindingUtil.inflate<FragmentReportSummaryItemBinding>(
             LayoutInflater.from(parent.context),
             R.layout.fragment_report_summary_item,
+
+
             parent,
             false
         )
@@ -683,7 +734,14 @@ class ReportSummaryAdapter(val activity: FragmentActivity, var summaries: List<O
     override fun onBindViewHolder(holder: ReportSummaryViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
-        holder.binding.viewModel = ReportSummaryItemViewModel(activity, view, summaries[position], summaries.count(), position, jobDetails)
+        holder.binding.viewModel = ReportSummaryItemViewModel(
+            activity,
+            view,
+            summaries[position],
+            summaries.count(),
+            position,
+            jobDetails
+        )
         val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
         editButton.setOnClickListener {
             onClickListener?.apply {

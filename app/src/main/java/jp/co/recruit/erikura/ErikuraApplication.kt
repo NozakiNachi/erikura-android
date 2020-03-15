@@ -79,8 +79,8 @@ class ErikuraApplication : Application() {
         ActivityCompat.requestPermissions(activity, permissions, REQUEST_PERMISSION)
     }
 
-    // 画像アップロード終了判定用スレッド
-    var lock = Thread()
+    // 画像アップロード終了判定用
+    var uploadMonitor = Object()
 
 }
 
