@@ -438,11 +438,7 @@ class ChangeUserInformationViewModel: ViewModel() {
             valid = false
             passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
             passwordErrorVisibility.value = 0
-        }else if(valid && password.value == null) {
-            valid = true
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
-        }else if(valid && password.value == ""){
+        }else if(valid && password.value == null || password.value == "") {
             valid = true
             verificationPasswordErrorMsg.value = ""
             verificationPasswordErrorVisibility.value = 8
@@ -472,15 +468,11 @@ class ChangeUserInformationViewModel: ViewModel() {
             valid = false
             verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
             verificationPasswordErrorVisibility.value = 0
-        }else if(valid && password.value !== null && verificationPassword.value !== null && password.value == verificationPassword.value) {
-            valid = true
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
-        }else if(valid && verificationPassword.value == null) {
-            valid = true
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
-        }else if(valid && verificationPassword.value == ""){
+        }else if(valid && password.value !== null && verificationPassword.value !== null && !(password.value.equals(verificationPassword.value))) {
+            valid = false
+            verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+            verificationPasswordErrorVisibility.value = 0
+        }else if(valid && verificationPassword.value == null || verificationPassword.value == "" ) {
             valid = true
             verificationPasswordErrorMsg.value = ""
             verificationPasswordErrorVisibility.value = 8

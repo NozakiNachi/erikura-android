@@ -39,11 +39,13 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     // FIXME: 正しいリンク先の作成
     var menuItems: List<MenuItem> = listOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
-            val intent = Intent(this, ChangeUserInformationActivity::class.java)
+            val intent = Intent(this, RecertificationActivity::class.java)
+            intent.putExtra("onClickChangeUserInformation", true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {
-            val intent = Intent(this, AccountSettingActivity::class.java)
+            val intent = Intent(this, RecertificationActivity::class.java)
+            intent.putExtra("onClickAccountSetting", true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {

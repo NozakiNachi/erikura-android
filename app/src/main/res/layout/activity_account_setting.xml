@@ -53,7 +53,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="8dp"
                         android:text="銀行名" />
                 </LinearLayout>
 
@@ -77,7 +77,7 @@
                     style="@style/errorField"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="8dp"
                     android:text="@={viewModel.bankNameErrorMsg}"
                     android:visibility="@{viewModel.bankNameErrorVisibility}" />
 
@@ -91,7 +91,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="8dp"
                         android:text="銀行コード" />
                 </LinearLayout>
 
@@ -133,7 +133,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="9dp"
                         android:text="支店名" />
                 </LinearLayout>
                 <EditText
@@ -170,7 +170,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="8dp"
                         android:text="支店コード" />
                 </LinearLayout>
 
@@ -213,7 +213,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="8dp"
                         android:text="口座番号" />
                 </LinearLayout>
 
@@ -257,7 +257,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
+                        android:drawablePadding="8dp"
                         android:text="口座種別" />
                 </LinearLayout>
 
@@ -268,58 +268,56 @@
                     >
                     <jp.co.recruit.erikura.presenters.activities.TableRadioGroup
                         android:id="@+id/table"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        >
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
                         <TableRow
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            >
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
                             <RadioButton
                                 android:id="@+id/ordinary_button"
-                                android:layout_width="140dp"
-                                android:layout_height="70dp"
+                                android:layout_width="155dp"
+                                android:layout_height="62dp"
                                 android:layout_marginTop="10dp"
-                                android:paddingLeft="10dp"
+                                android:padding="10dp"
                                 style="@style/buttonWithCheckBox"
+                                android:layout_marginRight="10dp"
                                 android:text="普通"
                                 android:orientation="horizontal"
-                                android:onClick="@{handlers::onOrdinaryButton}"
-                                />
+                                android:onClick="@{handlers::onOrdinaryButton}" />
                             <RadioButton
                                 android:id="@+id/current_button"
-                                android:layout_width="140dp"
-                                android:layout_height="70dp"
+                                android:layout_width="155dp"
+                                android:layout_height="62dp"
                                 android:layout_marginTop="10dp"
-                                android:paddingLeft="10dp"
                                 style="@style/buttonWithCheckBox"
+                                android:padding="10dp"
+                                android:layout_marginLeft="0dp"
+                                android:layout_marginRight="20dp"
                                 android:text="当座"
                                 android:orientation="horizontal"
-                                android:onClick="@{handlers::onCurrentButton}"
-                                />
+                                android:onClick="@{handlers::onCurrentButton}" />
                         </TableRow>
                         <TableRow
                             android:id="@+id/group2"
                             android:orientation="horizontal"
                             android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            >
+                            android:layout_height="wrap_content">
                             <RadioButton
                                 android:id="@+id/savings_button"
-                                android:layout_width="140dp"
-                                android:layout_height="70dp"
+                                android:layout_width="155dp"
+                                android:layout_height="62dp"
                                 android:layout_marginTop="10dp"
-                                android:paddingLeft="10dp"
+                                android:padding="10dp"
                                 style="@style/buttonWithCheckBox"
+                                android:layout_marginRight="10dp"
                                 android:text="貯蓄"
                                 android:orientation="horizontal"
-                                android:onClick="@{handlers::onSavingsButton}"
-                                />
+                                android:onClick="@{handlers::onSavingsButton}" />
                         </TableRow>
                     </jp.co.recruit.erikura.presenters.activities.TableRadioGroup>
                 </LinearLayout>
 
-                <!--銀行名-->
+                <!--名義人-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -329,24 +327,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawableLeft="@drawable/icon_required_18"
-                        android:drawablePadding="10dp"
-                        android:text="銀行名" />
+                        android:drawablePadding="8dp"
+                        android:text="名義人(カタカナ)" />
                 </LinearLayout>
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
                     >
                     <EditText
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:layout_weight="1"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginRight="8dp"
                         style="@style/textField"
+                        android:layout_marginRight="8dp"
                         android:hint="@string/register_last_name_hint"
                         android:text="@={viewModel.accountHolderFamily}"
                         />
@@ -354,9 +349,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
                         android:layout_weight="1"
-                        android:layout_marginLeft="0dp"
-                        android:layout_marginRight="8dp"
                         style="@style/textField"
+                        android:layout_marginLeft="0dp"
                         android:hint="@string/register_first_name_hint"
                         android:text="@={viewModel.accountHolder}"
                         />

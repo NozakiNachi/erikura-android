@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.MypageViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.RecertificationViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.MypageEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.RecertificationHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,21 +31,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/editText2"
+                        android:id="@+id/recerfitication"
                         style="@style/titleLabel"
                         android:layout_width="390dp"
                         android:layout_height="48dp"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="100.5dp"
+                        android:layout_marginTop="60dp"
                         android:textColor="@color/blackTwo"
-                        android:textSize="20dp"
+                        android:textSize="22dp"
                         android:text="再認証" />
                 </LinearLayout>
 
@@ -56,22 +54,21 @@
                     <TextView
                         android:id="@+id/editText"
                         style="@style/titleLabel"
-                        android:layout_width="390dp"
-                        android:layout_height="60dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="20.5dp"
-                        android:layout_marginBottom="1.5dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
                         android:textColor="@color/blackTwo"
                         android:textSize="14dp"
                         android:text="このページへアクセスするには再認証が必要です。\n下記にパスワードを入力してください。" />
                 </LinearLayout>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     style="@style/fieldLabel"
-                    android:layout_marginTop="10dp"
+                    android:layout_marginTop="40dp"
                     android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:text="@string/password" />
 
                 <EditText
@@ -79,27 +76,20 @@
                     android:layout_height="62dp"
                     style="@style/passwordField"
                     android:layout_marginTop="10dp"
-                    android:layout_marginLeft="20dp"/>
-<!--                    android:text="@={viewModel.password}"-->
-<!--                    android:hint="@string/register_password_hint" />-->
-
-<!--                <TextView-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:visibility="@{viewModel.errorVisibility}"-->
-<!--                    style="@style/errorField"-->
-<!--                    android:text="@={viewModel.errorMsg}"-->
-<!--                    />-->
-
-<!--                <Button-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="70dp"-->
-<!--                    android:layout_marginTop="30dp"-->
-<!--                    style="@style/primaryButton"-->
-<!--                    android:text="再認証する"-->
-<!--                    android:onClick="@{handlers::onClickLogout}"-->
-<!--                    />-->
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="@={viewModel.password}"
+                    android:hint="@string/register_password_hint"
+                />
+                <Button
+                    style="@style/primaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="40dp"
+                    android:text="再認証する"
+                    android:enabled="@{viewModel.isRecerfiticationEnabled}"
+                    android:onClick="@{handlers::onClickRecertification}"
+                    />
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>
