@@ -27,6 +27,7 @@ import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentImplementationLocationListBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
@@ -34,7 +35,7 @@ import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewM
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryViewHolder
 
 
-class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment() {
+class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment(), ReportedJobDetailsFragmentEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobDetailsFragmentViewModel::class.java)
     }
@@ -54,6 +55,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         val binding = FragmentReportedJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         binding.viewModel = viewModel
+        binding.handlers = this
 
 //        job?.report?.let {
 //            val minute = it.workingMinute ?: 0
@@ -118,11 +120,26 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         transaction.commit()
     }
+
+    override fun onClickFavorite(view: View) {
+        if (viewModel.favorited.value?: false) {
+            // お気に入り登録処理
+            Api(activity!!).placeFavorite(job?.place?.id?: 0) {
+                viewModel.favorited.value = true
+            }
+        }else {
+            // お気に入り削除処理
+            Api(activity!!).placeFavoriteDelete(job?.place?.id?: 0) {
+                viewModel.favorited.value = false
+            }
+        }
+    }
 }
 
 class ReportedJobDetailsFragmentViewModel: ViewModel() {
 //    val workingTime: MutableLiveData<String> = MutableLiveData()
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
+    val favorited: MutableLiveData<Boolean> = MutableLiveData()
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
 //
@@ -167,7 +184,17 @@ class ReportedJobDetailsFragmentViewModel: ViewModel() {
                 }
             }
 
+            // お気に入り状態の取得
+            UserSession.retrieve()?.let {
+                Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
+                    favorited.value = it
+                }
+            }
         }
     }
+}
+
+interface ReportedJobDetailsFragmentEventHandlers {
+    fun onClickFavorite(view: View)
 }
 

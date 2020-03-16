@@ -5,10 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentEventHandlers" />
     </data>
 
     <FrameLayout
@@ -277,6 +279,15 @@
         </ScrollView>
 
         <!-- お気に入りボタン -->
+        <ToggleButton
+            style="@style/favoriteButton"
+            android:layout_width="70dp"
+            android:layout_height="68dp"
+            android:layout_gravity="bottom|right"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:checked="@={viewModel.favorited}"
+            android:onClick="@{handlers::onClickFavorite}" />
 
     </FrameLayout>
 </layout>
