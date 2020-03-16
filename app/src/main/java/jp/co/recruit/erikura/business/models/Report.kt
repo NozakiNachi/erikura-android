@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.business.models
 
 import android.app.Activity
 import android.os.Parcelable
+import android.util.Log
 import jp.co.recruit.erikura.data.network.Api
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -156,7 +157,9 @@ data class Report (
             item?.let {
                 item.resizeImage(activity, 640, 640) { bytes ->
                     // 画像アップロード処理
-                    Api(activity).imageUpload(item, bytes) { token ->
+                    Api(activity).imageUpload(item, bytes, onError = {
+                        Log.e("Error in waiting upload", it.toString())
+                    }) { token ->
                         outputSummaries[0].beforeCleaningPhotoToken = token
                         onComplete(token)
                         synchronized(ErikuraApplication.instance.uploadMonitor) {

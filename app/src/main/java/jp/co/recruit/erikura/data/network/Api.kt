@@ -386,7 +386,7 @@ class Api(var context: Context) {
         var outputSummaries: MutableList<OutputSummaryRequest> = mutableListOf()
         report.outputSummaries.forEachIndexed { index, outputSummary ->
             var outputSummaryRequest = OutputSummaryRequest(
-                index+1,
+                outputSummary.id,
                 outputSummary.place?: "",
                 outputSummary.evaluationMap(),
                 outputSummary.latitude?: 0.0,
@@ -452,7 +452,7 @@ class Api(var context: Context) {
         ).build()
 
         executeObservable(
-            erikuraApiService.imageUpload(requestBody),
+            erikuraApiService.imageUpload(requestBody),false,
             onError = onError
         ) { body ->
             onComplete(body.photoToken)
