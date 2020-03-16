@@ -5,8 +5,8 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +19,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
@@ -38,7 +39,7 @@ import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import java.util.*
+import java.io.IOException
 
 
 class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
@@ -300,55 +301,93 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         uploadingDialog.show(supportFragmentManager, "Uploading")
 
 
-        val completable = Completable.fromAction {
-            var count = 0
-            while (!isCompletedUploadPhotos()) {
-                if (count < 5) {
-                    synchronized(ErikuraApplication.instance.uploadMonitor) {
+        val observable: Observable<Int> = Observable.create {
+            try {
+                var count = 0
+
+                while (!isCompletedUploadPhotos()) {
+                    if (count < 5) {
                         this.runOnUiThread {
                             // 画像アップの進捗表示更新
                             val (numPhotos, numUploadedPhotos) = updateProgress()
                             uploadingDialog.numPhotos = numPhotos
                             uploadingDialog.numUploadedPhotos = numUploadedPhotos
                         }
-                        ErikuraApplication.instance.uploadMonitor.wait(3000)
+
+                        synchronized(ErikuraApplication.instance.uploadMonitor) {
+                            ErikuraApplication.instance.uploadMonitor.wait(30000)
+                        }
+
+                        this.runOnUiThread {
+                            // token 再取得処理
+                            updateToken()
+                        }
+                        count++
+                    } else {
+                        break
                     }
-                    this.runOnUiThread {
-                        // token 再取得処理
-                        updateToken()
-                    }
-                    count++
-                } else {
-                    break
                 }
+
+                it.onNext(count)
+                it.onComplete()
             }
-
-            this.runOnUiThread { uploadingDialog.dismiss() }
-
-            if (count >= 5) {
-                // 画像アップ不可モーダル表示
-                val failedDialog = UploadFailedDialogFragment().also {
-                    it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
-                        override fun onClickRetryButton() {
-                            it.dismiss()
-                            retry()
-                        }
-
-                        override fun onClickRemoveButton() {
-                            it.dismiss()
-                            // レポートを削除して案件詳細画面へ遷移します
-                            removeAllContents()
-                        }
-                    }
-                }
-                failedDialog.isCancelable = false
-                failedDialog.show(supportFragmentManager, "UploadFailed")
-            } else {
-                saveReport()
+            catch (e: IOException) {
+                Log.e("Error in waiting upload", e.message, e)
+                it.onError(e)
             }
         }
-            .subscribeOn(Schedulers.io())
-        completable.subscribe()
+
+
+        observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { count ->
+                    Log.d("Upload Next", count.toString())
+                    uploadingDialog.dismiss()
+                    if (count >= 5) {
+                        // 画像アップ不可モーダル表示
+                        val failedDialog = UploadFailedDialogFragment().also {
+                            it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
+                                override fun onClickRetryButton() {
+                                    it.dismiss()
+                                    retry()
+                                }
+
+                                override fun onClickRemoveButton() {
+                                    it.dismiss()
+                                    // レポートを削除して案件詳細画面へ遷移します
+                                    removeAllContents()
+                                }
+                            }
+                        }
+                        failedDialog.isCancelable = false
+                        failedDialog.show(supportFragmentManager, "UploadFailed")
+                    } else {
+                        saveReport()
+                    }
+                },
+                onError = { e ->
+                    Log.e("Upload Error", e.message, e)
+                    uploadingDialog.dismiss()
+                    // 画像アップ不可モーダル表示
+                    val failedDialog = UploadFailedDialogFragment().also {
+                        it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
+                            override fun onClickRetryButton() {
+                                it.dismiss()
+                                retry()
+                            }
+
+                            override fun onClickRemoveButton() {
+                                it.dismiss()
+                                // レポートを削除して案件詳細画面へ遷移します
+                                removeAllContents()
+                            }
+                        }
+                    }
+                    failedDialog.isCancelable = false
+                    failedDialog.show(supportFragmentManager, "UploadFailed")
+                }
+            )
     }
 
 
