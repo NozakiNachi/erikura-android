@@ -54,13 +54,15 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         },
         MypageItem(1, "お気に入り", R.drawable.icon_star_18, true) {
             // FIXME: 正しいリンク先の作成
+            // FIXME: 押下時には、非ログインエラー画面を表示
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
-            // FIXME: 正しいリンク先の作成
+            // FIXME: 押下時には、非ログインエラー画面を表示
             Intent(this, OwnJobsActivity::class.java).let { intent ->
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("fromMypageJobCommentGoodButton", true)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         },

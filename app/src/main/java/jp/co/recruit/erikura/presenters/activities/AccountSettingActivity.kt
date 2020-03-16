@@ -20,6 +20,8 @@ import java.util.regex.Pattern
 
 class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers {
 
+    // FIXME: 入力値を選択させるドロップボックスが必要？
+    // FIXME: 存在しない銀行名・支店名をいれるとエラーになる
     var payment: Payment = Payment()
 
     private val viewModel: AccountSettingViewModel by lazy {
@@ -165,9 +167,6 @@ class AccountSettingViewModel: ViewModel() {
 
     // 口座タイプ
     val accountType: MutableLiveData<String> = MutableLiveData()
-    val ordinary_button: MutableLiveData<Boolean> = MutableLiveData()
-    val current_button: MutableLiveData<Boolean> = MutableLiveData()
-    val savings_button: MutableLiveData<Boolean> = MutableLiveData()
 
     // 銀行名
     val accountHolderFamily: MutableLiveData<String> = MutableLiveData()
@@ -319,7 +318,7 @@ class AccountSettingViewModel: ViewModel() {
         return valid
     }
 
-    private fun isValidAccountHolderFamily(): Boolean {
+    private fun isValidAccountHolder(): Boolean {
         var valid = true
         if (valid && accountHolder.value?.isBlank() ?:true) {
             valid = false
@@ -329,6 +328,11 @@ class AccountSettingViewModel: ViewModel() {
             valid = false
             accountHolderErrorMsg.value = ErikuraApplication.instance.getString(R.string.account_holder_count_error)
             accountHolderErrorVisibility.value = 0
+        }else if (!(accountHolder.value?.matches("^[\\u30A0-\\u30FF]+$".toRegex()) ?:true )){
+            valid = false
+            accountHolderErrorMsg.value =
+                ErikuraApplication.instance.getString(R.string.account_holder_format_error)
+            accountHolderErrorVisibility.value = 0
         } else {
             valid = true
             accountHolderErrorMsg.value = ""
@@ -337,7 +341,7 @@ class AccountSettingViewModel: ViewModel() {
         return valid
     }
 
-    private fun isValidAccountHolder(): Boolean {
+    private fun isValidAccountHolderFamily(): Boolean {
         var valid = true
         if (valid && accountHolderFamily.value?.isBlank() ?:true) {
             valid = false
@@ -345,7 +349,13 @@ class AccountSettingViewModel: ViewModel() {
             accountHolderFamilyErrorVisibility.value = 8
         } else if (valid && !(accountHolderFamily.value?.length ?: 0 <= 30)) {
             valid = false
-            accountHolderFamilyErrorMsg.value = ErikuraApplication.instance.getString(R.string.account_holder_family_count_error)
+            accountHolderFamilyErrorMsg.value =
+                ErikuraApplication.instance.getString(R.string.account_holder_family_count_error)
+            accountHolderFamilyErrorVisibility.value = 0
+        } else if (!(accountHolderFamily.value?.matches("^[\\u30A0-\\u30FF]+$".toRegex()) ?:true )){
+            valid = false
+            accountHolderFamilyErrorMsg.value =
+                ErikuraApplication.instance.getString(R.string.account_holder_family_format_error)
             accountHolderFamilyErrorVisibility.value = 0
         } else {
             valid = true

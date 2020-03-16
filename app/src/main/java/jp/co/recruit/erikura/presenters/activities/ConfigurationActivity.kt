@@ -10,22 +10,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.internal.util.HalfSerializer.onComplete
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import kotlinx.android.synthetic.main.activity_mypage.*
+import java.util.regex.Pattern
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
-    data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
+    data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, var displayJudge: String?, val onSelect: () -> Unit)
 
     var user: User = User()
     var fromChangeUserInformationFragment: Boolean = false
@@ -37,34 +44,35 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     }
 
     // FIXME: 正しいリンク先の作成
+    // FIXME: 非ログイン時のみ「会員情報変更」「口座情報登録・変更」「通知設定」「ログアウト」をトルツメする→リサイクラービューの線も消す
     var menuItems: List<MenuItem> = listOf(
-        MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
+        MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true, null) {
             val intent = Intent(this, RecertificationActivity::class.java)
             intent.putExtra("onClickChangeUserInformation", true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {
+        MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true, null) {
             val intent = Intent(this, RecertificationActivity::class.java)
             intent.putExtra("onClickAccountSetting", true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {
+        MenuItem(2, "通知設定", R.drawable.icon_slide_15, true, null) {
             val intent = Intent(this, NotificationSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, true) {
+        MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, false, null) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, true) {
+        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false, null) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, true) {
+        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false, null) {
             val intent = Intent(this, RegisterEmailActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
+        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true, null) {
             onClickLogoutLink()
         }
     )
@@ -74,18 +82,32 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         super.onCreate(savedInstanceState)
 
 
-        val binding: ActivityConfigurationBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration)
+        val binding: ActivityConfigurationBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_configuration)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
 
         // 設定画面のメニューをrecycler_viewで表示
         val adapter = ConfigurationAdapter(menuItems)
-        adapter.setOnItemClickListener(object:ConfigurationAdapter.OnItemClickListener{
+        adapter.setOnItemClickListener(object : ConfigurationAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
                 item.onSelect()
             }
         })
+
+//        for (i in menuItems) {
+//            var requireLogin = i.requireLogin
+//
+//            if (requireLogin == true) {
+//                i.displayJudge = "true"
+//                if(userSession == null && i.displayJudge == "true"){
+//                    binding.configurationRecyclerView.setVisibility(View.GONE)
+//                }
+//            }
+//        }
+
+
         configuration_recycler_view.adapter = adapter
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         configuration_recycler_view.addItemDecoration(itemDecoration)
@@ -113,6 +135,10 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             val MenuListItem = menuItems.get(position)
             val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
+
+            if(userSession == null && menuItems[position].requireLogin == true){
+                holder.binding.configurationCell.setVisibility(View.GONE)
+            }
 
             holder.binding.root.setOnClickListener {
                 listener?.onItemClickListener(menuItems[position])

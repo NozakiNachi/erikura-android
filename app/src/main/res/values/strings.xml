@@ -230,8 +230,10 @@
     <string name="branch_official_number_format_error">支店コードの形式が正しくありません。</string>
     <string name="account_number_count_error">口座番号は7文字で入力してください。</string>
     <string name="account_number_format_error">口座番号の形式が正しくありません。</string>
-    <string name="account_holder_count_error">名義人名(セイ)は30文字以内で入力してください。</string>
-    <string name="account_holder_family_count_error">名義人名(メイ)は30文字以内で入力してください。</string>
+    <string name="account_holder_count_error">名義人名(メイ)は30文字以内で入力してください。</string>
+    <string name="account_holder_format_error">名義人名(メイ)は全角カナで入力してください。</string>
+    <string name="account_holder_family_count_error">名義人名(セイ)は30文字以内で入力してください。</string>
+    <string name="account_holder_family_format_error">名義人名(セイ)は全角カナで入力してください。</string>
 
     <!--    <string name="email_format_error">メールアドレスの形式が正しくありません。</string>-->
     <!--    <string name="password_count_error">6文字以上の半角英数で入力してください。</string>-->

@@ -34,6 +34,7 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
         ViewModelProvider(this).get(OwnJobsViewModel::class.java)
     }
     var fromReportCompleted = false
+    var fromMypageJobCommentGoodButton = false
     lateinit var viewPager: ViewPager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,9 +120,6 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
                 // 何も行いません
             }
             R.id.tab_menu_mypage -> {
-                // MEMO: マイページ画面遷移コードを動作確認のため実装
-                // FIXME: 画面遷移の実装
-                // Toast.makeText(this, "マイページ画面に遷移", Toast.LENGTH_LONG).show()
                 Intent(this, MypageActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
@@ -141,6 +139,13 @@ class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
             uploadingDialog.show(supportFragmentManager, "ReportCompleted")
             intent.putExtra("fromReportCompleted", false)
             fromReportCompleted = false
+        }
+
+        fromMypageJobCommentGoodButton = intent.getBooleanExtra("fromMypageJobCommentGoodButton", false)
+        if (fromMypageJobCommentGoodButton) {
+            viewPager.setCurrentItem(2, true)
+            intent.putExtra("fromMypageJobCommentGoodButton", false)
+            fromMypageJobCommentGoodButton = false
         }
 
         Api(this).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
