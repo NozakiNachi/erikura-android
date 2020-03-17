@@ -88,7 +88,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         val timeLabel = TimeLabelFragment(job, user)
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
-        val reportedJobStatus = ReportedJobStatusFragment(activity, job?.report)
+//        val reportedJobStatus = ReportedJobStatusFragment(activity, job?.report)
         val reportedJobEditButton = ReportedJobEditButtonFragment(job)
         val reportedJobRemoveButton = ReportedJobRemoveButtonFragment(job)
         val jobDetailsView = JobDetailsViewFragment(job)
@@ -97,9 +97,9 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
         transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
 //        transaction.add(R.id.reportedJobDetails_reportedJobStatus, reportedJobStatus, "reportedJobStatus")
-//        transaction.add(R.id.reportedJobEditButton, reportedJobEditButton, "reportedJobEditButton")
-//        transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton, "reportedJobRemoveButton")
-//        transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
+        transaction.add(R.id.reportedJobEditButton, reportedJobEditButton, "reportedJobEditButton")
+        transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton, "reportedJobRemoveButton")
+        transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
 
         //FIXME: 実施箇所表示
 
@@ -169,6 +169,7 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_confirmed))
                         str.setSpan(ForegroundColorSpan(Color.rgb(25, 197, 183)), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         viewModel.rejectedCommentVisibility.value = View.GONE
+                        viewModel.buttonVisibility.value = View.GONE
                     }
                     ReportStatus.Rejected -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_reject))
@@ -179,11 +180,13 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
                             viewModel.rejectedComment.value = it.rejectComment?: ""
                             viewModel.rejectedCommentVisibility.value = View.VISIBLE
                         }
+                        viewModel.buttonVisibility.value = View.VISIBLE
                     }
                     ReportStatus.Unconfirmed -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_unconfirmed))
                         str.setSpan(ForegroundColorSpan(Color.rgb(137, 133, 129)), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                         viewModel.rejectedCommentVisibility.value = View.GONE
+                        viewModel.buttonVisibility.value = View.VISIBLE
                     }
                 }
                 viewModel.status.value = str
@@ -201,6 +204,9 @@ class ReportedJobDetailsFragmentViewModel: ViewModel() {
     val status: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val rejectedComment: MutableLiveData<String> = MutableLiveData()
     val rejectedCommentVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+
+    // 作業報告編集削除ボタンの表示・非表示
+    val buttonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)

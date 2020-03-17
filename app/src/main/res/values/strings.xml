@@ -298,7 +298,8 @@
     <string name="edit_summary">実施箇所%1$dを編集</string>
     <string name="remove_summary">実施箇所%1$dを削除</string>
     <string name="remove">削除</string>
-    <string name="edit_job_reported">作業報告を編集</string>
+    <string name="edit_report">作業報告を編集</string>
+    <string name="edit_rejected_report">再報告を開始する</string>
     <string name="remove_job_reported">作業報告を削除</string>
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>

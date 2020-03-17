@@ -133,37 +133,33 @@
 
                 </LinearLayout>
 
-<!--                &lt;!&ndash; 作業報告ステータス &ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobDetails_reportedJobStatus"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginLeft="20dp"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginRight="20dp"-->
-<!--                    />-->
 
-<!--                &lt;!&ndash;作業報告を編集ボタン&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobEditButton"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp" />-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="@{viewModel.buttonVisibility}">
+                <!--作業報告を編集ボタン-->
+                <FrameLayout
+                    android:id="@+id/reportedJobEditButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
 
-<!--                &lt;!&ndash;作業報告を削除ボタン&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobRemoveButton"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp" />-->
+                <!--作業報告を削除ボタン-->
+                <FrameLayout
+                    android:id="@+id/reportedJobRemoveButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" />
+            </LinearLayout>
 
-<!--                &lt;!&ndash; 案件詳細情報 &ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobDetails_jobDetailsViewFragment"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp" />-->
+                <!-- 案件詳細情報 -->
+                <FrameLayout
+                    android:id="@+id/reportedJobDetails_jobDetailsViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
 
 <!--                &lt;!&ndash;実施箇所表示&ndash;&gt;-->
 <!--                &lt;!&ndash;リサイクルビューで表示&ndash;&gt;-->
