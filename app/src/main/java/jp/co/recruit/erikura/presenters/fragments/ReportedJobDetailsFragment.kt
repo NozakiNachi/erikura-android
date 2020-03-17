@@ -3,9 +3,14 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -22,17 +27,15 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.OutputSummary
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
-import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentImplementationLocationListBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewModel
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryViewHolder
+
 
 
 class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment(), ReportedJobDetailsFragmentEventHandlers {
@@ -66,9 +69,9 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
 //            }
 //        }
 
-        viewModel.setup(activity, job, user)
+        setup()
 
-        reportSummaryAdapter = ReportSummaryAdapter(activity!!, listOf(), true)
+        reportSummaryAdapter = ReportSummaryAdapter(activity, listOf(), true)
         //リサイクラービューをセット
 //        val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
 //        reportSummaryView.setHasFixedSize(true)
@@ -124,13 +127,66 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
     override fun onClickFavorite(view: View) {
         if (viewModel.favorited.value?: false) {
             // お気に入り登録処理
-            Api(activity!!).placeFavorite(job?.place?.id?: 0) {
+            Api(activity).placeFavorite(job?.place?.id?: 0) {
                 viewModel.favorited.value = true
             }
         }else {
             // お気に入り削除処理
-            Api(activity!!).placeFavoriteDelete(job?.place?.id?: 0) {
+            Api(activity).placeFavoriteDelete(job?.place?.id?: 0) {
                 viewModel.favorited.value = false
+            }
+        }
+    }
+
+    private fun setup() {
+        if (job != null){
+            // ダウンロード
+            job.thumbnailUrl?.let { url ->
+                val assetsManager = ErikuraApplication.assetsManager
+
+                assetsManager.fetchImage(activity, url) { result ->
+                    activity.runOnUiThread {
+                        val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
+                        val bitmapDraw = BitmapDrawable(bitmapReduced)
+                        bitmapDraw.alpha = 150
+                        viewModel.bitmapDrawable.value = bitmapDraw
+                    }
+                }
+            }
+
+            // お気に入り状態の取得
+            UserSession.retrieve()?.let {
+                Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
+                    viewModel.favorited.value = it
+                }
+            }
+
+            job.report?.let {
+                // 作業報告ステータスの取得
+                var str = SpannableStringBuilder()
+                when (it.status){
+                    ReportStatus.Accepted -> {
+                        str.append(ErikuraApplication.instance.getString(R.string.report_status_confirmed))
+                        str.setSpan(ForegroundColorSpan(Color.rgb(25, 197, 183)), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        viewModel.rejectedCommentVisibility.value = View.GONE
+                    }
+                    ReportStatus.Rejected -> {
+                        str.append(ErikuraApplication.instance.getString(R.string.report_status_reject))
+                        str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        if (it.rejectComment.isNullOrBlank()) {
+                            viewModel.rejectedCommentVisibility.value = View.GONE
+                        }else {
+                            viewModel.rejectedComment.value = it.rejectComment?: ""
+                            viewModel.rejectedCommentVisibility.value = View.VISIBLE
+                        }
+                    }
+                    ReportStatus.Unconfirmed -> {
+                        str.append(ErikuraApplication.instance.getString(R.string.report_status_unconfirmed))
+                        str.setSpan(ForegroundColorSpan(Color.rgb(137, 133, 129)), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        viewModel.rejectedCommentVisibility.value = View.GONE
+                    }
+                }
+                viewModel.status.value = str
             }
         }
     }
@@ -140,6 +196,12 @@ class ReportedJobDetailsFragmentViewModel: ViewModel() {
 //    val workingTime: MutableLiveData<String> = MutableLiveData()
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData()
+
+    // 作業報告ステータス
+    val status: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
+    val rejectedComment: MutableLiveData<String> = MutableLiveData()
+    val rejectedCommentVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
 //
@@ -168,30 +230,6 @@ class ReportedJobDetailsFragmentViewModel: ViewModel() {
 //        summaryComment.value = summary.comment
 //    }
 
-    fun setup(activity: Activity, job: Job?, user: User) {
-        if (job != null){
-            // ダウンロード
-            job.thumbnailUrl?.let { url ->
-                val assetsManager = ErikuraApplication.assetsManager
-
-                assetsManager.fetchImage(activity, url) { result ->
-                    activity.runOnUiThread {
-                        val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
-                        val bitmapDraw = BitmapDrawable(bitmapReduced)
-                        bitmapDraw.alpha = 150
-                        bitmapDrawable.value = bitmapDraw
-                    }
-                }
-            }
-
-            // お気に入り状態の取得
-            UserSession.retrieve()?.let {
-                Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
-                    favorited.value = it
-                }
-            }
-        }
-    }
 }
 
 interface ReportedJobDetailsFragmentEventHandlers {

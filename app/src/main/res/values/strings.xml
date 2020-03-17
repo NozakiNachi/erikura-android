@@ -91,6 +91,11 @@
     <string name="jobDetails_working">作業実施中</string>
     <string name="jobDetails_startTo">開始から</string>
     <string name="jobDetails_finished">作業実施完了</string>
+    <string name="report_status">作業報告のステータス</string>
+    <string name="report_status_unconfirmed">確認待ち</string>
+    <string name="report_status_confirmed">確認済み</string>
+    <string name="report_status_reject">差し戻し</string>
+    <string name="report_rejected_comment">差し戻しコメント</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -169,10 +174,6 @@
     <!-- 画像アップロード不可モーダル -->
     <string name="upload_failed_title">画像をアップできませんでした</string>
     <string name="upload_failed_note">再度アップロードを試みますか？</string>
-
-    <!-- 作業報告ステータス画面 -->
-    <string name="report_status">作業報告のステータス</string>
-    <string name="report_rejected_comment">差し戻しコメント</string>
 
     <!-- 作業報告の削除モーダル-->
     <string name="report_remove_caption">作業報告を削除しますか？</string>
