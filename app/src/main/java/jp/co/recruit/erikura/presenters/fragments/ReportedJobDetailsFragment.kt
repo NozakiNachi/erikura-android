@@ -63,15 +63,6 @@ class ReportedJobDetailsFragment(
         binding.viewModel = viewModel
         binding.handlers = this
 
-//        job?.report?.let {
-//            val minute = it.workingMinute ?: 0
-//            viewModel.workingTime.value = if (minute == 0) {
-//                ""
-//            } else {
-//                "${minute}分"
-//            }
-//        }
-
         setup()
 
         reportSummaryAdapter = ReportSummaryAdapter(activity, listOf(), true)
@@ -228,6 +219,18 @@ class ReportedJobDetailsFragment(
                 } else {
                     "${minute}分"
                 }
+
+                // マニュアル外報告の取得
+                val item = it.additionalPhotoAsset ?: MediaItem()
+                if (item.contentUri != null) {
+                    val imageView: ImageView = activity.findViewById(R.id.reported_job_details_other_image)
+                    item.loadImage(activity, imageView)
+                    viewModel.otherFormImageVisibility.value = View.VISIBLE
+                } else {
+                    viewModel.otherFormImageVisibility.value = View.GONE
+                }
+                val additionalComment = it.additionalComment ?: ""
+                viewModel.otherFormComment.value = additionalComment
             }
         }
     }
@@ -247,6 +250,10 @@ class ReportedJobDetailsFragmentViewModel : ViewModel() {
 
     // 作業報告時間
     val workingTime: MutableLiveData<String> = MutableLiveData()
+
+    // マニュアル外報告
+    val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val otherFormComment: MutableLiveData<String> = MutableLiveData()
 
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)

@@ -96,6 +96,7 @@
     <string name="report_status_confirmed">確認済み</string>
     <string name="report_status_reject">差し戻し</string>
     <string name="report_rejected_comment">差し戻しコメント</string>
+    <string name="job_details_reported_additional_summary">マニュアル外の報告</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
