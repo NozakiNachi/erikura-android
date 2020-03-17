@@ -4,6 +4,8 @@ import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,17 +17,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityLoginRequiredBinding
 import jp.co.recruit.erikura.databinding.ActivityRecertificationBinding
 import jp.co.recruit.erikura.databinding.DialogChangeUserInformationSuccessBinding
 import jp.co.recruit.erikura.presenters.activities.LoginActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import java.util.*
 
 class RecertificationActivity : AppCompatActivity(), RecertificationHandlers {
 
     var user: User = User()
+    val date: Date = Date()
     var fromChangeUserInformation: Boolean = false
     var fromAccountSetting: Boolean = false
 
@@ -49,26 +55,44 @@ class RecertificationActivity : AppCompatActivity(), RecertificationHandlers {
 
         fromChangeUserInformation = intent.getBooleanExtra("onClickChangeUserInformation", false)
         fromAccountSetting = intent.getBooleanExtra("onClickAccountSetting", false)
+
+        val now = Date()
+        val reSignDate = userSession?.resignInExpiredAt
+
+        if(userSession?.resignInExpiredAt != null){
+            val diff = now.time - (reSignDate?.time ?: 0)
+//            val diff: Int = limit.toInt() - today.toInt()
+            if (diff >= 0) {
+                val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+                if (diffMinutes < 10) {
+                    screenTransition()
+                }
+            }
+        }
     }
 
     override fun onClickRecertification(view: View) {
 
-        Api(this).login(viewModel.email.value ?: "", viewModel.password.value ?: "") {
+        Api(this).recertification(viewModel.email.value ?: "", viewModel.password.value ?: "") {
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
+        }
+        screenTransition()
+    }
 
-            // クリックされていた画面へ遷移
-            if (fromChangeUserInformation) {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                finish()
-            }else if(fromAccountSetting) {
-                val intent = Intent(this, AccountSettingActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                finish()
-            }
+    override fun screenTransition(){
+        // クリックされていた画面へ遷移
+        if (fromChangeUserInformation) {
+            // 会員情報変更画面
+            val intent = Intent(this, ChangeUserInformationActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            finish()
+        }else if(fromAccountSetting) {
+            // 口座情報登録変更画面
+            val intent = Intent(this, AccountSettingActivity::class.java)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            finish()
         }
     }
-    // FIXME: 再認証の有効時間(アプリをkillまたは10分以上経過しない限り認証不要)を設ける
 }
 
 class RecertificationViewModel: ViewModel() {
@@ -78,7 +102,6 @@ class RecertificationViewModel: ViewModel() {
     val isRecerfiticationEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(password) { result.value = isValid()  }
     }
-
     fun isValid(): Boolean {
         return (password.value?.isNotBlank() ?: false)
     }
@@ -86,4 +109,5 @@ class RecertificationViewModel: ViewModel() {
 
 interface RecertificationHandlers {
     fun onClickRecertification(view: View)
+    fun screenTransition()
 }

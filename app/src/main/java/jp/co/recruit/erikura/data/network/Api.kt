@@ -55,7 +55,7 @@ class Api(var context: Context) {
 //    func isLogin() -> Bool {
 //        return userSession != nil
 //    }
-
+//
 //    // 再認証有効無効チェック
 //    func resignInRequired() -> Bool {
 //        if let expire = self.resignInSessionExpire, expire > Date() {
@@ -90,6 +90,18 @@ class Api(var context: Context) {
                 // エラーメッセージを出す
             }
             onComplete()
+        }
+    }
+
+    fun recertification(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
+        executeObservable(
+            erikuraApiService.login(LoginRequest(email = email, password = password)),
+            onError =  onError
+        ) { body ->
+            val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = Date())
+            userSession = session
+            Tracking.identify(body.userId)
+            onComplete(session)
         }
     }
 
@@ -219,21 +231,23 @@ class Api(var context: Context) {
         }
     }
 
-    fun updateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit)  {
+    fun updateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (id: Int) -> Unit)  {
         executeObservable(
             erikuraApiService.updateUser(user),
             onError = onError
         ) { body ->
-            onComplete()
+            val id = body.id
+            onComplete(id)
         }
     }
 
-    fun updatePayment(payment: Payment, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit)  {
+    fun updatePayment(payment: Payment, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (userId: Int) -> Unit)  {
         executeObservable(
             erikuraApiService.updatePayment(payment),
             onError = onError
         ) { body ->
-            onComplete()
+            var userId = body.userId
+            onComplete(userId)
         }
     }
 

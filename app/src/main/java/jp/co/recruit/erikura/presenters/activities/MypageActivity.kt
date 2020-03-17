@@ -194,6 +194,7 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
 
 }
 
+// FIXME: 数字と単位(円・件)を別のtextViewにする。
 class MypageViewModel: ViewModel() {
     val monthlyReward: MutableLiveData<Int> = MutableLiveData()
     val monthlyCompletedJobs: MutableLiveData<Int> = MutableLiveData()

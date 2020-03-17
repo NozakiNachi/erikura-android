@@ -93,19 +93,33 @@
                                     android:maxLines="1"
                                     android:text="今月の報酬"
                                     android:textColor="@color/blackTwo"
-                                    android:textSize="14dp" />
+                                    android:textSize="12dp" />
+                                    <TextView
+                                        android:id="@id/mypage_monthly_goods_label"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/mypage_monthly_reward_label"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_marginTop="10dp"
+                                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                        android:includeFontPadding="false"
+                                        android:text="118,350"
+                                        android:textColor="@color/blackTwo"
+                                        android:textSize="20dp" />
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_below="@id/mypage_monthly_reward_label"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="10dp"
-                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                    android:includeFontPadding="false"
-                                    android:text="@{viewModel.formattedMonthlyRewards}"
-                                    android:textColor="@color/blackTwo"
-                                    android:textSize="14dp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/mypage_monthly_reward_label"
+                                        android:layout_toRightOf="@id/mypage_monthly_goods_label"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_marginTop="15dp"
+                                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                        android:includeFontPadding="false"
+                                        android:text="円"
+                                        android:textColor="@color/blackTwo"
+                                        android:textSize="12dp" />
+
                             </RelativeLayout>
 
                             <RelativeLayout
@@ -138,7 +152,7 @@
                                     android:maxLines="1"
                                     android:text="今月の完了数"
                                     android:textColor="@color/blackTwo"
-                                    android:textSize="14dp" />
+                                    android:textSize="12dp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
@@ -185,7 +199,7 @@
                                     android:maxLines="1"
                                     android:text="今月のいいね数"
                                     android:textColor="@color/blackTwo"
-                                    android:textSize="14dp" />
+                                    android:textSize="12dp" />
 
                                 <TextView
                                     android:layout_width="wrap_content"
