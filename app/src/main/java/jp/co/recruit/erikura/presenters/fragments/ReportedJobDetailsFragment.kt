@@ -37,8 +37,11 @@ import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewM
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryViewHolder
 
 
-
-class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment(), ReportedJobDetailsFragmentEventHandlers {
+class ReportedJobDetailsFragment(
+    private val activity: AppCompatActivity,
+    val job: Job?,
+    val user: User
+) : Fragment(), ReportedJobDetailsFragmentEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobDetailsFragmentViewModel::class.java)
     }
@@ -95,11 +98,23 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
 
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
+        transaction.add(
+            R.id.reportedJobDetails_thumbnailImageFragment,
+            thumbnailImage,
+            "thumbnailImage"
+        )
 //        transaction.add(R.id.reportedJobDetails_reportedJobStatus, reportedJobStatus, "reportedJobStatus")
         transaction.add(R.id.reportedJobEditButton, reportedJobEditButton, "reportedJobEditButton")
-        transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton, "reportedJobRemoveButton")
-        transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
+        transaction.add(
+            R.id.reportedJobRemoveButton,
+            reportedJobRemoveButton,
+            "reportedJobRemoveButton"
+        )
+        transaction.add(
+            R.id.reportedJobDetails_jobDetailsViewFragment,
+            jobDetailsView,
+            "jobDetailsView"
+        )
 
         //FIXME: 実施箇所表示
 
@@ -125,21 +140,21 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
     }
 
     override fun onClickFavorite(view: View) {
-        if (viewModel.favorited.value?: false) {
+        if (viewModel.favorited.value ?: false) {
             // お気に入り登録処理
-            Api(activity).placeFavorite(job?.place?.id?: 0) {
+            Api(activity).placeFavorite(job?.place?.id ?: 0) {
                 viewModel.favorited.value = true
             }
-        }else {
+        } else {
             // お気に入り削除処理
-            Api(activity).placeFavoriteDelete(job?.place?.id?: 0) {
+            Api(activity).placeFavoriteDelete(job?.place?.id ?: 0) {
                 viewModel.favorited.value = false
             }
         }
     }
 
     private fun setup() {
-        if (job != null){
+        if (job != null) {
             // ダウンロード
             job.thumbnailUrl?.let { url ->
                 val assetsManager = ErikuraApplication.assetsManager
@@ -164,39 +179,61 @@ class ReportedJobDetailsFragment(private val activity: AppCompatActivity, val jo
             job.report?.let {
                 // 作業報告ステータスの取得
                 var str = SpannableStringBuilder()
-                when (it.status){
+                when (it.status) {
                     ReportStatus.Accepted -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_confirmed))
-                        str.setSpan(ForegroundColorSpan(Color.rgb(25, 197, 183)), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        str.setSpan(
+                            ForegroundColorSpan(Color.rgb(25, 197, 183)),
+                            0,
+                            str.length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
                         viewModel.rejectedCommentVisibility.value = View.GONE
                         viewModel.buttonVisibility.value = View.GONE
                     }
                     ReportStatus.Rejected -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_reject))
-                        str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        str.setSpan(
+                            ForegroundColorSpan(Color.RED),
+                            0,
+                            str.length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
                         if (it.rejectComment.isNullOrBlank()) {
                             viewModel.rejectedCommentVisibility.value = View.GONE
-                        }else {
-                            viewModel.rejectedComment.value = it.rejectComment?: ""
+                        } else {
+                            viewModel.rejectedComment.value = it.rejectComment ?: ""
                             viewModel.rejectedCommentVisibility.value = View.VISIBLE
                         }
                         viewModel.buttonVisibility.value = View.VISIBLE
                     }
                     ReportStatus.Unconfirmed -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_unconfirmed))
-                        str.setSpan(ForegroundColorSpan(Color.rgb(137, 133, 129)), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        str.setSpan(
+                            ForegroundColorSpan(Color.rgb(137, 133, 129)),
+                            0,
+                            str.length,
+                            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                        )
                         viewModel.rejectedCommentVisibility.value = View.GONE
                         viewModel.buttonVisibility.value = View.VISIBLE
                     }
                 }
                 viewModel.status.value = str
+
+                // 作業時間の取得
+                val minute = it.workingMinute ?: 0
+                viewModel.workingTime.value = if (minute == 0) {
+                    ""
+                } else {
+                    "${minute}分"
+                }
             }
         }
     }
 }
 
-class ReportedJobDetailsFragmentViewModel: ViewModel() {
-//    val workingTime: MutableLiveData<String> = MutableLiveData()
+class ReportedJobDetailsFragmentViewModel : ViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData()
 
@@ -207,6 +244,9 @@ class ReportedJobDetailsFragmentViewModel: ViewModel() {
 
     // 作業報告編集削除ボタンの表示・非表示
     val buttonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+
+    // 作業報告時間
+    val workingTime: MutableLiveData<String> = MutableLiveData()
 
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)

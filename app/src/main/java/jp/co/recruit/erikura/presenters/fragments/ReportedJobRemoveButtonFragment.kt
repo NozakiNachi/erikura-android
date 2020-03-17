@@ -46,7 +46,7 @@ class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), Repor
         job?.let { job ->
             if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
                 val dialog = CancelDialogFragment(job)
-                dialog.show(childFragmentManager, "Remove")
+                dialog.show(childFragmentManager, "Cancel")
             }else {
                 val dialog = ReportedJobRemoveDialogFragment(job)
                 dialog.show(childFragmentManager, "Remove")
