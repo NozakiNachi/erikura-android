@@ -54,7 +54,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         reward.text = job.fee.toString() + "円"
         workingTime.text = job.workingTime.toString() + "分"
         val sd = SimpleDateFormat("YYYY/MM/dd HH:mm")
-        workingFinishAt.text = "〜" + sd.format(job.workingFinishAt)
+        workingFinishAt.text = job.workingFinishAt?.let { "〜" + sd.format(it) } ?: ""
         workingPlace.text = job.workingPlace
 
         // ダウンロード
