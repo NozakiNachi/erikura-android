@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
+import jp.co.recruit.erikura.presenters.util.LocationManager
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
 import java.util.*
@@ -64,9 +65,9 @@ data class Job(
     /** 期限切れ、もしくは応募済みかを判定します */
     val isPastOrInactive: Boolean get() = (isPast || isEntried)
     /** 募集期間が過ぎたタスクか? */
-    val isPast: Boolean get() = (Date() > this.workingFinishAt)
+    val isPast: Boolean get() = (workingFinishAt?.let { Date() > it } ?: false)
     /** 募集期間前のタスクか? */
-    val isFuture: Boolean get() = (Date() < this.workingStartAt)
+    val isFuture: Boolean get() = (workingStartAt?.let { Date() < it } ?: false)
     /** 作業期間切れのタスクか? */
     val isExpired: Boolean get() = (this.limitAt?.let { Date() > it } ?: false)
     /** 応募済みの場合の作業リミット時間 */
@@ -129,5 +130,5 @@ data class Job(
         }
     }
 
-    val latLng: LatLng get() = LatLng(latitude?: 0.0, longitude?: 0.0)
+    val latLng: LatLng get() = LatLng(latitude?: LocationManager.defaultLatLng.latitude, longitude?: LocationManager.defaultLatLng.longitude)
 }
