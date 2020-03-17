@@ -105,39 +105,40 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
 
     // Firebase
-    implementation 'com.google.firebase:firebase-analytics:17.2.2'
-    implementation 'com.google.firebase:firebase-messaging:20.1.0'
+    implementation 'com.google.firebase:firebase-analytics:17.2.3'
+    implementation 'com.google.firebase:firebase-messaging:20.1.2'
     // Karte
-    implementation 'io.karte.android:tracker:1.7.+'
+    implementation 'io.karte.android:tracker:1.7.3'
 //    // Facebook SDK Core only (Analytics)
 //    implementation 'com.facebook.android:facebook-core:5.+'
 //    // Adjust
 //    implementation 'com.adjust.sdk:adjust-android:4.20.0'
 
     // Dagger
-    def dagger_version = '2.26'
+    def dagger_version = '2.27'
     implementation "com.google.dagger:dagger-android:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
     // ReactiveJava
-    implementation "io.reactivex.rxjava2:rxjava:2.2.16"
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
     implementation "io.reactivex.rxjava2:rxandroid:2.1.1"
     implementation "io.reactivex.rxjava2:rxkotlin:2.4.0"
 
     // Retrofit
-    def retrofit_version = '2.7.1'
+    def retrofit_version = '2.7.2'
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     // OkHTTP
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.3.1'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.4.1'
 
 
+    implementation 'androidx.preference:preference:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
-    implementation 'com.google.maps.android:android-maps-utils:0.6.2'
+    implementation 'com.google.maps.android:android-maps-utils:1.0.0'
     implementation 'commons-io:commons-io:2.6'
     implementation 'commons-lang:commons-lang:2.6'
     implementation 'com.android.support:design:28.0.0'

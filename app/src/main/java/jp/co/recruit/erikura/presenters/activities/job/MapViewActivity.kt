@@ -17,6 +17,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +26,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.maps.android.SphericalUtil
-import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -68,6 +68,7 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
     private lateinit var mMap: GoogleMap
     private lateinit var carouselView: RecyclerView
     private lateinit var adapter: ErikuraCarouselAdapter
+    private lateinit var tutorialAdapter: ErikuraCarouselAdapter
     private var firstFetchRequested: Boolean = false
 
     private fun fetchJobs(query: JobQuery) {
@@ -86,12 +87,12 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
                 // カルーセルの更新を行います
                 val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-                if (carouselView.adapter is ErikuraCarouselAdapter) {
-                    var adapter = carouselView.adapter as ErikuraCarouselAdapter
-                    adapter.data = jobs
-                    adapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
-                    adapter.notifyDataSetChanged()
-                }
+                adapter.data = jobs
+                adapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
+                adapter.notifyDataSetChanged()
+                tutorialAdapter.data = jobs
+                tutorialAdapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
+                tutorialAdapter.notifyDataSetChanged()
 
                 // マーカーを作成します
                 jobs.forEachIndexed { i, job ->
@@ -164,13 +165,16 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         binding.handlers = this
         binding.coachViewModel = coachViewModel
 
-        Realm.init(this)
-
         // 下部のタブの選択肢を仕事を探すに変更
         val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
         nav.selectedItemId = R.id.tab_menu_search_jobs
 
-        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
+        val dummyJob = Job(
+            latitude = LocationManager.defaultLatLng.latitude,
+            longitude = LocationManager.defaultLatLng.longitude
+        )
+
+        adapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
         adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
@@ -178,7 +182,6 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         }
 
         carouselView = findViewById(R.id.map_view_carousel)
-//        carouselView.setHasFixedSize(true)
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
 
@@ -199,8 +202,9 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
                     Log.v("VISIBLE JOB: ", job.toString())
 
                     this@MapViewActivity.runOnUiThread{
-                        mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
-
+                        if (::mMap.isInitialized) {
+                            mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
+                        }
                         viewModel.activeMaker = viewModel.markerMap[job.id]
                     }
                 }
@@ -210,7 +214,22 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(carouselView)
 
-        map_view_carousel_highlight.adapter = carouselView.adapter
+        val coachMarkDisplayed: Boolean = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("CoachMarkDisplayed", false)
+        coachViewModel.coach.value = !coachMarkDisplayed
+        coachViewModel.onCoachFinished {
+            PreferenceManager.getDefaultSharedPreferences(this)
+                .edit()
+                .putBoolean("CoachMarkDisplayed", true)
+                .apply()
+        }
+
+        tutorialAdapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
+        tutorialAdapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
+            override fun onClick(job: Job) {
+                coachViewModel.next()
+            }
+        }
+        map_view_carousel_highlight.adapter = tutorialAdapter
         map_view_carousel_highlight.addItemDecoration(ErikuraCarouselCellDecoration())
         LinearSnapHelper().attachToRecyclerView(map_view_carousel_highlight)
 
@@ -225,12 +244,6 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
         if (!locationManager.checkPermission(this)) {
             locationManager.requestPermission(this)
-        }
-
-        locationManager.latLng?.let {
-            firstFetchRequested = true
-            val query = viewModel.query(it)
-            fetchJobs(query)
         }
     }
 
@@ -256,8 +269,6 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-        // ズームの初期設定を行っておきます
-        mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
 
         // FIXME: ロゴの位置を変更する
         // MEMO: 下記のやり方だと地図の中心位置がずれる
@@ -295,6 +306,16 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
             layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
 
             true
+        }
+
+        // ズームの初期設定を行っておきます
+        mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
+
+        // 最初のタスク取得
+        locationManager.latLng?.let {
+            firstFetchRequested = true
+            val query = viewModel.query(it)
+            fetchJobs(query)
         }
     }
 
@@ -337,7 +358,6 @@ class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHan
 
     fun onCameraMoveStarted(_reason: Int) {
         cameraMoving = true
-
         // 案件取得によるカメラリセット以外の場合
         if (!resetCameraPosition) {
             // 再検索ボタンを表示
@@ -533,6 +553,8 @@ class MapViewCoachViewModel: ViewModel() {
         result.addSource(step) { result.value = decideCoachVisibility() }
     }
 
+    var onCoachFinishedHandler: (() -> Unit)? = null
+
     init {
         coach.value = false
         step.value = 0
@@ -540,6 +562,14 @@ class MapViewCoachViewModel: ViewModel() {
 
     fun next() {
         step.value = (step.value ?: 0) + 1
+
+        if ((step.value ?: 0) > 1) {
+            onCoachFinishedHandler?.invoke()
+        }
+    }
+
+    fun onCoachFinished(handler: () -> Unit) {
+        onCoachFinishedHandler = handler
     }
 
     fun decideCoachVisibility(): Int {
