@@ -35,7 +35,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
-                android:text="@string/remove_job_reported"
+                android:text="@string/remove_report"
                 android:onClick="@{handlers::onClickRemoveButton}"
                 />
 

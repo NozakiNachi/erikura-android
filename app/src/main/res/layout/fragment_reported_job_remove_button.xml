@@ -4,6 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportedJobRemoveButtonViewModel" />
+        <variable
             name="handler"
             type="jp.co.recruit.erikura.presenters.fragments.ReportedJobRemoveButtonFragmentEventHandlers" />
     </data>
@@ -17,8 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="44dp"
             style="@style/tertiaryButton"
-            android:text="@string/remove_job_reported"
-            android:textSize="14dp"
+            android:text="@{viewModel.buttonText}"
             android:onClick="@{handler::onClickReportedJobRemoveButton}"
             />
 

@@ -32,7 +32,7 @@ class ReportedJobRemoveDialogFragment(private val job: Job?) : DialogFragment() 
     }
     override fun onClickRemoveButton(view: View) {
         job?.report?.let {
-            Api(activity!!).deleteReport(job?.id) {
+            Api(activity!!).deleteReport(job.id) {
                 val intent= Intent(activity, JobDetailsActivity::class.java)
                 intent.putExtra("job", job)
                 startActivity(intent)
