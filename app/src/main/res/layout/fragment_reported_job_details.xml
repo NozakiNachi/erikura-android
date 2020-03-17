@@ -8,6 +8,7 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentEventHandlers" />
@@ -73,7 +74,7 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:background="@drawable/background_triangle_reverse"/>
+                        android:background="@drawable/background_triangle_reverse" />
 
                 </LinearLayout>
 
@@ -81,11 +82,11 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginRight="20dp"
                     android:layout_marginLeft="20dp"
-                    android:padding="20dp"
-                    android:background="@drawable/background_round_topaz" >
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/background_round_topaz"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
                     <TextView
                         android:layout_width="match_parent"
@@ -99,8 +100,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:gravity="center"
-                        android:textSize="22dp"
-                        android:text="@{viewModel.status}" />
+                        android:text="@{viewModel.status}"
+                        android:textSize="22dp" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -126,33 +127,33 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
-                            android:textColor="@color/black"
-                            android:text="@{viewModel.rejectedComment}"/>
+                            android:text="@{viewModel.rejectedComment}"
+                            android:textColor="@color/black" />
 
                     </LinearLayout>
 
                 </LinearLayout>
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="@{viewModel.buttonVisibility}">
-                <!--作業報告を編集ボタン-->
-                <FrameLayout
-                    android:id="@+id/reportedJobEditButton"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp" />
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.buttonVisibility}">
+                    <!--作業報告を編集ボタン-->
+                    <FrameLayout
+                        android:id="@+id/reportedJobEditButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp" />
 
-                <!--作業報告を削除ボタン-->
-                <FrameLayout
-                    android:id="@+id/reportedJobRemoveButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp" />
-            </LinearLayout>
+                    <!--作業報告を削除ボタン-->
+                    <FrameLayout
+                        android:id="@+id/reportedJobRemoveButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
 
                 <!-- 案件詳細情報  -->
                 <FrameLayout
@@ -161,16 +162,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp" />
 
-<!--                &lt;!&ndash;実施箇所表示&ndash;&gt;-->
-<!--                &lt;!&ndash;リサイクルビューで表示&ndash;&gt;-->
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/report_confirm_report_summaries"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--                    android:orientation="vertical"-->
-<!--                    android:padding="20dp"-->
-<!--                    />-->
+                <!--実施箇所表示-->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reported_job_details_report_summaries"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 <!-- 作業時間 -->
                 <TextView
@@ -178,21 +177,21 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:textSize="20dp"
-                    android:text="@string/report_working_time_caption" />
+                    android:text="@string/report_working_time_caption"
+                    android:textSize="20dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="vertical">
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/silver"/>
+                        android:background="@color/silver" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -200,24 +199,27 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:gravity="center"
-                            android:textColor="@color/black"
-                            android:text="@string/report_working_time_caption" />
+                            android:text="@string/report_working_time_caption"
+                            android:textColor="@color/black" />
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:textColor="@color/black"
-                            android:text="@{viewModel.workingTime}" />
+                            android:text="@{viewModel.workingTime}"
+                            android:textColor="@color/black" />
                     </LinearLayout>
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/silver"/>
+                        android:background="@color/silver" />
                 </LinearLayout>
 
                 <!--マニュアル外の報告-->
@@ -226,8 +228,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:textSize="20dp"
-                    android:text="@string/job_details_reported_additional_summary" />
+                    android:text="@string/job_details_reported_additional_summary"
+                    android:textSize="20dp" />
 
                 <!-- マニュアル外の報告画像 -->
                 <ImageView
@@ -235,24 +237,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="305dp"
                     android:layout_gravity="center"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginRight="20dp"
-                    android:layout_marginLeft="20dp"
                     android:background="@color/white"
-                    android:visibility="@{viewModel.otherFormImageVisibility}"/>
+                    android:visibility="@{viewModel.otherFormImageVisibility}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="vertical">
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/silver"/>
+                        android:background="@color/silver" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -260,27 +262,30 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:gravity="center"
-                            android:textSize="14dp"
+                            android:text="@string/comment"
                             android:textColor="@color/black"
-                            android:text="@string/comment" />
+                            android:textSize="14dp" />
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:lineSpacingExtra="10dp"
-                            android:textSize="14dp"
+                            android:text="@{viewModel.otherFormComment}"
                             android:textColor="@color/black"
-                            android:text="@{viewModel.otherFormComment}" />
+                            android:textSize="14dp" />
                     </LinearLayout>
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/silver"/>
+                        android:background="@color/silver" />
 
                 </LinearLayout>
 
@@ -290,31 +295,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:textSize="20dp"
-                    android:text="@string/report_evaluation_caption" />
+                    android:text="@string/report_evaluation_caption"
+                    android:textSize="20dp" />
 
                 <!-- 評価ボタン -->
                 <Button
                     android:layout_width="120dp"
                     android:layout_height="120dp"
-                    android:layout_marginTop="20dp"
                     android:layout_gravity="center"
-                    android:enabled="@{viewModel.evaluate}"
+                    android:layout_marginTop="20dp"
                     android:background="@drawable/evaluate_button"
+                    android:enabled="@{viewModel.evaluate}"
                     android:visibility="@{viewModel.evaluateButtonVisibility}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp">
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="vertical">
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/silver"/>
+                        android:background="@color/silver" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -322,28 +327,31 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         android:orientation="horizontal">
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="3"
                             android:gravity="center"
-                            android:textSize="14dp"
+                            android:text="@string/comment"
                             android:textColor="@color/black"
-                            android:text="@string/comment" />
+                            android:textSize="14dp" />
+
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:lineSpacingExtra="10dp"
-                            android:textSize="14dp"
+                            android:text="@{viewModel.evaluationComment}"
                             android:textColor="@color/black"
-                            android:text="@{viewModel.evaluationComment}" />
+                            android:textSize="14dp" />
                     </LinearLayout>
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_marginBottom="110dp"
-                        android:background="@color/silver"/>
+                        android:background="@color/silver" />
 
                 </LinearLayout>
             </LinearLayout>

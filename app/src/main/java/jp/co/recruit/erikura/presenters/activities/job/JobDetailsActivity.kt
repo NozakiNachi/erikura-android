@@ -96,7 +96,11 @@ class JobDetailsActivity : AppCompatActivity() {
                 fragment = FinishedJobDetailsFragment(this, job, user)
             }
             JobStatus.Reported -> {
-                fragment = ReportedJobDetailsFragment(this, job, user)
+                // reportの再取得
+                Api(this).reloadReport(job) {
+                    job.report = it
+                    fragment = ReportedJobDetailsFragment(this, job, user)
+                }
             }
             else -> {
                 fragment = NormalJobDetailsFragment(this, job, user)

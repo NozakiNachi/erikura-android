@@ -1,13 +1,10 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.app.Activity
-import android.content.Context
+
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -15,26 +12,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.FragmentImplementationLocationListBinding
-import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
-import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewModel
-import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryViewHolder
 
 
 class ReportedJobDetailsFragment(
@@ -66,10 +55,9 @@ class ReportedJobDetailsFragment(
         setup()
 
         reportSummaryAdapter = ReportSummaryAdapter(activity, listOf(), true)
-        //リサイクラービューをセット
-//        val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
-//        reportSummaryView.setHasFixedSize(true)
-//        reportSummaryView.adapter = reportSummaryAdapter
+        val reportSummaryView: RecyclerView = activity.findViewById(R.id.reported_job_details_report_summaries)
+        reportSummaryView.setHasFixedSize(true)
+        reportSummaryView.adapter = reportSummaryAdapter
 
         return binding.root
     }
@@ -106,27 +94,6 @@ class ReportedJobDetailsFragment(
             jobDetailsView,
             "jobDetailsView"
         )
-
-        //FIXME: 実施箇所表示
-
-//        val implementedLocationList: RecyclerView = activity!!.findViewById(R.id.)
-//        implementedLocationList.setHasFixedSize(true)
-        // Holder(getするやつ)とアダプターを用意する
-//        implementedLocationList.adapter = implementLocationAdapter
-//        implementedLocationList.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
-//        implementedLocationList.addItemDecoration(JobListItemDecorator())
-        //FIXME:　作業時間
-        //transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
-        //FIXME: マニュアル外の報告
-        //transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
-        //FIXME: マニュアル外の報告画像
-        //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
-        //FIXME: コメント
-        //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
-        //FIXME: 運営からの評価
-        //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
-        //FIXME:　案件の評価
-        //transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
         transaction.commit()
     }
 
@@ -211,6 +178,10 @@ class ReportedJobDetailsFragment(
                     }
                 }
                 viewModel.status.value = str
+
+                // 実施箇所の更新
+                reportSummaryAdapter.summaries = it.outputSummaries
+                reportSummaryAdapter.notifyDataSetChanged()
 
                 // 作業時間の取得
                 val minute = it.workingMinute ?: 0

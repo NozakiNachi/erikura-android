@@ -31,7 +31,7 @@ data class Report (
     var additionalReportPhotoWillDelete: Boolean = false,
     var additionalReportPhotoToken: String? = null,
     var additionalOperatorLikes: Boolean = false,
-    var additionalOPeratorComments: List<@RawValue OperatorComment> = listOf(),
+    var additionalOPeratorComments: List<OperatorComment> = listOf(),
     var evaluation: String? = null,
     var comment: String? = null,
     var owner: Boolean = false,
@@ -41,7 +41,7 @@ data class Report (
     var rejectedAt: Date? = null,
     var rejectComment: String? = null,
     var createdAt: Date? = null,
-    var outputSummaries: List<@RawValue OutputSummary> = listOf()
+    var outputSummaries: List<OutputSummary> = listOf()
 ): Parcelable {
     // photoAsset
     // isUploadCompleted
