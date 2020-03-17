@@ -284,67 +284,68 @@
 
                 </LinearLayout>
 
-<!--                &lt;!&ndash;運営からの評価&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/jobDetails_a"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginLeft="20dp"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:layout_marginRight="20dp" />-->
+                <!-- 案件の評価 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:textSize="20dp"
+                    android:text="@string/report_evaluation_caption" />
 
-<!--                &lt;!&ndash; ラベル &ndash;&gt;-->
-<!--                <TextView-->
-<!--                    style="@style/titleLabel"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="30dp"-->
-<!--                    android:text="@string/report_evaluation_caption" />-->
+                <!-- 評価ボタン -->
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center"
+                    android:enabled="@{viewModel.evaluate}"
+                    android:background="@drawable/evaluate_button"
+                    android:visibility="@{viewModel.evaluateButtonVisibility}" />
 
-<!--                &lt;!&ndash;評価ボタン表示のみ&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:layout_width="120dp"-->
-<!--                    android:layout_height="120dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"-->
-<!--                    style="@style/goodButton"/>-->
-<!--                &lt;!&ndash;                    android:checked="@={viewModel.good}"&ndash;&gt;-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp">
 
-<!--                <FrameLayout-->
-<!--                    android:layout_width="120dp"-->
-<!--                    android:layout_height="120dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"-->
-<!--                    style="@style/badButton"/>-->
-<!--                &lt;!&ndash;                    android:checked="@={viewModel.bad}"&ndash;&gt;-->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/silver"/>
 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:gravity="center"
+                            android:textSize="14dp"
+                            android:textColor="@color/black"
+                            android:text="@string/comment" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:lineSpacingExtra="10dp"
+                            android:textSize="14dp"
+                            android:textColor="@color/black"
+                            android:text="@{viewModel.evaluationComment}" />
+                    </LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="110dp"
+                        android:background="@color/silver"/>
 
-<!--                &lt;!&ndash;コメント&ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginBottom="20dp"-->
-<!--                    android:orientation="horizontal">-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="3"-->
-<!--                        android:gravity="center"-->
-<!--                        android:textSize="14dp"-->
-<!--                        android:textColor="@color/black"-->
-<!--                        android:text="@string/comment" />-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:lineSpacingExtra="10dp"-->
-<!--                        android:textSize="14dp"-->
-<!--                        android:textColor="@color/black"-->
-<!--                        />-->
-<!--                    &lt;!&ndash;                        android:text="@{viewModel.tool}" &ndash;&gt;-->
-
-<!--                </LinearLayout>-->
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

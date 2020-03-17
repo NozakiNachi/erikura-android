@@ -535,7 +535,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                 "bad" ->
                     viewModel.evaluate.value = false
             }
-            viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty()) {
+            viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty() || evaluation == "unanswered") {
                 View.GONE
             } else {
                 View.VISIBLE

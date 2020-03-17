@@ -231,6 +231,22 @@ class ReportedJobDetailsFragment(
                 }
                 val additionalComment = it.additionalComment ?: ""
                 viewModel.otherFormComment.value = additionalComment
+
+                // 案件評価の取得
+                val evaluation = it.evaluation ?: ""
+                when (evaluation) {
+                    "good" ->
+                        viewModel.evaluate.value = true
+                    "bad" ->
+                        viewModel.evaluate.value = false
+                }
+                viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty() || evaluation == "unanswered") {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+                val comment = it.comment ?: ""
+                viewModel.evaluationComment.value = comment
             }
         }
     }
@@ -254,6 +270,11 @@ class ReportedJobDetailsFragmentViewModel : ViewModel() {
     // マニュアル外報告
     val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
+
+    // 案件の評価
+    val evaluate: MutableLiveData<Boolean> = MutableLiveData()
+    val evaluateButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
