@@ -8,6 +8,7 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragmentEventHandlers" />
@@ -73,208 +74,364 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
-                        android:background="@drawable/background_triangle_reverse"/>
+                        android:background="@drawable/background_triangle_reverse" />
 
                 </LinearLayout>
 
-<!--                &lt;!&ndash; 作業報告ステータス &ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobDetails_reportedJobStatus"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="match_parent"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginLeft="20dp"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginRight="20dp"-->
-<!--                    />-->
+                <!--作業報告のステータス-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/background_round_topaz"
+                    android:orientation="vertical"
+                    android:padding="20dp">
 
-<!--                &lt;!&ndash;作業報告を編集ボタン&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobEditButton"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp" />-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/report_status"
+                        android:textColor="@color/black"
+                        android:textSize="16dp" />
 
-<!--                &lt;!&ndash;作業報告を削除ボタン&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobRemoveButton"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="10dp" />-->
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="@{viewModel.status}"
+                        android:textSize="22dp" />
 
-<!--                &lt;!&ndash; 案件詳細情報 &ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/reportedJobDetails_jobDetailsViewFragment"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp" />-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.rejectedCommentVisibility}">
 
-<!--                &lt;!&ndash;実施箇所表示&ndash;&gt;-->
-<!--                &lt;!&ndash;リサイクルビューで表示&ndash;&gt;-->
-<!--                <androidx.recyclerview.widget.RecyclerView-->
-<!--                    android:id="@+id/report_confirm_report_summaries"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"-->
-<!--                    android:orientation="vertical"-->
-<!--                    android:padding="20dp"-->
-<!--                    />-->
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@color/silverTwo" />
 
-<!--                &lt;!&ndash; 作業時間 &ndash;&gt;-->
-<!--                <TextView-->
-<!--                    style="@style/titleLabel"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:textSize="20dp"-->
-<!--                    android:text="@string/report_working_time_caption" />-->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/report_rejected_comment"
+                            android:textColor="@color/black"
+                            android:textSize="16dp" />
 
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="vertical"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginLeft="20dp"-->
-<!--                    android:layout_marginRight="20dp">-->
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="@{viewModel.rejectedComment}"
+                            android:textColor="@color/black" />
 
-<!--                    <View-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="1dp"-->
-<!--                        android:background="@color/silver"/>-->
+                    </LinearLayout>
 
-<!--                    <LinearLayout-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginTop="20dp"-->
-<!--                        android:layout_marginBottom="20dp"-->
-<!--                        android:orientation="horizontal">-->
-<!--                        <TextView-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="3"-->
-<!--                            android:gravity="center"-->
-<!--                            android:textSize="14dp"-->
-<!--                            android:textColor="@color/black"-->
-<!--                            android:text="@string/report_working_time_caption" />-->
-<!--                        <TextView-->
-<!--                            android:layout_width="match_parent"-->
-<!--                            android:layout_height="wrap_content"-->
-<!--                            android:layout_weight="1"-->
-<!--                            android:lineSpacingExtra="10dp"-->
-<!--                            android:textSize="14dp"-->
-<!--                            android:textColor="@color/black"-->
-<!--                            android:text="@{viewModel.workingTime}" />-->
-<!--                    </LinearLayout>-->
-<!--                    <View-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="1dp"-->
-<!--                        android:background="@color/silver"/>-->
-
-<!--                </LinearLayout>-->
-<!--                &lt;!&ndash;マニュアル外の報告&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/jobDetails_w"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp" />-->
-
-<!--                &lt;!&ndash; マニュアル外の報告画像 &ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/jobDetails_thumbnailImage"-->
-<!--                    android:layout_width="180dp"-->
-<!--                    android:layout_height="305dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginBottom="10dp" />-->
-
-<!--                &lt;!&ndash;コメント&ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginBottom="20dp"-->
-<!--                    android:orientation="horizontal">-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="3"-->
-<!--                        android:gravity="center"-->
-<!--                        android:textSize="14dp"-->
-<!--                        android:textColor="@color/black"-->
-<!--                        android:text="@string/comment" />-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:lineSpacingExtra="10dp"-->
-<!--                        android:textSize="14dp"-->
-<!--                        android:textColor="@color/black"-->
-<!--                        />-->
-<!--                    &lt;!&ndash;                        android:text="@{viewModel.tool}"&ndash;&gt;-->
-<!--                </LinearLayout>-->
-
-<!--                &lt;!&ndash;運営からの評価&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:id="@+id/jobDetails_a"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginLeft="20dp"-->
-<!--                    android:layout_marginTop="10dp"-->
-<!--                    android:layout_marginRight="20dp" />-->
-
-<!--                &lt;!&ndash; ラベル &ndash;&gt;-->
-<!--                <TextView-->
-<!--                    style="@style/titleLabel"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="30dp"-->
-<!--                    android:text="@string/report_evaluation_caption" />-->
-
-<!--                &lt;!&ndash;評価ボタン表示のみ&ndash;&gt;-->
-<!--                <FrameLayout-->
-<!--                    android:layout_width="120dp"-->
-<!--                    android:layout_height="120dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"-->
-<!--                    style="@style/goodButton"/>-->
-<!--                &lt;!&ndash;                    android:checked="@={viewModel.good}"&ndash;&gt;-->
-
-<!--                <FrameLayout-->
-<!--                    android:layout_width="120dp"-->
-<!--                    android:layout_height="120dp"-->
-<!--                    android:layout_gravity="center"-->
-<!--                    android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"-->
-<!--                    style="@style/badButton"/>-->
-<!--                &lt;!&ndash;                    android:checked="@={viewModel.bad}"&ndash;&gt;-->
+                </LinearLayout>
 
 
-<!--                &lt;!&ndash;コメント&ndash;&gt;-->
-<!--                <LinearLayout-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:layout_marginBottom="20dp"-->
-<!--                    android:orientation="horizontal">-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="3"-->
-<!--                        android:gravity="center"-->
-<!--                        android:textSize="14dp"-->
-<!--                        android:textColor="@color/black"-->
-<!--                        android:text="@string/comment" />-->
-<!--                    <TextView-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_weight="1"-->
-<!--                        android:lineSpacingExtra="10dp"-->
-<!--                        android:textSize="14dp"-->
-<!--                        android:textColor="@color/black"-->
-<!--                        />-->
-<!--                    &lt;!&ndash;                        android:text="@{viewModel.tool}" &ndash;&gt;-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.buttonVisibility}">
+                    <!--作業報告を編集ボタン-->
+                    <FrameLayout
+                        android:id="@+id/reportedJobEditButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp" />
 
-<!--                </LinearLayout>-->
+                    <!--作業報告を削除ボタン-->
+                    <FrameLayout
+                        android:id="@+id/reportedJobRemoveButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp" />
+                </LinearLayout>
 
+                <!-- 案件詳細情報  -->
+                <FrameLayout
+                    android:id="@+id/reportedJobDetails_jobDetailsViewFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
+                <!--実施箇所表示-->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reportedJobDetails_reportSummaries"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <!-- 作業時間 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/report_working_time_caption"
+                    android:textSize="20dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/silver" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:gravity="center"
+                            android:text="@string/report_working_time_caption"
+                            android:textColor="@color/black" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@{viewModel.workingTime}"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/silver" />
+                </LinearLayout>
+
+                <!--マニュアル外の報告-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/titleLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/job_details_reported_additional_summary"
+                        android:textSize="20dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="right"
+                        android:layout_marginRight="20dp"
+                        android:orientation="horizontal">
+                        <!--コメント-->
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="18dp"
+                            android:background="@drawable/background_roundrect_topaz"
+                            android:drawableLeft="@drawable/icon_comment_10"
+                            android:drawablePadding="2dp"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="8dp"
+                            android:paddingBottom="3dp"
+                            android:textColor="@color/black"
+                            android:textSize="12dp"
+                            android:visibility="@{viewModel.otherFormCommentCountVisibility}"
+                            android:text="@{viewModel.otherFormCommentCount}"/>
+
+                        <!--いいね-->
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="18dp"
+                            android:layout_marginLeft="6dp"
+                            android:background="@drawable/background_roundrect_topaz"
+                            android:drawableLeft="@drawable/icon_good_10"
+                            android:drawablePadding="2dp"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="8dp"
+                            android:paddingBottom="3dp"
+                            android:textColor="@color/black"
+                            android:textSize="12dp"
+                            android:visibility="@{viewModel.otherFormGoodCountVisibility}"
+                            android:text="@{viewModel.otherFormGoodCount}"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- マニュアル外の報告画像 -->
+                <ImageView
+                    android:id="@+id/reported_job_details_other_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="305dp"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@color/white"
+                    android:visibility="@{viewModel.otherFormImageVisibility}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/silver" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:gravity="center"
+                            android:text="@string/comment"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:lineSpacingExtra="10dp"
+                            android:text="@{viewModel.otherFormComment}"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/silver" />
+
+                </LinearLayout>
+
+                <!-- 運営からの評価-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/background_round_topaz"
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.otherFormEvaluationVisibility}">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/evaluation_from_management"
+                        android:textColor="@color/black"
+                        android:textSize="16dp" />
+
+                    <!-- コメント表示 -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/reportedJobDetails_additionalOperatorComments"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                </LinearLayout>
+
+                <!-- 案件の評価 -->
+                <TextView
+                    style="@style/titleLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/report_evaluation_caption"
+                    android:textSize="20dp" />
+
+                <!-- 評価ボタン -->
+                <Button
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/evaluate_button"
+                    android:enabled="@{viewModel.evaluate}"
+                    android:visibility="@{viewModel.evaluateButtonVisibility}" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="vertical">
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/silver" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="3"
+                            android:gravity="center"
+                            android:text="@string/comment"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:lineSpacingExtra="10dp"
+                            android:text="@{viewModel.evaluationComment}"
+                            android:textColor="@color/black"
+                            android:textSize="14dp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginBottom="110dp"
+                        android:background="@color/silver" />
+
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 

@@ -17,7 +17,7 @@
             android:padding="20dp"
             android:orientation="vertical">
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintRight_toRightOf="parent"
@@ -30,42 +30,84 @@
                     android:textSize="20dp"
                     android:text="@{viewModel.summaryTitle}" />
 
-                <!--コメント-->
-                <TextView
-                    android:id="@+id/job_list_item_comment"
-                    style="@style/label_w2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="18dp"
-                    android:background="@drawable/background_roundrect_topaz"
-                    android:drawableLeft="@drawable/icon_comment_10"
-                    android:drawablePadding="2dp"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="3dp"
-                    android:paddingRight="8dp"
-                    android:paddingBottom="3dp"
-                    android:textColor="@color/black"
-                    android:textSize="12dp"
-                    android:visibility="@{viewModel.commentVisible}"/>
-<!--                android:text="@{viewModel.commentText}"-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="right"
+                    android:orientation="horizontal">
+                    <!--コメント-->
+                    <TextView
+                        style="@style/label_w2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="18dp"
+                        android:background="@drawable/background_roundrect_topaz"
+                        android:drawableLeft="@drawable/icon_comment_10"
+                        android:drawablePadding="2dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/black"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.commentCountVisibility}"
+                        android:text="@{viewModel.commentCount}"/>
 
-                <!--いいね-->
-                <TextView
-                    android:id="@+id/job_list_item_good"
-                    style="@style/label_w2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="18dp"
-                    android:layout_marginLeft="6dp"
-                    android:background="@drawable/background_roundrect_topaz"
-                    android:drawableLeft="@drawable/icon_good_10"
-                    android:drawablePadding="2dp"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="3dp"
-                    android:paddingRight="8dp"
-                    android:paddingBottom="3dp"
-                    android:textColor="@color/black"
-                    android:textSize="12dp"
-                    android:visibility="@{viewModel.goodVisible}"/>
-<!--                android:text="@{viewModel.goodText}"-->
+                    <!--いいね-->
+                    <TextView
+                        style="@style/label_w2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="18dp"
+                        android:layout_marginLeft="6dp"
+                        android:background="@drawable/background_roundrect_topaz"
+                        android:drawableLeft="@drawable/icon_good_10"
+                        android:drawablePadding="2dp"
+                        android:paddingLeft="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingRight="8dp"
+                        android:paddingBottom="3dp"
+                        android:textColor="@color/black"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.goodCountVisibility}"
+                        android:text="@{viewModel.goodCount}"/>
+                </LinearLayout>
+
+<!--                &lt;!&ndash;コメント&ndash;&gt;-->
+<!--                <TextView-->
+<!--                    android:id="@+id/job_list_item_comment"-->
+<!--                    style="@style/label_w2"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="18dp"-->
+<!--                    android:background="@drawable/background_roundrect_topaz"-->
+<!--                    android:drawableLeft="@drawable/icon_comment_10"-->
+<!--                    android:drawablePadding="2dp"-->
+<!--                    android:paddingLeft="8dp"-->
+<!--                    android:paddingTop="3dp"-->
+<!--                    android:paddingRight="8dp"-->
+<!--                    android:paddingBottom="3dp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="12dp"-->
+<!--                    android:visibility="@{viewModel.commentVisible}"/>-->
+<!--&lt;!&ndash;                android:text="@{viewModel.commentText}"&ndash;&gt;-->
+
+<!--                &lt;!&ndash;いいね&ndash;&gt;-->
+<!--                <TextView-->
+<!--                    android:id="@+id/job_list_item_good"-->
+<!--                    style="@style/label_w2"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="18dp"-->
+<!--                    android:layout_marginLeft="6dp"-->
+<!--                    android:background="@drawable/background_roundrect_topaz"-->
+<!--                    android:drawableLeft="@drawable/icon_good_10"-->
+<!--                    android:drawablePadding="2dp"-->
+<!--                    android:paddingLeft="8dp"-->
+<!--                    android:paddingTop="3dp"-->
+<!--                    android:paddingRight="8dp"-->
+<!--                    android:paddingBottom="3dp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:textSize="12dp"-->
+<!--                    android:visibility="@{viewModel.goodVisible}"/>-->
+<!--&lt;!&ndash;                android:text="@{viewModel.goodText}"&ndash;&gt;-->
 
             </LinearLayout>
             <ImageView

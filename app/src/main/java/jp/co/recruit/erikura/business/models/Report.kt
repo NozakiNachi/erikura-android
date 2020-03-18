@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.business.models
 import android.app.Activity
 import android.os.Parcelable
 import android.util.Log
+import com.google.gson.annotations.SerializedName
 import jp.co.recruit.erikura.data.network.Api
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -31,7 +32,7 @@ data class Report (
     var additionalReportPhotoWillDelete: Boolean = false,
     var additionalReportPhotoToken: String? = null,
     var additionalOperatorLikes: Boolean = false,
-    var additionalOPeratorComments: List<@RawValue OperatorComment> = listOf(),
+    var additionalOperatorComments: List<OperatorComment> = listOf(),
     var evaluation: String? = null,
     var comment: String? = null,
     var owner: Boolean = false,
@@ -41,7 +42,8 @@ data class Report (
     var rejectedAt: Date? = null,
     var rejectComment: String? = null,
     var createdAt: Date? = null,
-    var outputSummaries: List<@RawValue OutputSummary> = listOf()
+    @SerializedName("output_summaries_attributes")
+    var outputSummaries: List<OutputSummary> = listOf()
 ): Parcelable {
     // photoAsset
     // isUploadCompleted

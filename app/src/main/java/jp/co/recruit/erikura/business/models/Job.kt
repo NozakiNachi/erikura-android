@@ -50,7 +50,7 @@ data class Job(
     var entryId: Int? = 0,
     var entry: Entry? = null,
     var reportId: Int? = 0,
-    var report: @RawValue Report? = null,
+    var report: Report? = null,
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf(),
     var targetGender: Gender? = null,

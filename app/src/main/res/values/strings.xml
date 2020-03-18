@@ -91,6 +91,12 @@
     <string name="jobDetails_working">作業実施中</string>
     <string name="jobDetails_startTo">開始から</string>
     <string name="jobDetails_finished">作業実施完了</string>
+    <string name="report_status">作業報告のステータス</string>
+    <string name="report_status_unconfirmed">確認待ち</string>
+    <string name="report_status_confirmed">確認済み</string>
+    <string name="report_status_reject">差し戻し</string>
+    <string name="report_rejected_comment">差し戻しコメント</string>
+    <string name="job_details_reported_additional_summary">マニュアル外の報告</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -170,10 +176,6 @@
     <string name="upload_failed_title">画像をアップできませんでした</string>
     <string name="upload_failed_note">再度アップロードを試みますか？</string>
 
-    <!-- 作業報告ステータス画面 -->
-    <string name="report_status">作業報告のステータス</string>
-    <string name="report_rejected_comment">差し戻しコメント</string>
-
     <!-- 作業報告の削除モーダル-->
     <string name="report_remove_caption">作業報告を削除しますか？</string>
 
@@ -183,7 +185,7 @@
 
     <!--　作業報告済み仕事詳細画面-->
     <string name="location">箇所</string>
-    <string name="evaluation_from_management">運営からの評価</string>
+    <string name="evaluation_from_management">お仕事依頼元からのコメント</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
@@ -297,8 +299,10 @@
     <string name="edit_summary">実施箇所%1$dを編集</string>
     <string name="remove_summary">実施箇所%1$dを削除</string>
     <string name="remove">削除</string>
-    <string name="edit_job_reported">作業報告を編集</string>
-    <string name="remove_job_reported">作業報告を削除</string>
+    <string name="edit_report">作業報告を編集</string>
+    <string name="edit_rejected_report">再報告を開始する</string>
+    <string name="remove_report">作業報告を削除</string>
+    <string name="cancel_report_entry">作業報告を削除</string>
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>
