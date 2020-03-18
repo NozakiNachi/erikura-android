@@ -36,13 +36,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@color/paleGrey"
                         android:orientation="vertical">
-
                         <TextView
                             android:id="@+id/editText"
                             style="@style/titleLabel"
@@ -61,7 +59,6 @@
                             android:orientation="horizontal"
                             android:layout_marginTop="20dp"
                             android:layout_marginBottom="20dp">
-
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="110dp"
@@ -69,21 +66,21 @@
                                 android:layout_marginRight="4dp"
                                 android:layout_weight="1.0"
                                 android:background="@drawable/background_white_circle">
-
                                 <ImageView
+                                    android:id="@+id/mypage_monthly_reward_image"
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    android:layout_above="@id/mypage_monthly_reward_label"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="20dp"
                                     android:layout_gravity="center"
                                     android:layout_marginBottom="10dp"
-                                    android:src="@drawable/yen" />
-
+                                    android:src="@drawable/yen_small_2x" />
                                 <TextView
                                     android:id="@+id/mypage_monthly_reward_label"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_below="@id/mypage_monthly_reward_image"
                                     android:layout_centerVertical="true"
                                     android:firstBaselineToTopHeight="0dp"
                                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
@@ -94,32 +91,37 @@
                                     android:text="今月の報酬"
                                     android:textColor="@color/blackTwo"
                                     android:textSize="12dp" />
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_centerHorizontal="true"
+                                    android:layout_below="@id/mypage_monthly_reward_label"
+                                    >
                                     <TextView
-                                        android:id="@id/mypage_monthly_goods_label"
+                                        android:id="@id/mypage_monthly_reward_label"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/mypage_monthly_reward_label"
                                         android:layout_centerHorizontal="true"
-                                        android:layout_marginTop="10dp"
+                                        android:layout_marginTop="6dp"
                                         android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                                         android:includeFontPadding="false"
-                                        android:text="118,350"
+                                        android:text="@{viewModel.formattedMonthlyRewards}"
                                         android:textColor="@color/blackTwo"
                                         android:textSize="20dp" />
-
                                     <TextView
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_below="@id/mypage_monthly_reward_label"
                                         android:layout_toRightOf="@id/mypage_monthly_goods_label"
-                                        android:layout_centerHorizontal="true"
-                                        android:layout_marginTop="15dp"
+                                        android:layout_marginTop="4dp"
+                                        android:layout_marginLeft="2dp"
                                         android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                                         android:includeFontPadding="false"
                                         android:text="円"
                                         android:textColor="@color/blackTwo"
                                         android:textSize="12dp" />
-
+                                </LinearLayout>
                             </RelativeLayout>
 
                             <RelativeLayout
@@ -129,92 +131,127 @@
                                 android:layout_marginRight="4dp"
                                 android:layout_weight="1.0"
                                 android:background="@drawable/background_white_circle">
-
                                 <ImageView
+                                    android:id="@+id/mypage_monthly_jobs_image"
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    android:layout_above="@id/mypage_monthly_jobs_label"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_gravity="center"
                                     android:layout_marginBottom="10dp"
                                     android:src="@drawable/work_bg_2x" />
-
                                 <TextView
                                     android:id="@+id/mypage_monthly_jobs_label"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_below="@id/mypage_monthly_jobs_image"
                                     android:layout_centerVertical="true"
-                                    android:layout_gravity="center"
                                     android:firstBaselineToTopHeight="0dp"
                                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:gravity="center"
                                     android:includeFontPadding="false"
                                     android:lastBaselineToBottomHeight="0dp"
                                     android:maxLines="1"
                                     android:text="今月の完了数"
                                     android:textColor="@color/blackTwo"
                                     android:textSize="12dp" />
-
-                                <TextView
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/mypage_monthly_jobs_label"
                                     android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="10dp"
-                                    android:firstBaselineToTopHeight="0dp"
-                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                    android:includeFontPadding="false"
-                                    android:lastBaselineToBottomHeight="0dp"
-                                    android:maxLines="1"
-                                    android:text="@{viewModel.formattedMonthlyCompletedJobs}"
-                                    android:textColor="@color/blackTwo"
-                                    android:textSize="14dp" />
+                                    android:layout_below="@id/mypage_monthly_jobs_label"
+                                    >
+                                    <TextView
+                                        android:id="@id/mypage_monthly_jobs_label"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/mypage_monthly_jobs_label"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_marginTop="6dp"
+                                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                        android:includeFontPadding="false"
+                                        android:text="@{viewModel.formattedMonthlyCompletedJobs}"
+                                        android:textColor="@color/blackTwo"
+                                        android:textSize="20dp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/mypage_monthly_jobs_label"
+                                        android:layout_toRightOf="@id/mypage_monthly_jobs_label"
+                                        android:layout_marginTop="4dp"
+                                        android:layout_marginLeft="2dp"
+                                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                        android:includeFontPadding="false"
+                                        android:text="円"
+                                        android:textColor="@color/blackTwo"
+                                        android:textSize="12dp" />
+                                </LinearLayout>
                             </RelativeLayout>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="110dp"
-                                android:layout_marginLeft="8dp"
+                                android:layout_marginLeft="7dp"
                                 android:layout_marginRight="4dp"
                                 android:layout_weight="1.0"
                                 android:background="@drawable/background_white_circle">
-
                                 <ImageView
+                                    android:id="@+id/mypage_monthly_goods_image"
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
-                                    android:layout_above="@id/mypage_monthly_goods_label"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_marginTop="20dp"
+                                    android:layout_gravity="center"
                                     android:layout_marginBottom="10dp"
-                                    android:src="@drawable/ic_good_2x" />
-
+                                    android:src="@drawable/good_2x" />
                                 <TextView
                                     android:id="@+id/mypage_monthly_goods_label"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_centerHorizontal="true"
+                                    android:layout_below="@id/mypage_monthly_goods_image"
                                     android:layout_centerVertical="true"
                                     android:firstBaselineToTopHeight="0dp"
                                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                    android:gravity="center"
                                     android:includeFontPadding="false"
                                     android:lastBaselineToBottomHeight="0dp"
                                     android:maxLines="1"
                                     android:text="今月のいいね数"
                                     android:textColor="@color/blackTwo"
                                     android:textSize="12dp" />
-
-                                <TextView
+                                <LinearLayout
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_below="@id/mypage_monthly_goods_label"
                                     android:layout_centerHorizontal="true"
-                                    android:layout_marginTop="10dp"
-                                    android:firstBaselineToTopHeight="0dp"
-                                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
-                                    android:includeFontPadding="false"
-                                    android:lastBaselineToBottomHeight="0dp"
-                                    android:maxLines="1"
-                                    android:text="@{viewModel.formattedMonthlyGoodsCount}"
-                                    android:textColor="@color/blackTwo"
-                                    android:textSize="14dp" />
+                                    android:layout_below="@id/mypage_monthly_goods_label"
+                                    >
+                                    <TextView
+                                        android:id="@id/mypage_monthly_goods_label"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/mypage_monthly_goods_label"
+                                        android:layout_centerHorizontal="true"
+                                        android:layout_marginTop="6dp"
+                                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                        android:includeFontPadding="false"
+                                        android:text="@{viewModel.formattedMonthlyGoodsCount}"
+                                        android:textColor="@color/blackTwo"
+                                        android:textSize="20dp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_below="@id/mypage_monthly_goods_label"
+                                        android:layout_toRightOf="@id/mypage_monthly_goods_label"
+                                        android:layout_marginTop="4dp"
+                                        android:layout_marginLeft="2dp"
+                                        android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                                        android:includeFontPadding="false"
+                                        android:text="円"
+                                        android:textColor="@color/blackTwo"
+                                        android:textSize="12dp" />
+                                </LinearLayout>
                             </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>

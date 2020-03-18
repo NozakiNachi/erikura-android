@@ -201,13 +201,13 @@ class MypageViewModel: ViewModel() {
     val monthlyGoodCount: MutableLiveData<Int> = MutableLiveData()
 
     val formattedMonthlyRewards = MediatorLiveData<String>().also { result ->
-        result.addSource(monthlyReward) { result.value = String.format("%,d円", monthlyReward.value ?: 0) }
+        result.addSource(monthlyReward) { result.value = String.format("%,d", monthlyReward.value ?: 0) }
     }
     val formattedMonthlyCompletedJobs = MediatorLiveData<String>().also { result ->
-        result.addSource(monthlyCompletedJobs) { result.value = String.format("%,d件", monthlyCompletedJobs.value ?: 0) }
+        result.addSource(monthlyCompletedJobs) { result.value = String.format("%,d", monthlyCompletedJobs.value ?: 0) }
     }
     val formattedMonthlyGoodsCount = MediatorLiveData<String>().also { result ->
-        result.addSource(monthlyGoodCount) { result.value = String.format("%,d件", monthlyGoodCount.value ?: 0)}
+        result.addSource(monthlyGoodCount) { result.value = String.format("%,d", monthlyGoodCount.value ?: 0)}
     }
 
     init {
