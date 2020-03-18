@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.business.models
 import android.app.Activity
 import android.os.Parcelable
 import android.util.Log
+import com.google.gson.annotations.SerializedName
 import jp.co.recruit.erikura.data.network.Api
 import kotlinx.android.parcel.Parcelize
 import kotlinx.android.parcel.RawValue
@@ -41,6 +42,7 @@ data class Report (
     var rejectedAt: Date? = null,
     var rejectComment: String? = null,
     var createdAt: Date? = null,
+    @SerializedName("output_summaries_attributes")
     var outputSummaries: List<OutputSummary> = listOf()
 ): Parcelable {
     // photoAsset

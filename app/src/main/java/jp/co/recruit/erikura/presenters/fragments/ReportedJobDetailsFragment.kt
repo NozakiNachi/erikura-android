@@ -4,7 +4,9 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -14,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +27,7 @@ import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
+import java.net.URI
 
 
 class ReportedJobDetailsFragment(
@@ -52,21 +56,18 @@ class ReportedJobDetailsFragment(
         binding.viewModel = viewModel
         binding.handlers = this
 
-        setup()
-
-        reportSummaryAdapter = ReportSummaryAdapter(activity, listOf(), true)
-        val reportSummaryView: RecyclerView = activity.findViewById(R.id.reported_job_details_report_summaries)
-        reportSummaryView.setHasFixedSize(true)
-        reportSummaryView.adapter = reportSummaryAdapter
-
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val transaction = childFragmentManager.beginTransaction()
+        reportSummaryAdapter = ReportSummaryAdapter(activity, listOf(), true)
+        val reportSummaryView: RecyclerView = activity.findViewById(R.id.reportedJobDetails_reportSummaries)
+        reportSummaryView.setHasFixedSize(true)
+        reportSummaryView.adapter = reportSummaryAdapter
 
+        val transaction = childFragmentManager.beginTransaction()
         val timeLabel = TimeLabelFragment(job, user)
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
@@ -95,6 +96,19 @@ class ReportedJobDetailsFragment(
             "jobDetailsView"
         )
         transaction.commit()
+
+        // reportの再取得
+        job?.let {
+            Api(activity).reloadReport(job) {
+                var report = it
+                report.additionalPhotoAsset = createAssets(report.additionalReportPhotoUrl?.toUri()?: Uri.EMPTY)
+                report.outputSummaries.forEach { summary ->
+                    summary.photoAsset = createAssets(summary.beforeCleaningPhotoUrl?.toUri()?: Uri.EMPTY)
+                }
+                job.report = report
+                setup()
+            }
+        }
     }
 
     override fun onClickFavorite(view: View) {
@@ -220,6 +234,24 @@ class ReportedJobDetailsFragment(
                 viewModel.evaluationComment.value = comment
             }
         }
+    }
+
+    private fun createAssets(uri: Uri): MediaItem {
+        val cursor = activity.contentResolver.query(
+            uri,
+            arrayOf(
+                MediaStore.Files.FileColumns._ID,
+                MediaStore.MediaColumns.DISPLAY_NAME,
+                MediaStore.MediaColumns.MIME_TYPE,
+                MediaStore.MediaColumns.SIZE
+            ),
+            MediaStore.MediaColumns.SIZE + ">0",
+            arrayOf<String>(),
+            "datetaken DESC"
+        )
+        cursor?.moveToFirst()
+        val item = if(cursor != null){MediaItem.from(cursor)}else {MediaItem()}
+        return item
     }
 }
 
