@@ -689,24 +689,26 @@ class ReportSummaryItemViewModel(
     jobDetails: Boolean
 ) : ViewModel() {
 
-    val goodExist: Boolean get() = summary.operatorLikes
-    val commentCount: Int get() = summary.operatorComments.count()
-    val hasComment: Boolean get() = commentCount > 0
-    val goodVisible: Int
-        get() = if (goodExist) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
-    val commentVisible: Int
-        get() = if (hasComment) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+//    val goodExist: Boolean get() = summary.operatorLikes
+//    val commentCount: Int get() = summary.operatorComments.count()
+//    val hasComment: Boolean get() = commentCount > 0
+//    val goodVisible: Int
+//        get() = if (goodExist) {
+//            View.VISIBLE
+//        } else {
+//            View.GONE
+//        }
+//    val commentVisible: Int
+//        get() = if (hasComment) {
+//            View.VISIBLE
+//        } else {
+//            View.GONE
+//        }
+
+
     val buttonsVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val evaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+//    val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
     val summaryTitle: MutableLiveData<String> = MutableLiveData()
     val summaryName: MutableLiveData<String> = MutableLiveData()
@@ -714,7 +716,11 @@ class ReportSummaryItemViewModel(
     val summaryComment: MutableLiveData<String> = MutableLiveData()
     val editSummaryButtonText: MutableLiveData<String> = MutableLiveData()
     val removeSummaryButtonText: MutableLiveData<String> = MutableLiveData()
-    val summaryOperatorComment: MutableLiveData<List<OperatorComment>> = MutableLiveData()
+//    val summaryOperatorComment: MutableLiveData<List<OperatorComment>> = MutableLiveData()
+    val commentCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val commentCount: MutableLiveData<String> = MutableLiveData()
+    val goodCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val goodCount: MutableLiveData<String> = MutableLiveData()
 
     init {
         summary.photoAsset?.let {
@@ -733,12 +739,20 @@ class ReportSummaryItemViewModel(
             ErikuraApplication.instance.getString(R.string.edit_summary, position + 1)
         removeSummaryButtonText.value =
             ErikuraApplication.instance.getString(R.string.remove_summary, position + 1)
-        summaryOperatorComment.value = summary.operatorComments
+//        summaryOperatorComment.value = summary.operatorComments
 
         if (jobDetails) {
             buttonsVisible.value = View.GONE
-            evaluationVisible.value = View.VISIBLE
-            goodCommentsVisible.value = View.VISIBLE
+            if (summary.operatorComments.isNotEmpty()) {
+                commentCount.value = "${summary.operatorComments.count()}件"
+                commentCountVisibility.value = View.VISIBLE
+                evaluationVisible.value = View.VISIBLE
+            }
+            if (summary.operatorLikes) {
+                goodCount.value = "1件"
+                goodCountVisibility.value = View.VISIBLE
+            }
+//            goodCommentsVisible.value = View.VISIBLE
         }
     }
 }
@@ -757,8 +771,6 @@ class ReportSummaryAdapter(
         val binding = DataBindingUtil.inflate<FragmentReportSummaryItemBinding>(
             LayoutInflater.from(parent.context),
             R.layout.fragment_report_summary_item,
-
-
             parent,
             false
         )
