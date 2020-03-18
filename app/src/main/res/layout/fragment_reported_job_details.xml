@@ -290,6 +290,35 @@
 
                 </LinearLayout>
 
+                <!-- 運営からの評価-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:background="@drawable/background_round_topaz"
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.otherFormEvaluationVisible}">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="20dp"
+                        android:text="@string/evaluation_from_management"
+                        android:textColor="@color/black"
+                        android:textSize="16dp" />
+
+                    <!-- コメント表示 -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/reportedJobDetails_additionalOperatorComments"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                </LinearLayout>
+
                 <!-- 案件の評価 -->
                 <TextView
                     style="@style/titleLabel"

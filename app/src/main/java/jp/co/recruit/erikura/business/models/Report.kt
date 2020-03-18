@@ -32,7 +32,7 @@ data class Report (
     var additionalReportPhotoWillDelete: Boolean = false,
     var additionalReportPhotoToken: String? = null,
     var additionalOperatorLikes: Boolean = false,
-    var additionalOPeratorComments: List<OperatorComment> = listOf(),
+    var additionalOperatorComments: List<OperatorComment> = listOf(),
     var evaluation: String? = null,
     var comment: String? = null,
     var owner: Boolean = false,

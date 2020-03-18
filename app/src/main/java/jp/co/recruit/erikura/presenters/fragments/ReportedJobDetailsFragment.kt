@@ -17,6 +17,8 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -26,8 +28,10 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
-import java.net.URI
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ReportedJobDetailsFragment(
@@ -40,6 +44,7 @@ class ReportedJobDetailsFragment(
     }
 
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
+    private lateinit var additionalOperatorCommentsAdapter: OperatorCommentAdapter
     var fromConfirm = false
     var pictureIndex = 0
     var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
@@ -66,6 +71,11 @@ class ReportedJobDetailsFragment(
         val reportSummaryView: RecyclerView = activity.findViewById(R.id.reportedJobDetails_reportSummaries)
         reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
+
+        additionalOperatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
+        val additionalCommentView: RecyclerView = activity.findViewById(R.id.reportedJobDetails_additionalOperatorComments)
+        additionalCommentView.setHasFixedSize(true)
+        additionalCommentView.adapter = additionalOperatorCommentsAdapter
 
         val transaction = childFragmentManager.beginTransaction()
         val timeLabel = TimeLabelFragment(job, user)
@@ -216,6 +226,13 @@ class ReportedJobDetailsFragment(
                 }
                 val additionalComment = it.additionalComment ?: ""
                 viewModel.otherFormComment.value = additionalComment
+                if (it.additionalOperatorComments.isNotEmpty()) {
+                    additionalOperatorCommentsAdapter.operatorComments = it.additionalOperatorComments
+                    additionalOperatorCommentsAdapter.notifyDataSetChanged()
+                    viewModel.otherFormEvaluationVisible.value = View.VISIBLE
+                }else {
+                    viewModel.otherFormEvaluationVisible.value = View.GONE
+                }
 
                 // 案件評価の取得
                 val evaluation = it.evaluation ?: ""
@@ -225,7 +242,7 @@ class ReportedJobDetailsFragment(
                     "bad" ->
                         viewModel.evaluate.value = false
                 }
-                viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty() || evaluation == "unanswered") {
+                viewModel.evaluateButtonVisibility.value = if (evaluation == "unanswered") {
                     View.GONE
                 } else {
                     View.VISIBLE
@@ -273,6 +290,7 @@ class ReportedJobDetailsFragmentViewModel : ViewModel() {
     // マニュアル外報告
     val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
+    val otherFormEvaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     // 案件の評価
     val evaluate: MutableLiveData<Boolean> = MutableLiveData()
@@ -312,4 +330,50 @@ class ReportedJobDetailsFragmentViewModel : ViewModel() {
 interface ReportedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
 }
+
+
+// 運営からの評価コメント
+class OperatorCommentItemViewModel(val operatorComment: OperatorComment): ViewModel() {
+    val comment: MutableLiveData<String> = MutableLiveData()
+    val commentCreatedAt: MutableLiveData<String> = MutableLiveData()
+
+    init {
+        comment.value = operatorComment.body
+        commentCreatedAt.value = dateToString(operatorComment.createdAt, "yyyy/MM/dd HH:mm")
+    }
+
+    private fun dateToString(date: Date, format: String): String {
+        val sdf = SimpleDateFormat(format, Locale.JAPAN)
+        return sdf.format(date)
+    }
+}
+
+class OperatorCommentViewHolder(val binding: FragmentOperatorCommentItemBinding) : RecyclerView.ViewHolder(binding.root)
+
+class OperatorCommentAdapter(
+    val activity: FragmentActivity,
+    var operatorComments: List<OperatorComment>
+    ): RecyclerView.Adapter<OperatorCommentViewHolder>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OperatorCommentViewHolder {
+        val binding = DataBindingUtil.inflate<FragmentOperatorCommentItemBinding>(
+            LayoutInflater.from(parent.context),
+            R.layout.fragment_operator_comment_item,
+            parent,
+            false
+        )
+        return OperatorCommentViewHolder(binding)
+    }
+
+    override fun getItemCount(): Int {
+        return operatorComments.count()
+    }
+
+    override fun onBindViewHolder(holder: OperatorCommentViewHolder, position: Int) {
+        holder.binding.lifecycleOwner = activity
+        holder.binding.viewModel = OperatorCommentItemViewModel(operatorComments[position])
+    }
+}
+
+
 
