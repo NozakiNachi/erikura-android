@@ -226,12 +226,22 @@ class ReportedJobDetailsFragment(
                 }
                 val additionalComment = it.additionalComment ?: ""
                 viewModel.otherFormComment.value = additionalComment
+                // マニュアル外報告運営からの評価の取得
+                if (it.additionalOperatorLikes) {
+                    viewModel.otherFormGoodCount.value = "1件"
+                    viewModel.otherFormGoodCountVisibility.value = View.VISIBLE
+                }else {
+                    viewModel.otherFormGoodCountVisibility.value = View.GONE
+                }
                 if (it.additionalOperatorComments.isNotEmpty()) {
                     additionalOperatorCommentsAdapter.operatorComments = it.additionalOperatorComments
                     additionalOperatorCommentsAdapter.notifyDataSetChanged()
-                    viewModel.otherFormEvaluationVisible.value = View.VISIBLE
+                    viewModel.otherFormEvaluationVisibility.value = View.VISIBLE
+                    viewModel.otherFormCommentCount.value = "${it.additionalOperatorComments.count()}件"
+                    viewModel.otherFormCommentCountVisibility.value = View.VISIBLE
                 }else {
-                    viewModel.otherFormEvaluationVisible.value = View.GONE
+                    viewModel.otherFormEvaluationVisibility.value = View.GONE
+                    viewModel.otherFormCommentCountVisibility.value = View.GONE
                 }
 
                 // 案件評価の取得
@@ -290,7 +300,11 @@ class ReportedJobDetailsFragmentViewModel : ViewModel() {
     // マニュアル外報告
     val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
-    val otherFormEvaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val otherFormEvaluationVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val otherFormGoodCount: MutableLiveData<String> = MutableLiveData()
+    val otherFormGoodCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val otherFormCommentCount: MutableLiveData<String> = MutableLiveData()
+    val otherFormCommentCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     // 案件の評価
     val evaluate: MutableLiveData<Boolean> = MutableLiveData()

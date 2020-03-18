@@ -224,13 +224,61 @@
                 </LinearLayout>
 
                 <!--マニュアル外の報告-->
-                <TextView
-                    style="@style/titleLabel"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
-                    android:text="@string/job_details_reported_additional_summary"
-                    android:textSize="20dp" />
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/titleLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/job_details_reported_additional_summary"
+                        android:textSize="20dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="right"
+                        android:layout_marginRight="20dp"
+                        android:orientation="horizontal">
+                        <!--コメント-->
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="18dp"
+                            android:background="@drawable/background_roundrect_topaz"
+                            android:drawableLeft="@drawable/icon_comment_10"
+                            android:drawablePadding="2dp"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="8dp"
+                            android:paddingBottom="3dp"
+                            android:textColor="@color/black"
+                            android:textSize="12dp"
+                            android:visibility="@{viewModel.otherFormCommentCountVisibility}"
+                            android:text="@{viewModel.otherFormCommentCount}"/>
+
+                        <!--いいね-->
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="18dp"
+                            android:layout_marginLeft="6dp"
+                            android:background="@drawable/background_roundrect_topaz"
+                            android:drawableLeft="@drawable/icon_good_10"
+                            android:drawablePadding="2dp"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="3dp"
+                            android:paddingRight="8dp"
+                            android:paddingBottom="3dp"
+                            android:textColor="@color/black"
+                            android:textSize="12dp"
+                            android:visibility="@{viewModel.otherFormGoodCountVisibility}"
+                            android:text="@{viewModel.otherFormGoodCount}"/>
+                    </LinearLayout>
+                </LinearLayout>
 
                 <!-- マニュアル外の報告画像 -->
                 <ImageView
@@ -299,7 +347,7 @@
                     android:layout_marginRight="20dp"
                     android:background="@drawable/background_round_topaz"
                     android:orientation="vertical"
-                    android:visibility="@{viewModel.otherFormEvaluationVisible}">
+                    android:visibility="@{viewModel.otherFormEvaluationVisibility}">
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
