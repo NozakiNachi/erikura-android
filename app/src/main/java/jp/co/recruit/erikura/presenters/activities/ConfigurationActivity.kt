@@ -53,13 +53,11 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     // FIXME: 正しいリンク先の作成
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true, 0) {
-            val intent = Intent(this, RecertificationActivity::class.java)
-            intent.putExtra("onClickChangeUserInformation", true)
+            val intent = Intent(this, ChangeUserInformationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true, 1) {
-            val intent = Intent(this, RecertificationActivity::class.java)
-            intent.putExtra("onClickAccountSetting", true)
+            val intent = Intent(this, AccountSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(2, "通知設定", R.drawable.icon_slide_15, true, 2) {
@@ -83,8 +81,6 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
     )
 
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
@@ -100,39 +96,15 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 
 // FIXME: 非ログイン時の挙動実装途中
         // 設定画面のメニューをrecycler_viewで表示
-        if (userSession == null) {
-//            if (menuItems[0].requireLogin == true) {
-//                menuItems.remove(menuItems[0])
+//        if (userSession == null) {
+//            for (i in menuItems) {
+//                if (i.requireLogin == true) {
+//                    menuSize++
+//                }
 //            }
-//            if (menuItems[1].requireLogin == true) {
-//                menuItems.remove(menuItems[1])
-//            }
-//            if (menuItems[2].requireLogin == true) {
-//                menuItems.remove(menuItems[2])
-//            }
-//            if (menuItems[3].requireLogin == true) {
-//                menuItems.remove(menuItems[3])
-//            }
-//            if (menuItems[4].requireLogin == true) {
-//                menuItems.remove(menuItems[4])
-//            }
-//            if (menuItems[5].requireLogin == true) {
-//                menuItems.remove(menuItems[5])
-//            }
-//            if (menuItems[6].requireLogin == true) {
-//                menuItems.remove(menuItems[6])
-//            }
-//            if (menuItems[7].requireLogin == true) {
-//                menuItems.remove(menuItems[7])
-//            }
-            for (i in menuItems) {
-                if (i.requireLogin == true) {
-                    menuSize++
-                }
-            }
-        }
+//        }
 
-        val adapter = ConfigurationAdapter(menuItems, menuSize)
+        val adapter = ConfigurationAdapter(menuItems)
         adapter.setOnItemClickListener(object : ConfigurationAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
                 item.onSelect()
@@ -148,7 +120,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         fromRegisterAccountFragment = intent.getBooleanExtra("onClickRegisterAccountFragment", false)
     }
 
-    class ConfigurationAdapter(private val menuItems: List<MenuItem>, private val menuSize:Int) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
+    class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
     {
         class ViewHolder(val binding: FragmentConfigurationCellBinding) : RecyclerView.ViewHolder(binding.root)
         var listener: OnItemClickListener? = null
@@ -167,9 +139,9 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
-            if(userSession == null && menuItems[position].requireLogin == true){
-                holder.binding.configurationCell.setVisibility(View.GONE)
-            }
+//            if(userSession == null && menuItems[position].requireLogin == true){
+//                holder.binding.configurationCell.setVisibility(View.GONE)
+//            }
 
             holder.binding.root.setOnClickListener {
                 listener?.onItemClickListener(menuItems[position])
