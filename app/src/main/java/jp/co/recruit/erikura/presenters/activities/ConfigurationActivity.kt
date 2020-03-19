@@ -38,10 +38,9 @@ import java.util.regex.Pattern
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
-    data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, var display_judge_id: Int?, val onSelect: () -> Unit)
+    data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
-    var menuSize: Int =0
     var fromChangeUserInformationFragment: Boolean = false
     var fromChangeAccountFragment: Boolean = false
     var fromRegisterAccountFragment: Boolean = false
@@ -52,31 +51,31 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
 
     // FIXME: 正しいリンク先の作成
     var menuItems: ArrayList<MenuItem> = arrayListOf(
-        MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true, 0) {
+        MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true, 1) {
+        MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {
             val intent = Intent(this, AccountSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(2, "通知設定", R.drawable.icon_slide_15, true, 2) {
+        MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {
             val intent = Intent(this, NotificationSettingActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, false, 3) {
+        MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, false) {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false, 4) {
+        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false, 5) {
+        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
             val intent = Intent(this, RegisterEmailActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true, 6) {
+        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()
         }
     )
@@ -92,17 +91,17 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-
-
-// FIXME: 非ログイン時の挙動実装途中
-        // 設定画面のメニューをrecycler_viewで表示
-//        if (userSession == null) {
-//            for (i in menuItems) {
-//                if (i.requireLogin == true) {
-//                    menuSize++
-//                }
-//            }
-//        }
+        // 未ログイン時は表示する項目を絞る。
+        if (userSession == null) {
+            for (i in 0..menuItems.size-1) {
+                for (ia in 0..menuItems.size-1) {
+                    if (menuItems[ia].requireLogin) {
+                        menuItems.remove(menuItems[ia])
+                        break
+                    }
+                }
+            }
+        }
 
         val adapter = ConfigurationAdapter(menuItems)
         adapter.setOnItemClickListener(object : ConfigurationAdapter.OnItemClickListener {
@@ -139,10 +138,6 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
-//            if(userSession == null && menuItems[position].requireLogin == true){
-//                holder.binding.configurationCell.setVisibility(View.GONE)
-//            }
-
             holder.binding.root.setOnClickListener {
                 listener?.onItemClickListener(menuItems[position])
             }
@@ -158,7 +153,6 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         override fun getItemCount() = menuItems.size
     }
 
-    //
     override fun onStart() {
         super.onStart()
         if(fromChangeUserInformationFragment) {
