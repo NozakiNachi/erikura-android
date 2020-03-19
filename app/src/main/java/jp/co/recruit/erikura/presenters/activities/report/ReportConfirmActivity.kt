@@ -30,7 +30,6 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
-import jp.co.recruit.erikura.business.models.OperatorComment
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
@@ -39,6 +38,7 @@ import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.fragments.OperatorCommentAdapter
 import java.io.IOException
 
 
@@ -681,35 +681,18 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
 
 // 実施箇所
 class ReportSummaryItemViewModel(
-    activity: Activity,
+    activity: FragmentActivity,
     view: View,
     val summary: OutputSummary,
     summariesCount: Int,
     position: Int,
     jobDetails: Boolean
 ) : ViewModel() {
-
-//    val goodExist: Boolean get() = summary.operatorLikes
-//    val commentCount: Int get() = summary.operatorComments.count()
-//    val hasComment: Boolean get() = commentCount > 0
-//    val goodVisible: Int
-//        get() = if (goodExist) {
-//            View.VISIBLE
-//        } else {
-//            View.GONE
-//        }
-//    val commentVisible: Int
-//        get() = if (hasComment) {
-//            View.VISIBLE
-//        } else {
-//            View.GONE
-//        }
-
-
     val buttonsVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val evaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 //    val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
+//    private val additionalCommentView: RecyclerView = view.findViewById(R.id.summaryItem_operatorComments)
     val summaryTitle: MutableLiveData<String> = MutableLiveData()
     val summaryName: MutableLiveData<String> = MutableLiveData()
     val summaryStatus: MutableLiveData<String> = MutableLiveData()
@@ -743,10 +726,16 @@ class ReportSummaryItemViewModel(
 
         if (jobDetails) {
             buttonsVisible.value = View.GONE
+//            val operatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
+//            additionalCommentView.setHasFixedSize(true)
+//            additionalCommentView.adapter = operatorCommentsAdapter
             if (summary.operatorComments.isNotEmpty()) {
                 commentCount.value = "${summary.operatorComments.count()}件"
                 commentCountVisibility.value = View.VISIBLE
                 evaluationVisible.value = View.VISIBLE
+//
+//                operatorCommentsAdapter.operatorComments = summary.operatorComments
+//                operatorCommentsAdapter.notifyDataSetChanged()
             }
             if (summary.operatorLikes) {
                 goodCount.value = "1件"
@@ -793,6 +782,7 @@ class ReportSummaryAdapter(
             position,
             jobDetails
         )
+
         val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
         editButton.setOnClickListener {
             onClickListener?.apply {
@@ -805,6 +795,12 @@ class ReportSummaryAdapter(
                 onClickRemoveButton(view, position)
             }
         }
+
+        val commentView: RecyclerView = holder.binding.root.findViewById(R.id.summaryItem_operatorComments)
+        val operatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
+        commentView.adapter = operatorCommentsAdapter
+        operatorCommentsAdapter.operatorComments = summaries[position].operatorComments
+        operatorCommentsAdapter.notifyDataSetChanged()
     }
 
     interface OnClickListener {
