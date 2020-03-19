@@ -64,7 +64,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, false) {
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, AboutAppActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
