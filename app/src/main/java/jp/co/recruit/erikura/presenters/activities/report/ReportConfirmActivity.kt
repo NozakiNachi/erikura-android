@@ -522,7 +522,11 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             val item = it.additionalPhotoAsset ?: MediaItem()
             if (item.contentUri != null) {
                 val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
-                item.loadImage(this, imageView)
+                if (it.additionalReportPhotoUrl!=null) {
+                    item.loadImageFromString(this, imageView)
+                }else {
+                    item.loadImage(this, imageView)
+                }
                 viewModel.otherFormImageVisibility.value = View.VISIBLE
             } else {
                 viewModel.otherFormImageVisibility.value = View.GONE
@@ -620,7 +624,8 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
 
     init {
         if (mediaItem != null) {
-            mediaItem.loadImage(activity, imageView)
+            mediaItem.loadImageFromString(activity, imageView)
+//            mediaItem.loadImage(activity, imageView)
         } else {
             imageVisibility.value = View.GONE
             addPhotoButtonVisibility.value = View.VISIBLE

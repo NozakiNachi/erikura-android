@@ -134,9 +134,14 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     private fun createImage() {
         val imageView: ImageView = findViewById(R.id.report_form_image)
         job.report?.let {
-            val item = it.outputSummaries[pictureIndex].photoAsset
+            val summary = it.outputSummaries[pictureIndex]
+            val item = summary.photoAsset
             item?.let {
-                item.loadImage(this, imageView)
+                if (summary.beforeCleaningPhotoUrl != null ) {
+                    item.loadImage(this, imageView)
+                }else {
+                    item.loadImageFromString(this, imageView)
+                }
             }
         }
     }

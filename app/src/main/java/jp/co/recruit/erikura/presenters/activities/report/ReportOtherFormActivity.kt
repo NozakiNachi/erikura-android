@@ -68,6 +68,7 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
 
     override fun onClickAddPhotoButton(view: View) {
         if(ErikuraApplication.instance.hasStoragePermission(this)) {
+            job.report?.additionalReportPhotoUrl = null
             moveToGallery()
         }
         else {
@@ -119,7 +120,11 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
                 viewModel.addPhotoButtonVisibility.value = View.GONE
                 viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                 val imageView: ImageView = findViewById(R.id.report_other_image)
-                item.loadImage(this, imageView)
+                if (it.additionalReportPhotoUrl != null ) {
+                    item.loadImageFromString(this, imageView)
+                }else {
+                    item.loadImage(this, imageView)
+                }
                 viewModel.otherPhoto = item
                 viewModel.comment.value = comment
             }else {
