@@ -560,6 +560,15 @@ class Api(var context: Context) {
             )
     }
 
+    fun clientVersion(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (clientVersion: RequiredClientVersion) -> Unit) {
+        executeObservable(
+            erikuraApiService.clientVersion(),
+            onError = onError
+        ) { clientVersion ->
+            onComplete(clientVersion)
+        }
+    }
+
     fun erikuraConfig(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (map: ErikuraConfigMap) -> Unit) {
         executeObservable(erikuraApiService.erikuraConfig(), onError = onError) { result ->
             onComplete(result)
