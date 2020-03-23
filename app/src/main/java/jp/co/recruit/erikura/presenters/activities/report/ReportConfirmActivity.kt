@@ -40,6 +40,8 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.fragments.OperatorCommentAdapter
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
@@ -690,20 +692,20 @@ class ReportSummaryItemViewModel(
 ) : ViewModel() {
     val buttonsVisible: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val evaluationVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
-//    val goodCommentsVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
-//    private val additionalCommentView: RecyclerView = view.findViewById(R.id.summaryItem_operatorComments)
     val summaryTitle: MutableLiveData<String> = MutableLiveData()
     val summaryName: MutableLiveData<String> = MutableLiveData()
     val summaryStatus: MutableLiveData<String> = MutableLiveData()
     val summaryComment: MutableLiveData<String> = MutableLiveData()
     val editSummaryButtonText: MutableLiveData<String> = MutableLiveData()
     val removeSummaryButtonText: MutableLiveData<String> = MutableLiveData()
-//    val summaryOperatorComment: MutableLiveData<List<OperatorComment>> = MutableLiveData()
     val commentCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val commentCount: MutableLiveData<String> = MutableLiveData()
     val goodCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val goodCount: MutableLiveData<String> = MutableLiveData()
+    // 運営からのコメント
+    val operatorComment: MutableLiveData<String> = MutableLiveData()
+    val operatorCommentCreatedAt: MutableLiveData<String> = MutableLiveData()
 
     init {
         summary.photoAsset?.let {
@@ -722,27 +724,26 @@ class ReportSummaryItemViewModel(
             ErikuraApplication.instance.getString(R.string.edit_summary, position + 1)
         removeSummaryButtonText.value =
             ErikuraApplication.instance.getString(R.string.remove_summary, position + 1)
-//        summaryOperatorComment.value = summary.operatorComments
 
         if (jobDetails) {
             buttonsVisible.value = View.GONE
-//            val operatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
-//            additionalCommentView.setHasFixedSize(true)
-//            additionalCommentView.adapter = operatorCommentsAdapter
             if (summary.operatorComments.isNotEmpty()) {
                 commentCount.value = "${summary.operatorComments.count()}件"
                 commentCountVisibility.value = View.VISIBLE
                 evaluationVisible.value = View.VISIBLE
-//
-//                operatorCommentsAdapter.operatorComments = summary.operatorComments
-//                operatorCommentsAdapter.notifyDataSetChanged()
+                operatorComment.value = summary.operatorComments.first().body
+                operatorCommentCreatedAt.value = dateToString(summary.operatorComments.first().createdAt, "yyyy/MM/dd HH:mm")
             }
             if (summary.operatorLikes) {
                 goodCount.value = "1件"
                 goodCountVisibility.value = View.VISIBLE
             }
-//            goodCommentsVisible.value = View.VISIBLE
         }
+    }
+
+    private fun dateToString(date: Date, format: String): String {
+        val sdf = SimpleDateFormat(format, Locale.JAPAN)
+        return sdf.format(date)
     }
 }
 
@@ -796,11 +797,12 @@ class ReportSummaryAdapter(
             }
         }
 
-        val commentView: RecyclerView = holder.binding.root.findViewById(R.id.summaryItem_operatorComments)
-        val operatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
-        commentView.adapter = operatorCommentsAdapter
-        operatorCommentsAdapter.operatorComments = summaries[position].operatorComments
-        operatorCommentsAdapter.notifyDataSetChanged()
+        // MEMO: 運営からのコメントは実施箇所につき1つの想定
+//        val commentView: RecyclerView = holder.binding.root.findViewById(R.id.summaryItem_operatorComments)
+//        val operatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
+//        commentView.adapter = operatorCommentsAdapter
+//        operatorCommentsAdapter.operatorComments = summaries[position].operatorComments
+//        operatorCommentsAdapter.notifyDataSetChanged()
     }
 
     interface OnClickListener {
