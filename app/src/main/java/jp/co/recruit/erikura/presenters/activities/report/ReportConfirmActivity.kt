@@ -709,7 +709,8 @@ class ReportSummaryItemViewModel(
 
     init {
         summary.photoAsset?.let {
-            it.loadImage(activity, imageView)
+//            it.loadImage(activity, imageView)
+            it.loadImageFromString(activity, imageView)
         }
 
         summaryTitle.value = ErikuraApplication.instance.getString(

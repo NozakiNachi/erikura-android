@@ -219,7 +219,7 @@ class ReportedJobDetailsFragment(
                 val item = it.additionalPhotoAsset ?: MediaItem()
                 if (item.contentUri != null) {
                     val imageView: ImageView = activity.findViewById(R.id.reported_job_details_other_image)
-                    item.loadImage(activity, imageView)
+                    item.loadImageFromString(activity, imageView)
                     viewModel.otherFormImageVisibility.value = View.VISIBLE
                 } else {
                     viewModel.otherFormImageVisibility.value = View.GONE
@@ -264,20 +264,7 @@ class ReportedJobDetailsFragment(
     }
 
     private fun createAssets(uri: Uri): MediaItem {
-        val cursor = activity.contentResolver.query(
-            uri,
-            arrayOf(
-                MediaStore.Files.FileColumns._ID,
-                MediaStore.MediaColumns.DISPLAY_NAME,
-                MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.SIZE
-            ),
-            MediaStore.MediaColumns.SIZE + ">0",
-            arrayOf<String>(),
-            "datetaken DESC"
-        )
-        cursor?.moveToFirst()
-        val item = if(cursor != null){MediaItem.from(cursor)}else {MediaItem()}
+        val item = MediaItem(id = 0, mimeType = "", size = 0, contentUri = uri)
         return item
     }
 }
