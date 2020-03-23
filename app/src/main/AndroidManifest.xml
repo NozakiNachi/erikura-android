@@ -130,6 +130,10 @@
             android:name=".presenters.activities.RecertificationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 再認証画面 -->
+        <activity
+            android:name=".presenters.activities.AboutAppActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" /> <!-- このアプリについて画面 -->
         <!-- ============================================================ -->
         <!-- 新規会員登録関連 -->
         <activity

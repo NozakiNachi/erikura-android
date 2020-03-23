@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -15,6 +16,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Payment
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
+import java.util.*
 import java.util.regex.Pattern
 
 
@@ -75,6 +77,9 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
                 binding.savingsButton.isChecked = true
             }
         }
+
+        // 再認証が必要かどうか確認
+        recerfitication()
     }
 
     // 銀行名フォーカス機能
@@ -132,6 +137,32 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
             }
             startActivity(intent)
             finish()
+        }
+    }
+
+    // 再認証画面へ遷移
+    override fun recerfitication(){
+        val now = Date()
+        val reSignDate = Api.userSession?.resignInExpiredAt
+
+        if(Api.userSession?.resignInExpiredAt != null){
+            val diff = now.time - (reSignDate?.time ?: 0)
+            if (diff >= 0) {
+                val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+                if (diffMinutes > 10) {
+                    // 過去の再認証から10分以上経っていたら再認証画面へ
+                    Intent(this, RecertificationActivity::class.java).let {
+                        it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        this.startActivity(it)
+                    }
+                }
+            }
+        } else {
+            // 一度も再認証していなければ、再認証画面へ
+            Intent(this, RecertificationActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                this.startActivity(it)
+            }
         }
     }
 }
@@ -373,4 +404,5 @@ interface AccountSettingEventHandlers {
     fun onSavingsButton(view: View)
     fun onBankNameFocusChanged(view: View, hasFocus: Boolean)
     fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
+    fun recerfitication()
 }

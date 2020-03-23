@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import java.util.*
 import java.util.regex.Pattern
 
@@ -128,6 +129,9 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
                 binding.femaleButton.isChecked = true
             }
         }
+
+        // 再認証が必要かどうか確認
+        recerfitication()
     }
 
     // 所在地
@@ -219,6 +223,32 @@ class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformation
             intent.putExtra("onClickChangeUserInformationFragment", true)
             startActivity(intent)
             finish()
+        }
+    }
+
+    // 再認証画面へ遷移
+    override fun recerfitication(){
+        val now = Date()
+        val reSignDate = Api.userSession?.resignInExpiredAt
+
+        if(Api.userSession?.resignInExpiredAt != null){
+            val diff = now.time - (reSignDate?.time ?: 0)
+            if (diff >= 0) {
+                val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+                if (diffMinutes > 10) {
+                    // 過去の再認証から10分以上経っていたら再認証画面へ
+                    Intent(this, RecertificationActivity::class.java).let {
+                        it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        this.startActivity(it)
+                    }
+                }
+            }
+        } else {
+            // 一度も再認証していなければ、再認証画面へ
+            Intent(this, RecertificationActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                this.startActivity(it)
+            }
         }
     }
 }
@@ -520,4 +550,5 @@ interface ChangeUserInformationEventHandlers {
     fun onClickRegister(view: View)
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
+    fun recerfitication()
 }
