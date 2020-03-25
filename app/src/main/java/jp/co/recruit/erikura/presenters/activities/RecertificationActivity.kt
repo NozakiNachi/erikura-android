@@ -43,8 +43,8 @@ class RecertificationActivity : AppCompatActivity(), RecertificationHandlers {
     override fun onClickRecertification(view: View) {
         Api(this).recertification(viewModel.email.value ?: "", viewModel.password.value ?: "") {
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
+            finish()
         }
-        finish()
     }
 }
 

@@ -325,6 +325,8 @@
     <string name="summary_hint">例）エレベータ</string>
     <string name="comment_hint">例）床が少し汚い状態</string>
     <string name="other_comment_hint">例）階段下に放置自転車があります</string>
+    <string name="account_holder_family_hint">例）タナカ</string>
+    <string name="account_holder_hint">例）タロウ</string>
 
     <!-- このアプリについて -->
     <string name="app_explain">本サービスは、リクルートの新規事業プログラムを通じて提案されたもので、現在は実証実験の段階にあります。サービスの継続は、一定条件や期間のもと判断されます。</string>

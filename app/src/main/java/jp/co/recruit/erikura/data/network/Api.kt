@@ -10,6 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.BuildConfig
@@ -30,6 +31,7 @@ import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import org.apache.commons.lang.builder.ToStringBuilder
 import java.util.*
 
 
@@ -181,48 +183,21 @@ class Api(var context: Context) {
         }
     }
 
-    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (List<Bank>) -> Unit) {
-        executeObservable(erikuraApiService.bank(bankName), onError = onError) { body ->
-            val banks = body.map { Bank(name = it.first(), code = it.last()) }
+    fun bank(bankName: String, showProgress: Boolean = true, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (List<Bank>) -> Unit) {
+        executeObservable(erikuraApiService.bank(bankName), onError = onError, showProgress = showProgress) { body ->
+            val banks = body.map {
+                Bank(code = it.first(), name = it.last())
+            }
             onComplete(banks)
         }
     }
 
-    fun bankCode(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (bankNumber: String?) -> Unit) {
-        executeObservable(
-            erikuraApiService.bank(bankName),
-            onError = onError
-        ) { body ->
-            var bankNumber: String? = null
-
-            for (i in body) {
-                var number = i.get(0)
-                var name = i.get(1)
-
-                if (name == bankName) {
-                    bankNumber = number
-                }
+    fun branch(branchOfficeName: String, bankNumber:String, showProgress: Boolean = true, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (branches: List<BankBranch>) -> Unit) {
+        executeObservable(erikuraApiService.branch(branchOfficeName, bankNumber), showProgress = showProgress, onError =  onError) { body ->
+            val branches = body.map {
+                BankBranch(code = it.first(), name = it.last())
             }
-            onComplete(bankNumber)
-        }
-    }
-
-    fun branchCode(branchOfficeName: String, bankNumber:String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (branchOfficeNumber: String?) -> Unit) {
-        executeObservable(
-            erikuraApiService.branch(branchOfficeName, bankNumber),
-            onError = onError
-        ) { body ->
-            var branchOfficeNumber: String? = null
-
-            for (i in body) {
-                var number = i.get(0)
-                var name = i.get(1)
-
-                if (name == branchOfficeName) {
-                    branchOfficeNumber = number
-                }
-            }
-            onComplete(branchOfficeNumber)
+            onComplete(branches)
         }
     }
 
@@ -597,15 +572,27 @@ class Api(var context: Context) {
         }
     }
 
+    fun cancelAllRequests() {
+        activeObservables.forEach { observable ->
+            (observable as? Disposable)?.dispose()
+        }
+        activeObservables.clear()
+    }
+
+    private val activeObservables = mutableSetOf<Observable<*>>()
+
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, showProgress: Boolean = true, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
         if (showProgress)
             showProgressAlert()
+
+        activeObservables.add(observable)
         observable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onComplete = {
+                    activeObservables.remove(observable)
                     if (showProgress)
                         hideProgressAlert()
                 },
