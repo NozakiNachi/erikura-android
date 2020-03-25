@@ -450,7 +450,6 @@ class Api(var context: Context) {
                 onComplete(reportId)
             }
         }else {
-
             executeObservable(
                 erikuraApiService.updateReport(params),
                 onError = onError

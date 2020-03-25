@@ -279,8 +279,10 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         getPhotoToken(summary.photoAsset?.contentUri.toString())
                 }
             }
-            report.additionalReportPhotoToken =
-                getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            if (report.additionalReportPhotoUrl.isNullOrBlank()){
+                report.additionalReportPhotoToken =
+                    getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            }
         }
 
         if (isCompletedUploadPhotos()) {

@@ -110,7 +110,7 @@ class ReportedJobDetailsFragment(
         job?.let {
             Api(activity).reloadReport(job) {
                 var report = it
-                report.additionalPhotoAsset = createAssets(report.additionalReportPhotoUrl?.toUri()?: Uri.EMPTY)
+                report.additionalPhotoAsset = if (report.additionalReportPhotoUrl.isNullOrEmpty()){null}else{createAssets(report.additionalReportPhotoUrl?.toUri()?: Uri.EMPTY)}
                 report.outputSummaries.forEach { summary ->
                     summary.photoAsset = createAssets(summary.beforeCleaningPhotoUrl?.toUri()?: Uri.EMPTY)
                 }
