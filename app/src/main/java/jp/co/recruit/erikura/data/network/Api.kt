@@ -418,7 +418,7 @@ class Api(var context: Context) {
             var outputSummaryRequest = OutputSummaryRequest(
                 outputSummary.id,
                 outputSummary.place?: "",
-                outputSummary.evaluationMap(),
+                outputSummary.evaluation?: "",
                 outputSummary.latitude?: 0.0,
                 outputSummary.longitude?: 0.0,
                 outputSummary.photoTakedAt?: Date(),

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ImageView
@@ -17,10 +16,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+
+
 
 class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -61,7 +63,7 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
             }else {
                 summary.place = viewModel.summarySelectedItem
             }
-            summary.evaluation = viewModel.evaluationSelectedItem
+            summary.evaluation = viewModel.evaluationSelectedItem.toString().toLowerCase()
             summary.comment = viewModel.comment.value
 
             var nextIndex = pictureIndex + 1
@@ -99,7 +101,8 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
     }
 
     override fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        viewModel.evaluationSelectedItem = if ( position == 0 ) {null} else {parent.getItemAtPosition(position).toString()}
+        val evaluateType = viewModel.evaluateTypes[position]
+        viewModel.evaluationSelectedItem = evaluateType
     }
 
     override fun onClickManual(view: View) {
@@ -163,11 +166,19 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
                 viewModel.summarySelectedItem = ErikuraApplication.instance.getString(R.string.other_hint)
                 viewModel.summaryEditVisibility.value = View.VISIBLE
             }
-            var statuses = ErikuraApplication.instance.getResources().getStringArray(R.array.summary_evaluation)
-            statuses.forEachIndexed { index, s ->
-                if (s == summary.evaluation) {
-                    viewModel.statusId.value = index
-                    viewModel.evaluationSelectedItem = s
+            val evaluate = EvaluateType.valueOf(summary.evaluation?.toUpperCase()?: "UNSELECTED")
+            when(evaluate) {
+                EvaluateType.BAD -> {
+                    viewModel.statusId.value = viewModel.evaluateTypes.indexOf(EvaluateType.BAD)
+                }
+                EvaluateType.ORDINARY -> {
+                    viewModel.statusId.value = viewModel.evaluateTypes.indexOf(EvaluateType.ORDINARY)
+                }
+                EvaluateType.GOOD -> {
+                    viewModel.statusId.value = viewModel.evaluateTypes.indexOf(EvaluateType.GOOD)
+                }
+                else -> {
+                    viewModel.statusId.value = viewModel.evaluateTypes.indexOf(EvaluateType.UNSELECTED)
                 }
             }
             viewModel.comment.value = summary.comment
@@ -187,9 +198,11 @@ class ReportFormViewModel: ViewModel() {
     val comment: MutableLiveData<String> = MutableLiveData()
     val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
     val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val evaluateTypes = EvaluateType.values()
+    val evaluateLabels: List<String> = evaluateTypes.map { ErikuraApplication.applicationContext.getString(it.resourceId) }
 
     var summarySelectedItem: String? = null
-    var evaluationSelectedItem: String? = null
+    var evaluationSelectedItem: EvaluateType = EvaluateType.UNSELECTED
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(summaryEditVisibility) {result.value = isValid()}

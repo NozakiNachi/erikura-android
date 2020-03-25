@@ -26,10 +26,7 @@ import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.business.models.OutputSummary
-import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
@@ -724,7 +721,15 @@ class ReportSummaryItemViewModel(
             summariesCount
         )
         summaryName.value = summary.place
-        summaryStatus.value = summary.evaluation
+        val evaluateType = EvaluateType.valueOf(summary.evaluation?.toUpperCase()?: "UNSELECTED")
+        when(evaluateType) {
+            EvaluateType.UNSELECTED -> {
+                summaryStatus.value = ""
+            }
+            else -> {
+                summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
+            }
+        }
         summaryComment.value = summary.comment
         editSummaryButtonText.value =
             ErikuraApplication.instance.getString(R.string.edit_summary, position + 1)

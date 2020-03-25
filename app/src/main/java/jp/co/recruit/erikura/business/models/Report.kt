@@ -6,19 +6,28 @@ import android.util.Log
 import com.google.gson.annotations.SerializedName
 import jp.co.recruit.erikura.data.network.Api
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 import java.util.*
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.Completable
 import jp.co.recruit.erikura.ErikuraApplication
-import okhttp3.internal.notifyAll
-import okhttp3.internal.wait
+import jp.co.recruit.erikura.R
 
 
 enum class ReportStatus {
     Unconfirmed,
     Accepted,
     Rejected
+}
+
+enum class EvaluateType(val value: String, val resourceId: Int) {
+    // 選択してください
+    UNSELECTED("unselected", R.string.please_select),
+    // 異常あり、未対応
+    BAD("bad", R.string.bad),
+    // 異常あり、対応済み
+    ORDINARY("ordinary", R.string.ordinary),
+    // 異常あり、未対応
+    GOOD("good", R.string.good),
 }
 
 @Parcelize
