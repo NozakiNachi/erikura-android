@@ -462,9 +462,6 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         job.report?.let { report ->
             report.outputSummaries.forEach { summary ->
                 completed = completed && summary.isUploadCompleted
-//                if (summary.beforeCleaningPhotoUrl.isNullOrBlank()){
-//                    completed = completed && summary.isUploadCompleted
-//                }
             }
         }
         return completed

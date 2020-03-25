@@ -429,33 +429,30 @@ class Api(var context: Context) {
             outputSummaries.add(outputSummaryRequest)
         }
 
+        val params = ReportRequest(
+            report.id,
+            job.id,
+            outputSummaries,
+            report.workingMinute,
+            report.additionalComment,
+            report.additionalReportPhotoToken,
+            report.evaluation?: "unanswered",
+            report.comment,
+            report.additionalReportPhotoWillDelete
+        )
+
         if (report.id == null) {
             executeObservable(
-                erikuraApiService.createReport(ReportRequest(
-                    job.id,
-                    outputSummaries,
-                    report.workingMinute,
-                    report.additionalComment,
-                    report.additionalReportPhotoToken,
-                    report.evaluation?: "unanswered",
-                    report.comment
-                )),
+                erikuraApiService.createReport(params),
                 onError = onError
             ) { body ->
                 val reportId = body.reportId
                 onComplete(reportId)
             }
         }else {
+
             executeObservable(
-                erikuraApiService.updateReport(ReportRequest(
-                    job.id,
-                    outputSummaries,
-                    report.workingMinute,
-                    report.additionalComment,
-                    report.additionalReportPhotoToken,
-                    report.evaluation?: "unanswered",
-                    report.comment
-                )),
+                erikuraApiService.updateReport(params),
                 onError = onError
             ) { body ->
                 val reportId = body.reportId
