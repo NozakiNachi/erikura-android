@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import android.provider.MediaStore
 import io.realm.Realm
 import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
 
 
 class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandlers {
@@ -134,6 +135,7 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
                 viewModel.otherPhoto = MediaItem()
             }
         }
+        viewModel.commentError.message.value = null
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -221,8 +223,9 @@ class ReportOtherFormViewModel: ViewModel() {
     val addPhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val removePhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val comment: MutableLiveData<String> = MutableLiveData()
-    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+//    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
+//    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val commentError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     var otherPhoto: MediaItem = MediaItem()
 
@@ -250,16 +253,19 @@ class ReportOtherFormViewModel: ViewModel() {
         var valid = true
         if (valid && comment.value.isNullOrBlank()) {
             valid = false
-            commentErrorMsg.value = ""
-            commentErrorVisibility.value = View.GONE
+//            commentErrorMsg.value = ""
+//            commentErrorVisibility.value = View.GONE
+            commentError.message.value = null
         }else if (valid && comment.value?.length?: 0 > 5000) {
             valid = false
-            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
-            commentErrorVisibility.value = View.VISIBLE
+//            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+//            commentErrorVisibility.value = View.VISIBLE
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
         }else {
             valid = true
-            commentErrorMsg.value = ""
-            commentErrorVisibility.value = View.GONE
+//            commentErrorMsg.value = ""
+//            commentErrorVisibility.value = View.GONE
+            commentError.message.value = null
         }
         return valid
     }

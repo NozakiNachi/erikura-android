@@ -217,8 +217,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.commentErrorMsg}"
-                    android:visibility="@{viewModel.commentErrorVisibility}" />
+                    android:text="@={viewModel.commentError.message}"
+                    android:visibility="@{viewModel.commentError.visibility}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

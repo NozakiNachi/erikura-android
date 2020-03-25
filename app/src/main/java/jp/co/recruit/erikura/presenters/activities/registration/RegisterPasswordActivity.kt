@@ -17,6 +17,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
+import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import java.util.regex.Pattern
 
@@ -38,7 +39,7 @@ class RegisterPasswordActivity : AppCompatActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        viewModel.errorVisibility.value = 8
+        viewModel.error.message.value = null
 
         // 仮登録トークン取得
         val uri: Uri? = intent.data
@@ -71,8 +72,7 @@ class RegisterPasswordActivity : AppCompatActivity(),
 
 class RegisterPasswordViewModel: ViewModel() {
     val password: MutableLiveData<String> = MutableLiveData()
-    val errorMsg: MutableLiveData<String> = MutableLiveData()
-    val errorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(password) {result.value = isValid() }
@@ -86,20 +86,16 @@ class RegisterPasswordViewModel: ViewModel() {
 
         if (valid && password.value?.isBlank() ?:true) {
             valid = false
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            error.message.value = null
         }else if(valid && !(pattern.matcher(password.value).find())) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-            errorVisibility.value = 0
+            error.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
         }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-            errorVisibility.value = 0
+            error.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
         } else {
             valid = true
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            error.message.value = null
         }
 
         return valid

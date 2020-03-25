@@ -3,27 +3,31 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.EditText
+import android.view.ViewGroup
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Bank
+import jp.co.recruit.erikura.business.models.BankBranch
 import jp.co.recruit.erikura.business.models.Payment
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityAccountSettingBinding
-import kotlinx.android.synthetic.main.activity_account_setting.*
 import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.regex.Pattern
 
 
 class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers {
+    val api = Api(this)
 
     // FIXME: 入力値を選択させるドロップボックスが必要？
     // FIXME: 存在しない銀行名・支店名をいれるとエラーになる
@@ -44,27 +48,11 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         binding.handlers = this
         binding.viewModel = viewModel
 
-//        val adapter = BankNameAdapter(this)
-        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_dropdown_item_1line,
-            arrayOf("test", "hoo", "foo", "bar")
-        )
-        this.account_setting_bank_name.setAdapter(adapter)
-//        val api = Api(this)
-//        viewModel.bankName.observe(this, object: Observer<String> {
-//            override fun onChanged(t: String?) {
-//                Log.v("DEBUG", t ?: "HOGEHOGE")
-//                api.bank(t ?: "") { banks ->
-//                    adapter.clear()
-//                    adapter.addAll(banks.map { it.name })
-//                    adapter.notifyDataSetChanged()
-//                }
-//            }
-//        })
+        setupBankNameAdapter()
+        setupBranchNameAdapter()
 
         // 変更するユーザーの現在の登録値を取得
-        Api(this).payment() {
+        api.payment() {
             payment = it
 
             viewModel.bankName.value = payment.bankName
@@ -95,26 +83,97 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         recerfitication()
     }
 
-    // 銀行名フォーカス機能
-    override fun onBankNameFocusChanged(view: View, hasFocus: Boolean) {
-        if(!hasFocus && viewModel.bankName.value !== null) {
-            Api(this).bankCode(viewModel.bankName.value ?: "") { bankNumber ->
-                viewModel.bankNumber.value = bankNumber
+    private fun setupBankNameAdapter() {
+        val adapter = BankNameAdapter(this)
+        val bankNameField: AutoCompleteTextView = findViewById(R.id.account_setting_bank_name)
+        bankNameField.setAdapter(adapter)
+        bankNameField.threshold = 1
+        bankNameField.onItemClickListener = object: AdapterView.OnItemClickListener {
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val bank = adapter.getItem(position)
+                viewModel.bankNumber.value = bank?.code
+                // 次のフィールドにフォーカスを移します
+                val nextField: AutoCompleteTextView = findViewById(R.id.account_setting_branch_office_name)
+                nextField.requestFocus()
+            }
+        }
+        var prevBankName: String = ""
+        viewModel.bankName.observe(this, object: Observer<String> {
+            override fun onChanged(t: String?) {
+                val bankName = t ?: ""
+                if (bankName != prevBankName) {
+                    api.cancelAllRequests()
+                    api.bank(bankName, showProgress = false) { banks ->
+                        adapter.clear()
+                        adapter.addAll(banks)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        })
+    }
 
-                val streetEditText = findViewById<EditText>(R.id.branch_office_name)
-                streetEditText.requestFocus()
+    private fun setupBranchNameAdapter() {
+        val adapter = BranchNameAdapter(this)
+        val branchNameField: AutoCompleteTextView = findViewById(R.id.account_setting_branch_office_name)
+        branchNameField.setAdapter(adapter)
+        branchNameField.threshold = 1
+        branchNameField.onItemClickListener = object: AdapterView.OnItemClickListener {
+            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val branch = adapter.getItem(position)
+                viewModel.branchOfficeNumber.value = branch?.code
+                // 次のフィールドにフォーカスを移します
+                val nextField: EditText = findViewById(R.id.account_name)
+                nextField.requestFocus()
+            }
+        }
+        var prevBranchName: String = ""
+        viewModel.branchOfficeName.observe(this, object: Observer<String> {
+            override fun onChanged(t: String?) {
+                val branchOfficeName = t ?: ""
+                if (branchOfficeName != prevBranchName) {
+                    api.cancelAllRequests()
+                    api.branch(branchOfficeName, viewModel.bankNumber.value ?: "", showProgress = false) { branches ->
+                        adapter.clear()
+                        adapter.addAll(branches)
+                        adapter.notifyDataSetChanged()
+                    }
+                }
+            }
+        })
+    }
+
+    override fun onBankNameFocusChanged(view: View, hasFocus: Boolean) {
+        if (!hasFocus && StringUtils.isNotBlank(viewModel.bankName.value)) {
+            val bankName = viewModel.bankName.value ?: ""
+            api.bank(bankName, showProgress = true) { banks ->
+                if (banks.isNotEmpty()) {
+                    val bank = banks.find { it.name == bankName }
+                    bank?.let {
+                        if (StringUtils.isBlank(viewModel.bankNumber.value)) {
+                            viewModel.bankNumber.value = bank.code
+                        }
+                    }
+                }
+                // MEMO: ユーザが意図的にフォーカスを移しているため、このタイミングではフォーカス変更は行いません
             }
         }
     }
 
-    // 支店名フォーカス機能
     override fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean) {
-        if(!hasFocus && viewModel.branchOfficeName.value !== null) {
-            Api(this).branchCode(viewModel.branchOfficeName.value ?: "",viewModel.bankNumber.value ?: "") { branchOfficeNumber ->
-                viewModel.branchOfficeNumber.value = branchOfficeNumber
-
-                val streetEditText = findViewById<EditText>(R.id.account_name)
-                streetEditText.requestFocus()
+        if (!hasFocus && StringUtils.isNotBlank(viewModel.branchOfficeName.value)) {
+            val branchOfficeName = viewModel.branchOfficeName.value ?: ""
+            val bankNumber = viewModel.bankNumber.value ?: ""
+            api.branch(branchOfficeName, bankNumber, showProgress = true) { branches ->
+                if (branches.isNotEmpty()) {
+                    val branch = branches.find { it.name == branchOfficeName }
+                    branch?.let {
+                        if (StringUtils.isBlank(viewModel.branchOfficeNumber.value)) {
+                            viewModel.branchOfficeNumber.value = branch.code
+                        }
+                    }
+                }
+                // MEMO: ユーザが意図的にフォーカスを移しているため、このタイミングではフォーカス変更は行いません
             }
         }
     }
@@ -398,166 +457,86 @@ class ErrorMessageViewModel {
     }
 }
 
+class BankNameAdapter(context: Context): ArrayAdapter<Bank>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf()) {
+    val filter = BankNameFilter(this)
 
-
-
-/*
-
-class SearchHistoryAdapter(context: Context, items: MutableList<SearchHistoryItem>): ArrayAdapter<SearchHistoryItem>(context, R.layout.fragment_history_downdown_item, R.id.history_dropdown_item_text, items) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val convertView = convertView ?: run {
-            val inflater = LayoutInflater.from(context)
-            inflater.inflate(R.layout.fragment_history_downdown_item, parent, false)
+            val inflator = LayoutInflater.from(context)
+            inflator.inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
         }
 
         getItem(position)?.let {
-            val textView: TextView = convertView.findViewById(R.id.history_dropdown_item_text)
-            val imageView: ImageView = convertView.findViewById(R.id.history_dropdown_item_icon)
-
-            textView.text = it.name
-            imageView.setImageResource(it.iconResourceId)
+            (convertView as? TextView)?.text = it.name
         }
         return convertView
     }
-}
-*/
 
-class BankNameAdapter(context: Context): ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf("test1", "test2", "test3")) {
-}
-
-/*
-public class HashTagSuggestWithAPIAdapter extends ArrayAdapter<HashTagSuggestWithAPIAdapter.HashTag> {
-
-    private HashTagFilter filter;
-    private List<HashTag> suggests = new ArrayList<>();
-
-    private LayoutInflater inflater;
-    private CursorPositionListener listener;
-
-    public HashTagSuggestWithAPIAdapter(Context context, int resource, List<HashTag> objects) {
-        super(context, resource, objects);
-        inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    override fun getFilter(): Filter {
+        return filter
     }
 
-    public interface CursorPositionListener {
-        int currentCursorPosition();
-    }
-
-    public void setCursorPositionListener(CursorPositionListener listener) {
-        this.listener = listener;
-    }
-
-    @Override
-    public int getCount() {
-        return suggests.size();
-    }
-
-    @Override
-    public HashTag getItem(int position) {
-        return suggests.get(position);
-    }
-
-    @Override
-    public Filter getFilter() {
-
-        if (filter == null) {
-            filter = new HashTagFilter();
-        }
-
-        return filter;
-    }
-
-    public class HashTagFilter extends Filter {
-
-        private final Pattern pattern = Pattern.compile("[#＃]([Ａ-Ｚａ-ｚA-Za-z一-\u9FC60-9０-９ぁ-ヶｦ-ﾟー])+");
-
-        private SuggestService service;
-
-        public int start;
-        public int end;
-
-        public HashTagFilter() {
-
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("YOUR_BASE_URL")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            service = retrofit.create(SuggestService.class);
-        }
-
-        @Override
-        public CharSequence convertResultToString(Object resultValue) {
-            return String.format("#%s ", ((HashTag) resultValue).tag);
-        }
-
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-
-            FilterResults filterResults = new FilterResults();
-
-            if (constraint != null) {
-
-                suggests.clear();
-
-                int cursorPosition = listener.currentCursorPosition();
-
-                Matcher m = pattern.matcher(constraint.toString());
-                while (m.find()) {
-
-                    if (m.start() < cursorPosition && cursorPosition <= m.end()) {
-
-                        start = m.start();
-                        end = m.end();
-
-                        String keyword = constraint.subSequence(m.start() + 1, m.end()).toString();
-                        Call<SuggestResponse> call = service.listHashTags(keyword);
-                        try {
-                            suggests = call.execute().body().results;
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
+    class BankNameFilter(val adapter: BankNameAdapter): Filter() {
+        override fun convertResultToString(resultValue: Any?): CharSequence {
+            return (resultValue as? Bank)?.let {
+                it.name
+            } ?: run {
+                super.convertResultToString(resultValue)
             }
-
-            filterResults.values = suggests;
-            filterResults.count = suggests.size();
-
-            return filterResults;
         }
 
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            return FilterResults()
+        }
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
             if (results != null && results.count > 0) {
-                notifyDataSetChanged();
+                adapter.notifyDataSetChanged()
             } else {
-                notifyDataSetInvalidated();
+                adapter.notifyDataSetInvalidated()
             }
         }
     }
+}
 
-    public interface SuggestService {
-        @GET("YOUR_PATH")
-        Call<SuggestResponse> listHashTags(@Query("keyword") String keyword);
-    }
+class BranchNameAdapter(context: Context): ArrayAdapter<BankBranch>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf()) {
+    val filter = BranchNameFilter(this)
 
-    public class SuggestResponse {
-
-        private ArrayList<HashTag> results;
-
-        public SuggestResponse() {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val convertView = convertView ?: run {
+            val inflator = LayoutInflater.from(context)
+            inflator.inflate(android.R.layout.simple_dropdown_item_1line, parent, false)
         }
+
+        getItem(position)?.let {
+            (convertView as? TextView)?.text = it.name
+        }
+        return convertView
     }
 
-    public class HashTag {
-        private final String tag;
-        private final String count;
+    override fun getFilter(): Filter {
+        return filter
+    }
 
-        public HashTag(String tag, String count) {
-            this.tag = tag;
-            this.count = count;
+    class BranchNameFilter(val adapter: BranchNameAdapter): Filter() {
+        override fun convertResultToString(resultValue: Any?): CharSequence {
+            return (resultValue as? Bank)?.let {
+                it.name
+            } ?: run {
+                super.convertResultToString(resultValue)
+            }
+        }
+
+        override fun performFiltering(constraint: CharSequence?): FilterResults {
+            return FilterResults()
+        }
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+            if (results != null && results.count > 0) {
+                adapter.notifyDataSetChanged()
+            } else {
+                adapter.notifyDataSetInvalidated()
+            }
         }
     }
 }
- */

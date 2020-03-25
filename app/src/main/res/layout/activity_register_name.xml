@@ -84,8 +84,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.lastNameErrorMsg}"
-                    android:visibility="@{viewModel.lastNameErrorVisibility}" />
+                    android:text="@={viewModel.lastNameError.message}"
+                    android:visibility="@{viewModel.lastNameError.visibility}" />
 
                 <TextView
                     style="@style/fieldLabel"
@@ -107,8 +107,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.firstNameErrorMsg}"
-                    android:visibility="@{viewModel.firstNameErrorVisibility}" />
+                    android:text="@={viewModel.firstNameError.message}"
+                    android:visibility="@{viewModel.firstNameError.visibility}" />
 
             </LinearLayout>
         </ScrollView>

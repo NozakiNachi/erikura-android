@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterPhoneBinding
+import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
 import java.util.regex.Pattern
 
 class RegisterPhoneActivity : AppCompatActivity(),
@@ -28,7 +29,6 @@ class RegisterPhoneActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_register_phone)
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
@@ -37,7 +37,7 @@ class RegisterPhoneActivity : AppCompatActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        viewModel.errorVisibility.value = 8
+        viewModel.error.message.value = null
     }
 
     override fun onClickNext(view: View) {
@@ -52,8 +52,7 @@ class RegisterPhoneActivity : AppCompatActivity(),
 
 class RegisterPhoneViewModel: ViewModel() {
     val phone: MutableLiveData<String> = MutableLiveData()
-    val errorMsg: MutableLiveData<String> = MutableLiveData()
-    val errorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(phone) {result.value = isValid() }
@@ -65,20 +64,16 @@ class RegisterPhoneViewModel: ViewModel() {
 
         if (valid && phone.value?.isBlank() ?:true) {
             valid = false
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            error.message.value = null
         }else if(valid && !(pattern.matcher(phone.value).find())) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-            errorVisibility.value = 0
+            error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
         }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
-            errorVisibility.value = 0
+            error.message.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
         } else {
             valid = true
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            error.message.value = null
         }
 
         return valid

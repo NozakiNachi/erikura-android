@@ -17,6 +17,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterEmailBinding
+import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 class RegisterEmailActivity : AppCompatActivity(),
@@ -33,7 +34,7 @@ class RegisterEmailActivity : AppCompatActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        viewModel.errorVisibility.value = 8
+        viewModel.error.message.value = null
     }
 
     override fun onClickSendEmail(view: View) {
@@ -67,8 +68,7 @@ class RegisterEmailActivity : AppCompatActivity(),
 
 class RegisterEmailViewModel: ViewModel() {
     val email: MutableLiveData<String> = MutableLiveData()
-    val errorMsg: MutableLiveData<String> = MutableLiveData()
-    val errorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isRegisterEmailButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(email) { result.value = isValid() }
@@ -79,16 +79,14 @@ class RegisterEmailViewModel: ViewModel() {
 
         if (valid && email.value?.isBlank() ?: true) {
             valid = false
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            error.message.value = null
         }else if (valid && !(android.util.Patterns.EMAIL_ADDRESS.matcher(email.value ?:"").matches())) {
             valid = false
-            errorMsg.value = ErikuraApplication.instance.getString(R.string.email_format_error)
-            errorVisibility.value = 0
+            error.message.value = ErikuraApplication.instance.getString(R.string.email_format_error)
+
         } else {
             valid = true
-            errorMsg.value = ""
-            errorVisibility.value = 8
+            error.message.value = null
         }
 
         return valid

@@ -59,9 +59,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{view_model.errorVisibility}"
+                    android:visibility="@{view_model.error.visibility}"
                     style="@style/errorField"
-                    android:text="@={view_model.errorMsg}"
+                    android:text="@={view_model.error.message}"
                     />
 
 

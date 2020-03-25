@@ -47,24 +47,16 @@
                     android:drawableLeft="@drawable/icon_required_18"
                     android:drawablePadding="8dp"
                     android:text="銀行名" />
-                <!--
-                <EditText
-                    style="@style/textField"
-                    android:layout_marginTop="10dp"
-                    android:hint="例)みずほ"
-                    android:text="@={viewModel.bankName}"
-                    android:onFocusChanged="@{handlers::onBankNameFocusChanged}"
-                    />
-                -->
                 <AutoCompleteTextView
                     android:id="@+id/account_setting_bank_name"
                     android:layout_width="match_parent"
                     android:layout_height="66dp"
                     android:layout_marginTop="10dp"
                     style="@style/textField"
+                    android:inputType="text"
                     android:hint="例)みずほ"
                     android:text="@={viewModel.bankName}"
-                    android:inputType="text"
+                    android:onFocusChanged="@{handlers::onBankNameFocusChanged}"
                     />
                 <TextView
                     android:layout_width="match_parent"
@@ -125,11 +117,14 @@
                     android:drawableLeft="@drawable/icon_required_18"
                     android:drawablePadding="9dp"
                     android:text="支店名" />
-                <EditText
-                    android:id="@+id/branch_office_name"
-                    style="@style/textField"
-                    android:hint="例)銀座"
+                <AutoCompleteTextView
+                    android:id="@+id/account_setting_branch_office_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="66dp"
                     android:layout_marginTop="10dp"
+                    style="@style/textField"
+                    android:inputType="text"
+                    android:hint="例)銀座"
                     android:text="@={viewModel.branchOfficeName}"
                     android:onFocusChanged="@{handlers::onBranchOfficeNameFocusChanged}"
                     />
@@ -308,7 +303,8 @@
                         android:layout_weight="1"
                         style="@style/textField"
                         android:layout_marginRight="8dp"
-                        android:hint="@string/register_last_name_hint"
+                        android:inputType="text"
+                        android:hint="@string/account_holder_family_hint"
                         android:text="@={viewModel.accountHolderFamily}"
                         />
                     <EditText
@@ -316,8 +312,9 @@
                         android:layout_height="70dp"
                         android:layout_weight="1"
                         style="@style/textField"
+                        android:inputType="text"
                         android:layout_marginLeft="0dp"
-                        android:hint="@string/register_first_name_hint"
+                        android:hint="@string/account_holder_hint"
                         android:text="@={viewModel.accountHolder}"
                         />
                 </LinearLayout>
