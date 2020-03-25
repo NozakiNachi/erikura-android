@@ -47,12 +47,24 @@
                     android:drawableLeft="@drawable/icon_required_18"
                     android:drawablePadding="8dp"
                     android:text="銀行名" />
+                <!--
                 <EditText
                     style="@style/textField"
                     android:layout_marginTop="10dp"
                     android:hint="例)みずほ"
                     android:text="@={viewModel.bankName}"
                     android:onFocusChanged="@{handlers::onBankNameFocusChanged}"
+                    />
+                -->
+                <AutoCompleteTextView
+                    android:id="@+id/account_setting_bank_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="66dp"
+                    android:layout_marginTop="10dp"
+                    style="@style/textField"
+                    android:hint="例)みずほ"
+                    android:text="@={viewModel.bankName}"
+                    android:inputType="text"
                     />
                 <TextView
                     android:layout_width="match_parent"
@@ -68,8 +80,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@={viewModel.bankNameErrorMsg}"
-                    android:visibility="@{viewModel.bankNameErrorVisibility}" />
+                    android:text="@={viewModel.bankNameError.message}"
+                    android:visibility="@{viewModel.bankNameError.visibility}" />
 
                 <!-- 銀行コード -->
                 <TextView
@@ -101,8 +113,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.bankNumberErrorMsg}"
-                    android:visibility="@{viewModel.bankNumberErrorVisibility}" />
+                    android:text="@={viewModel.bankNumberError.message}"
+                    android:visibility="@{viewModel.bankNumberError.visibility}" />
 
                 <!--支店名-->
                 <TextView
@@ -134,8 +146,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.branchOfficeNameErrorMsg}"
-                    android:visibility="@{viewModel.branchOfficeNameErrorVisibility}" />
+                    android:text="@={viewModel.branchOfficeNameError.message}"
+                    android:visibility="@{viewModel.branchOfficeNameError.visibility}" />
 
                 <!-- 支店コード -->
                 <TextView
@@ -169,8 +181,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.branchOfficeNumberErrorMsg}"
-                    android:visibility="@{viewModel.branchOfficeNumberErrorVisibility}" />
+                    android:text="@={viewModel.branchOfficeNumberError.message}"
+                    android:visibility="@{viewModel.branchOfficeNumberError.visibility}" />
 
                 <!-- 口座番号 -->
                 <TextView
@@ -205,8 +217,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.accountNumberErrorMsg}"
-                    android:visibility="@{viewModel.accountNumberErrorVisibility}" />
+                    android:text="@={viewModel.accountNumberError.message}"
+                    android:visibility="@{viewModel.accountNumberError.visibility}" />
 
                 <!-- 口座種別 -->
                 <TextView
@@ -322,17 +334,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.accountHolderFamilyErrorVisibility}"
+                    android:visibility="@{viewModel.accountHolderFamilyError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.accountHolderFamilyErrorMsg}"
+                    android:text="@={viewModel.accountHolderFamilyError.message}"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.accountHolderErrorVisibility}"
+                    android:visibility="@{viewModel.accountHolderError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.accountHolderErrorMsg}"
+                    android:text="@={viewModel.accountHolderError.message}"
                     />
 
                 <!--登録ボタン-->

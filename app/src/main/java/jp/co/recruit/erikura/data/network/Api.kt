@@ -181,7 +181,14 @@ class Api(var context: Context) {
         }
     }
 
-    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (bankNumber: String?) -> Unit) {
+    fun bank(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (List<Bank>) -> Unit) {
+        executeObservable(erikuraApiService.bank(bankName), onError = onError) { body ->
+            val banks = body.map { Bank(name = it.first(), code = it.last()) }
+            onComplete(banks)
+        }
+    }
+
+    fun bankCode(bankName: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (bankNumber: String?) -> Unit) {
         executeObservable(
             erikuraApiService.bank(bankName),
             onError = onError
@@ -200,7 +207,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun branch(branchOfficeName: String, bankNumber:String,  onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (branchOfficeNumber: String?) -> Unit) {
+    fun branchCode(branchOfficeName: String, bankNumber:String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (branchOfficeNumber: String?) -> Unit) {
         executeObservable(
             erikuraApiService.branch(branchOfficeName, bankNumber),
             onError = onError

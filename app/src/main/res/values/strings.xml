@@ -224,17 +224,17 @@
     <string name="password_verificationPassword_match_error">パスワードとパスワード(確認)の値が一致しません。</string>
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
-    <string name="bank_name_count_error">銀行名は30文字以内で入力してください。</string>
+    <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>
     <string name="bank_number_count_error">銀行コードは4文字で入力してください。</string>
     <string name="bank_number_format_error">銀行コードの形式が正しくありません。</string>
-    <string name="branch_official_name_count_error">支店名は30文字以内で入力してください。</string>
+    <string name="branch_official_name_count_error">支店名は100文字以内で入力してください。</string>
     <string name="branch_official_number_count_error">支店コードは3文字で入力してください。</string>
     <string name="branch_official_number_format_error">支店コードの形式が正しくありません。</string>
     <string name="account_number_count_error">口座番号は7文字で入力してください。</string>
     <string name="account_number_format_error">口座番号の形式が正しくありません。</string>
-    <string name="account_holder_count_error">名義人名(メイ)は30文字以内で入力してください。</string>
+    <string name="account_holder_count_error">名義人名(メイ)は20文字以内で入力してください。</string>
     <string name="account_holder_format_error">名義人名(メイ)は全角カナで入力してください。</string>
-    <string name="account_holder_family_count_error">名義人名(セイ)は30文字以内で入力してください。</string>
+    <string name="account_holder_family_count_error">名義人名(セイ)は20文字以内で入力してください。</string>
     <string name="account_holder_family_format_error">名義人名(セイ)は全角カナで入力してください。</string>
 
     <!--    <string name="email_format_error">メールアドレスの形式が正しくありません。</string>-->
