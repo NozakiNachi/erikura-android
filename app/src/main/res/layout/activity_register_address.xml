@@ -88,8 +88,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.postalCodeErrorMsg}"
-                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+                    android:text="@={viewModel.postalCodeError.message}"
+                    android:visibility="@{viewModel.postalCodeError.visibility}" />
 
                 <!-- 都道府県 -->
                 <TextView
@@ -131,8 +131,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.cityErrorMsg}"
-                    android:visibility="@{viewModel.cityErrorVisibility}" />
+                    android:text="@={viewModel.cityError.message}"
+                    android:visibility="@{viewModel.cityError.visibility}" />
 
                 <!-- 番地以降 -->
                 <TextView
@@ -156,8 +156,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.streetErrorMsg}"
-                    android:visibility="@{viewModel.streetErrorVisibility}" />
+                    android:text="@={viewModel.streetError.message}"
+                    android:visibility="@{viewModel.streetError.visibility}" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
