@@ -256,10 +256,9 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         outputSummaryList.add(summary)
                         job.report?.let {
                             it.outputSummaries = outputSummaryList
-                            // FIXME: 画像アップロード処理の実行
-//                            it.uploadPhoto(this, job, summary.photoAsset){ token ->
-//                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
-//                            }
+                            it.uploadPhoto(this, job, summary.photoAsset){ token ->
+                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
+                            }
                         }
                     }
 
@@ -521,7 +520,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             val item = it.additionalPhotoAsset ?: MediaItem()
             if (item.contentUri != null) {
                 val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
-                if (it.additionalReportPhotoUrl!=null) {
+                if (it.additionalReportPhotoUrl!= null) {
                     item.loadImageFromString(this, imageView)
                 }else {
                     item.loadImage(this, imageView)
@@ -623,8 +622,11 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
 
     init {
         if (mediaItem != null) {
-            mediaItem.loadImageFromString(activity, imageView)
-//            mediaItem.loadImage(activity, imageView)
+            if(isUrlExist) {
+                mediaItem.loadImageFromString(activity, imageView)
+            }else {
+                mediaItem.loadImage(activity, imageView)
+            }
         } else {
             imageVisibility.value = View.GONE
             addPhotoButtonVisibility.value = View.VISIBLE
@@ -713,8 +715,11 @@ class ReportSummaryItemViewModel(
 
     init {
         summary.photoAsset?.let {
-//            it.loadImage(activity, imageView)
-            it.loadImageFromString(activity, imageView)
+            if (summary.beforeCleaningPhotoUrl != null){
+                it.loadImageFromString(activity, imageView)
+            }else {
+                it.loadImage(activity, imageView)
+            }
         }
 
         summaryTitle.value = ErikuraApplication.instance.getString(
