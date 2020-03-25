@@ -33,7 +33,7 @@ class ReportedJobEditButtonFragment(private val job: Job?) : Fragment(), Reporte
         binding.handler = this
 
         job?.let { job ->
-            if (job.entry!!.limitAt!! > Date() && job.report?.isRejected?: false) {
+            if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_rejected_report)
             }else {
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
