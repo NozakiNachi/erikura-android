@@ -18,6 +18,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterAddressBinding
+import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
 import java.util.regex.Pattern
 
 class RegisterAddressActivity : AppCompatActivity(),
@@ -32,7 +33,6 @@ class RegisterAddressActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_register_address)
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
@@ -41,13 +41,13 @@ class RegisterAddressActivity : AppCompatActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        viewModel.postalCodeErrorVisibility.value = 8
-        viewModel.cityErrorVisibility.value = 8
-        viewModel.streetErrorVisibility.value = 8
 
         val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
         prefectureSpinner.isFocusable = true
         prefectureSpinner.isFocusableInTouchMode = true
+        viewModel.postalCodeError.message.value = null
+        viewModel.cityError.message.value = null
+        viewModel.streetError.message.value = null
     }
 
     override fun onClickNext(view: View) {
@@ -91,15 +91,12 @@ class RegisterAddressActivity : AppCompatActivity(),
 
 class RegisterAddressViewModel: ViewModel() {
     val postalCode: MutableLiveData<String> = MutableLiveData()
-    val postalCodeErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val postalCodeErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val postalCodeError: ErrorMessageViewModel = ErrorMessageViewModel()
     val prefectureId: MutableLiveData<Int> = MutableLiveData()
     val city: MutableLiveData<String> = MutableLiveData()
-    val cityErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val cityErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val cityError: ErrorMessageViewModel = ErrorMessageViewModel()
     val street: MutableLiveData<String> = MutableLiveData()
-    val streetErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val streetErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val streetError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(postalCode) { result.value = isValid() }
@@ -124,20 +121,16 @@ class RegisterAddressViewModel: ViewModel() {
 
         if (valid && postalCode.value?.isBlank() ?: true) {
             valid = false
-            postalCodeErrorMsg.value = ""
-            postalCodeErrorVisibility.value = 8
+            postalCodeError.message.value = null
         } else if (valid && !(pattern.matcher(postalCode.value).find())) {
             valid = false
-            postalCodeErrorMsg.value = ErikuraApplication.instance.getString(R.string.postal_code_pattern_error)
-            postalCodeErrorVisibility.value = 0
+            postalCodeError.message.value = ErikuraApplication.instance.getString(R.string.postal_code_pattern_error)
         } else if (valid && !(postalCode.value?.length ?: 0 == 7)) {
             valid = false
-            postalCodeErrorMsg.value = ErikuraApplication.instance.getString(R.string.postal_code_count_error)
-            postalCodeErrorVisibility.value = 0
+            postalCodeError.message.value = ErikuraApplication.instance.getString(R.string.postal_code_count_error)
         } else {
             valid = true
-            postalCodeErrorMsg.value = ""
-            postalCodeErrorVisibility.value = 8
+            postalCodeError.message.value = null
 
         }
 
@@ -153,16 +146,13 @@ class RegisterAddressViewModel: ViewModel() {
 
         if (valid && city.value?.isBlank() ?: true) {
             valid = false
-            cityErrorMsg.value = ""
-            cityErrorVisibility.value = 8
+            cityError.message.value = null
         } else if (valid && !(city.value?.length ?: 0 <= 20)) {
             valid = false
-            cityErrorMsg.value = ErikuraApplication.instance.getString(R.string.city_count_error)
-            cityErrorVisibility.value = 0
+            cityError.message.value = ErikuraApplication.instance.getString(R.string.city_count_error)
         } else {
             valid = true
-            cityErrorMsg.value = ""
-            cityErrorVisibility.value = 8
+            cityError.message.value = null
         }
 
         return valid
@@ -173,16 +163,13 @@ class RegisterAddressViewModel: ViewModel() {
 
         if (valid && street.value?.isBlank() ?: true) {
             valid = false
-            streetErrorMsg.value = ""
-            streetErrorVisibility.value = 8
+            streetError.message.value = null
         } else if (valid && !(street.value?.length ?: 0 <= 100)) {
             valid = false
-            streetErrorMsg.value = ErikuraApplication.instance.getString(R.string.street_count_error)
-            streetErrorVisibility.value = 0
+            streetError.message.value = ErikuraApplication.instance.getString(R.string.street_count_error)
         } else {
             valid = true
-            streetErrorMsg.value = ""
-            streetErrorVisibility.value = 8
+            streetError.message.value = null
         }
 
         return valid

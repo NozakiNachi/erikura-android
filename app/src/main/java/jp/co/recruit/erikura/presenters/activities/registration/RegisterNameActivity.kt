@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterNameBinding
+import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
 
 class RegisterNameActivity : AppCompatActivity(),
     RegisterNameEventHandlers {
@@ -27,7 +28,6 @@ class RegisterNameActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        //setContentView(R.layout.activity_register_name)
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
@@ -36,8 +36,8 @@ class RegisterNameActivity : AppCompatActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        viewModel.lastNameErrorVisibility.value = 8
-        viewModel.firstNameErrorVisibility.value = 8
+        viewModel.firstNameError.message.value = null
+        viewModel.lastNameError.message.value = null
     }
 
     override fun onClickNext(view: View) {
@@ -53,11 +53,9 @@ class RegisterNameActivity : AppCompatActivity(),
 
 class RegisterNameViewModel: ViewModel() {
     val lastName: MutableLiveData<String> = MutableLiveData()
-    val lastNameErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val lastNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val lastNameError: ErrorMessageViewModel = ErrorMessageViewModel()
     val firstName: MutableLiveData<String> = MutableLiveData()
-    val firstNameErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val firstNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val firstNameError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(lastName) { result.value = isValid() }
@@ -77,16 +75,13 @@ class RegisterNameViewModel: ViewModel() {
 
         if (valid && lastName.value?.isBlank() ?:true) {
             valid = false
-            lastNameErrorMsg.value = ""
-            lastNameErrorVisibility.value = 8
+            lastNameError.message.value = null
         } else if (valid && !(lastName.value?.length ?: 0 <= 30)) {
             valid = false
-            lastNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
-            lastNameErrorVisibility.value = 0
+            lastNameError.message.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
         } else {
             valid = true
-            lastNameErrorMsg.value = ""
-            lastNameErrorVisibility.value = 8
+            lastNameError.message.value = null
         }
 
         return valid
@@ -97,16 +92,13 @@ class RegisterNameViewModel: ViewModel() {
 
         if (valid && firstName.value?.isBlank() ?:true) {
             valid = false
-            firstNameErrorMsg.value = ""
-            firstNameErrorVisibility.value = 8
+            firstNameError.message.value = null
         } else if (valid && !(firstName.value?.length ?: 0 <= 30)) {
             valid = false
-            firstNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
-            firstNameErrorVisibility.value = 0
+            firstNameError.message.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
         } else {
             valid = true
-            firstNameErrorMsg.value = ""
-            firstNameErrorVisibility.value = 8
+            firstNameError.message.value = null
         }
 
         return valid
