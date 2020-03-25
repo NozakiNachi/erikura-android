@@ -1,40 +1,27 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
-import android.app.Service
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.IBinder
-import android.system.Os.remove
-import android.view.Display
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import io.reactivex.internal.util.HalfSerializer.onComplete
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
-import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
-import kotlinx.android.synthetic.main.activity_mypage.*
-import java.util.AbstractList
-import java.util.regex.Pattern
 
 
 class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {

@@ -8,11 +8,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.RequiredClientVersion
@@ -21,7 +23,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlin.collections.ArrayList
-
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 
 class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
     data class MenuItem(val id: Int, val label: String, val onSelect: () -> Unit)
@@ -86,7 +88,7 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
 
         // ユーザーのOSバージョンを取得
         Api(this).clientVersion(){
-            // FIXME: RequiredCilentVirsionを実装後挙動確認(Viewも書き換え)
+            // FIXME: RequiredCilentVirsionを実装後挙動確認(xmlも書き換え)
             virsion = it
             viewModel.current.value = virsion!!.current
             viewModel.minimum.value = virsion!!.minimum
@@ -119,7 +121,6 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
                 listener?.onItemClickListener(menuItems[position])
             }
         }
-
         interface OnItemClickListener {
             fun onItemClickListener(item: MenuItem)
         }
@@ -131,7 +132,6 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
         override fun getItemCount() = menuItems.size
     }
 }
-
 
 interface AboutAppEventHandlers {
 
