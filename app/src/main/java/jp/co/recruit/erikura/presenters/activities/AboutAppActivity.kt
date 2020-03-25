@@ -60,6 +60,10 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
                 data = Uri.parse(privacyPolicyURLString)
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        },
+        MenuItem(3, "ライセンス一覧") {
+            val intent = Intent(this, OssLicensesMenuActivity::class.java)
+            startActivity(intent)
         }
     )
 
