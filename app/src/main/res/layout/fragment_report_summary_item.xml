@@ -236,6 +236,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:padding="20dp"
                 android:background="@drawable/background_round_topaz"
                 android:orientation="vertical"
                 android:visibility="@{viewModel.evaluationVisible}">
@@ -243,57 +244,41 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_weight="3"
-                    android:gravity="left"
                     android:text="@string/evaluation_from_management"
                     android:textColor="@color/black"
                     android:textSize="16dp" />
 
                 <!-- コメント表示 -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/summaryItem_operatorComments"
+<!--                <androidx.recyclerview.widget.RecyclerView-->
+<!--                    android:id="@+id/summaryItem_operatorComments"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:orientation="vertical"-->
+<!--                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />-->
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:background="@color/silverTwo" />
+
+                <!-- report.client_comments-->
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:orientation="vertical"
-                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                    android:layout_marginBottom="8dp"
+                    android:text="@{viewModel.operatorComment}"
+                    android:textColor="@color/black" />
 
-                <!--            <View-->
-                <!--                android:layout_width="match_parent"-->
-                <!--                android:layout_height="1dp"-->
-                <!--                android:layout_marginLeft="20dp"-->
-                <!--                android:layout_marginTop="20dp"-->
-                <!--                android:layout_marginRight="18dp"-->
-                <!--                android:layout_marginBottom="19.5dp"-->
-                <!--                android:background="@color/silverTwo" />-->
-
-                <!--            &lt;!&ndash; report.client_comments&ndash;&gt;-->
-                <!--            <TextView-->
-                <!--                android:layout_width="match_parent"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_marginLeft="20dp"-->
-                <!--                android:layout_marginRight="33dp"-->
-                <!--                android:layout_marginBottom="8dp"-->
-                <!--                android:layout_weight="3"-->
-                <!--                android:gravity="left"-->
-                <!--                android:text=""-->
-                <!--                android:textColor="@color/black"-->
-                <!--                android:textSize="14dp" />-->
-
-                <!--            &lt;!&ndash; report.client_comments_created_at&ndash;&gt;-->
-                <!--            <TextView-->
-                <!--                android:layout_width="match_parent"-->
-                <!--                android:layout_height="wrap_content"-->
-                <!--                android:layout_marginLeft="20dp"-->
-                <!--                android:layout_marginRight="36dp"-->
-                <!--                android:layout_marginBottom="20dp"-->
-                <!--                android:layout_weight="3"-->
-                <!--                android:gravity="left"-->
-                <!--                android:text=""-->
-                <!--                android:textColor="@color/warmGrey"-->
-                <!--                android:textSize="12dp" />-->
+                <!-- report.client_comments_created_at-->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.operatorCommentCreatedAt}"
+                    android:textColor="@color/warmGrey"
+                    android:textSize="12dp" />
 
             </LinearLayout>
         </LinearLayout>

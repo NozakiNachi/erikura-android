@@ -1,9 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -15,7 +16,9 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Payment
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.databinding.ActivityAccountSettingBinding
+import kotlinx.android.synthetic.main.activity_account_setting.*
+import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.regex.Pattern
 
@@ -41,14 +44,24 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         binding.handlers = this
         binding.viewModel = viewModel
 
-        // エラーメッセージ
-        viewModel.bankNameErrorVisibility.value = 8
-        viewModel.bankNumberErrorVisibility.value = 8
-        viewModel.branchOfficeNameErrorVisibility.value = 8
-        viewModel.branchOfficeNumberErrorVisibility.value = 8
-        viewModel.accountNumberErrorVisibility.value = 8
-        viewModel.accountHolderErrorVisibility.value = 8
-        viewModel.accountHolderFamilyErrorVisibility.value = 8
+//        val adapter = BankNameAdapter(this)
+        val adapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            this,
+            android.R.layout.simple_dropdown_item_1line,
+            arrayOf("test", "hoo", "foo", "bar")
+        )
+        this.account_setting_bank_name.setAdapter(adapter)
+//        val api = Api(this)
+//        viewModel.bankName.observe(this, object: Observer<String> {
+//            override fun onChanged(t: String?) {
+//                Log.v("DEBUG", t ?: "HOGEHOGE")
+//                api.bank(t ?: "") { banks ->
+//                    adapter.clear()
+//                    adapter.addAll(banks.map { it.name })
+//                    adapter.notifyDataSetChanged()
+//                }
+//            }
+//        })
 
         // 変更するユーザーの現在の登録値を取得
         Api(this).payment() {
@@ -85,7 +98,7 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
     // 銀行名フォーカス機能
     override fun onBankNameFocusChanged(view: View, hasFocus: Boolean) {
         if(!hasFocus && viewModel.bankName.value !== null) {
-            Api(this).bank(viewModel.bankName.value ?: "") { bankNumber ->
+            Api(this).bankCode(viewModel.bankName.value ?: "") { bankNumber ->
                 viewModel.bankNumber.value = bankNumber
 
                 val streetEditText = findViewById<EditText>(R.id.branch_office_name)
@@ -97,7 +110,7 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
     // 支店名フォーカス機能
     override fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean) {
         if(!hasFocus && viewModel.branchOfficeName.value !== null) {
-            Api(this).branch(viewModel.branchOfficeName.value ?: "",viewModel.bankNumber.value ?: "") { branchOfficeNumber ->
+            Api(this).branchCode(viewModel.branchOfficeName.value ?: "",viewModel.bankNumber.value ?: "") { branchOfficeNumber ->
                 viewModel.branchOfficeNumber.value = branchOfficeNumber
 
                 val streetEditText = findViewById<EditText>(R.id.account_name)
@@ -173,39 +186,32 @@ class AccountSettingViewModel: ViewModel() {
 
     // 銀行名
     val bankName: MutableLiveData<String> = MutableLiveData()
-    val bankNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val bankNameErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val bankNameError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 銀行コード
     val bankNumber: MutableLiveData<String> = MutableLiveData()
-    val bankNumberErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val bankNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val bankNumberError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 支店名
     val branchOfficeName: MutableLiveData<String> = MutableLiveData()
-    val branchOfficeNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val branchOfficeNameErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val branchOfficeNameError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 支店コード
     val branchOfficeNumber: MutableLiveData<String> = MutableLiveData()
-    val branchOfficeNumberErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val branchOfficeNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val branchOfficeNumberError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 口座番号
     val accountNumber: MutableLiveData<String> = MutableLiveData()
-    val accountNumberErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val accountNumberErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val accountNumberError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 口座タイプ
     val accountType: MutableLiveData<String> = MutableLiveData()
 
     // 銀行名
     val accountHolderFamily: MutableLiveData<String> = MutableLiveData()
-    val accountHolderFamilyErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val accountHolderFamilyErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val accountHolderFamilyError: ErrorMessageViewModel = ErrorMessageViewModel()
     val accountHolder: MutableLiveData<String> = MutableLiveData()
-    val accountHolderErrorVisibility: MutableLiveData<Int> = MutableLiveData()
-    val accountHolderErrorMsg: MutableLiveData<String> = MutableLiveData()
+    val accountHolderError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 登録ボタン押下
     val isSettingButtonEnabled = MediatorLiveData<Boolean>().also { result ->
@@ -240,16 +246,13 @@ class AccountSettingViewModel: ViewModel() {
 
         if (valid && bankName.value?.isBlank() ?:true) {
             valid = false
-            bankNameErrorMsg.value = ""
-            bankNameErrorVisibility.value = 8
-        } else if (valid && !(bankName.value?.length ?: 0 <= 6)) {
+            bankNameError.message.value = null
+        } else if (valid && !(bankName.value?.length ?: 0 <= 100)) {
             valid = false
-            bankNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.bank_name_count_error)
-            bankNameErrorVisibility.value = 0
+            bankNameError.message.value = ErikuraApplication.instance.getString(R.string.bank_name_count_error)
         } else {
             valid = true
-            bankNameErrorMsg.value = ""
-            bankNameErrorVisibility.value = 8
+            bankNameError.message.value = null
         }
 
         return valid
@@ -257,25 +260,20 @@ class AccountSettingViewModel: ViewModel() {
 
     private fun isValidBankNumber(): Boolean {
         var valid = true
-        val pattern = Pattern.compile("^([0-9])")
+        val pattern = Pattern.compile("^([0-9]*)$")
 
         if (valid && bankNumber.value?.isBlank() ?: true) {
             valid = false
-            bankNumberErrorMsg.value = ""
-            bankNumberErrorVisibility.value = 8
+            bankNumberError.message.value = null
         } else if (valid && !(pattern.matcher(bankNumber.value).find())) {
             valid = false
-            bankNumberErrorMsg.value = ErikuraApplication.instance.getString(R.string.bank_number_format_error)
-            bankNumberErrorVisibility.value = 0
+            bankNumberError.message.value = ErikuraApplication.instance.getString(R.string.bank_number_format_error)
         } else if (valid && !(bankNumber.value?.length ?: 4 == 4)) {
             valid = false
-            bankNumberErrorMsg.value = ErikuraApplication.instance.getString(R.string.bank_number_count_error)
-            bankNumberErrorVisibility.value = 0
+            bankNumberError.message.value = ErikuraApplication.instance.getString(R.string.bank_number_count_error)
         } else {
             valid = true
-            bankNumberErrorMsg.value = ""
-            bankNumberErrorVisibility.value = 8
-
+            bankNumberError.message.value = null
         }
         return valid
     }
@@ -286,16 +284,13 @@ class AccountSettingViewModel: ViewModel() {
 
         if (valid && branchOfficeName.value?.isBlank() ?:true) {
             valid = false
-            branchOfficeNameErrorMsg.value = ""
-            branchOfficeNameErrorVisibility.value = 8
-        } else if (valid && !(bankName.value?.length ?: 0 <= 30)) {
+            branchOfficeNameError.message.value = null
+        } else if (valid && !(bankName.value?.length ?: 0 <= 100)) {
             valid = false
-            branchOfficeNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.branch_official_name_count_error)
-            branchOfficeNameErrorVisibility.value = 0
+            branchOfficeNameError.message.value = ErikuraApplication.instance.getString(R.string.branch_official_name_count_error)
         } else {
             valid = true
-            branchOfficeNameErrorMsg.value = ""
-            branchOfficeNameErrorVisibility.value = 8
+            branchOfficeNameError.message.value = null
         }
         return valid
     }
@@ -303,71 +298,59 @@ class AccountSettingViewModel: ViewModel() {
 
     private fun isValidBranchOfficeNumber(): Boolean {
         var valid = true
-        val pattern = Pattern.compile("^([0-9])")
+        val pattern = Pattern.compile("^([0-9]*)$")
 
         if (valid && bankNumber.value?.isBlank() ?: true) {
             valid = false
-            branchOfficeNumberErrorMsg.value = ""
-            branchOfficeNumberErrorVisibility.value = 8
+            branchOfficeNumberError.message.value = null
         } else if (valid && !(pattern.matcher(bankNumber.value).find())) {
             valid = false
-            branchOfficeNumberErrorMsg.value = ErikuraApplication.instance.getString(R.string.branch_official_number_format_error)
-            branchOfficeNumberErrorVisibility.value = 0
+            branchOfficeNumberError.message.value = ErikuraApplication.instance.getString(R.string.branch_official_number_format_error)
         } else if (valid && !(branchOfficeNumber.value?.length ?: 3 == 3)) {
             valid = false
-            branchOfficeNumberErrorMsg.value = ErikuraApplication.instance.getString(R.string.branch_official_number_count_error)
-            branchOfficeNumberErrorVisibility.value = 0
+            branchOfficeNumberError.message.value = ErikuraApplication.instance.getString(R.string.branch_official_number_count_error)
         } else {
             valid = true
-            branchOfficeNumberErrorMsg.value = ""
-            branchOfficeNumberErrorVisibility.value = 8
+            branchOfficeNumberError.message.value = null
         }
         return valid
     }
 
     private fun isValidAccountNumber(): Boolean {
         var valid = true
-        val pattern = Pattern.compile("^([0-9])")
+        val pattern = Pattern.compile("^([0-9]*)$")
 
-        if (valid && branchOfficeNumber.value?.isBlank() ?: true) {
+        if (valid && accountNumber.value?.isBlank() ?: true) {
             valid = false
-            accountNumberErrorMsg.value = ""
-            accountNumberErrorVisibility.value = 8
-        } else if (valid && !(pattern.matcher(bankNumber.value).find())) {
+            accountNumberError.message.value = null
+        } else if (valid && !(pattern.matcher(accountNumber.value).find())) {
             valid = false
-            accountNumberErrorMsg.value = ErikuraApplication.instance.getString(R.string.account_number_format_error)
-            accountNumberErrorVisibility.value = 0
+            accountNumberError.message.value = ErikuraApplication.instance.getString(R.string.account_number_format_error)
         } else if (valid && !(accountNumber.value?.length ?: 7 == 7)) {
             valid = false
-            accountNumberErrorMsg.value = ErikuraApplication.instance.getString(R.string.account_number_count_error)
-            accountNumberErrorVisibility.value = 0
+            accountNumberError.message.value = ErikuraApplication.instance.getString(R.string.account_number_count_error)
         } else {
             valid = true
-            accountNumberErrorMsg.value = ""
-            accountNumberErrorVisibility.value = 8
+            accountNumberError.message.value = null
         }
         return valid
     }
 
     private fun isValidAccountHolder(): Boolean {
         var valid = true
+
         if (valid && accountHolder.value?.isBlank() ?:true) {
             valid = false
-            accountHolderErrorMsg.value = ""
-            accountHolderErrorVisibility.value = 8
-        } else if (valid && !(accountHolder.value?.length ?: 0 <= 30)) {
+            accountHolderError.message.value = null
+        } else if (valid && !(accountHolder.value?.length ?: 0 <= 20)) {
             valid = false
-            accountHolderErrorMsg.value = ErikuraApplication.instance.getString(R.string.account_holder_count_error)
-            accountHolderErrorVisibility.value = 0
+            accountHolderError.message.value = ErikuraApplication.instance.getString(R.string.account_holder_count_error)
         }else if (!(accountHolder.value?.matches("^[\\u30A0-\\u30FF]+$".toRegex()) ?:true )){
             valid = false
-            accountHolderErrorMsg.value =
-                ErikuraApplication.instance.getString(R.string.account_holder_format_error)
-            accountHolderErrorVisibility.value = 0
+            accountHolderError.message.value = ErikuraApplication.instance.getString(R.string.account_holder_format_error)
         } else {
             valid = true
-            accountHolderErrorMsg.value = ""
-            accountHolderErrorVisibility.value = 8
+            accountHolderError.message.value = null
         }
         return valid
     }
@@ -376,22 +359,16 @@ class AccountSettingViewModel: ViewModel() {
         var valid = true
         if (valid && accountHolderFamily.value?.isBlank() ?:true) {
             valid = false
-            accountHolderFamilyErrorMsg.value = ""
-            accountHolderFamilyErrorVisibility.value = 8
-        } else if (valid && !(accountHolderFamily.value?.length ?: 0 <= 30)) {
+            accountHolderFamilyError.message.value = null
+        } else if (valid && !(accountHolderFamily.value?.length ?: 0 <= 20)) {
             valid = false
-            accountHolderFamilyErrorMsg.value =
-                ErikuraApplication.instance.getString(R.string.account_holder_family_count_error)
-            accountHolderFamilyErrorVisibility.value = 0
+            accountHolderFamilyError.message.value = ErikuraApplication.instance.getString(R.string.account_holder_family_count_error)
         } else if (!(accountHolderFamily.value?.matches("^[\\u30A0-\\u30FF]+$".toRegex()) ?:true )){
             valid = false
-            accountHolderFamilyErrorMsg.value =
-                ErikuraApplication.instance.getString(R.string.account_holder_family_format_error)
-            accountHolderFamilyErrorVisibility.value = 0
+            accountHolderFamilyError.message.value = ErikuraApplication.instance.getString(R.string.account_holder_family_format_error)
         } else {
             valid = true
-            accountHolderFamilyErrorMsg.value = ""
-            accountHolderFamilyErrorVisibility.value = 8
+            accountHolderFamilyError.message.value = null
         }
         return valid
     }
@@ -406,3 +383,181 @@ interface AccountSettingEventHandlers {
     fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
     fun recerfitication()
 }
+
+class ErrorMessageViewModel {
+    val message: MutableLiveData<String> = MutableLiveData()
+    val visibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(message) {
+            result.value = if (message.value == null || StringUtils.isBlank(message.value)) {
+                View.GONE
+            }
+            else {
+                View.VISIBLE
+            }
+        }
+    }
+}
+
+
+
+
+/*
+
+class SearchHistoryAdapter(context: Context, items: MutableList<SearchHistoryItem>): ArrayAdapter<SearchHistoryItem>(context, R.layout.fragment_history_downdown_item, R.id.history_dropdown_item_text, items) {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        val convertView = convertView ?: run {
+            val inflater = LayoutInflater.from(context)
+            inflater.inflate(R.layout.fragment_history_downdown_item, parent, false)
+        }
+
+        getItem(position)?.let {
+            val textView: TextView = convertView.findViewById(R.id.history_dropdown_item_text)
+            val imageView: ImageView = convertView.findViewById(R.id.history_dropdown_item_icon)
+
+            textView.text = it.name
+            imageView.setImageResource(it.iconResourceId)
+        }
+        return convertView
+    }
+}
+*/
+
+class BankNameAdapter(context: Context): ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf("test1", "test2", "test3")) {
+}
+
+/*
+public class HashTagSuggestWithAPIAdapter extends ArrayAdapter<HashTagSuggestWithAPIAdapter.HashTag> {
+
+    private HashTagFilter filter;
+    private List<HashTag> suggests = new ArrayList<>();
+
+    private LayoutInflater inflater;
+    private CursorPositionListener listener;
+
+    public HashTagSuggestWithAPIAdapter(Context context, int resource, List<HashTag> objects) {
+        super(context, resource, objects);
+        inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    }
+
+    public interface CursorPositionListener {
+        int currentCursorPosition();
+    }
+
+    public void setCursorPositionListener(CursorPositionListener listener) {
+        this.listener = listener;
+    }
+
+    @Override
+    public int getCount() {
+        return suggests.size();
+    }
+
+    @Override
+    public HashTag getItem(int position) {
+        return suggests.get(position);
+    }
+
+    @Override
+    public Filter getFilter() {
+
+        if (filter == null) {
+            filter = new HashTagFilter();
+        }
+
+        return filter;
+    }
+
+    public class HashTagFilter extends Filter {
+
+        private final Pattern pattern = Pattern.compile("[#＃]([Ａ-Ｚａ-ｚA-Za-z一-\u9FC60-9０-９ぁ-ヶｦ-ﾟー])+");
+
+        private SuggestService service;
+
+        public int start;
+        public int end;
+
+        public HashTagFilter() {
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("YOUR_BASE_URL")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            service = retrofit.create(SuggestService.class);
+        }
+
+        @Override
+        public CharSequence convertResultToString(Object resultValue) {
+            return String.format("#%s ", ((HashTag) resultValue).tag);
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            FilterResults filterResults = new FilterResults();
+
+            if (constraint != null) {
+
+                suggests.clear();
+
+                int cursorPosition = listener.currentCursorPosition();
+
+                Matcher m = pattern.matcher(constraint.toString());
+                while (m.find()) {
+
+                    if (m.start() < cursorPosition && cursorPosition <= m.end()) {
+
+                        start = m.start();
+                        end = m.end();
+
+                        String keyword = constraint.subSequence(m.start() + 1, m.end()).toString();
+                        Call<SuggestResponse> call = service.listHashTags(keyword);
+                        try {
+                            suggests = call.execute().body().results;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+            filterResults.values = suggests;
+            filterResults.count = suggests.size();
+
+            return filterResults;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            if (results != null && results.count > 0) {
+                notifyDataSetChanged();
+            } else {
+                notifyDataSetInvalidated();
+            }
+        }
+    }
+
+    public interface SuggestService {
+        @GET("YOUR_PATH")
+        Call<SuggestResponse> listHashTags(@Query("keyword") String keyword);
+    }
+
+    public class SuggestResponse {
+
+        private ArrayList<HashTag> results;
+
+        public SuggestResponse() {
+        }
+    }
+
+    public class HashTag {
+        private final String tag;
+        private final String count;
+
+        public HashTag(String tag, String count) {
+            this.tag = tag;
+            this.count = count;
+        }
+    }
+}
+ */
