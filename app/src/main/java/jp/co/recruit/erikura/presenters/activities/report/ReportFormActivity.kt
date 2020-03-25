@@ -141,9 +141,9 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
             val item = summary.photoAsset
             item?.let {
                 if (summary.beforeCleaningPhotoUrl != null ) {
-                    item.loadImage(this, imageView)
-                }else {
                     item.loadImageFromString(this, imageView)
+                }else {
+                    item.loadImage(this, imageView)
                 }
             }
         }

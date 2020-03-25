@@ -256,10 +256,9 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
                         outputSummaryList.add(summary)
                         job.report?.let {
                             it.outputSummaries = outputSummaryList
-                            // FIXME: 画像アップロード処理の実行
-//                            it.uploadPhoto(this, job, summary.photoAsset){ token ->
-//                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
-//                            }
+                            it.uploadPhoto(this, job, summary.photoAsset){ token ->
+                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
+                            }
                         }
                     }
 
@@ -275,11 +274,15 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
         // token取得処理
         job.report?.let { report ->
             report.outputSummaries.forEach { summary ->
-                summary.beforeCleaningPhotoToken =
-                    getPhotoToken(summary.photoAsset?.contentUri.toString())
+                if (summary.beforeCleaningPhotoUrl.isNullOrBlank()){
+                    summary.beforeCleaningPhotoToken =
+                        getPhotoToken(summary.photoAsset?.contentUri.toString())
+                }
             }
-            report.additionalReportPhotoToken =
-                getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            if (report.additionalReportPhotoUrl.isNullOrBlank()){
+                report.additionalReportPhotoToken =
+                    getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
+            }
         }
 
         if (isCompletedUploadPhotos()) {
@@ -519,7 +522,7 @@ class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
             val item = it.additionalPhotoAsset ?: MediaItem()
             if (item.contentUri != null) {
                 val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
-                if (it.additionalReportPhotoUrl!=null) {
+                if (it.additionalReportPhotoUrl!= null) {
                     item.loadImageFromString(this, imageView)
                 }else {
                     item.loadImage(this, imageView)
@@ -613,7 +616,7 @@ interface ReportConfirmEventHandlers {
 }
 
 // 実施箇所の一覧
-class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?) :
+class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?, isUrlExist: Boolean) :
     ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_image_item)
     val imageVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
@@ -621,8 +624,11 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
 
     init {
         if (mediaItem != null) {
-            mediaItem.loadImageFromString(activity, imageView)
-//            mediaItem.loadImage(activity, imageView)
+            if(isUrlExist) {
+                mediaItem.loadImageFromString(activity, imageView)
+            }else {
+                mediaItem.loadImage(activity, imageView)
+            }
         } else {
             imageVisibility.value = View.GONE
             addPhotoButtonVisibility.value = View.VISIBLE
@@ -664,9 +670,9 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         holder.binding.lifecycleOwner = activity
         if (position < summaries.count()) {
             holder.binding.viewModel =
-                ReportImageItemViewModel(activity, view, summaries[position].photoAsset)
+                ReportImageItemViewModel(activity, view, summaries[position].photoAsset, !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank())
         } else {
-            holder.binding.viewModel = ReportImageItemViewModel(activity, view, null)
+            holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false)
             val button =
                 holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
             button.setOnClickListener {
@@ -711,8 +717,11 @@ class ReportSummaryItemViewModel(
 
     init {
         summary.photoAsset?.let {
-//            it.loadImage(activity, imageView)
-            it.loadImageFromString(activity, imageView)
+            if (summary.beforeCleaningPhotoUrl != null){
+                it.loadImageFromString(activity, imageView)
+            }else {
+                it.loadImage(activity, imageView)
+            }
         }
 
         summaryTitle.value = ErikuraApplication.instance.getString(

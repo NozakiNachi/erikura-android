@@ -302,7 +302,7 @@
     <string name="edit_report">作業報告を編集</string>
     <string name="edit_rejected_report">再報告を開始する</string>
     <string name="remove_report">作業報告を削除</string>
-    <string name="cancel_report_entry">作業報告を削除</string>
+    <string name="cancel_report_entry">応募と報告をキャンセルする</string>
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>

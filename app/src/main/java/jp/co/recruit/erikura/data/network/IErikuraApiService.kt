@@ -264,13 +264,15 @@ data class AbortJobRequest(
 )
 
 data class ReportRequest(
+    var id: Int?,
     var jobId: Int,
     var outputSummariesAttributes: List<OutputSummaryRequest>,
     var workingMinute: Int?,
     var additionalComment: String?,
     var additionReportPhotoToken: String?,
     var evaluation: String,
-    var comment: String?
+    var comment: String?,
+    var additionalReportWillDelete: Boolean?
 )
 
 data class OutputSummaryRequest(

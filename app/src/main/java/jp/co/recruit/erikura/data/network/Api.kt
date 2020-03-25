@@ -404,17 +404,21 @@ class Api(var context: Context) {
             outputSummaries.add(outputSummaryRequest)
         }
 
+        val params = ReportRequest(
+            report.id,
+            job.id,
+            outputSummaries,
+            report.workingMinute,
+            report.additionalComment,
+            report.additionalReportPhotoToken,
+            report.evaluation?: "unanswered",
+            report.comment,
+            report.additionalReportPhotoWillDelete
+        )
+
         if (report.id == null) {
             executeObservable(
-                erikuraApiService.createReport(ReportRequest(
-                    job.id,
-                    outputSummaries,
-                    report.workingMinute,
-                    report.additionalComment,
-                    report.additionalReportPhotoToken,
-                    report.evaluation?: "unanswered",
-                    report.comment
-                )),
+                erikuraApiService.createReport(params),
                 onError = onError
             ) { body ->
                 val reportId = body.reportId
@@ -422,15 +426,7 @@ class Api(var context: Context) {
             }
         }else {
             executeObservable(
-                erikuraApiService.updateReport(ReportRequest(
-                    job.id,
-                    outputSummaries,
-                    report.workingMinute?: 0,
-                    report.additionalComment?: "",
-                    report.additionalReportPhotoToken?: "",
-                    report.evaluation?: "unanswered",
-                    report.comment?: ""
-                )),
+                erikuraApiService.updateReport(params),
                 onError = onError
             ) { body ->
                 val reportId = body.reportId
@@ -540,6 +536,15 @@ class Api(var context: Context) {
                     )
                 }
             )
+    }
+
+    fun clientVersion(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (clientVersion: RequiredClientVersion) -> Unit) {
+        executeObservable(
+            erikuraApiService.clientVersion(),
+            onError = onError
+        ) { clientVersion ->
+            onComplete(clientVersion)
+        }
     }
 
     fun erikuraConfig(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (map: ErikuraConfigMap) -> Unit) {

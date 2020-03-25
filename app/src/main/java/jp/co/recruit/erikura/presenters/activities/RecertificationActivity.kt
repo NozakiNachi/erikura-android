@@ -46,6 +46,7 @@ class RecertificationActivity : AppCompatActivity(), RecertificationHandlers {
             finish()
         }
     }
+    // FIXME: 戻るボタンが押下された場合の振る舞いを修正する
 }
 
 class RecertificationViewModel: ViewModel() {

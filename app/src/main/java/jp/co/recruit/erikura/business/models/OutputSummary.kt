@@ -26,25 +26,10 @@ data class OutputSummary(
     // validate
 
     val isUploadCompleted: Boolean get() {
-        if (photoAsset?.contentUri == null) {
+        if (photoAsset?.contentUri == null || beforeCleaningPhotoUrl != null) {
             return true
         }else {
             return !beforeCleaningPhotoToken.isNullOrBlank()
         }
-    }
-
-    fun evaluationMap(): String {
-        when(evaluation) {
-            "異常あり、未対応" -> {
-                return "bad"
-            }
-            "異常あり、対応済み" -> {
-                return "ordinary"
-            }
-            "異常なし" -> {
-                return "good"
-            }
-        }
-        return "bad"
     }
 }
