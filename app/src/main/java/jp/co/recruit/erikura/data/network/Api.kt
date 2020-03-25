@@ -450,11 +450,11 @@ class Api(var context: Context) {
                 erikuraApiService.updateReport(ReportRequest(
                     job.id,
                     outputSummaries,
-                    report.workingMinute?: 0,
-                    report.additionalComment?: "",
-                    report.additionalReportPhotoToken?: "",
+                    report.workingMinute,
+                    report.additionalComment,
+                    report.additionalReportPhotoToken,
                     report.evaluation?: "unanswered",
-                    report.comment?: ""
+                    report.comment
                 )),
                 onError = onError
             ) { body ->

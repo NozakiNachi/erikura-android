@@ -68,7 +68,6 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
 
     override fun onClickAddPhotoButton(view: View) {
         if(ErikuraApplication.instance.hasStoragePermission(this)) {
-            job.report?.additionalReportPhotoUrl = null
             moveToGallery()
         }
         else {
@@ -105,6 +104,8 @@ class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandler
     }
 
     private fun moveToGallery() {
+        // MEMO: アップロード済みの画像と区別するためにURLを空にします
+        job.report?.additionalReportPhotoUrl = null
         val intent = Intent()
         intent.action = Intent.ACTION_OPEN_DOCUMENT
         intent.addCategory(Intent.CATEGORY_OPENABLE)

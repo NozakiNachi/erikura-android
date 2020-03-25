@@ -77,7 +77,7 @@ data class Report (
     }
 
     val isUploadCompleted: Boolean get() {
-        if (additionalPhotoAsset?.contentUri == null) {
+        if (additionalPhotoAsset?.contentUri == null || additionalReportPhotoUrl != null) {
             return true
         }else {
             return !additionalReportPhotoToken.isNullOrBlank()
