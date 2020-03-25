@@ -43,8 +43,8 @@ class RecertificationActivity : AppCompatActivity(), RecertificationHandlers {
     override fun onClickRecertification(view: View) {
         Api(this).recertification(viewModel.email.value ?: "", viewModel.password.value ?: "") {
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
+            finish()
         }
-        finish()
     }
     // FIXME: 戻るボタンが押下された場合の振る舞いを修正する
 }
