@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -176,7 +177,13 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
-            thumbnailUrl?.let {
+            if (thumbnailUrl.isNullOrBlank()) {
+                val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
+                val bitmapReduced = Bitmap.createScaledBitmap( drawable.toBitmap(), 15, 15, true)
+                val bitmapDraw = BitmapDrawable(bitmapReduced)
+                bitmapDraw.alpha = 150
+                bitmapDrawable.value = bitmapDraw
+            }else {
                 val assetsManager = ErikuraApplication.assetsManager
                 assetsManager.fetchImage(activity, thumbnailUrl) { result ->
                     activity.runOnUiThread {

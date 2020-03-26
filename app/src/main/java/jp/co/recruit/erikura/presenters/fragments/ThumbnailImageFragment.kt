@@ -15,6 +15,12 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.util.UrlUtils
 import jp.co.recruit.erikura.databinding.FragmentThumbnailImageBinding
 import java.net.URL
+import android.R
+import androidx.core.content.res.ResourcesCompat
+import android.graphics.drawable.Drawable
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.core.graphics.drawable.toBitmap
+
 
 class ThumbnailImageFragment(val job: Job?) : Fragment() {
     private val viewModel: ThumbnailImageFragmentViewModel by lazy {
@@ -41,7 +47,11 @@ class ThumbnailImageFragmentViewModel: ViewModel() {
         if (job != null){
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
-            thumbnailUrl?.let {
+            if (thumbnailUrl.isNullOrBlank()) {
+                val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(
+                    jp.co.recruit.erikura.R.drawable.ic_noimage, null)
+                bitmap.value = drawable.toBitmap()
+            }else {
                 val assetsManager = ErikuraApplication.assetsManager
                 assetsManager.fetchImage(activity, thumbnailUrl) { result ->
                     activity.runOnUiThread {
