@@ -25,6 +25,14 @@ data class JobKind(
         }
     }
 
+    val noImageIconUrl: URL? get() {
+        return activeIconUrl?.let { url ->
+            val extension = FilenameUtils.getExtension(url.path)
+            val path = arrayOf(FilenameUtils.getBaseName(url.path) + "_noimage", extension).joinToString(".")
+            URL(activeIconUrl, arrayOf(path, url.query).filterNotNull().joinToString("?"))
+        }
+    }
+
     override fun toString(): String {
         return name ?: super.toString()
     }

@@ -137,10 +137,10 @@ class ReportedJobDetailsFragment(
     private fun setup() {
         if (job != null) {
             // ダウンロード
-            job.thumbnailUrl?.let { url ->
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
+            thumbnailUrl?.let {
                 val assetsManager = ErikuraApplication.assetsManager
-
-                assetsManager.fetchImage(activity, url) { result ->
+                assetsManager.fetchImage(activity, thumbnailUrl) { result ->
                     activity.runOnUiThread {
                         val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
                         val bitmapDraw = BitmapDrawable(bitmapReduced)
