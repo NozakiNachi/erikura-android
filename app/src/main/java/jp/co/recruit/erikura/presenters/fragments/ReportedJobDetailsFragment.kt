@@ -138,13 +138,13 @@ class ReportedJobDetailsFragment(
     private fun setup() {
         if (job != null) {
             // ダウンロード
-            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
             if (thumbnailUrl.isNullOrBlank()) {
                 val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
                 val bitmapReduced = Bitmap.createScaledBitmap( drawable.toBitmap(), 15, 15, true)
                 val bitmapDraw = BitmapDrawable(bitmapReduced)
                 bitmapDraw.alpha = 150
-                bitmapDrawable.value = bitmapDraw
+                viewModel.bitmapDrawable.value = bitmapDraw
             }else {
                 val assetsManager = ErikuraApplication.assetsManager
                 assetsManager.fetchImage(activity, thumbnailUrl) { result ->
@@ -152,7 +152,7 @@ class ReportedJobDetailsFragment(
                         val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
                         val bitmapDraw = BitmapDrawable(bitmapReduced)
                         bitmapDraw.alpha = 150
-                        bitmapDrawable.value = bitmapDraw
+                        viewModel.bitmapDrawable.value = bitmapDraw
                     }
                 }
             }

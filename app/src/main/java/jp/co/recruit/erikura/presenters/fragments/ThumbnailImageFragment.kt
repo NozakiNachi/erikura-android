@@ -46,7 +46,7 @@ class ThumbnailImageFragmentViewModel: ViewModel() {
     fun setup(activity: Activity, job: Job?) {
         if (job != null){
             // ダウンロード
-            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
             if (thumbnailUrl.isNullOrBlank()) {
                 val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(
                     jp.co.recruit.erikura.R.drawable.ic_noimage, null)

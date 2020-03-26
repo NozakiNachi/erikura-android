@@ -123,7 +123,7 @@ class FinishedJobDetailsFragmentViewModel: ViewModel() {
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null) {
             // ダウンロード
-            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
             if (thumbnailUrl.isNullOrBlank()) {
                 val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
                 val bitmapReduced = Bitmap.createScaledBitmap( drawable.toBitmap(), 15, 15, true)
