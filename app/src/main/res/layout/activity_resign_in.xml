@@ -2,15 +2,16 @@
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
 
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.RecertificationViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ResignInViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.RecertificationHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ResignInHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,7 +37,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
-                        android:id="@+id/recerfitication"
+                        android:id="@+id/resignIn"
                         style="@style/titleLabel"
                         android:layout_width="390dp"
                         android:layout_height="48dp"
@@ -87,8 +88,8 @@
                     android:layout_height="70dp"
                     android:layout_marginTop="40dp"
                     android:text="再認証する"
-                    android:enabled="@{viewModel.isRecerfiticationEnabled}"
-                    android:onClick="@{handlers::onClickRecertification}"
+                    android:enabled="@{viewModel.isResignInEnabled}"
+                    android:onClick="@{handlers::onClickResignIn}"
                     />
             </LinearLayout>
         </ScrollView>

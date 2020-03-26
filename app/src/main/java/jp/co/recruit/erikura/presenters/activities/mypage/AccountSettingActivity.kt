@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.content.Context
 import android.content.Intent
@@ -65,7 +65,7 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
             viewModel.accountHolder.value = payment.accountHolder
 
             // 登録・更新を見分けるフラグ
-            if(payment.bankName == null){
+            if (payment.bankName == null) {
                 viewModel.settingFragment.value = "register"
             }
 
@@ -80,7 +80,7 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         }
 
         // 再認証が必要かどうか確認
-        recerfitication()
+        resignIn()
     }
 
     private fun setupBankNameAdapter() {
@@ -88,17 +88,23 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         val bankNameField: AutoCompleteTextView = findViewById(R.id.account_setting_bank_name)
         bankNameField.setAdapter(adapter)
         bankNameField.threshold = 1
-        bankNameField.onItemClickListener = object: AdapterView.OnItemClickListener {
-            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        bankNameField.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val bank = adapter.getItem(position)
                 viewModel.bankNumber.value = bank?.code
                 // 次のフィールドにフォーカスを移します
-                val nextField: AutoCompleteTextView = findViewById(R.id.account_setting_branch_office_name)
+                val nextField: AutoCompleteTextView =
+                    findViewById(R.id.account_setting_branch_office_name)
                 nextField.requestFocus()
             }
         }
         var prevBankName: String = ""
-        viewModel.bankName.observe(this, object: Observer<String> {
+        viewModel.bankName.observe(this, object : Observer<String> {
             override fun onChanged(t: String?) {
                 val bankName = t ?: ""
                 if (bankName != prevBankName) {
@@ -115,11 +121,17 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
     private fun setupBranchNameAdapter() {
         val adapter = BranchNameAdapter(this)
-        val branchNameField: AutoCompleteTextView = findViewById(R.id.account_setting_branch_office_name)
+        val branchNameField: AutoCompleteTextView =
+            findViewById(R.id.account_setting_branch_office_name)
         branchNameField.setAdapter(adapter)
         branchNameField.threshold = 1
-        branchNameField.onItemClickListener = object: AdapterView.OnItemClickListener {
-            override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        branchNameField.onItemClickListener = object : AdapterView.OnItemClickListener {
+            override fun onItemClick(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 val branch = adapter.getItem(position)
                 viewModel.branchOfficeNumber.value = branch?.code
                 // 次のフィールドにフォーカスを移します
@@ -128,12 +140,16 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
             }
         }
         var prevBranchName: String = ""
-        viewModel.branchOfficeName.observe(this, object: Observer<String> {
+        viewModel.branchOfficeName.observe(this, object : Observer<String> {
             override fun onChanged(t: String?) {
                 val branchOfficeName = t ?: ""
                 if (branchOfficeName != prevBranchName) {
                     api.cancelAllRequests()
-                    api.branch(branchOfficeName, viewModel.bankNumber.value ?: "", showProgress = false) { branches ->
+                    api.branch(
+                        branchOfficeName,
+                        viewModel.bankNumber.value ?: "",
+                        showProgress = false
+                    ) { branches ->
                         adapter.clear()
                         adapter.addAll(branches)
                         adapter.notifyDataSetChanged()
@@ -182,9 +198,11 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
     override fun onOrdinaryButton(view: View) {
         payment.accountType = "ordinary_account"
     }
+
     override fun onCurrentButton(view: View) {
         payment.accountType = "current_account"
     }
+
     override fun onSavingsButton(view: View) {
         payment.accountType = "savings"
     }
@@ -204,7 +222,7 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
 
             if (viewModel.settingFragment.value == "register") {
                 intent.putExtra("onClickRegisterAccountFragment", true)
-            } else if(viewModel.settingFragment.value == null) {
+            } else if (viewModel.settingFragment.value == null) {
                 intent.putExtra("onClickChangeAccountFragment", true)
             }
             startActivity(intent)
@@ -213,25 +231,25 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
     }
 
     // 再認証画面へ遷移
-    override fun recerfitication(){
-        val now = Date()
-        val reSignDate = Api.userSession?.resignInExpiredAt
+    override fun resignIn() {
+        val nowTime = (Date().time % (1000 * 60 * 60)) / (1000 * 60)
+        val reSignTime = Api.userSession?.resignInExpiredAt
 
-        if(Api.userSession?.resignInExpiredAt != null){
-            val diff = now.time - (reSignDate?.time ?: 0)
-            if (diff >= 0) {
-                val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
-                if (diffMinutes > 10) {
-                    // 過去の再認証から10分以上経っていたら再認証画面へ
-                    Intent(this, RecertificationActivity::class.java).let {
-                        it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        this.startActivity(it)
-                    }
+        if (Api.userSession?.resignInExpiredAt !== null) {
+            // 過去の再認証から10分以上経っていたら再認証画面へ
+            if (reSignTime!! < nowTime) {
+                finish()
+                Intent(this, ResignInActivity::class.java).let {
+                    intent.putExtra("fromAccountSetting", true)
+                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    this.startActivity(it)
                 }
             }
         } else {
             // 一度も再認証していなければ、再認証画面へ
-            Intent(this, RecertificationActivity::class.java).let {
+            finish()
+            Intent(this, ResignInActivity::class.java).let {
+//                intent.putExtra("fromAccountSetting", true)
                 it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 this.startActivity(it)
             }
@@ -239,38 +257,46 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
     }
 }
 
+
 class AccountSettingViewModel: ViewModel() {
     // 登録か更新かのフラグ
     val settingFragment: MutableLiveData<String> = MutableLiveData()
 
     // 銀行名
     val bankName: MutableLiveData<String> = MutableLiveData()
-    val bankNameError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val bankNameError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
 
     // 銀行コード
     val bankNumber: MutableLiveData<String> = MutableLiveData()
-    val bankNumberError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val bankNumberError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
 
     // 支店名
     val branchOfficeName: MutableLiveData<String> = MutableLiveData()
-    val branchOfficeNameError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val branchOfficeNameError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
 
     // 支店コード
     val branchOfficeNumber: MutableLiveData<String> = MutableLiveData()
-    val branchOfficeNumberError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val branchOfficeNumberError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
 
     // 口座番号
     val accountNumber: MutableLiveData<String> = MutableLiveData()
-    val accountNumberError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val accountNumberError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
 
     // 口座タイプ
     val accountType: MutableLiveData<String> = MutableLiveData()
 
     // 銀行名
     val accountHolderFamily: MutableLiveData<String> = MutableLiveData()
-    val accountHolderFamilyError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val accountHolderFamilyError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
     val accountHolder: MutableLiveData<String> = MutableLiveData()
-    val accountHolderError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val accountHolderError: ErrorMessageViewModel =
+        ErrorMessageViewModel()
 
     // 登録ボタン押下
     val isSettingButtonEnabled = MediatorLiveData<Boolean>().also { result ->
@@ -440,7 +466,7 @@ interface AccountSettingEventHandlers {
     fun onSavingsButton(view: View)
     fun onBankNameFocusChanged(view: View, hasFocus: Boolean)
     fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
-    fun recerfitication()
+    fun resignIn()
 }
 
 class ErrorMessageViewModel {
@@ -458,7 +484,8 @@ class ErrorMessageViewModel {
 }
 
 class BankNameAdapter(context: Context): ArrayAdapter<Bank>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf()) {
-    val filter = BankNameFilter(this)
+    val filter =
+        BankNameFilter(this)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val convertView = convertView ?: run {
@@ -500,7 +527,8 @@ class BankNameAdapter(context: Context): ArrayAdapter<Bank>(context, android.R.l
 }
 
 class BranchNameAdapter(context: Context): ArrayAdapter<BankBranch>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf()) {
-    val filter = BranchNameFilter(this)
+    val filter =
+        BranchNameFilter(this)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val convertView = convertView ?: run {

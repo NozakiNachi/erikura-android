@@ -17,7 +17,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
-import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import java.util.regex.Pattern
 

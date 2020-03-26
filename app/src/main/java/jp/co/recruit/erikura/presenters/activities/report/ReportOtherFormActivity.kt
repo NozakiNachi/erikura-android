@@ -23,7 +23,7 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import android.provider.MediaStore
 import io.realm.Realm
 import jp.co.recruit.erikura.data.storage.PhotoToken
-import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 
 
 class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandlers {

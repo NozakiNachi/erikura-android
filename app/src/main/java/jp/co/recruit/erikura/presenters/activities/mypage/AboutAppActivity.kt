@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -8,13 +8,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.RequiredClientVersion
@@ -24,8 +22,10 @@ import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlin.collections.ArrayList
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
-class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
+class AboutAppActivity : AppCompatActivity(),
+    AboutAppEventHandlers {
     data class MenuItem(val id: Int, val label: String, val onSelect: () -> Unit)
 
     var user: User = User()
@@ -38,15 +38,24 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "利用規約") {
             val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
-            val intent = Intent(this, WebViewActivity::class.java).apply {
+            val intent = Intent(
+                this,
+                WebViewActivity::class.java
+            ).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(termsOfServiceURLString)
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(1, "プライバシーポリシー") {
+        MenuItem(
+            1,
+            "プライバシーポリシー"
+        ) {
             val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + "/pdf/privacy_policy.pdf"
-            val intent = Intent(this, WebViewActivity::class.java).apply {
+            val intent = Intent(
+                this,
+                WebViewActivity::class.java
+            ).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
             }
@@ -54,8 +63,12 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
         },
         MenuItem(2, "推奨環境") {
             // FIXME: 正しいURLか確認
-            val privacyPolicyURLString = "https://faq.erikura.net/hc/ja/articles/360020286793-%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E6%8E%A8%E5%A5%A8%E7%92%B0%E5%A2%83%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"
-            val intent = Intent(this, WebViewActivity::class.java).apply {
+            val privacyPolicyURLString =
+                "https://faq.erikura.net/hc/ja/articles/360020286793-%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E6%8E%A8%E5%A5%A8%E7%92%B0%E5%A2%83%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"
+            val intent = Intent(
+                this,
+                WebViewActivity::class.java
+            ).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
             }
@@ -79,8 +92,12 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
         binding.handlers = this
 
 
-        val adapter = AboutAppAdapter(menuItems)
-        adapter.setOnItemClickListener(object : AboutAppAdapter.OnItemClickListener {
+        val adapter =
+            AboutAppAdapter(
+                menuItems
+            )
+        adapter.setOnItemClickListener(object :
+            AboutAppAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
                 item.onSelect()
             }
@@ -113,12 +130,17 @@ class AboutAppActivity : AppCompatActivity(), AboutAppEventHandlers {
                 parent,
                 false
             )
-            return ViewHolder(binding)
+            return ViewHolder(
+                binding
+            )
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MenuListItem = menuItems.get(position)
-            val viewModel = AboutAppMenuItemViewModel(MenuListItem)
+            val viewModel =
+                AboutAppMenuItemViewModel(
+                    MenuListItem
+                )
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {

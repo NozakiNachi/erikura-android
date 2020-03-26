@@ -95,12 +95,14 @@ class Api(var context: Context) {
         }
     }
 
-    fun recertification(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
+    fun resignIn(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
         executeObservable(
             erikuraApiService.login(LoginRequest(email = email, password = password)),
             onError =  onError
         ) { body ->
-            val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = Date())
+            val now = Date().time
+            val resignTime = (now % (1000 * 60 * 60)) / (1000 * 60) +10
+            val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = resignTime)
             userSession = session
             Tracking.identify(body.userId)
             onComplete(session)

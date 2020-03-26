@@ -15,7 +15,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterPhoneBinding
-import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
 
 class RegisterPhoneActivity : AppCompatActivity(),

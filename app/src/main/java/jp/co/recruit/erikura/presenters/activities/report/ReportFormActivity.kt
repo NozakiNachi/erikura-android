@@ -20,7 +20,7 @@ import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
-import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 

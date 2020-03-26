@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -30,13 +30,14 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMypageBinding
 import jp.co.recruit.erikura.databinding.FragmentInformationCellBinding
 import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
+import jp.co.recruit.erikura.presenters.activities.LoginActivity
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import kotlinx.android.synthetic.main.activity_mypage.*
-import jp.co.recruit.erikura.presenters.activities.mypage.PaymentInformationActivity
-import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
 import java.util.*
 
-class MypageActivity : AppCompatActivity(), MypageEventHandlers {
+class MypageActivity : AppCompatActivity(),
+    MypageEventHandlers {
     private lateinit var informationListView: RecyclerView
     private lateinit var informationListAdapter: InformationAdapter
 
@@ -47,7 +48,8 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
     }
 
     var mypageItems: List<MypageItem> = listOf(
-        MypageItem(0, "お支払情報", R.drawable.ic_account, true) {
+        MypageItem(
+            0, "お支払情報", R.drawable.ic_account, true) {
             Intent(this, PaymentInformationActivity::class.java).let {
                 startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
@@ -84,7 +86,8 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         val nav: BottomNavigationView = findViewById(R.id.mypage_view_navigation)
         nav.selectedItemId = R.id.tab_menu_mypage
 
-        informationListAdapter = InformationAdapter(this)
+        informationListAdapter =
+            InformationAdapter(this)
 
 
         informationListView = findViewById(R.id.mypage_information_list)
@@ -92,8 +95,12 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
         informationListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
         // 設定画面のメニューをrecycler_viewで表示
-        val adapter = MypageAdapter(mypageItems)
-        adapter.setOnItemClickListener(object: MypageAdapter.OnItemClickListener{
+        val adapter =
+            MypageAdapter(
+                mypageItems
+            )
+        adapter.setOnItemClickListener(object:
+            MypageAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MypageItem) {
                 item.onSelect()
             }
@@ -115,11 +122,16 @@ class MypageActivity : AppCompatActivity(), MypageEventHandlers {
                 parent,
                 false
             )
-            return ViewHolder(binding)
+            return ViewHolder(
+                binding
+            )
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MypageListItem = mypageItems.get(position)
-            val viewModel = MypageMenuItemViewModel(MypageListItem)
+            val viewModel =
+                MypageMenuItemViewModel(
+                    MypageListItem
+                )
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {
@@ -234,7 +246,8 @@ class InformationAdapter(val activity: FragmentActivity) : RecyclerView.Adapter<
 
     override fun onBindViewHolder(holder: InformationCellHolder, position: Int) {
         val information = informations[position]!!
-        val viewModel = InformationCellViewModel(information)
+        val viewModel =
+            InformationCellViewModel(information)
 
         holder.binding.lifecycleOwner = activity
         holder.binding.viewModel = viewModel

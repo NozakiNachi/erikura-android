@@ -9,7 +9,7 @@ import java.util.*
 data class UserSession(
     val userId: Int,
     val token: String,
-    val resignInExpiredAt: Date? = null
+    val resignInExpiredAt: Long? = null
 ) {
     companion object {
         const val preferencesFilename = "erikuraPreferences"

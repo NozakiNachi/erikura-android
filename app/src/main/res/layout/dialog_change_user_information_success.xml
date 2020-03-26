@@ -5,10 +5,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.ChangeUserInformationViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.ChangeUserInformationEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationEventHandlers" />
     </data>
 
     <LinearLayout

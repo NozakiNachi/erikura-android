@@ -16,7 +16,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
-import jp.co.recruit.erikura.presenters.activities.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandler {

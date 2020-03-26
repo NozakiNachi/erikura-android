@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.ActivityOptions
 import android.content.Intent
@@ -20,11 +20,14 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
+import jp.co.recruit.erikura.presenters.activities.StartActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 
-class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
+class ConfigurationActivity : AppCompatActivity(),
+    ConfigurationEventHandlers {
     data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
@@ -54,15 +57,19 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             val intent = Intent(this, AboutAppActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
-            val intent = Intent(this, ConfigurationActivity::class.java)
+        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false
+        ) {
+            val intent = Intent(this, ConfigurationActivity::class.java
+            )
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
+        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false
+        ) {
             val intent = Intent(this, RegisterEmailActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
+        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true
+        ) {
             onClickLogoutLink()
         }
     )
@@ -90,8 +97,12 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             }
         }
 
-        val adapter = ConfigurationAdapter(menuItems)
-        adapter.setOnItemClickListener(object : ConfigurationAdapter.OnItemClickListener {
+        val adapter =
+            ConfigurationAdapter(
+                menuItems
+            )
+        adapter.setOnItemClickListener(object :
+            ConfigurationAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
                 item.onSelect()
             }
@@ -118,11 +129,16 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
                 parent,
                 false
             )
-            return ViewHolder(binding)
+            return ViewHolder(
+                binding
+            )
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MenuListItem = menuItems.get(position)
-            val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
+            val viewModel =
+                ConfigurationMenuItemViewModel(
+                    MenuListItem
+                )
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {
