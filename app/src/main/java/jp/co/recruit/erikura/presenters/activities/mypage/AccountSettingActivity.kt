@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -47,6 +48,9 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
+
+        // 再認証が必要かどうか確認
+        resignIn()
 
         setupBankNameAdapter()
         setupBranchNameAdapter()
@@ -239,19 +243,20 @@ class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers 
             // 過去の再認証から10分以上経っていたら再認証画面へ
             if (reSignTime!! < nowTime) {
                 finish()
-                Intent(this, ResignInActivity::class.java).let {
+                finish()
+                Intent(this, ResignInActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromAccountSetting", true)
-                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    this.startActivity(it)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }
         } else {
             // 一度も再認証していなければ、再認証画面へ
             finish()
-            Intent(this, ResignInActivity::class.java).let {
-//                intent.putExtra("fromAccountSetting", true)
-                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                this.startActivity(it)
+            Intent(this, ResignInActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("fromAccountSetting", true)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         }
     }

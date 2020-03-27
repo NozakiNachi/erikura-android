@@ -53,13 +53,15 @@ class ResignInActivity : AppCompatActivity(), ResignInHandlers {
         Api(this).resignIn(viewModel.email.value ?: "", viewModel.password.value ?: "") {
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
             finish()
-        }
-        if(fromChangeUserInformationFragment) {
-            val intent = Intent(this, ChangeUserInformationActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }else if(fromAccountSettingFragment){
-            val intent = Intent(this, AccountSettingActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+
+            // 画面遷移
+            if(fromChangeUserInformationFragment) {
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }else if(fromAccountSettingFragment){
+                val intent = Intent(this, AccountSettingActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
         }
     }
 }

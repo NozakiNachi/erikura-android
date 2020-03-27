@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.ActivityOptions
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -58,20 +59,14 @@ class ChangeUserInformationActivity : AppCompatActivity(),
         binding.handlers = this
         binding.viewModel = viewModel
 
-        // エラーメッセージ
-        viewModel.postalCodeErrorVisibility.value = 8
-        viewModel.cityErrorVisibility.value = 8
-        viewModel.streetErrorVisibility.value = 8
-        viewModel.lastNameErrorVisibility.value = 8
-        viewModel.firstNameErrorVisibility.value = 8
-        viewModel.passwordErrorVisibility.value = 8
-        viewModel.verificationPasswordErrorVisibility.value = 8
-
         // 生年月日入力のカレンダー設定
         calender.set(Calendar.YEAR, 1980)
         calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
         viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", 1980, 1, 1)
+
+        // 再認証が必要かどうか確認
+        resignIn()
 
         // 変更するユーザーの現在の登録値を取得
         Api(this).user(){
@@ -125,9 +120,6 @@ class ChangeUserInformationActivity : AppCompatActivity(),
                 binding.femaleButton.isChecked = true
             }
         }
-
-        // 再認証が必要かどうか確認
-        resignIn()
     }
 
     // 所在地
@@ -231,17 +223,19 @@ class ChangeUserInformationActivity : AppCompatActivity(),
             // 過去の再認証から10分以上経っていたら再認証画面へ
             if (reSignTime!! < nowTime) {
                 finish()
-                Intent(this, ResignInActivity::class.java).let {
+                Intent(this, ResignInActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromChangeUserInformation", true)
-                    this.startActivity(it)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }
         } else {
             // 一度も再認証していなければ、再認証画面へ
             finish()
-            Intent(this, ResignInActivity::class.java).let {
+            Intent(this, ResignInActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("fromChangeUserInformation", true)
-                this.startActivity(it)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         }
     }
@@ -252,37 +246,29 @@ class ChangeUserInformationViewModel: ViewModel() {
     val email: MutableLiveData<String> = MutableLiveData()
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
-    val passwordErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val passwordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val passwordError: ErrorMessageViewModel = ErrorMessageViewModel()
     val verificationPassword: MutableLiveData<String> = MutableLiveData()
-    val verificationPasswordErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val verificationPasswordErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val verificationPasswordError: ErrorMessageViewModel = ErrorMessageViewModel()
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
-    val lastNameErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val lastNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val lastNameError: ErrorMessageViewModel = ErrorMessageViewModel()
     val firstName: MutableLiveData<String> = MutableLiveData()
-    val firstNameErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val firstNameErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val firstNameError: ErrorMessageViewModel = ErrorMessageViewModel()
     // 生年月日
     val dateOfBirth: MutableLiveData<String> = MutableLiveData()
     // 性別
     val gender: MutableLiveData<String> = MutableLiveData()
     // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
-    val postalCodeErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val postalCodeErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val postalCodeError: ErrorMessageViewModel = ErrorMessageViewModel()
     val prefectureId: MutableLiveData<Int> = MutableLiveData()
     val city: MutableLiveData<String> = MutableLiveData()
-    val cityErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val cityErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val cityError: ErrorMessageViewModel = ErrorMessageViewModel()
     val street: MutableLiveData<String> = MutableLiveData()
-    val streetErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val streetErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val streetError: ErrorMessageViewModel = ErrorMessageViewModel()
     // 電話番号
     val phone: MutableLiveData<String> = MutableLiveData()
-    val phoneErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val phoneErrorVisibility: MutableLiveData<Int> = MutableLiveData()
+    val phoneError: ErrorMessageViewModel = ErrorMessageViewModel()
     // 職業
     val jobStatusId: MutableLiveData<Int> = MutableLiveData()
     // やりたい仕事
@@ -338,16 +324,13 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && lastName.value?.isBlank() ?:true) {
             valid = false
-            lastNameErrorMsg.value = ""
-            lastNameErrorVisibility.value = 8
+            lastNameError.message.value = null
         } else if (valid && !(lastName.value?.length ?: 0 <= 30)) {
             valid = false
-            lastNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
-            lastNameErrorVisibility.value = 0
+            lastNameError.message.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
         } else {
             valid = true
-            lastNameErrorMsg.value = ""
-            lastNameErrorVisibility.value = 8
+            lastNameError.message.value = null
         }
 
         return valid
@@ -358,16 +341,13 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && firstName.value?.isBlank() ?:true) {
             valid = false
-            firstNameErrorMsg.value = ""
-            firstNameErrorVisibility.value = 8
+            firstNameError.message.value = null
         } else if (valid && !(firstName.value?.length ?: 0 <= 30)) {
             valid = false
-            firstNameErrorMsg.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
-            firstNameErrorVisibility.value = 0
+            firstNameError.message.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
         } else {
             valid = true
-            firstNameErrorMsg.value = ""
-            firstNameErrorVisibility.value = 8
+            firstNameError.message.value = null
         }
 
         return valid
@@ -379,21 +359,16 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && postalCode.value?.isBlank() ?: true) {
             valid = false
-            postalCodeErrorMsg.value = ""
-            postalCodeErrorVisibility.value = 8
+            postalCodeError.message.value = null
         } else if (valid && !(pattern.matcher(postalCode.value).find())) {
             valid = false
-            postalCodeErrorMsg.value = ErikuraApplication.instance.getString(R.string.postal_code_pattern_error)
-            postalCodeErrorVisibility.value = 0
+            postalCodeError.message.value = ErikuraApplication.instance.getString(R.string.postal_code_pattern_error)
         } else if (valid && !(postalCode.value?.length ?: 0 == 7)) {
             valid = false
-            postalCodeErrorMsg.value = ErikuraApplication.instance.getString(R.string.postal_code_count_error)
-            postalCodeErrorVisibility.value = 0
+            postalCodeError.message.value = ErikuraApplication.instance.getString(R.string.postal_code_count_error)
         } else {
             valid = true
-            postalCodeErrorMsg.value = ""
-            postalCodeErrorVisibility.value = 8
-
+            postalCodeError.message.value = null
         }
         return valid
     }
@@ -413,16 +388,13 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && city.value?.isBlank() ?: true) {
             valid = false
-            cityErrorMsg.value = ""
-            cityErrorVisibility.value = 8
+            cityError.message.value = null
         } else if (valid && !(city.value?.length ?: 0 <= 20)) {
             valid = false
-            cityErrorMsg.value = ErikuraApplication.instance.getString(R.string.city_count_error)
-            cityErrorVisibility.value = 0
+            cityError.message.value = ErikuraApplication.instance.getString(R.string.city_count_error)
         } else {
             valid = true
-            cityErrorMsg.value = ""
-            cityErrorVisibility.value = 8
+            cityError.message.value = null
         }
 
         return valid
@@ -433,16 +405,13 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && street.value?.isBlank() ?: true) {
             valid = false
-            streetErrorMsg.value = ""
-            streetErrorVisibility.value = 8
+            streetError.message.value = null
         } else if (valid && !(street.value?.length ?: 0 <= 100)) {
             valid = false
-            streetErrorMsg.value = ErikuraApplication.instance.getString(R.string.street_count_error)
-            streetErrorVisibility.value = 0
+            streetError.message.value = ErikuraApplication.instance.getString(R.string.street_count_error)
         } else {
             valid = true
-            streetErrorMsg.value = ""
-            streetErrorVisibility.value = 8
+            streetError.message.value = null
         }
 
         return valid
@@ -456,20 +425,16 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if(valid && password.value !== null && !(pattern.matcher(password.value).find())) {
             valid = false
-            passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-            passwordErrorVisibility.value = 0
+            passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
         }else if(valid && password.value !== null && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
             valid = false
-            passwordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-            passwordErrorVisibility.value = 0
+            passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
         }else if(valid && password.value == null || password.value == "") {
             valid = true
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
+            passwordError.message.value = null
         } else {
             valid = true
-            passwordErrorMsg.value = ""
-            passwordErrorVisibility.value = 8
+            passwordError.message.value = null
         }
         return valid
     }
@@ -482,28 +447,22 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && password.value !== null && verificationPassword.value == null) {
             valid = false
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
+            verificationPasswordError.message.value = null
         } else if(valid && verificationPassword.value !== null && !(pattern.matcher(password.value).find())) {
             valid = false
-            verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-            verificationPasswordErrorVisibility.value = 0
+            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
         }else if(valid && verificationPassword.value !== null && (!(alPattern.matcher(verificationPassword.value).find()) || !(numPattern.matcher(verificationPassword.value).find()))) {
             valid = false
-            verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-            verificationPasswordErrorVisibility.value = 0
+            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
         }else if(valid && password.value !== null && verificationPassword.value !== null && !(password.value.equals(verificationPassword.value))) {
             valid = false
-            verificationPasswordErrorMsg.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
-            verificationPasswordErrorVisibility.value = 0
+            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
         }else if(valid && verificationPassword.value == null || verificationPassword.value == "" ) {
             valid = true
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
+            verificationPasswordError.message.value = null
         } else {
             valid = true
-            verificationPasswordErrorMsg.value = ""
-            verificationPasswordErrorVisibility.value = 8
+            verificationPasswordError.message.value = null
         }
         return valid
     }
@@ -518,20 +477,16 @@ class ChangeUserInformationViewModel: ViewModel() {
 
         if (valid && phone.value?.isBlank() ?:true) {
             valid = false
-            phoneErrorMsg.value = ""
-            phoneErrorVisibility.value = 8
+            phoneError.message.value = null
         }else if(valid && !(pattern.matcher(phone.value).find())) {
             valid = false
-            phoneErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-            phoneErrorVisibility.value = 0
+            phoneError.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
         }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
             valid = false
-            phoneErrorMsg.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
-            phoneErrorVisibility.value = 0
+            phoneError.message.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
         } else {
             valid = true
-            phoneErrorMsg.value = ""
-            phoneErrorVisibility.value = 8
+            phoneError.message.value = null
         }
 
         return valid
