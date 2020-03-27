@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.MypageViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.MypageViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.MypageEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.MypageEventHandlers" />
     </data>
 
     <RelativeLayout

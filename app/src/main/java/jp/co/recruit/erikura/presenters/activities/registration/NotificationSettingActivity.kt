@@ -1,4 +1,4 @@
-package jp.co.recruit.erikura.presenters.activities
+package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -12,7 +12,8 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.*
 
 
-class NotificationSettingActivity : AppCompatActivity(), NotificationSettingEventHandlers {
+class NotificationSettingActivity : AppCompatActivity(),
+    NotificationSettingEventHandlers {
     private val viewModel: NotificationSettingViewModel by lazy {
         ViewModelProvider(this).get(NotificationSettingViewModel::class.java)
     }

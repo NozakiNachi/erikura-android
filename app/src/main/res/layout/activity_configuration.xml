@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.ConfigurationViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ConfigurationViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.ConfigurationEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ConfigurationEventHandlers" />
     </data>
 
     <androidx.core.widget.NestedScrollView

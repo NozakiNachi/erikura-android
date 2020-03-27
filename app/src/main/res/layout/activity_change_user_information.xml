@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.ChangeUserInformationViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.ChangeUserInformationEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,9 +94,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.passwordErrorVisibility}"
+                    android:visibility="@{viewModel.passwordError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.passwordErrorMsg}"
+                    android:text="@={viewModel.passwordError.message}"
                     />
 
                 <!--パスワード確認-->
@@ -130,9 +130,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.verificationPasswordErrorVisibility}"
+                    android:visibility="@{viewModel.verificationPasswordError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.verificationPasswordErrorMsg}"
+                    android:text="@={viewModel.verificationPasswordError.message}"
                     />
 
                 <!--氏名-->
@@ -177,17 +177,17 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.lastNameErrorVisibility}"
+                    android:visibility="@{viewModel.lastNameError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.lastNameErrorMsg}"
+                    android:text="@={viewModel.lastNameError.message}"
                     />
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.firstNameErrorVisibility}"
+                    android:visibility="@{viewModel.firstNameError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.firstNameErrorMsg}"
+                    android:text="@={viewModel.firstNameError.message}"
                     />
 
                 <!--生年月日-->
@@ -286,8 +286,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.postalCodeErrorMsg}"
-                    android:visibility="@{viewModel.postalCodeErrorVisibility}" />
+                    android:text="@={viewModel.postalCodeError.message}"
+                    android:visibility="@{viewModel.postalCodeError.visibility}" />
 
                 <!-- 都道府県 -->
                 <TextView
@@ -330,8 +330,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.cityErrorMsg}"
-                    android:visibility="@{viewModel.cityErrorVisibility}"
+                    android:text="@={viewModel.cityError.message}"
+                    android:visibility="@{viewModel.cityError.visibility}"
                     />
 
                 <!-- 番地以降 -->
@@ -355,8 +355,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:text="@={viewModel.streetErrorMsg}"
-                    android:visibility="@{viewModel.streetErrorVisibility}"
+                    android:text="@={viewModel.streetError.message}"
+                    android:visibility="@{viewModel.streetError.visibility}"
                     />
 
 
@@ -388,9 +388,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:visibility="@{viewModel.phoneErrorVisibility}"
+                    android:visibility="@{viewModel.phoneError.visibility}"
                     style="@style/errorField"
-                    android:text="@={viewModel.phoneErrorMsg}"
+                    android:text="@={viewModel.phoneError.message}"
                     />
 
                 <!--職業(セレクトボックス作成)-->

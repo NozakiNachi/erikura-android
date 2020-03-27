@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandler {
@@ -103,6 +104,7 @@ class ReportEvaluationActivity : AppCompatActivity(), ReportEvaluationEventHandl
             }
             viewModel.comment.value = it.comment
         }
+        viewModel.commentError.message.value = null
     }
 
 }
@@ -111,8 +113,9 @@ class ReportEvaluationViewModel: ViewModel() {
     val good: MutableLiveData<Boolean> = MutableLiveData()
     val bad: MutableLiveData<Boolean> = MutableLiveData()
     val comment: MutableLiveData<String> = MutableLiveData()
-    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+//    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
+//    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val commentError: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(comment) { result.value = isValid()  }
@@ -122,12 +125,14 @@ class ReportEvaluationViewModel: ViewModel() {
         var valid = true
         if (valid && comment.value?.length?: 0 > 5000) {
             valid = false
-            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
-            commentErrorVisibility.value = View.VISIBLE
+//            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+//            commentErrorVisibility.value = View.VISIBLE
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
         }else {
             valid = true
-            commentErrorMsg.value = ""
-            commentErrorVisibility.value = View.GONE
+//            commentErrorMsg.value = ""
+//            commentErrorVisibility.value = View.GONE
+            commentError.message.value = null
         }
         return valid
     }

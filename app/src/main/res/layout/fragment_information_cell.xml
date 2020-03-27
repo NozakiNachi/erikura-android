@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.InformationCellViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.InformationCellViewModel" />
     </data>
 
     <RelativeLayout

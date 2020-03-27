@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.AboutAppViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.AboutAppViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.AboutAppEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.AboutAppEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -81,16 +81,16 @@
                     android:textSize="12dp"
                     android:textColor="@color/blackTwo"
                     android:text="バージョン1.0.0"/>
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    style="@style/label_w2"
-                    android:textSize="18dp"
-                    android:textColor="@color/black"
-                    android:text="ライセンス" />
+<!--                <TextView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="40dp"-->
+<!--                    android:layout_marginLeft="20dp"-->
+<!--                    android:layout_marginRight="20dp"-->
+<!--                    style="@style/label_w2"-->
+<!--                    android:textSize="18dp"-->
+<!--                    android:textColor="@color/black"-->
+<!--                    android:text="ライセンス" />-->
             </LinearLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

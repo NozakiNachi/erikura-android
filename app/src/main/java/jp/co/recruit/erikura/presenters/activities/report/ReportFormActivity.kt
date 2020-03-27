@@ -20,6 +20,7 @@ import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 
@@ -122,6 +123,8 @@ class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
         createSummaryItems()
         createImage()
         loadDate()
+        viewModel.summaryError.message.value = null
+        viewModel.commentError.message.value = null
     }
 
     private fun createSummaryItems() {
@@ -192,12 +195,10 @@ class ReportFormViewModel: ViewModel() {
     val summaryId: MutableLiveData<Int> = MutableLiveData()
     val summaryEditVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val summary: MutableLiveData<String> = MutableLiveData()
-    val summaryErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val summaryErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val summaryError: ErrorMessageViewModel = ErrorMessageViewModel()
     val statusId: MutableLiveData<Int> = MutableLiveData()
     val comment: MutableLiveData<String> = MutableLiveData()
-    val commentErrorMsg: MutableLiveData<String> = MutableLiveData()
-    val commentErrorVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val commentError: ErrorMessageViewModel = ErrorMessageViewModel()
     val evaluateTypes = EvaluateType.values()
     val evaluateLabels: List<String> = evaluateTypes.map { ErikuraApplication.applicationContext.getString(it.resourceId) }
 
@@ -215,8 +216,7 @@ class ReportFormViewModel: ViewModel() {
         if (summaryEditVisibility.value == View.VISIBLE) {
             valid = isValidSummary() && valid
         }else {
-            summaryErrorMsg.value = ""
-            summaryErrorVisibility.value = View.GONE
+            summaryError.message.value = null
         }
         valid = isValidComment() && valid
         valid = summarySelectedItem != null && evaluationSelectedItem != null && valid
@@ -227,16 +227,13 @@ class ReportFormViewModel: ViewModel() {
         var valid = true
         if (valid && summary.value.isNullOrBlank()) {
             valid = false
-            summaryErrorMsg.value = ""
-            summaryErrorVisibility.value = View.GONE
+            summaryError.message.value = null
         }else if (valid && summary.value?.length?: 0 > 50) {
             valid = false
-            summaryErrorMsg.value = ErikuraApplication.instance.getString(R.string.summary_count_error)
-            summaryErrorVisibility.value = View.VISIBLE
+            summaryError.message.value = ErikuraApplication.instance.getString(R.string.summary_count_error)
         }else {
             valid = true
-            summaryErrorMsg.value = ""
-            summaryErrorVisibility.value = View.GONE
+            summaryError.message.value = null
         }
         return valid
     }
@@ -245,16 +242,13 @@ class ReportFormViewModel: ViewModel() {
         var valid = true
         if (valid && comment.value.isNullOrBlank()) {
             valid = false
-            commentErrorMsg.value = ""
-            commentErrorVisibility.value = View.GONE
+            commentError.message.value = null
         }else if (valid && comment.value?.length?: 0 > 5000) {
             valid = false
-            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
-            commentErrorVisibility.value = View.VISIBLE
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
         }else {
             valid = true
-            commentErrorMsg.value = ""
-            commentErrorVisibility.value = View.GONE
+            commentError.message.value = null
         }
         return valid
     }

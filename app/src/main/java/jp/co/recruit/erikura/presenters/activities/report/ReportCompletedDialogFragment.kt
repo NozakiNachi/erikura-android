@@ -16,7 +16,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogReportCompletedBinding
-import jp.co.recruit.erikura.presenters.activities.AccountSettingActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.AccountSettingActivity
 
 
 class ReportCompletedDialogFragment: DialogFragment(), ReportCompletedEventHandlers {

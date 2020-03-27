@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 
@@ -72,10 +73,16 @@ class NormalJobDetailsFragmentViewModel: ViewModel() {
     fun setup(activity: Activity, job: Job?, user: User) {
         if (job != null){
             // ダウンロード
-            job.thumbnailUrl?.let { url ->
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+            if (thumbnailUrl.isNullOrBlank()) {
+                val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
+                val bitmapReduced = Bitmap.createScaledBitmap( drawable.toBitmap(), 15, 15, true)
+                val bitmapDraw = BitmapDrawable(bitmapReduced)
+                bitmapDraw.alpha = 150
+                bitmapDrawable.value = bitmapDraw
+            }else {
                 val assetsManager = ErikuraApplication.assetsManager
-
-                assetsManager.fetchImage(activity, url) { result ->
+                assetsManager.fetchImage(activity, thumbnailUrl) { result ->
                     activity.runOnUiThread {
                         val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
                         val bitmapDraw = BitmapDrawable(bitmapReduced)

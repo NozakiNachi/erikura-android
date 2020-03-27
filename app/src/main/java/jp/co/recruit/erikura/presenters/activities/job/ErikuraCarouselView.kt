@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
@@ -58,15 +59,20 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         workingPlace.text = job.workingPlace
 
         // ダウンロード
-        job.thumbnailUrl?.let { url ->
+        val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+        if (thumbnailUrl.isNullOrBlank()) {
+            val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
+            image.setImageBitmap(drawable.toBitmap())
+        }else {
             val assetsManager = ErikuraApplication.assetsManager
 
-            assetsManager.fetchImage(activity, url) { bitmap ->
+            assetsManager.fetchImage(activity, thumbnailUrl) { bitmap ->
                 activity.runOnUiThread {
                     image.setImageBitmap(bitmap)
                 }
             }
         }
+
     }
 }
 

@@ -111,32 +111,32 @@
             android:screenOrientation="portrait" /> <!-- ============================================================ -->
         <!-- マイページ関連 -->
         <activity
-            android:name=".presenters.activities.MypageActivity"
+            android:name=".presenters.activities.mypage.MypageActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- マイページ -->
         <activity
-            android:name=".presenters.activities.ConfigurationActivity"
+            android:name=".presenters.activities.mypage.ConfigurationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 設定画面 -->
         <!-- 設定画面関連 -->
         <activity
-            android:name=".presenters.activities.ChangeUserInformationActivity"
+            android:name=".presenters.activities.mypage.ChangeUserInformationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 会員情報変更 -->
         <activity
-            android:name=".presenters.activities.AccountSettingActivity"
+            android:name=".presenters.activities.mypage.AccountSettingActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 口座情報登録更新 -->
         <activity
-            android:name=".presenters.activities.NotificationSettingActivity"
+            android:name=".presenters.activities.registration.NotificationSettingActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 通知設定 -->
         <activity
-            android:name=".presenters.activities.RecertificationActivity"
+            android:name=".presenters.activities.mypage.ResignInActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 再認証画面 -->
         <activity
-            android:name=".presenters.activities.AboutAppActivity"
+            android:name=".presenters.activities.mypage.AboutAppActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- このアプリについて画面 -->
         <!-- ============================================================ -->

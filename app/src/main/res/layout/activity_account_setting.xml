@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.AccountSettingViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.AccountSettingViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.AccountSettingEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.AccountSettingEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

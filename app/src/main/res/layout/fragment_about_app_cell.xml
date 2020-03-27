@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.AboutAppMenuItemViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.AboutAppMenuItemViewModel" />
     </data>
     <RelativeLayout
         android:layout_width="match_parent"
