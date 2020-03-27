@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -137,8 +138,14 @@ class ReportedJobDetailsFragment(
     private fun setup() {
         if (job != null) {
             // ダウンロード
-            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl.toString()}
-            thumbnailUrl?.let {
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+            if (thumbnailUrl.isNullOrBlank()) {
+                val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
+                val bitmapReduced = Bitmap.createScaledBitmap( drawable.toBitmap(), 15, 15, true)
+                val bitmapDraw = BitmapDrawable(bitmapReduced)
+                bitmapDraw.alpha = 150
+                viewModel.bitmapDrawable.value = bitmapDraw
+            }else {
                 val assetsManager = ErikuraApplication.assetsManager
                 assetsManager.fetchImage(activity, thumbnailUrl) { result ->
                     activity.runOnUiThread {
