@@ -15,7 +15,9 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import jp.co.recruit.erikura.services.ErikuraMessagingService
 import jp.co.recruit.erikura.services.NotificationData
+import jp.co.recruit.erikura.services.PedometerService
 
 class StartActivity : AppCompatActivity(), StartEventHandlers {
     lateinit var video: VideoView
@@ -23,6 +25,9 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+
+        val pedometerServiceIntent = Intent(this, PedometerService::class.java)
+        startService(pedometerServiceIntent)
 
         // ErikuraConfig を読み込みます
         ErikuraConfig.load(this)
