@@ -187,6 +187,9 @@
     <string name="location">箇所</string>
     <string name="evaluation_from_management">お仕事依頼元からのコメント</string>
 
+    <!-- お気に入り画面 -->
+    <string name="favorite_places_title">お気に入り</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
