@@ -183,7 +183,7 @@
                                         android:layout_marginLeft="2dp"
                                         android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                                         android:includeFontPadding="false"
-                                        android:text="円"
+                                        android:text="件"
                                         android:textColor="@color/blackTwo"
                                         android:textSize="12dp" />
                                 </LinearLayout>
@@ -248,7 +248,7 @@
                                         android:layout_marginLeft="2dp"
                                         android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                                         android:includeFontPadding="false"
-                                        android:text="円"
+                                        android:text="件"
                                         android:textColor="@color/blackTwo"
                                         android:textSize="12dp" />
                                 </LinearLayout>
