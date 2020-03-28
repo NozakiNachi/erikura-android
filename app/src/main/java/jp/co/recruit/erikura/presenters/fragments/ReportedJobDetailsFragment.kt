@@ -327,7 +327,7 @@ class ReportedJobDetailsFragmentViewModel : ViewModel() {
 //        }
 //
 //        summaryTitle.value = ErikuraApplication.instance.getString(R.string.report_form_caption, position+1, summariesCount)
-//        summaryName.value = summary.place
+//        summaryName.value = summary.workingPlace
 //        summaryStatus.value = summary.evaluation
 //        summaryComment.value = summary.comment
 //    }

@@ -40,7 +40,7 @@ class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_place_detail)
 
-        val value = intent.getParcelableExtra<Place>("place")
+        val value = intent.getParcelableExtra<Place>("workingPlace")
         if (value != null) {
             place = value
         }else {

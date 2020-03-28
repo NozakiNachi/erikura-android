@@ -97,6 +97,9 @@ interface IErikuraApiService {
     @HTTP(method = "DELETE", path = "place_favorites/destroy", hasBody = true)
     fun placeFavoriteDelete(@Body request: FavoriteRequest): ApiObservable<ResultResponse>
 
+    @GET("place_favorites")
+    fun favoritePlaces(): ApiObservable<FavoritePlacesResponse>
+
     @POST("reports")
     fun createReport(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
 
@@ -297,6 +300,10 @@ data class PushEndpointRequest(
 
 data class FavoriteRequest(
     var placeId: Int
+)
+
+data class FavoritePlacesResponse(
+    var places: List<Place>
 )
 
 sealed class ErikuraConfigValue {

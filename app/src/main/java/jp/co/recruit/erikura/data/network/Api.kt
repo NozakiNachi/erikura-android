@@ -388,6 +388,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun favoritePlaces(onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<Place>) -> Unit){
+        executeObservable(
+            erikuraApiService.favoritePlaces(),
+            onError = onError
+        ) { body ->
+            val placeList = body.places
+            onComplete(placeList)
+        }
+    }
+
     fun report(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (reportId: Int) -> Unit) {
         val report = job.report!!
         var outputSummaries: MutableList<OutputSummaryRequest> = mutableListOf()
