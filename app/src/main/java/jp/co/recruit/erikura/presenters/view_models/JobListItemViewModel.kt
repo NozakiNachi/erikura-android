@@ -7,6 +7,7 @@ import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.util.TypedValue
 import android.view.View
+import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -74,9 +75,23 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
             distance.value = sb
         }
 
-        job.thumbnailUrl?.let { url ->
-            assetsManager.fetchImage(activity, url) { bitmap ->
-                image.value = bitmap
+//        job.thumbnailUrl?.let { url ->
+//            assetsManager.fetchImage(activity, url) { bitmap ->
+//                image.value = bitmap
+//            }
+//        }
+        // ダウンロード
+        val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+        if (thumbnailUrl.isNullOrBlank()) {
+            val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(
+                jp.co.recruit.erikura.R.drawable.ic_noimage, null)
+            image.value = drawable.toBitmap()
+        }else {
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchImage(activity, thumbnailUrl) { result ->
+                activity.runOnUiThread {
+                    image.value = result
+                }
             }
         }
     }
