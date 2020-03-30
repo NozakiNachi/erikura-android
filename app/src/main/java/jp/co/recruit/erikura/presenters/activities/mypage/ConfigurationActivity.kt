@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
+import android.app.Dialog
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -24,12 +25,12 @@ import jp.co.recruit.erikura.databinding.*
 import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.activities.job.*
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 
-class ConfigurationActivity : AppCompatActivity(),
-    ConfigurationEventHandlers {
+class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
@@ -155,26 +156,17 @@ class ConfigurationActivity : AppCompatActivity(),
     override fun onStart() {
         super.onStart()
         if(fromChangeUserInformationFragment) {
-            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
-            binding.lifecycleOwner = this
-
-            AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
-        }else if(fromRegisterAccountFragment){
-            val binding: DialogRegisterAccountSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_register_account_success, null, false)
-            binding.lifecycleOwner = this
-
-            AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
-        }else if(fromChangeAccountFragment){
-            val binding: DialogChangeAccountSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_account_success, null, false)
-            binding.lifecycleOwner = this
-
-            AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
+            val dialog = ChangeUserInformationFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformation")
+            fromChangeUserInformationFragment = false
+        }else if(fromRegisterAccountFragment) {
+            val dialog = RegisterAccountSettingFragment()
+            dialog.show(supportFragmentManager, "RegisterAccountSetting")
+            fromRegisterAccountFragment = false
+        }else if(fromChangeAccountFragment) {
+            val dialog = ChangeAccountSettingFragment()
+            dialog.show(supportFragmentManager, "ChangeAccountSetting")
+            fromChangeAccountFragment = false
         }
     }
 
