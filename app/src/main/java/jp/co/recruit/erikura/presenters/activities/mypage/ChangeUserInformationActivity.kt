@@ -33,9 +33,11 @@ class ChangeUserInformationActivity : AppCompatActivity(),
     }
 
     // 都道府県のリスト
-    val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
+    val prefectureList =
+        ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
     // 職業のリスト
-    val jobStatusIdList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
+    val jobStatusIdList =
+        ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
     // 生年月日入力のカレンダー設定
     val calender: Calendar = Calendar.getInstance()
@@ -52,9 +54,10 @@ class ChangeUserInformationActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_change_user_information)
+//        setContentView(R.layout.activity_change_user_information)
 
-        val binding: ActivityChangeUserInformationBinding = DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
+        val binding: ActivityChangeUserInformationBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
@@ -64,67 +67,36 @@ class ChangeUserInformationActivity : AppCompatActivity(),
         calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
         viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", 1980, 1, 1)
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         // 再認証が必要かどうか確認
-        resignIn()
-
-        // 変更するユーザーの現在の登録値を取得
-        Api(this).user(){
-            user = it
-            viewModel.email.value = user.email
-            viewModel.lastName.value = user.lastName
-            viewModel.firstName.value = user.firstName
-            viewModel.dateOfBirth.value = user.dateOfBirth
-            viewModel.gender.value = user.gender?.value
-            viewModel.postalCode.value = user.postcode
-            viewModel.city.value = user.city
-            viewModel.street.value = user.street
-            viewModel.phone.value = user.phoneNumber
-            viewModel.wishWalk.value = user.wishWorks.size
-
-            // FIXME: 数回に1回初期値がプルダウンに表示されない不具合あり。
-            // 都道府県のプルダウン初期表示
-            viewModel.prefectureId.value = getPrefectureId(user.prefecture ?: "")
-            // 職業のプルダウン初期表示
-            viewModel.jobStatusId.value = getJobStatusId(user.jobStatus ?: "")
-
-            // やりたい仕事のチェックボタン初期表示
-            val wishWorkList: MutableList<String> = mutableListOf()
-            wishWorkList.add(user.wishWorks.getOrNull(0).toString())
-            wishWorkList.add(user.wishWorks.getOrNull(1).toString())
-            wishWorkList.add(user.wishWorks.getOrNull(2).toString())
-            wishWorkList.add(user.wishWorks.getOrNull(3).toString())
-            wishWorkList.add(user.wishWorks.getOrNull(4).toString())
-
-            if(wishWorkList.contains("smart_phone")){
-                binding.wishWorkSmartPhone.isChecked = true
-            }
-            if(wishWorkList.contains("cleaning")) {
-                binding.wishWorkCleaning.isChecked = true
-            }
-            if(wishWorkList.contains("walk")) {
-                binding.wishWorkWalk.isChecked = true
-            }
-            if(wishWorkList.contains("bicycle"))
-            {
-                binding.wishWorkBicycle.isChecked = true
-            }
-            if(wishWorkList.contains("car")) {
-                binding.wishWorkCar.isChecked = true
-            }
-
-            // 性別のラジオボタン初期表示
-            if(viewModel.gender.value == "male"){
-                binding.maleButton.isChecked = true
-            }else{
-                binding.femaleButton.isChecked = true
+        checkResignIn() { isResignIn ->
+            if (isResignIn) {
+                // 変更するユーザーの現在の登録値を取得
+                Api(this).user() {
+                    user = it
+                    loadData()
+                }
+            } else {
+                finish()
+                Intent(this, ResignInActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.putExtra("fromChangeUserInformation", true)
+                    startActivity(
+                        intent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                    )
+                }
             }
         }
     }
 
     // 所在地
     override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if(!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
+        if (!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
             Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
                 viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
                 viewModel.city.value = city
@@ -135,9 +107,10 @@ class ChangeUserInformationActivity : AppCompatActivity(),
             }
         }
     }
+
     private fun getPrefectureId(prefecture: String): Int {
         for (i in 0..47) {
-            if(prefectureList.getString(i).equals(prefecture)) {
+            if (prefectureList.getString(i).equals(prefecture)) {
                 return i
             }
         }
@@ -165,6 +138,7 @@ class ChangeUserInformationActivity : AppCompatActivity(),
     override fun onClickMale(view: View) {
         user.gender = Gender.MALE
     }
+
     override fun onClickFemale(view: View) {
         user.gender = Gender.FEMALE
     }
@@ -172,7 +146,7 @@ class ChangeUserInformationActivity : AppCompatActivity(),
     // 職業
     private fun getJobStatusId(jobStatus: String): Int {
         for (i in 0..8) {
-            if(jobStatusIdList.getString(i).equals(jobStatus)) {
+            if (jobStatusIdList.getString(i).equals(jobStatus)) {
                 return i
             }
         }
@@ -198,11 +172,21 @@ class ChangeUserInformationActivity : AppCompatActivity(),
         user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
         // やりたいこと
         val wishWorks: MutableList<String> = mutableListOf()
-        if(viewModel.interestedSmartPhone.value ?: false){ wishWorks.add("smart_phone") }
-        if(viewModel.interestedCleaning.value ?: false){ wishWorks.add("cleaning") }
-        if(viewModel.interestedWalk.value ?: false){ wishWorks.add("walk") }
-        if(viewModel.interestedBicycle.value ?: false){ wishWorks.add("bicycle") }
-        if(viewModel.interestedCar.value ?: false){ wishWorks.add("car") }
+        if (viewModel.interestedSmartPhone.value ?: false) {
+            wishWorks.add("smart_phone")
+        }
+        if (viewModel.interestedCleaning.value ?: false) {
+            wishWorks.add("cleaning")
+        }
+        if (viewModel.interestedWalk.value ?: false) {
+            wishWorks.add("walk")
+        }
+        if (viewModel.interestedBicycle.value ?: false) {
+            wishWorks.add("bicycle")
+        }
+        if (viewModel.interestedCar.value ?: false) {
+            wishWorks.add("car")
+        }
         user.wishWorks = wishWorks
 
         // 会員情報変更Apiの呼び出し
@@ -215,33 +199,64 @@ class ChangeUserInformationActivity : AppCompatActivity(),
     }
 
     // 再認証画面へ遷移
-    override fun resignIn() {
+    private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
         val nowTime = (Date().time % (1000 * 60 * 60)) / (1000 * 60)
         val reSignTime = Api.userSession?.resignInExpiredAt
 
         if (Api.userSession?.resignInExpiredAt !== null) {
             // 過去の再認証から10分以上経っていたら再認証画面へ
             if (reSignTime!! < nowTime) {
-                finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("fromChangeUserInformation", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
+                onComplete(false)
+            } else {
+                onComplete(true)
             }
         } else {
             // 一度も再認証していなければ、再認証画面へ
-            finish()
-            Intent(this, ResignInActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.putExtra("fromChangeUserInformation", true)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            onComplete(false)
+        }
+    }
+
+    // データの読み込み
+    private fun loadData() {
+        viewModel.email.value = user.email
+        viewModel.lastName.value = user.lastName
+        viewModel.firstName.value = user.firstName
+        viewModel.dateOfBirth.value = user.dateOfBirth
+//        viewModel.gender.value = user.gender?.value
+        viewModel.postalCode.value = user.postcode
+        viewModel.city.value = user.city
+        viewModel.street.value = user.street
+        viewModel.phone.value = user.phoneNumber
+        viewModel.wishWalk.value = user.wishWorks.size
+
+        // FIXME: 数回に1回初期値がプルダウンに表示されない不具合あり。
+        // 都道府県のプルダウン初期表示
+        val id = getPrefectureId(user.prefecture ?: "")
+        viewModel.prefectureId.value = id
+        // 職業のプルダウン初期表示
+        viewModel.jobStatusId.value = getJobStatusId(user.jobStatus ?: "")
+
+        // やりたい仕事のチェックボタン初期表示
+        viewModel.interestedSmartPhone.value = user.wishWorks.contains("smart_phone")
+        viewModel.interestedCleaning.value = user.wishWorks.contains("cleaning")
+        viewModel.interestedWalk.value = user.wishWorks.contains("walk")
+        viewModel.interestedBicycle.value = user.wishWorks.contains("bicycle")
+        viewModel.interestedCar.value = user.wishWorks.contains("car")
+
+        // 性別のラジオボタン初期表示
+        when (user.gender) {
+            Gender.MALE -> {
+                viewModel.male.value = true
+            }
+            else -> {
+                viewModel.female.value = true
             }
         }
+
     }
 }
 
-class ChangeUserInformationViewModel: ViewModel() {
+class ChangeUserInformationViewModel : ViewModel() {
     // メールアドレス
     val email: MutableLiveData<String> = MutableLiveData()
     // パスワード
@@ -258,6 +273,8 @@ class ChangeUserInformationViewModel: ViewModel() {
     val dateOfBirth: MutableLiveData<String> = MutableLiveData()
     // 性別
     val gender: MutableLiveData<String> = MutableLiveData()
+    val male: MutableLiveData<Boolean> = MutableLiveData()
+    val female: MutableLiveData<Boolean> = MutableLiveData()
     // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeError: ErrorMessageViewModel = ErrorMessageViewModel()
@@ -294,11 +311,11 @@ class ChangeUserInformationViewModel: ViewModel() {
         result.addSource(phone) { result.value = isValid() }
         result.addSource(jobStatusId) { result.value = isValid() }
         result.addSource(wishWalk) { result.value = isValid() }
-        result.addSource(interestedSmartPhone) {result.value = isValid()}
-        result.addSource(interestedCleaning) {result.value = isValid()}
-        result.addSource(interestedWalk) {result.value = isValid()}
-        result.addSource(interestedBicycle) {result.value = isValid()}
-        result.addSource(interestedCar) {result.value = isValid()}
+        result.addSource(interestedSmartPhone) { result.value = isValid() }
+        result.addSource(interestedCleaning) { result.value = isValid() }
+        result.addSource(interestedWalk) { result.value = isValid() }
+        result.addSource(interestedBicycle) { result.value = isValid() }
+        result.addSource(interestedCar) { result.value = isValid() }
     }
 
     //     バリデーションルール
@@ -322,12 +339,13 @@ class ChangeUserInformationViewModel: ViewModel() {
     private fun isValidLastName(): Boolean {
         var valid = true
 
-        if (valid && lastName.value?.isBlank() ?:true) {
+        if (valid && lastName.value?.isBlank() ?: true) {
             valid = false
             lastNameError.message.value = null
         } else if (valid && !(lastName.value?.length ?: 0 <= 30)) {
             valid = false
-            lastNameError.message.value = ErikuraApplication.instance.getString(R.string.last_name_count_error)
+            lastNameError.message.value =
+                ErikuraApplication.instance.getString(R.string.last_name_count_error)
         } else {
             valid = true
             lastNameError.message.value = null
@@ -339,12 +357,13 @@ class ChangeUserInformationViewModel: ViewModel() {
     private fun isValidFirstName(): Boolean {
         var valid = true
 
-        if (valid && firstName.value?.isBlank() ?:true) {
+        if (valid && firstName.value?.isBlank() ?: true) {
             valid = false
             firstNameError.message.value = null
         } else if (valid && !(firstName.value?.length ?: 0 <= 30)) {
             valid = false
-            firstNameError.message.value = ErikuraApplication.instance.getString(R.string.first_name_count_error)
+            firstNameError.message.value =
+                ErikuraApplication.instance.getString(R.string.first_name_count_error)
         } else {
             valid = true
             firstNameError.message.value = null
@@ -362,10 +381,12 @@ class ChangeUserInformationViewModel: ViewModel() {
             postalCodeError.message.value = null
         } else if (valid && !(pattern.matcher(postalCode.value).find())) {
             valid = false
-            postalCodeError.message.value = ErikuraApplication.instance.getString(R.string.postal_code_pattern_error)
+            postalCodeError.message.value =
+                ErikuraApplication.instance.getString(R.string.postal_code_pattern_error)
         } else if (valid && !(postalCode.value?.length ?: 0 == 7)) {
             valid = false
-            postalCodeError.message.value = ErikuraApplication.instance.getString(R.string.postal_code_count_error)
+            postalCodeError.message.value =
+                ErikuraApplication.instance.getString(R.string.postal_code_count_error)
         } else {
             valid = true
             postalCodeError.message.value = null
@@ -379,7 +400,7 @@ class ChangeUserInformationViewModel: ViewModel() {
     }
 
     // FIXME: プルダウン初期値取得の不具合が解決したら動作確認
-    private fun isValidJobStatus() : Boolean {
+    private fun isValidJobStatus(): Boolean {
         return !(jobStatusId.value == 0 || jobStatusId.value == null)
     }
 
@@ -391,7 +412,8 @@ class ChangeUserInformationViewModel: ViewModel() {
             cityError.message.value = null
         } else if (valid && !(city.value?.length ?: 0 <= 20)) {
             valid = false
-            cityError.message.value = ErikuraApplication.instance.getString(R.string.city_count_error)
+            cityError.message.value =
+                ErikuraApplication.instance.getString(R.string.city_count_error)
         } else {
             valid = true
             cityError.message.value = null
@@ -408,7 +430,8 @@ class ChangeUserInformationViewModel: ViewModel() {
             streetError.message.value = null
         } else if (valid && !(street.value?.length ?: 0 <= 100)) {
             valid = false
-            streetError.message.value = ErikuraApplication.instance.getString(R.string.street_count_error)
+            streetError.message.value =
+                ErikuraApplication.instance.getString(R.string.street_count_error)
         } else {
             valid = true
             streetError.message.value = null
@@ -423,13 +446,18 @@ class ChangeUserInformationViewModel: ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
-        if(valid && password.value !== null && !(pattern.matcher(password.value).find())) {
+        if (valid && password.value !== null && !(pattern.matcher(password.value).find())) {
             valid = false
-            passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-        }else if(valid && password.value !== null && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
+            passwordError.message.value =
+                ErikuraApplication.instance.getString(R.string.password_count_error)
+        } else if (valid && password.value !== null && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(
+                password.value
+            ).find()))
+        ) {
             valid = false
-            passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-        }else if(valid && password.value == null || password.value == "") {
+            passwordError.message.value =
+                ErikuraApplication.instance.getString(R.string.password_pattern_error)
+        } else if (valid && password.value == null || password.value == "") {
             valid = true
             passwordError.message.value = null
         } else {
@@ -448,16 +476,25 @@ class ChangeUserInformationViewModel: ViewModel() {
         if (valid && password.value !== null && verificationPassword.value == null) {
             valid = false
             verificationPasswordError.message.value = null
-        } else if(valid && verificationPassword.value !== null && !(pattern.matcher(password.value).find())) {
+        } else if (valid && verificationPassword.value !== null && !(pattern.matcher(password.value).find())) {
             valid = false
-            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-        }else if(valid && verificationPassword.value !== null && (!(alPattern.matcher(verificationPassword.value).find()) || !(numPattern.matcher(verificationPassword.value).find()))) {
+            verificationPasswordError.message.value =
+                ErikuraApplication.instance.getString(R.string.password_count_error)
+        } else if (valid && verificationPassword.value !== null && (!(alPattern.matcher(
+                verificationPassword.value
+            ).find()) || !(numPattern.matcher(verificationPassword.value).find()))
+        ) {
             valid = false
-            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-        }else if(valid && password.value !== null && verificationPassword.value !== null && !(password.value.equals(verificationPassword.value))) {
+            verificationPasswordError.message.value =
+                ErikuraApplication.instance.getString(R.string.password_pattern_error)
+        } else if (valid && password.value !== null && verificationPassword.value !== null && !(password.value.equals(
+                verificationPassword.value
+            ))
+        ) {
             valid = false
-            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
-        }else if(valid && verificationPassword.value == null || verificationPassword.value == "" ) {
+            verificationPasswordError.message.value =
+                ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+        } else if (valid && verificationPassword.value == null || verificationPassword.value == "") {
             valid = true
             verificationPasswordError.message.value = null
         } else {
@@ -468,22 +505,24 @@ class ChangeUserInformationViewModel: ViewModel() {
     }
 
     private fun isValidWishWorks(): Boolean {
-        return interestedSmartPhone.value ?:false || interestedCleaning.value ?:false || interestedWalk.value ?:false || interestedBicycle.value ?:false || interestedCar.value ?:false
+        return interestedSmartPhone.value ?: false || interestedCleaning.value ?: false || interestedWalk.value ?: false || interestedBicycle.value ?: false || interestedCar.value ?: false
     }
 
     private fun isValidPhoneNumber(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
-        if (valid && phone.value?.isBlank() ?:true) {
+        if (valid && phone.value?.isBlank() ?: true) {
             valid = false
             phoneError.message.value = null
-        }else if(valid && !(pattern.matcher(phone.value).find())) {
+        } else if (valid && !(pattern.matcher(phone.value).find())) {
             valid = false
-            phoneError.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-        }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
+            phoneError.message.value =
+                ErikuraApplication.instance.getString(R.string.phone_pattern_error)
+        } else if (valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
             valid = false
-            phoneError.message.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
+            phoneError.message.value =
+                ErikuraApplication.instance.getString(R.string.phone_count_error)
         } else {
             valid = true
             phoneError.message.value = null
@@ -499,5 +538,4 @@ interface ChangeUserInformationEventHandlers {
     fun onClickRegister(view: View)
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
-    fun resignIn()
 }

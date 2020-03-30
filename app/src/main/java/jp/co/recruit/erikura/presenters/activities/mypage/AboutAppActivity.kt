@@ -39,24 +39,16 @@ class AboutAppActivity : AppCompatActivity(),
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "利用規約") {
             val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
-            val intent = Intent(
-                this,
-                WebViewActivity::class.java
-            ).apply {
+            val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(termsOfServiceURLString)
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(
-            1,
-            "プライバシーポリシー"
+        MenuItem(1, "プライバシーポリシー"
         ) {
             val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + "/pdf/privacy_policy.pdf"
-            val intent = Intent(
-                this,
-                WebViewActivity::class.java
-            ).apply {
+            val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
             }
@@ -66,10 +58,7 @@ class AboutAppActivity : AppCompatActivity(),
             // FIXME: 正しいURLか確認
             val privacyPolicyURLString =
                 "https://faq.erikura.net/hc/ja/articles/360020286793-%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E6%8E%A8%E5%A5%A8%E7%92%B0%E5%A2%83%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"
-            val intent = Intent(
-                this,
-                WebViewActivity::class.java
-            ).apply {
+            val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
             }

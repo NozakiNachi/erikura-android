@@ -3,7 +3,9 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
+import android.app.Dialog
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,12 +24,13 @@ import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.*
 import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.activities.job.*
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 
-class ConfigurationActivity : AppCompatActivity(),
-    ConfigurationEventHandlers {
+class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
     data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()
@@ -57,19 +60,23 @@ class ConfigurationActivity : AppCompatActivity(),
             val intent = Intent(this, AboutAppActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false
-        ) {
-            val intent = Intent(this, ConfigurationActivity::class.java
-            )
+        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
+            val frequentlyQuestionsURLString = "https://faq.erikura.net/hc/ja/sections/360003690953-FAQ"
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(frequentlyQuestionsURLString)
+            }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false
-        ) {
-            val intent = Intent(this, RegisterEmailActivity::class.java)
+        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
+            val inquiryURLString = "https://support.erikura.net/"
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(inquiryURLString)
+            }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true
-        ) {
+        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()
         }
     )
@@ -77,7 +84,6 @@ class ConfigurationActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-
 
         val binding: ActivityConfigurationBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_configuration)
@@ -87,10 +93,10 @@ class ConfigurationActivity : AppCompatActivity(),
 
         // 未ログイン時は表示する項目を絞る。
         if (userSession == null) {
-            for (i in 0..menuItems.size-1) {
-                for (ia in 0..menuItems.size-1) {
-                    if (menuItems[ia].requireLogin) {
-                        menuItems.remove(menuItems[ia])
+            for (items in 0..menuItems.size-1) {
+                for (item in 0..menuItems.size-1) {
+                    if (menuItems[item].requireLogin) {
+                        menuItems.remove(menuItems[item])
                         break
                     }
                 }
@@ -98,9 +104,7 @@ class ConfigurationActivity : AppCompatActivity(),
         }
 
         val adapter =
-            ConfigurationAdapter(
-                menuItems
-            )
+            ConfigurationAdapter(menuItems)
         adapter.setOnItemClickListener(object :
             ConfigurationAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
@@ -125,20 +129,13 @@ class ConfigurationActivity : AppCompatActivity(),
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding = DataBindingUtil.inflate<FragmentConfigurationCellBinding>(
                 LayoutInflater.from(parent.context),
-                R.layout.fragment_configuration_cell,
-                parent,
-                false
-            )
-            return ViewHolder(
-                binding
-            )
+                R.layout.fragment_configuration_cell, parent, false)
+            return ViewHolder(binding)
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MenuListItem = menuItems.get(position)
             val viewModel =
-                ConfigurationMenuItemViewModel(
-                    MenuListItem
-                )
+                ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {
@@ -159,26 +156,17 @@ class ConfigurationActivity : AppCompatActivity(),
     override fun onStart() {
         super.onStart()
         if(fromChangeUserInformationFragment) {
-            val binding: DialogChangeUserInformationSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_user_information_success, null, false)
-            binding.lifecycleOwner = this
-
-            AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
-        }else if(fromRegisterAccountFragment){
-            val binding: DialogRegisterAccountSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_register_account_success, null, false)
-            binding.lifecycleOwner = this
-
-            AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
-        }else if(fromChangeAccountFragment){
-            val binding: DialogChangeAccountSuccessBinding = DataBindingUtil.inflate(LayoutInflater.from(this), R.layout.dialog_change_account_success, null, false)
-            binding.lifecycleOwner = this
-
-            AlertDialog.Builder(this)
-                .setView(binding.root)
-                .show()
+            val dialog = ChangeUserInformationFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformation")
+            fromChangeUserInformationFragment = false
+        }else if(fromRegisterAccountFragment) {
+            val dialog = RegisterAccountSettingFragment()
+            dialog.show(supportFragmentManager, "RegisterAccountSetting")
+            fromRegisterAccountFragment = false
+        }else if(fromChangeAccountFragment) {
+            val dialog = ChangeAccountSettingFragment()
+            dialog.show(supportFragmentManager, "ChangeAccountSetting")
+            fromChangeAccountFragment = false
         }
     }
 
@@ -209,10 +197,6 @@ class ConfigurationActivity : AppCompatActivity(),
 
     // 再認証が必要か確認
     override fun recertification() {
-
-
-
-
         // スタート画面に戻る
         val intent = Intent(this, StartActivity::class.java)
         // 戻るボタンの無効化
@@ -220,7 +204,6 @@ class ConfigurationActivity : AppCompatActivity(),
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
-
 
 interface ConfigurationEventHandlers {
     // ログアウトへのリンク

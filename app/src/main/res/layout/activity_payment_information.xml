@@ -51,6 +51,7 @@
                 android:orientation="vertical"
                 android:visibility="visible">
                 <TextView
+                    android:id="@+id/not_payment_date_explain"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -62,13 +63,16 @@
                     android:text="口座情報が未登録です"
                     />
                 <Button
+                    android:id="@+id/not_payment_date_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="40dp"
                     android:layout_marginRight="40dp"
                     style="@style/primaryButton"
-                    android:text="口座情報登録"/>
+                    android:text="口座情報登録"
+                    android:onClick="@{handlers::onClickAccountSetting}"
+                    />
             </LinearLayout>
 
             <Spinner
