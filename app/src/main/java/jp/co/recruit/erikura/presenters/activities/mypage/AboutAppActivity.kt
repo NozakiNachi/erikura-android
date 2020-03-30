@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.databinding.*
 import kotlinx.android.synthetic.main.activity_about_app.*
 import kotlin.collections.ArrayList
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 class AboutAppActivity : AppCompatActivity(),
@@ -91,11 +92,7 @@ class AboutAppActivity : AppCompatActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
 
-
-        val adapter =
-            AboutAppAdapter(
-                menuItems
-            )
+        val adapter = AboutAppAdapter(menuItems)
         adapter.setOnItemClickListener(object :
             AboutAppAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
@@ -106,14 +103,6 @@ class AboutAppActivity : AppCompatActivity(),
         about_app_recycler_view.adapter = adapter
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         about_app_recycler_view.addItemDecoration(itemDecoration)
-
-        // ユーザーのOSバージョンを取得
-        Api(this).clientVersion(){
-            // FIXME: RequiredCilentVirsionを実装後挙動確認(xmlも書き換え)
-            virsion = it
-            viewModel.current.value = virsion!!.current
-            viewModel.minimum.value = virsion!!.minimum
-        }
     }
 
     class AboutAppAdapter(private val menuItems: List<MenuItem>) :
@@ -164,8 +153,10 @@ interface AboutAppEventHandlers {
 }
 
 class AboutAppViewModel: ViewModel() {
-    val current: MutableLiveData<String> = MutableLiveData()
-    val minimum: MutableLiveData<String> = MutableLiveData()
+    val versionName: String get() = ErikuraApplication.versionName
+    val version: String get() {
+        return String.format("バージョン %s", versionName)
+    }
 }
 
 class AboutAppMenuItemViewModel(val item: AboutAppActivity.MenuItem) : ViewModel() {

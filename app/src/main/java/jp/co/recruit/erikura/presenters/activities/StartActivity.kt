@@ -29,9 +29,6 @@ class StartActivity : AppCompatActivity(), StartEventHandlers {
         val pedometerServiceIntent = Intent(this, PedometerService::class.java)
         startService(pedometerServiceIntent)
 
-        // ErikuraConfig を読み込みます
-        ErikuraConfig.load(this)
-
         val intent = getIntent()
         if (intent != null) {
             intent.getStringExtra("extra")?.let { data ->

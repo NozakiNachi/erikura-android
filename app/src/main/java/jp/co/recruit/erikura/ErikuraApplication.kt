@@ -26,14 +26,16 @@ import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.json.JSONObject
 import androidx.core.content.ContextCompat.getSystemService
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
+import jp.co.recruit.erikura.business.models.ErikuraConfig
+import org.apache.commons.lang.builder.ToStringBuilder
 
 
 class ErikuraApplication : Application() {
-
     companion object {
         lateinit var instance: ErikuraApplication private set
+
+        val versionCode : Int = BuildConfig.VERSION_CODE
+        val versionName : String = BuildConfig.VERSION_NAME
 
         val applicationContext: Context get() = instance.applicationContext
         val assetsManager: AssetsManager get() = instance.erikuraComponent.assetsManager()
@@ -57,6 +59,16 @@ class ErikuraApplication : Application() {
         UserSession.retrieve()?.let {
             Api.userSession = it
         }
+
+        Api(this).let { api ->
+            // ErikuraConfig を読み込みます
+            ErikuraConfig.load(this)
+
+            api.clientVersion() { requiredVersion ->
+                Log.v("VERSION", ToStringBuilder.reflectionToString(requiredVersion))
+            }
+        }
+
     }
 
     // ギャラリーへのアクセス許可関連
