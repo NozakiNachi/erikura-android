@@ -1,6 +1,9 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +25,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPaymentInformationBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInfoMonthlyCellBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInformationListCellBinding
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterGenderActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -87,6 +91,19 @@ class PaymentInformationActivity : AppCompatActivity(), PaymentInformationHandle
                 binding.paiment.setVisibility(View.GONE)
             }
         }
+
+        Api(this).payment() {
+            if(it.bankName !== null) {
+                binding.notPaymentDateButton.setVisibility(View.GONE)
+                binding.notPaymentDateExplain.setVisibility(View.GONE)
+            }
+        }
+    }
+
+    // 未登録の場合、口座情報登録画面へ
+    override fun onClickAccountSetting(view: View) {
+        val intent = Intent(this, AccountSettingActivity::class.java)
+        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 }
 
@@ -112,6 +129,7 @@ class PaymentInformationViewModel: ViewModel() {
 
 interface PaymentInformationHandlers {
     fun onTargetYearSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onClickAccountSetting(view: View)
 }
 
 data class MonthlyPaymentInformation(val month: Date, val jobs: List<Job>)

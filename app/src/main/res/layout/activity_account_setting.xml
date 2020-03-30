@@ -348,9 +348,9 @@
                 <Button
                     android:id="@+id/change_button"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
-                    android:layout_marginBottom="29dp"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
                     android:onClick="@{handlers::onClickSetting}"
