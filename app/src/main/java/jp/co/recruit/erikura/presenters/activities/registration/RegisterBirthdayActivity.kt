@@ -6,17 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
-import java.util.*
 import jp.co.recruit.erikura.databinding.ActivityRegisterBirthdayBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.util.*
 
-class RegisterBirthdayActivity : AppCompatActivity(),
+class RegisterBirthdayActivity : BaseActivity(),
     RegisterBirthdayEventHandlers {
     private val viewModel: RegisterBirthdayViewModel by lazy {
         ViewModelProvider(this).get(RegisterBirthdayViewModel::class.java)

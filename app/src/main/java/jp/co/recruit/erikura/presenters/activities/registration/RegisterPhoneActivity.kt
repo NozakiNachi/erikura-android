@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,10 +14,11 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterPhoneBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
 
-class RegisterPhoneActivity : AppCompatActivity(),
+class RegisterPhoneActivity : BaseActivity(),
     RegisterPhoneEventHandlers {
     private val viewModel: RegisterPhoneViewModel by lazy {
         ViewModelProvider(this).get(RegisterPhoneViewModel::class.java)

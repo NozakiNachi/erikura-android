@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
-import android.Manifest
 import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,8 +14,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -33,6 +30,7 @@ import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
@@ -40,7 +38,7 @@ import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
 import java.util.*
 import kotlin.collections.HashMap
 
-class ReportImagePickerActivity : AppCompatActivity(), ReportImagePickerEventHandler {
+class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportImagePickerViewModel::class.java)
     }

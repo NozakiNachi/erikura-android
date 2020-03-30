@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -32,16 +31,16 @@ import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import jp.co.recruit.erikura.presenters.fragments.OperatorCommentAdapter
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ReportConfirmActivity : AppCompatActivity(), ReportConfirmEventHandlers {
+class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportConfirmViewModel::class.java)
     }

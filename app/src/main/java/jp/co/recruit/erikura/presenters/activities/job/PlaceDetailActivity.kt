@@ -13,7 +13,6 @@ import android.text.style.DynamicDrawableSpan
 import android.text.style.ImageSpan
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -25,10 +24,11 @@ import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.fragments.JobsListFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingPlaceViewFragment
 
-class PlaceDetailActivity : AppCompatActivity(), PlaceDetailEventHandlers {
+class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
     private val viewModel: PlaceDetailViewModel by lazy {
         ViewModelProvider(this).get(PlaceDetailViewModel::class.java)
     }

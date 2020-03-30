@@ -3,12 +3,10 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
@@ -25,11 +23,11 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPaymentInformationBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInfoMonthlyCellBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInformationListCellBinding
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterGenderActivity
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PaymentInformationActivity : AppCompatActivity(), PaymentInformationHandlers {
+class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
     private val viewModel: PaymentInformationViewModel by lazy {
         ViewModelProvider(this).get(PaymentInformationViewModel::class.java)
     }

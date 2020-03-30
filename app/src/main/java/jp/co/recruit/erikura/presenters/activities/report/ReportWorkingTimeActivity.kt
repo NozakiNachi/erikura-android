@@ -4,9 +4,7 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import androidx.databinding.DataBindingUtil
@@ -16,9 +14,10 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportWorkingTimeBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
-class ReportWorkingTimeActivity : AppCompatActivity(), ReportWorkingTimeEventHandlers {
+class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportWorkingTimeViewModel::class.java)
     }

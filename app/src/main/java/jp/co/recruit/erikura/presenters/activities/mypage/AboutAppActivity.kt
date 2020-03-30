@@ -6,27 +6,24 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import jp.co.recruit.erikura.BuildConfig
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.RequiredClientVersion
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.*
-import kotlinx.android.synthetic.main.activity_about_app.*
-import kotlin.collections.ArrayList
-import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
-import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.databinding.ActivityAboutAppBinding
+import jp.co.recruit.erikura.databinding.FragmentAboutAppCellBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import kotlinx.android.synthetic.main.activity_about_app.*
 
-class AboutAppActivity : AppCompatActivity(),
-    AboutAppEventHandlers {
+class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
     data class MenuItem(val id: Int, val label: String, val onSelect: () -> Unit)
 
     var user: User = User()

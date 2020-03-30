@@ -30,7 +30,6 @@ class PedometerService : Service(), SensorEventListener {
         sensorManager.registerListener(this, stepDetectSensor, SensorManager.SENSOR_DELAY_FASTEST)
         sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
 
-
         return START_STICKY
     }
 

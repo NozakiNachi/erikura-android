@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,10 +8,11 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.NotificationSetting
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.databinding.ActivityNotificationSettingBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
 
-class NotificationSettingActivity : AppCompatActivity(),
+class NotificationSettingActivity : BaseActivity(),
     NotificationSettingEventHandlers {
     private val viewModel: NotificationSettingViewModel by lazy {
         ViewModelProvider(this).get(NotificationSettingViewModel::class.java)

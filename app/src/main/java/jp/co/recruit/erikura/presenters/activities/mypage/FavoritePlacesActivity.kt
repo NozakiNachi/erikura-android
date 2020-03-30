@@ -3,12 +3,9 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
@@ -22,9 +19,10 @@ import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityFavoritePlacesBinding
 import jp.co.recruit.erikura.databinding.FragmentFavoritePlaceItemBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 
-class FavoritePlacesActivity : AppCompatActivity() {
+class FavoritePlacesActivity : BaseActivity() {
     private lateinit var favoritePlaceAdapter: FavoritePlaceAdapter
     private var placeList: List<Place> = listOf()
 

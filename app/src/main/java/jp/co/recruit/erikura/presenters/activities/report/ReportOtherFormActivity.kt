@@ -5,8 +5,8 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
@@ -14,19 +14,19 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
-import android.provider.MediaStore
-import io.realm.Realm
 import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 
 
-class ReportOtherFormActivity : AppCompatActivity(), ReportOtherFormEventHandlers {
+class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportOtherFormViewModel::class.java)
     }

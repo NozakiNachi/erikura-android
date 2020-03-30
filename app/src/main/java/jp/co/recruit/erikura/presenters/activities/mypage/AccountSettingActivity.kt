@@ -8,13 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Bank
@@ -22,12 +18,13 @@ import jp.co.recruit.erikura.business.models.BankBranch
 import jp.co.recruit.erikura.business.models.Payment
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityAccountSettingBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.regex.Pattern
 
 
-class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers {
+class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
     val api = Api(this)
 
     // FIXME: 入力値を選択させるドロップボックスが必要？

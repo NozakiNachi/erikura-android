@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,8 +14,9 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityApplyCompletedBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
-class ApplyCompletedActivity : AppCompatActivity(), ApplyCompletedEventHandlers {
+class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
     private val viewModel: ApplyCompletedViewModel by lazy {
         ViewModelProvider(this).get(ApplyCompletedViewModel::class.java)
     }

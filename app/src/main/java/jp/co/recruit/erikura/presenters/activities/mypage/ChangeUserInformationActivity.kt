@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,13 +17,13 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import java.util.*
 import java.util.regex.Pattern
 
 
-class ChangeUserInformationActivity : AppCompatActivity(),
-    ChangeUserInformationEventHandlers {
+class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
 
     var user: User = User()
 

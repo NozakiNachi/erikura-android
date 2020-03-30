@@ -4,13 +4,13 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.ActivityRegisterFinishedBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
-class RegisterFinishedActivity : AppCompatActivity(),
+class RegisterFinishedActivity : BaseActivity(),
     RegisterFinishedEventHandlers {
 
     override fun onCreate(savedInstanceState: Bundle?) {
