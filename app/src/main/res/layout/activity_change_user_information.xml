@@ -242,6 +242,7 @@
                             android:layout_marginRight="4dp"
                             android:paddingLeft="10dp"
                             android:onClick="@{handlers::onClickMale}"
+                            android:checked="@={viewModel.male}"
                             android:text="@string/male"/>
                         <RadioButton
                             android:id="@+id/female_button"
@@ -253,6 +254,7 @@
                             android:layout_marginRight="20dp"
                             android:paddingLeft="5dp"
                             android:onClick="@{handlers::onClickFemale}"
+                            android:checked="@={viewModel.female}"
                             android:text="@string/female"/>
                     </RadioGroup>
                 </LinearLayout>
