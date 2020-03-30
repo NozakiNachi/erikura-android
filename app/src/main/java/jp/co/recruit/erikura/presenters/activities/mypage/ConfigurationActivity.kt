@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.app.AlertDialog
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +23,7 @@ import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.*
 import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
@@ -57,19 +59,25 @@ class ConfigurationActivity : AppCompatActivity(),
             val intent = Intent(this, AboutAppActivity::class.java)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false
-        ) {
-            val intent = Intent(this, ConfigurationActivity::class.java
-            )
+        MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
+            val frequentlyQuestionsURLString =
+                "https://faq.erikura.net/hc/ja/sections/360003690953-FAQ"
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(frequentlyQuestionsURLString)
+            }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false
-        ) {
-            val intent = Intent(this, RegisterEmailActivity::class.java)
+        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
+            val inquiryURLString =
+                "https://support.erikura.net/"
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(inquiryURLString)
+            }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true
-        ) {
+        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()
         }
     )
