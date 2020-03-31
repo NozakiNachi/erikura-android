@@ -29,9 +29,6 @@ import java.util.regex.Pattern
 
 class AccountSettingActivity : AppCompatActivity(), AccountSettingEventHandlers {
     val api = Api(this)
-
-    // FIXME: 入力値を選択させるドロップボックスが必要？
-    // FIXME: 存在しない銀行名・支店名をいれるとエラーになる
     var payment: Payment = Payment()
 
     private val viewModel: AccountSettingViewModel by lazy {

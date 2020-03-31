@@ -63,11 +63,11 @@
     <string name="registerFinished_caption">会員登録が完了しました！</string>
 
     <!-- 会員情報変更成功モーダル -->
-    <string name="change_user_information_success">会員情報を変更しました。</string>
+    <string name="change_user_information_success">会員情報を更新しました。</string>
 
     <!-- 口座情報登録成功モーダル -->
     <string name="register_account_success">口座情報を登録しました。</string>
-    <string name="change_account_success">口座情報を変更しました。</string>
+    <string name="change_account_success">口座情報を更新しました。</string>
 
     <!-- 案件詳細画面 -->
     <string name="jobDetails_workingTime">作業時間（目安）</string>

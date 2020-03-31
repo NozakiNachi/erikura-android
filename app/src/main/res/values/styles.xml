@@ -172,6 +172,17 @@
         <item name="android:elevation">@dimen/default_elevation</item>
     </style>
 
+    <!-- ラジオボタン -->
+    <style name="buttonWithRadioButton" parent="android:Widget.CompoundButton.RadioButton">
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:background">@drawable/button_with_checkbox</item>
+        <item name="android:textColor">@color/blackTwo</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:button">@drawable/erikura_radio_in_button</item>
+    </style>
+
     <!-- チェックボックス付きボタン -->
     <style name="buttonWithCheckBox" parent="android:Widget.CompoundButton.CheckBox">
         <item name="android:layout_marginLeft">20dp</item>

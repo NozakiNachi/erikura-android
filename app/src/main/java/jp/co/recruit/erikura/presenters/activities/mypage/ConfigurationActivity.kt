@@ -103,11 +103,8 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
             }
         }
 
-        val adapter =
-            ConfigurationAdapter(menuItems)
-        adapter.setOnItemClickListener(object :
-            ConfigurationAdapter.OnItemClickListener {
-            override fun onItemClickListener(item: MenuItem) {
+        val adapter = ConfigurationAdapter(menuItems)
+        adapter.setOnItemClickListener(object : ConfigurationAdapter.OnItemClickListener { override fun onItemClickListener(item: MenuItem) {
                 item.onSelect()
             }
         })
@@ -134,8 +131,7 @@ class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MenuListItem = menuItems.get(position)
-            val viewModel =
-                ConfigurationMenuItemViewModel(MenuListItem)
+            val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {

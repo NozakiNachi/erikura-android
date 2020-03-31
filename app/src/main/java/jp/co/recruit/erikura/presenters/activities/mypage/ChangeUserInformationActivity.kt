@@ -23,8 +23,7 @@ import java.util.*
 import java.util.regex.Pattern
 
 
-class ChangeUserInformationActivity : AppCompatActivity(),
-    ChangeUserInformationEventHandlers {
+class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformationEventHandlers {
 
     var user: User = User()
 
@@ -47,8 +46,7 @@ class ChangeUserInformationActivity : AppCompatActivity(),
             calender.set(Calendar.MONTH, monthOfYear)
             calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-            viewModel.dateOfBirth.value =
-                String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
+            viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,10 +83,7 @@ class ChangeUserInformationActivity : AppCompatActivity(),
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromChangeUserInformation", true)
-                    startActivity(
-                        intent,
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-                    )
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }
         }

@@ -63,7 +63,7 @@ class AboutAppActivity : AppCompatActivity(),
             }
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
-        MenuItem(3, "ライセンス一覧") {
+        MenuItem(3, "ライセンス") {
             val intent = Intent(this, OssLicensesMenuActivity::class.java)
             startActivity(intent)
         }
@@ -73,18 +73,13 @@ class AboutAppActivity : AppCompatActivity(),
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-
         val binding: ActivityAboutAppBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_about_app)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
 
-
-        val adapter =
-            AboutAppAdapter(
-                menuItems
-            )
+        val adapter = AboutAppAdapter(menuItems)
         adapter.setOnItemClickListener(object :
             AboutAppAdapter.OnItemClickListener {
             override fun onItemClickListener(item: MenuItem) {
@@ -119,17 +114,13 @@ class AboutAppActivity : AppCompatActivity(),
                 parent,
                 false
             )
-            return ViewHolder(
-                binding
-            )
+            return ViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MenuListItem = menuItems.get(position)
             val viewModel =
-                AboutAppMenuItemViewModel(
-                    MenuListItem
-                )
+                AboutAppMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {
@@ -149,7 +140,6 @@ class AboutAppActivity : AppCompatActivity(),
 }
 
 interface AboutAppEventHandlers {
-
 }
 
 class AboutAppViewModel: ViewModel() {

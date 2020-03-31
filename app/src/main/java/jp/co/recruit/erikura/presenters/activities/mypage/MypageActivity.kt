@@ -48,8 +48,7 @@ class MypageActivity : AppCompatActivity(),
     }
 
     var mypageItems: List<MypageItem> = listOf(
-        MypageItem(
-            0, "お支払情報", R.drawable.ic_account, true) {
+        MypageItem(0, "お支払情報", R.drawable.ic_account, true) {
             Intent(this, PaymentInformationActivity::class.java).let {
                 startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
@@ -89,7 +88,6 @@ class MypageActivity : AppCompatActivity(),
         informationListAdapter =
             InformationAdapter(this)
 
-
         informationListView = findViewById(R.id.mypage_information_list)
         informationListView.adapter = informationListAdapter
         informationListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -128,10 +126,7 @@ class MypageActivity : AppCompatActivity(),
         }
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val MypageListItem = mypageItems.get(position)
-            val viewModel =
-                MypageMenuItemViewModel(
-                    MypageListItem
-                )
+            val viewModel = MypageMenuItemViewModel(MypageListItem)
             holder.binding.viewModel = viewModel
 
             holder.binding.root.setOnClickListener {

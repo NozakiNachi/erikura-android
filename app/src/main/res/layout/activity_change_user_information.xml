@@ -234,7 +234,7 @@
                         android:orientation="horizontal">
                         <RadioButton
                             android:id="@+id/male_button"
-                            style="@style/buttonWithCheckBox"
+                            style="@style/buttonWithRadioButton"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
                             android:layout_weight="1"
@@ -246,7 +246,7 @@
                             android:text="@string/male"/>
                         <RadioButton
                             android:id="@+id/female_button"
-                            style="@style/buttonWithCheckBox"
+                            style="@style/buttonWithRadioButton"
                             android:layout_width="match_parent"
                             android:layout_height="70dp"
                             android:layout_weight="1"

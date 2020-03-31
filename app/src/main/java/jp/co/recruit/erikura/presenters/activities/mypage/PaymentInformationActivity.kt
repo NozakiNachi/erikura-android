@@ -87,11 +87,14 @@ class PaymentInformationActivity : AppCompatActivity(), PaymentInformationHandle
 
             if(jobs.size == 0){
                 binding.paiment.setVisibility(View.VISIBLE)
+                binding.paymentExplain.setVisibility(View.GONE)
             }else{
                 binding.paiment.setVisibility(View.GONE)
+                binding.paymentExplain.setVisibility(View.VISIBLE)
             }
         }
 
+        // 口座情報が登録済みであれば、口座情報登録ボタンは表示しない。
         Api(this).payment() {
             if(it.bankName !== null) {
                 binding.notPaymentDateButton.setVisibility(View.GONE)

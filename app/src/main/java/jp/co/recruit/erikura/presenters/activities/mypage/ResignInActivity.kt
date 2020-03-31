@@ -15,9 +15,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResignInBinding
-
 import java.util.*
-
 class ResignInActivity : AppCompatActivity(), ResignInHandlers {
 
     var user: User = User()
@@ -38,10 +36,8 @@ class ResignInActivity : AppCompatActivity(), ResignInHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-
         // 登録メールアドレスを取得
-        Api(this).user() {
-            user = it
+        Api(this).user() { user->
             viewModel.email.value = user.email
         }
 
