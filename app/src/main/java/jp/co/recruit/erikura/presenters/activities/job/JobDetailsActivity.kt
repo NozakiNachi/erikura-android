@@ -27,28 +27,28 @@ class JobDetailsActivity : BaseActivity() {
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
 
-    lateinit var sensorManager: SensorManager
-    lateinit var stepCountSensor: Sensor
-    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
-        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            // Accuracy の変更時
-        }
-
-        override fun onSensorChanged(event: SensorEvent?) {
-            event?.let { event ->
-                val sensor: Sensor = event.sensor
-                val values: FloatArray = event.values
-                val timestamp: Long = event.timestamp
-
-                if (sensor.type == Sensor.TYPE_STEP_COUNTER) {
-                    values.forEach {
-                        Log.v("SENSOR", String.format("VAL: %f", it))
-                    }
-                }
-
-            }
-        }
-    }
+//    lateinit var sensorManager: SensorManager
+//    lateinit var stepCountSensor: Sensor
+//    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
+//        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+//            // Accuracy の変更時
+//        }
+//
+//        override fun onSensorChanged(event: SensorEvent?) {
+//            event?.let { event ->
+//                val sensor: Sensor = event.sensor
+//                val values: FloatArray = event.values
+//                val timestamp: Long = event.timestamp
+//
+//                if (sensor.type == Sensor.TYPE_STEP_COUNTER) {
+//                    values.forEach {
+//                        Log.v("SENSOR", String.format("VAL: %f", it))
+//                    }
+//                }
+//
+//            }
+//        }
+//    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,16 +68,16 @@ class JobDetailsActivity : BaseActivity() {
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
 
-        // 歩数センサーの初期化
-        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+//        // 歩数センサーの初期化
+//        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+//        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     }
 
-    override fun onResume() {
-        super.onResume()
-        // FIXME:センサーの精度は一番低いものに設定する
-        sensorManager.registerListener(sensorEventListener, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        // FIXME:センサーの精度は一番低いものに設定する
+//        sensorManager.registerListener(sensorEventListener, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
+//    }
 
     override fun onStart() {
         super.onStart()
@@ -97,10 +97,10 @@ class JobDetailsActivity : BaseActivity() {
         fetchJob()
     }
 
-    override fun onStop() {
-        super.onStop()
-        sensorManager.unregisterListener(sensorEventListener)
-    }
+//    override fun onStop() {
+//        super.onStop()
+//        sensorManager.unregisterListener(sensorEventListener)
+//    }
 
     private fun fetchJob() {
         // jobの再取得

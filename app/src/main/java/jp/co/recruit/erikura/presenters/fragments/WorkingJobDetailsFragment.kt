@@ -4,8 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,6 +43,32 @@ class WorkingJobDetailsFragment(
 
     private var timer: Timer = Timer()
     private var timerHandler: Handler = Handler()
+
+
+    var steps = 0
+    lateinit var sensorManager: SensorManager
+    lateinit var stepCountSensor: Sensor
+    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
+        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+            // Accuracy の変更時
+        }
+
+        override fun onSensorChanged(event: SensorEvent?) {
+            event?.let { event ->
+                val sensor: Sensor = event.sensor
+                val values: FloatArray = event.values
+                val timestamp: Long = event.timestamp
+
+                if (sensor.type == Sensor.TYPE_STEP_COUNTER) {
+                    values.forEach {
+                        Log.v("SENSOR", String.format("VAL: %f", it))
+                        steps = it.toInt()
+                    }
+                }
+
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -85,6 +116,21 @@ class WorkingJobDetailsFragment(
                 })
             }
         }, 1000, 1000) // 実行したい間隔(ミリ秒)
+
+        // 歩数センサーの初期化
+        sensorManager = activity.getSystemService(AppCompatActivity.SENSOR_SERVICE) as SensorManager
+        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // FIXME:センサーの精度は一番低いものに設定する
+        sensorManager.registerListener(sensorEventListener, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        sensorManager.unregisterListener(sensorEventListener)
     }
 
     override fun onClickFavorite(view: View) {
@@ -120,7 +166,7 @@ class WorkingJobDetailsFragment(
     }
 
     override fun onClickStop(view: View) {
-        val dialog = StopDialogFragment(job)
+        val dialog = StopDialogFragment(job, steps)
         dialog.show(childFragmentManager, "Stop")
 
         timer.cancel()
