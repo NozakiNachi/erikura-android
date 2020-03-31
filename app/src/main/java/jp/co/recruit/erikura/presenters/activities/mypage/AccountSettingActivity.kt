@@ -43,30 +43,14 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
         binding.handlers = this
         binding.viewModel = viewModel
 
-        // 再認証が必要かどうか確認
-        resignIn()
-
         setupBankNameAdapter()
         setupBranchNameAdapter()
 
-        // 変更するユーザーの現在の登録値を取得
+        // FIXME: isCheckedでないとRadioButtonを制御できない。
         api.payment() {
             payment = it
 
-            viewModel.bankName.value = payment.bankName
-            viewModel.bankNumber.value = payment.bankNumber
-            viewModel.branchOfficeName.value = payment.branchOfficeName
-            viewModel.branchOfficeNumber.value = payment.branchOfficeNumber
             viewModel.accountType.value = payment.accountType
-            viewModel.accountNumber.value = payment.accountNumber
-            viewModel.accountHolderFamily.value = payment.accountHolderFamily
-            viewModel.accountHolder.value = payment.accountHolder
-
-            // 登録・更新を見分けるフラグ
-            if (payment.bankName == null) {
-                viewModel.settingFragment.value = "register"
-            }
-
             // 口座タイプのラジオボタン初期表示
             if (viewModel.accountType.value == "ordinary_account") {
                 binding.ordinaryButton.isChecked = true
@@ -76,9 +60,28 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
                 binding.savingsButton.isChecked = true
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
 
         // 再認証が必要かどうか確認
-        resignIn()
+        checkResignIn() { isResignIn ->
+            if (isResignIn) {
+                // 変更するユーザーの現在の登録値を取得
+                Api(this).payment() {
+                    payment = it
+                    loadData()
+                }
+            } else {
+                finish()
+                Intent(this, ResignInActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.putExtra("fromAccountSetting", true)
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
+            }
+        }
     }
 
     private fun setupBankNameAdapter() {
@@ -229,29 +232,37 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
     }
 
     // 再認証画面へ遷移
-    override fun resignIn() {
+    private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
         val nowTime = (Date().time % (1000 * 60 * 60)) / (1000 * 60)
         val reSignTime = Api.userSession?.resignInExpiredAt
 
         if (Api.userSession?.resignInExpiredAt !== null) {
             // 過去の再認証から10分以上経っていたら再認証画面へ
             if (reSignTime!! < nowTime) {
-                finish()
-                finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("fromAccountSetting", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
+                onComplete(false)
+            } else {
+                onComplete(true)
             }
         } else {
             // 一度も再認証していなければ、再認証画面へ
-            finish()
-            Intent(this, ResignInActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.putExtra("fromAccountSetting", true)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            onComplete(false)
+        }
+    }
+
+    // データの読み込み
+    private fun loadData() {
+        viewModel.bankName.value = payment.bankName
+        viewModel.bankNumber.value = payment.bankNumber
+        viewModel.branchOfficeName.value = payment.branchOfficeName
+        viewModel.branchOfficeNumber.value = payment.branchOfficeNumber
+        viewModel.accountType.value = payment.accountType
+        viewModel.accountNumber.value = payment.accountNumber
+        viewModel.accountHolderFamily.value = payment.accountHolderFamily
+        viewModel.accountHolder.value = payment.accountHolder
+
+        // 登録・更新を見分けるフラグ
+        if (payment.bankName == null) {
+            viewModel.settingFragment.value = "register"
         }
     }
 }
@@ -465,7 +476,6 @@ interface AccountSettingEventHandlers {
     fun onSavingsButton(view: View)
     fun onBankNameFocusChanged(view: View, hasFocus: Boolean)
     fun onBranchOfficeNameFocusChanged(view: View, hasFocus: Boolean)
-    fun resignIn()
 }
 
 class ErrorMessageViewModel {
