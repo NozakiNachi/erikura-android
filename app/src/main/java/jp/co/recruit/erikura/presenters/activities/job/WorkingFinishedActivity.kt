@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -15,10 +14,11 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 
-class WorkingFinishedActivity : AppCompatActivity(), WorkingFinishedEventHandlers {
+class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     private val viewModel: WorkingFinishedViewModel by lazy {
         ViewModelProvider(this).get(WorkingFinishedViewModel::class.java)
     }

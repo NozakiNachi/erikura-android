@@ -553,14 +553,14 @@ class Api(var context: Context) {
     fun clientVersion(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (clientVersion: RequiredClientVersion) -> Unit) {
         executeObservable(
             erikuraApiService.clientVersion(),
-            onError = onError
+            onError = onError, showProgress = false
         ) { clientVersion ->
             onComplete(clientVersion)
         }
     }
 
     fun erikuraConfig(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (map: ErikuraConfigMap) -> Unit) {
-        executeObservable(erikuraApiService.erikuraConfig(), onError = onError) { result ->
+        executeObservable(erikuraApiService.erikuraConfig(), onError = onError, showProgress = false) { result ->
             onComplete(result)
         }
     }

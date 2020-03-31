@@ -18,12 +18,13 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.*
+import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import java.util.*
 import java.util.regex.Pattern
 
 
-class ChangeUserInformationActivity : AppCompatActivity(), ChangeUserInformationEventHandlers {
+class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
 
     var user: User = User()
 

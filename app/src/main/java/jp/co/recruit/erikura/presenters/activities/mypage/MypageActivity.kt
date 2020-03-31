@@ -11,7 +11,6 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
@@ -30,14 +29,13 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMypageBinding
 import jp.co.recruit.erikura.databinding.FragmentInformationCellBinding
 import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
-import jp.co.recruit.erikura.presenters.activities.LoginActivity
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import kotlinx.android.synthetic.main.activity_mypage.*
 import java.util.*
 
-class MypageActivity : AppCompatActivity(),
-    MypageEventHandlers {
+class MypageActivity : BaseActivity(), MypageEventHandlers {
     private lateinit var informationListView: RecyclerView
     private lateinit var informationListAdapter: InformationAdapter
 

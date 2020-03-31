@@ -4,9 +4,7 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import io.realm.Realm
-import io.realm.RealmConfiguration
 import io.realm.Sort
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication

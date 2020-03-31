@@ -1,16 +1,14 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.ActivityOptions
-import android.content.Intent
 import android.app.AlertDialog
-import android.app.Dialog
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,16 +19,20 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
-import jp.co.recruit.erikura.databinding.*
-import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
+import jp.co.recruit.erikura.databinding.ActivityConfigurationBinding
+import jp.co.recruit.erikura.databinding.DialogLogoutBinding
+import jp.co.recruit.erikura.databinding.FragmentConfigurationCellBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
-import jp.co.recruit.erikura.presenters.activities.job.*
+import jp.co.recruit.erikura.presenters.activities.job.ChangeAccountSettingFragment
+import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationFragment
+import jp.co.recruit.erikura.presenters.activities.job.RegisterAccountSettingFragment
+import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 
-class ConfigurationActivity : AppCompatActivity(), ConfigurationEventHandlers {
+class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
     data class MenuItem(val id: Int, val label: String, val iconDrawableId: Int, var requireLogin: Boolean, val onSelect: () -> Unit)
 
     var user: User = User()

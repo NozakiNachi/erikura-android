@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Spinner
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,10 +17,11 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterAddressBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
 
-class RegisterAddressActivity : AppCompatActivity(),
+class RegisterAddressActivity : BaseActivity(),
     RegisterAddressEventHandlers {
     private val viewModel: RegisterAddressViewModel by lazy {
         ViewModelProvider(this).get(RegisterAddressViewModel::class.java)

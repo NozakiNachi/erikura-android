@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -12,14 +11,11 @@ import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.presenters.fragments.AppliedJobDetailsFragment
-import jp.co.recruit.erikura.presenters.fragments.FinishedJobDetailsFragment
-import jp.co.recruit.erikura.presenters.fragments.NormalJobDetailsFragment
-import jp.co.recruit.erikura.presenters.fragments.WorkingJobDetailsFragment
-import jp.co.recruit.erikura.presenters.fragments.ReportedJobDetailsFragment
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.fragments.*
 
 
-class JobDetailsActivity : AppCompatActivity() {
+class JobDetailsActivity : BaseActivity() {
 
     var job: Job = Job()
     var user: User = User()

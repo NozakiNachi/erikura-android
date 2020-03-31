@@ -34,10 +34,9 @@ class ErikuraApiServiceBuilder {
                 val original = chain.request()
                 val requestBuilder = original.newBuilder()
                     .method(original.method, original.body)
-                // FIXME: version の取得方法を修正
                 requestBuilder
                     .header("Content-Type", "application/json")
-                    .header("User-Agent-Version", "v0.0.0.1")
+                    .header("User-Agent-Version", "v${ErikuraApplication.versionName}")
                     .header("User-Agent-Type", "android")
 
                 if (isIconDownload) {

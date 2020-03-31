@@ -11,7 +11,6 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -34,6 +33,7 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
@@ -42,7 +42,7 @@ import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
 
-class MapViewActivity : AppCompatActivity(), OnMapReadyCallback, MapViewEventHandlers {
+class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
         // SearchJob にわたすID
         const val REQUEST_SEARCH_CONDITIONS = 1

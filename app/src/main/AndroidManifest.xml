@@ -23,7 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".presenters.activities.mypage.FavoritePlacesActivity"></activity>
+        <activity android:name=".presenters.activities.errors.UpgradeRequiredActivity"></activity>
+        <activity android:name=".presenters.activities.mypage.FavoritePlacesActivity" />
 
         <service
             android:name=".services.PedometerService"

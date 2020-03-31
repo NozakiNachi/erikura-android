@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -20,12 +19,12 @@ import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
-import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 
 
-
-class ReportFormActivity : AppCompatActivity(), ReportFormEventHandlers {
+class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportFormViewModel::class.java)
     }

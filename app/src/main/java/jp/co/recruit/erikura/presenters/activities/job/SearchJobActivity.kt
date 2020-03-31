@@ -12,10 +12,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.*
+import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -32,10 +33,11 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.SearchHistory
 import jp.co.recruit.erikura.databinding.ActivitySearchJobBinding
 import jp.co.recruit.erikura.databinding.FragmentMinMaxPickerBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import java.util.*
 
-class SearchJobActivity : AppCompatActivity(), SearchJobHandlers {
+class SearchJobActivity : BaseActivity(), SearchJobHandlers {
     companion object {
         val EXTRA_SEARCH_CONDITIONS = "jp.co.recruit.erikura.job.SearchJobActivity.SEARCH_CONDITIONS"
     }

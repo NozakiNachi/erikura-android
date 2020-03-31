@@ -1,10 +1,14 @@
 package jp.co.recruit.erikura
 
 import android.Manifest
+import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.util.Log
+import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.FragmentActivity
 import com.crashlytics.android.Crashlytics
@@ -24,16 +28,22 @@ import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.json.JSONObject
-import androidx.core.content.ContextCompat.getSystemService
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
+import jp.co.recruit.erikura.business.models.ErikuraConfig
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivity
+import org.apache.commons.lang.builder.ToStringBuilder
 
 
 class ErikuraApplication : Application() {
-
     companion object {
         lateinit var instance: ErikuraApplication private set
+
+        val versionCode : Int = BuildConfig.VERSION_CODE
+        val versionName : String = BuildConfig.VERSION_NAME
 
         val applicationContext: Context get() = instance.applicationContext
         val assetsManager: AssetsManager get() = instance.erikuraComponent.assetsManager()
@@ -49,6 +59,8 @@ class ErikuraApplication : Application() {
         super.onCreate()
         instance = this
 
+        ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycle())
+
         // トラッキングの初期化
         Tracking.initTrackers(this)
         // 通知チャネルの初期化
@@ -57,6 +69,16 @@ class ErikuraApplication : Application() {
         UserSession.retrieve()?.let {
             Api.userSession = it
         }
+
+        Api(this).let { api ->
+            // ErikuraConfig を読み込みます
+            ErikuraConfig.load(this)
+
+            api.clientVersion() { requiredVersion ->
+                Log.v("VERSION", ToStringBuilder.reflectionToString(requiredVersion))
+            }
+        }
+
     }
 
     // ギャラリーへのアクセス許可関連
@@ -82,6 +104,45 @@ class ErikuraApplication : Application() {
     // 画像アップロード終了判定用
     var uploadMonitor = Object()
 
+    fun checkVersion() {
+        Api(this).clientVersion { requiredClientVersion ->
+            // 最低バージョンを満たしているか確認します
+            if (!requiredClientVersion.isMinimumSatisfied(versionName)) {
+                //  最低バージョンを満たしていない場合 => バージョンアップ画面を表示します
+                BaseActivity.currentActivity?.let { activity ->
+                    val intent = Intent(activity, UpgradeRequiredActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    activity.startActivity(intent)
+                }
+            }
+
+            // 最新バージョンになっているか確認します
+            if (!requiredClientVersion.isCurrentSatisfied(versionName)) {
+                // 最新バージョンになっていない場合 => アップデートを促すモーダルを表示
+                Log.v("DEBUG", BaseActivity.currentActivity.toString())
+                BaseActivity.currentActivity?.let { activity ->
+                    val dialog = AlertDialog.Builder(activity)
+                        .setView(R.layout.dialog_update)
+                        .create()
+                    dialog.show()
+
+                    val button: Button = dialog.findViewById(R.id.update_button)
+                    button.setOnClickListener {
+                        val playURL = "http://play.google.com/store/apps/details?id=${packageName}"
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playURL))
+                        activity.startActivity(intent)
+                    }
+                }
+            }
+        }
+    }
+}
+
+class AppLifecycle: LifecycleObserver {
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onStart() {
+        ErikuraApplication.instance.checkVersion()
+    }
 }
 
 object Tracking {

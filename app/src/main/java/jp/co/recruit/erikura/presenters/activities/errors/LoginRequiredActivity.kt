@@ -4,16 +4,16 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.ActivityLoginRequiredBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.LoginActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
-class LoginRequiredActivity : AppCompatActivity(), LoginRequiredHandlers {
+class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
     private val viewModel: LoginRequiredViewModel by lazy {
         ViewModelProvider(this).get(LoginRequiredViewModel::class.java)
     }

@@ -190,6 +190,12 @@
     <!-- お気に入り画面 -->
     <string name="favorite_places_title">お気に入り</string>
 
+    <!-- アップデートモーダル -->
+    <string name="update_dialog_update_recommendation">最新版にアップデートして\nご利用ください</string>
+    <string name="update_dialog_button">アップデート</string>
+    <string name="upgrade_required">最新版にアップデートして\nご利用ください</string>
+    <string name="upgrade_required_button">アップデート</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>

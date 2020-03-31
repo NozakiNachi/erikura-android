@@ -5,14 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterGenderBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
-class RegisterGenderActivity : AppCompatActivity(),
+class RegisterGenderActivity : BaseActivity(),
     RegisterGenderEventHandlers {
 
     var user: User = User()

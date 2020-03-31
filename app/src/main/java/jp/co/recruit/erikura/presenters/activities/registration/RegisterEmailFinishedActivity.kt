@@ -1,10 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
-class RegisterEmailFinishedActivity : AppCompatActivity() {
+class RegisterEmailFinishedActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)

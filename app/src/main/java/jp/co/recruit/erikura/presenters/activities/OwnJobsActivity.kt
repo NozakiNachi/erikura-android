@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.activities
 
 import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -27,9 +26,8 @@ import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingTimeCircleFragment
-import java.lang.IllegalArgumentException
 
-class OwnJobsActivity : AppCompatActivity(), OwnJobsHandlers {
+class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
 
     private val viewModel: OwnJobsViewModel by lazy {
         ViewModelProvider(this).get(OwnJobsViewModel::class.java)

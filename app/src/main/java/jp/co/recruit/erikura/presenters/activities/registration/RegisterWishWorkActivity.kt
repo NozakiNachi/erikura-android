@@ -6,7 +6,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,10 +16,11 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 
-class RegisterWishWorkActivity : AppCompatActivity(),
+class RegisterWishWorkActivity : BaseActivity(),
     RegisterWishWorkEventHandlers {
     private val viewModel: RegisterWishWorkViewModel by lazy {
         ViewModelProvider(this).get(RegisterWishWorkViewModel::class.java)

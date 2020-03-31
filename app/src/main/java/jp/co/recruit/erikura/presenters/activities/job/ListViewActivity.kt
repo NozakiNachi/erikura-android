@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,16 +21,20 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.JobQuery
+import jp.co.recruit.erikura.business.models.PeriodType
+import jp.co.recruit.erikura.business.models.SortType
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
-class ListViewActivity : AppCompatActivity(), ListViewHandlers {
+class ListViewActivity : BaseActivity(), ListViewHandlers {
     companion object {
         val REQUEST_SEARCH_CONDITIONS = 1
     }

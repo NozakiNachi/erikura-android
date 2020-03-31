@@ -4,13 +4,13 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterJobStatusBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
-class RegisterJobStatusActivity : AppCompatActivity(),
+class RegisterJobStatusActivity : BaseActivity(),
     RegisterJobStatusEventHandlers {
 
     var user: User = User()

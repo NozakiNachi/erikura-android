@@ -12,12 +12,10 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatActivity
 import jp.co.recruit.erikura.R
-import java.util.concurrent.ScheduledExecutorService
 
 
-class WebViewActivity : AppCompatActivity() {
+class WebViewActivity : BaseActivity() {
     private val webView: WebView get() = findViewById(R.id.webview_webview)
     private val progressBar: ProgressBar get() = findViewById(R.id.webview_progress)
 
