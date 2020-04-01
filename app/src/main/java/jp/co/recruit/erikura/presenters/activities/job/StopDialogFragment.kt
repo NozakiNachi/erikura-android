@@ -23,7 +23,7 @@ import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
 
-class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFragmentEventHandlers  {
+class StopDialogFragment(private val job: Job?, private val steps: Int?) : DialogFragment(), StopDialogFragmentEventHandlers  {
     private val viewModel by lazy {
         ViewModelProvider(this).get(StopDialogFragmentViewModel::class.java)
     }
@@ -49,46 +49,54 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
     }
 
     override fun onClikStop(view: View) {
-        if (fitApiManager.checkPermission()) {
-            job?.let {
-                var steps = 0
-                var distance = 0.0
-                var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: Date()
-                fitApiManager.readAggregateStepDelta(
-                    fitApiManager.setAccount(activity!!),
-                    startTime,
-                    Date(),
-                    activity!!
-                ) {
-                    Log.v("Step", "$it")
-                    steps = if(it == Value(0)) {0}else {it.asInt()}
-                    fitApiManager.readAggregateDistanceDelta(
-                        fitApiManager.setAccount(activity!!),
-                        startTime,
-                        Date(),
-                        activity!!
-                    ) {
-                        Log.v("Distance", "$it")
-                        distance = if(it == Value(0)) {0.0}else {it.asFloat().toDouble()}
-                        // stopJobの呼び出し
-                        Api(activity!!).stopJob(job, locationManager.latLng ?: locationManager.latLngOrDefault, steps, distance) {
-                            val intent= Intent(activity, WorkingFinishedActivity::class.java)
-                            intent.putExtra("job", job)
-                            startActivity(intent)
-                        }
-                    }
-                }
-            }
-
-        }else {
-            job?.let {
-                Api(activity!!).stopJob(it, locationManager.latLng ?: locationManager.latLngOrDefault, 0, 0.0) {
-                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
-                    intent.putExtra("job", job)
-                    startActivity(intent)
-                }
+        // stopJobの呼び出し
+        job?.let {
+            Api(activity!!).stopJob(job, locationManager.latLng ?: locationManager.latLngOrDefault, steps?: 0, 0.0) {
+                val intent= Intent(activity, WorkingFinishedActivity::class.java)
+                intent.putExtra("job", job)
+                startActivity(intent)
             }
         }
+//        if (fitApiManager.checkPermission()) {
+//            job?.let {
+//                var steps = 0
+//                var distance = 0.0
+//                var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: Date()
+//                fitApiManager.readAggregateStepDelta(
+//                    fitApiManager.setAccount(activity!!),
+//                    startTime,
+//                    Date(),
+//                    activity!!
+//                ) {
+//                    Log.v("Step", "$it")
+//                    steps = if(it == Value(0)) {0}else {it.asInt()}
+//                    fitApiManager.readAggregateDistanceDelta(
+//                        fitApiManager.setAccount(activity!!),
+//                        startTime,
+//                        Date(),
+//                        activity!!
+//                    ) {
+//                        Log.v("Distance", "$it")
+//                        distance = if(it == Value(0)) {0.0}else {it.asFloat().toDouble()}
+//                        // stopJobの呼び出し
+//                        Api(activity!!).stopJob(job, locationManager.latLng ?: locationManager.latLngOrDefault, steps, distance) {
+//                            val intent= Intent(activity, WorkingFinishedActivity::class.java)
+//                            intent.putExtra("job", job)
+//                            startActivity(intent)
+//                        }
+//                    }
+//                }
+//            }
+//
+//        }else {
+//            job?.let {
+//                Api(activity!!).stopJob(it, locationManager.latLng ?: locationManager.latLngOrDefault, 0, 0.0) {
+//                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
+//                    intent.putExtra("job", job)
+//                    startActivity(intent)
+//                }
+//            }
+//        }
     }
 }
 

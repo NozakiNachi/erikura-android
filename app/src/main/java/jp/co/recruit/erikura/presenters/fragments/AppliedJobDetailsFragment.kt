@@ -101,25 +101,6 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickStart(view: View) {
-        if (!fitApiManager.checkPermission()) {
-            fitApiManager.requestPermission(this)
-        }else {
-            job?.let {
-                Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
-                    val intent= Intent(activity, JobDetailsActivity::class.java)
-                    intent.putExtra("job", job)
-                    intent.putExtra("onClickStart", true)
-                    startActivity(intent)
-                    activity.finish()
-                }
-            }
-        }
-
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
         job?.let {
             Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
                 val intent= Intent(activity, JobDetailsActivity::class.java)
@@ -129,7 +110,34 @@ class AppliedJobDetailsFragment(
                 activity.finish()
             }
         }
+//        if (!fitApiManager.checkPermission()) {
+//            fitApiManager.requestPermission(this)
+//        }else {
+//            job?.let {
+//                Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
+//                    val intent= Intent(activity, JobDetailsActivity::class.java)
+//                    intent.putExtra("job", job)
+//                    intent.putExtra("onClickStart", true)
+//                    startActivity(intent)
+//                    activity.finish()
+//                }
+//            }
+//        }
     }
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        job?.let {
+//            Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
+//                val intent= Intent(activity, JobDetailsActivity::class.java)
+//                intent.putExtra("job", job)
+//                intent.putExtra("onClickStart", true)
+//                startActivity(intent)
+//                activity.finish()
+//            }
+//        }
+//    }
 
     private fun updateTimeLimit() {
         val str = SpannableStringBuilder()

@@ -1,6 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +27,30 @@ class JobDetailsActivity : BaseActivity() {
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
 
+//    lateinit var sensorManager: SensorManager
+//    lateinit var stepCountSensor: Sensor
+//    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
+//        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+//            // Accuracy の変更時
+//        }
+//
+//        override fun onSensorChanged(event: SensorEvent?) {
+//            event?.let { event ->
+//                val sensor: Sensor = event.sensor
+//                val values: FloatArray = event.values
+//                val timestamp: Long = event.timestamp
+//
+//                if (sensor.type == Sensor.TYPE_STEP_COUNTER) {
+//                    values.forEach {
+//                        Log.v("SENSOR", String.format("VAL: %f", it))
+//                    }
+//                }
+//
+//            }
+//        }
+//    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
@@ -31,7 +59,7 @@ class JobDetailsActivity : BaseActivity() {
         val value = intent.getParcelableExtra<Job>("job")
         if (value != null) {
             job = value
-        }else {
+        } else {
             handleIntent(intent)
         }
         Log.v("DEBUG", job.toString())
@@ -39,24 +67,40 @@ class JobDetailsActivity : BaseActivity() {
         // アラート表示
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
+
+//        // 歩数センサーの初期化
+//        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
+//        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
     }
-    
+
+//    override fun onResume() {
+//        super.onResume()
+//        // FIXME:センサーの精度は一番低いものに設定する
+//        sensorManager.registerListener(sensorEventListener, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
+//    }
+
     override fun onStart() {
         super.onStart()
+
         val errorMessages = intent.getStringArrayExtra("errorMessages")
-        if(errorMessages != null){
+        if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
-        }else if(fromWorkingJobDetailsFragment) {
+        } else if (fromWorkingJobDetailsFragment) {
             val dialog = CancelWorkingDialogFragment()
             dialog.show(supportFragmentManager, "CancelWorking")
             fromWorkingJobDetailsFragment = false
-        }else if(fromAppliedJobDetailsFragment) {
+        } else if (fromAppliedJobDetailsFragment) {
             val dialog = StartDialogFragment(job)
             dialog.show(supportFragmentManager, "Start")
             fromAppliedJobDetailsFragment = false
         }
         fetchJob()
     }
+
+//    override fun onStop() {
+//        super.onStop()
+//        sensorManager.unregisterListener(sensorEventListener)
+//    }
 
     private fun fetchJob() {
         // jobの再取得
@@ -68,7 +112,7 @@ class JobDetailsActivity : BaseActivity() {
                     user = it
                     refreshContents()
                 }
-            }else {
+            } else {
                 refreshContents()
             }
         }
@@ -78,7 +122,7 @@ class JobDetailsActivity : BaseActivity() {
         val transaction = supportFragmentManager.beginTransaction()
         // fragmentの作成
         // jobのステータスで挿しこむフラグメントを変更します
-        when(job.status) {
+        when (job.status) {
             JobStatus.Normal -> {
                 fragment = NormalJobDetailsFragment(this, job, user)
             }

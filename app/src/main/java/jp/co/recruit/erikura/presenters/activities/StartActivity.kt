@@ -22,8 +22,8 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-        val pedometerServiceIntent = Intent(this, PedometerService::class.java)
-        startService(pedometerServiceIntent)
+//        val pedometerServiceIntent = Intent(this, PedometerService::class.java)
+//        startService(pedometerServiceIntent)
 
         val intent = getIntent()
         if (intent != null) {
