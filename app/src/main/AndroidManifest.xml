@@ -166,7 +166,7 @@
                 <data
                     android:host="*"
                     android:scheme="erikura" />
-                <data android:path="/user/register/password" />
+                <data android:path="/user/register/mail_auth" />
             </intent-filter>
         </activity>
         <activity
