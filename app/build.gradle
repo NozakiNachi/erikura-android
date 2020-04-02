@@ -28,6 +28,14 @@ apply plugin: 'io.fabric'
 //    - パッケージ名: AndroidManifest.xml より
 
 android {
+    signingConfigs {
+        staging {
+            storeFile file('/Users/cuebs/test-keystore')
+            storePassword 'pass0000'
+            keyAlias = 'key0'
+            keyPassword 'pass0000'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
@@ -53,7 +61,7 @@ android {
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
         }
         staging {
-            buildConfigField("String", "SERVER_BASE_URL", "\"https://dev-app.erikura.net\"")
+            buildConfigField("String", "SERVER_BASE_URL", "\"https://dev-app.erikura.net/\"")
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
@@ -63,7 +71,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "SERVER_BASE_URL", "\"https://app.erikura.net\"")
+            buildConfigField("String", "SERVER_BASE_URL", "\"https://app.erikura.net/\"")
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "KARTE_APP_KEY", '"Fnz0u2qNxnY4BmYLtH1LBHOJjUjTgA7Q"')

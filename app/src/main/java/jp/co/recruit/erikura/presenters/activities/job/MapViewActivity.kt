@@ -214,13 +214,10 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(carouselView)
 
-        val coachMarkDisplayed: Boolean = PreferenceManager.getDefaultSharedPreferences(this).getBoolean("CoachMarkDisplayed", false)
+        val coachMarkDisplayed: Boolean = ErikuraApplication.instance.isCoachMarkDisplayed()
         coachViewModel.coach.value = !coachMarkDisplayed
         coachViewModel.onCoachFinished {
-            PreferenceManager.getDefaultSharedPreferences(this)
-                .edit()
-                .putBoolean("CoachMarkDisplayed", true)
-                .apply()
+            ErikuraApplication.instance.setCoachMarkDisplayed(true)
         }
 
         tutorialAdapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())

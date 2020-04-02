@@ -32,6 +32,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.preference.PreferenceManager
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivity
@@ -103,6 +104,31 @@ class ErikuraApplication : Application() {
 
     // 画像アップロード終了判定用
     var uploadMonitor = Object()
+
+    private val onboardingDisplayedKey = "OnboardingDisplayed"
+    private val coachMarkDisplayedKey = "CoachMarkDisplayed"
+
+    fun isOnboardingDisplayed(): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(onboardingDisplayedKey, false)
+    }
+
+    fun setOnboardingDisplayed(displayed: Boolean = true) {
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .edit()
+            .putBoolean(onboardingDisplayedKey, displayed)
+            .apply()
+    }
+
+    fun isCoachMarkDisplayed(): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(coachMarkDisplayedKey, false)
+    }
+
+    fun setCoachMarkDisplayed(displayed: Boolean = true) {
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .edit()
+            .putBoolean(coachMarkDisplayedKey, displayed)
+            .apply()
+    }
 
     fun checkVersion() {
         Api(this).clientVersion { requiredClientVersion ->
