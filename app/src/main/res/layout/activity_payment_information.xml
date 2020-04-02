@@ -88,7 +88,7 @@
                 />
 
             <TextView
-                android:id="@+id/paiment"
+                android:id="@+id/payment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
@@ -106,12 +106,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
                 <View
+                    android:id="@+id/payment_line"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:background="@color/silverTwo"/>
+                    android:background="#dddddd"
+                    />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/payment_information_monthly_list"
@@ -122,12 +124,6 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     android:orientation="vertical"
                     />
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:background="@color/silverTwo"/>
             </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

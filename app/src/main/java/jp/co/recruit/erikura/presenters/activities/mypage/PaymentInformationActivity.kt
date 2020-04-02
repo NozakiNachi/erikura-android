@@ -84,10 +84,14 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
             monthlyPaymentAdapter.notifyDataSetChanged()
 
             if(jobs.size == 0){
-                binding.paiment.setVisibility(View.VISIBLE)
+                binding.payment.setVisibility(View.VISIBLE)
+                binding.paymentLine.setVisibility(View.GONE)
+//                binding.paymentLineTwo.setVisibility(View.GONE)
                 binding.paymentExplain.setVisibility(View.GONE)
             }else{
-                binding.paiment.setVisibility(View.GONE)
+                binding.payment.setVisibility(View.GONE)
+                binding.paymentLine.setVisibility(View.VISIBLE)
+//                binding.paymentLineTwo.setVisibility(View.VISIBLE)
                 binding.paymentExplain.setVisibility(View.VISIBLE)
             }
         }

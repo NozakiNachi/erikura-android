@@ -36,6 +36,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     style="@style/label_w2"
+                    android:textColor="@color/blackTwo"
                     android:textSize="22dp"
                     android:text="通知設定"/>
                 <TextView
@@ -46,6 +47,7 @@
                     android:layout_marginRight="20dp"
                     android:layout_marginBottom="19.5dp"
                     style="@style/label_w2"
+                    android:textColor="@color/blackTwo"
                     android:textSize="20dp"
                     android:text="メール通知設定"/>
                 <LinearLayout
@@ -90,6 +92,7 @@
                                     android:layout_marginTop="19.5dp"
                                     android:layout_marginLeft="10dp"
                                     android:text="リマインドメール"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -100,7 +103,8 @@
                                     android:layout_below="@+id/allow_remind_mail_reception_text"
                                     style="@style/label_w2"
                                     android:textSize="12dp"
-                                    android:text="納期間近の案件があった場合のリマインドメール"/>
+                                    android:textColor="@color/blackTwo"
+                                    android:text="納期間近の案件があった場合のリマインドメール。"/>
                             </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -139,6 +143,7 @@
                                     android:layout_marginTop="19.5dp"
                                     android:layout_marginLeft="10dp"
                                     android:text="会員様限定のお知らせメール"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -149,6 +154,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_info_mail_reception_text"
                                     android:textSize="10.5dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="会員様限定のお仕事情報などを記載したお知らせメール。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -188,6 +194,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
                                     android:text="応募再開メール"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -198,6 +205,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_reopen_mail_reception_text"
                                     android:textSize="12dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="応募再開のお知らせメール。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -237,6 +245,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
                                     android:text="お仕事依頼元からの「いいね」通知メール"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -246,6 +255,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginBottom="19.5dp"
                                     style="@style/label_w2"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="12dp"
                                     android:text="お仕事依頼元から「いいね」があった場合のメール。"/>
                             </RelativeLayout>
@@ -286,6 +296,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
                                     android:text="お仕事依頼元からの「コメント」通知メール"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -296,6 +307,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_liked_mail_reception_text"
                                     android:textSize="12dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="お仕事依頼元から「コメント」があった場合のメール。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -315,6 +327,7 @@
                         android:layout_marginBottom="19.5dp"
                         style="@style/label_w2"
                         android:textSize="20dp"
+                        android:textColor="@color/blackTwo"
                         android:text="プッシュ通知設定"/>
                 </LinearLayout>
 
@@ -361,6 +374,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
                                     android:text="リマインドプッシュ通知"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -371,6 +385,7 @@
                                     android:layout_below="@+id/allow_remind_push_reception_text"
                                     android:textSize="12dp"
                                     android:layout_marginBottom="19.5dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="納期間近の案件があった場合のプッシュ通知。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -409,6 +424,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
                                     android:text="会員様限定のお知らせプッシュ通知"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -419,6 +435,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_info_push_reception_text"
                                     android:textSize="12dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="会員様限定のお仕事情報などを掲載したお知らせプッシュ通知。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -457,6 +474,7 @@
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
                                     android:text="応募再開プッシュ通知"
+                                    android:textColor="@color/blackTwo"
                                     android:textSize="16dp" />
                                 <TextView
                                     android:layout_width="match_parent"
@@ -467,6 +485,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_reopen_push_reception_text"
                                     android:textSize="12dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="応募再開のお知らせプッシュ通知。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -504,6 +523,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="お仕事依頼元からの「いいね」プッシュ通知"
                                     android:textSize="16dp" />
                                 <TextView
@@ -515,6 +535,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_commented_push_reception_text"
                                     android:textSize="12dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="お仕事依頼元から「いいね」があった場合のプッシュ通知。"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -552,6 +573,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginLeft="10dp"
                                     android:layout_marginTop="19.5dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="お仕事依頼元からの「コメント」プッシュ通知"
                                     android:textSize="16dp" />
                                 <TextView
@@ -563,6 +585,7 @@
                                     style="@style/label_w2"
                                     android:layout_below="@+id/allow_liked_push_reception_text"
                                     android:textSize="12dp"
+                                    android:textColor="@color/blackTwo"
                                     android:text="お仕事依頼元から「コメント」があった場合のプッシュ通知。"/>
                             </RelativeLayout>
                         </LinearLayout>
