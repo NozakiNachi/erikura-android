@@ -25,13 +25,13 @@ class Onboarding3Activity : AppCompatActivity(), Onboarding3Handlers {
     override fun onResume() {
         super.onResume()
 
-        timer.schedule(object: TimerTask() {
-            override fun run() {
-                AndroidSchedulers.mainThread().scheduleDirect {
-                    startNextActivity()
-                }
-            }
-        }, 5000)
+//        timer.schedule(object: TimerTask() {
+//            override fun run() {
+//                AndroidSchedulers.mainThread().scheduleDirect {
+//                    startNextActivity()
+//                }
+//            }
+//        }, 5000)
     }
 
     override fun onPause() {

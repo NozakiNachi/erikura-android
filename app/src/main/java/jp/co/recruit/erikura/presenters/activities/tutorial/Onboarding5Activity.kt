@@ -50,6 +50,7 @@ class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
         timer.cancel()
         ErikuraApplication.instance.setOnboardingDisplayed(true)
         Intent(this, MapViewActivity::class.java).let { intent ->
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }

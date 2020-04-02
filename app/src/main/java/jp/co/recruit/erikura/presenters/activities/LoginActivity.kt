@@ -39,7 +39,6 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
     }
 
     override fun onClickLogin(view: View) {
-        // FIXME: spinner 表示を行う
         Log.v("EMAIL", viewModel.email.value ?: "")
         Log.v("PASS", viewModel.password.value ?: "")
         Api(this).login(viewModel.email.value ?: "", viewModel.password.value ?: "") {
@@ -50,7 +49,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             }
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                val intent = Intent(this, MapViewActivity::class.java)
+                 val intent = Intent(this, MapViewActivity::class.java)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
             else {
