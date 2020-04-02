@@ -12,10 +12,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityLoginBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
 class LoginActivity : BaseActivity(), LoginEventHandlers {
     private val viewModel: LoginViewModel by lazy {
@@ -47,9 +49,16 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                 it.store()
             }
             // 地図画面へ遷移します
-            // FIXME: チュートリアルの表示
-            val intent = Intent(this, MapViewActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                val intent = Intent(this, MapViewActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+            else {
+                // 位置情報の許諾、オンボーディングを表示します
+                Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                }
+            }
         }
     }
 
