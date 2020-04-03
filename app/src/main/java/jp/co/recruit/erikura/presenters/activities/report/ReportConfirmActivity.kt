@@ -507,9 +507,15 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private fun loadData() {
         job.report?.let {
             // 実施箇所の更新
-            reportImageAdapter.summaries = it.outputSummaries
+            var summaries = mutableListOf<OutputSummary>()
+            it.outputSummaries.forEach {summary ->
+                if (!summary.willDelete) {
+                    summaries.add(summary)
+                }
+            }
+            reportImageAdapter.summaries = summaries
             reportImageAdapter.notifyDataSetChanged()
-            reportSummaryAdapter.summaries = it.outputSummaries
+            reportSummaryAdapter.summaries = summaries
             reportSummaryAdapter.notifyDataSetChanged()
             // 作業時間の更新
             val minute = it.workingMinute ?: 0
@@ -669,10 +675,8 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
         if (position < summaries.count()) {
-            if (!summaries[position].willDelete) {
-                holder.binding.viewModel =
-                    ReportImageItemViewModel(activity, view, summaries[position].photoAsset, !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank())
-            }
+            holder.binding.viewModel =
+                ReportImageItemViewModel(activity, view, summaries[position].photoAsset, !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank())
         } else {
             holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false)
             val button =
@@ -797,26 +801,24 @@ class ReportSummaryAdapter(
     override fun onBindViewHolder(holder: ReportSummaryViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
-        if (!summaries[position].willDelete) {
-            holder.binding.viewModel = ReportSummaryItemViewModel(
-                activity,
-                view,
-                summaries[position],
-                summaries.count(),
-                position,
-                jobDetails
-            )
-            val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
-            editButton.setOnClickListener {
-                onClickListener?.apply {
-                    onClickEditButton(view, position)
-                }
+        holder.binding.viewModel = ReportSummaryItemViewModel(
+            activity,
+            view,
+            summaries[position],
+            summaries.count(),
+            position,
+            jobDetails
+        )
+        val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
+        editButton.setOnClickListener {
+            onClickListener?.apply {
+                onClickEditButton(view, position)
             }
-            val removeButton = holder.binding.root.findViewById<Button>(R.id.remove_report_summary_item)
-            removeButton.setOnClickListener {
-                onClickListener?.apply {
-                    onClickRemoveButton(view, position)
-                }
+        }
+        val removeButton = holder.binding.root.findViewById<Button>(R.id.remove_report_summary_item)
+        removeButton.setOnClickListener {
+            onClickListener?.apply {
+                onClickRemoveButton(view, position)
             }
         }
 

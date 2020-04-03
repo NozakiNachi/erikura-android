@@ -210,7 +210,13 @@ class ReportedJobDetailsFragment(
                 viewModel.status.value = str
 
                 // 実施箇所の更新
-                reportSummaryAdapter.summaries = it.outputSummaries
+                var summaries = mutableListOf<OutputSummary>()
+                it.outputSummaries.forEach {summary ->
+                    if (!summary.willDelete) {
+                        summaries.add(summary)
+                    }
+                }
+                reportSummaryAdapter.summaries = summaries
                 reportSummaryAdapter.notifyDataSetChanged()
 
                 // 作業時間の取得
