@@ -171,7 +171,7 @@ data class Report (
                     Api(activity).imageUpload(item, bytes, onError = {
                         Log.e("Error in waiting upload", it.toString())
                     }) { token ->
-                        outputSummaries[0].beforeCleaningPhotoToken = token
+//                        outputSummaries[0].beforeCleaningPhotoToken = token
                         onComplete(token)
                         synchronized(ErikuraApplication.instance.uploadMonitor) {
                             ErikuraApplication.instance.uploadMonitor.notifyAll()
