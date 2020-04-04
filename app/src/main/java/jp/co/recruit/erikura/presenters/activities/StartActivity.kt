@@ -1,11 +1,20 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.Manifest
+import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.VideoView
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -14,8 +23,10 @@ import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
+import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.services.NotificationData
-import jp.co.recruit.erikura.services.PedometerService
+import org.apache.commons.lang.builder.ToStringBuilder
 
 class StartActivity : BaseActivity(), StartEventHandlers {
     lateinit var video: VideoView
@@ -61,46 +72,15 @@ class StartActivity : BaseActivity(), StartEventHandlers {
             video.start()
         }
 
-//        // 会員登録ボタンの設定
-//        val registerButton: Button = findViewById(R.id.registerButton)
-//        val intent: Intent = Intent(this@StartActivity, RegisterEmailActivity::class.java)
-//        registerButton.setOnClickListener {
-//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-//        }
-//
-//        // ログインボタンの設定
-//        val loginButton: Button = findViewById(R.id.loginButton)
-//        val intentLogin: Intent = Intent(this@StartActivity, LoginActivity::class.java)
-//        loginButton.setOnClickListener {
-//            startActivity(intentLogin, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-//        }
-//
-//        // リンクの設定
-//        val tv: TextView = findViewById(R.id.textView)
-//        val mMethod: MovementMethod = LinkMovementMethod.getInstance()
-//        tv.movementMethod = mMethod
-//        val url = "http://www.google.co.jp"
-//        val link = HtmlCompat.fromHtml("<a href=\"$url\">スキップして近くの仕事を探す</a>", HtmlCompat.FROM_HTML_MODE_COMPACT)
-//        tv.text = link
-
-//        if (!hasGoogleFitPermissions()) {
-//            // 権限のリクエスト
-//            GoogleSignIn.requestPermissions(
-//                this,
-//                REQUEST_OAUTH_REQUEST_CODE,
-//                GoogleSignIn.getLastSignedInAccount(this),
-//                fitnessOptions
-//            )
-//        }
-//        else {
-//            // データ取得の開始
-//            startFitnessSubscription()
-//        }
-//
-//        Api(this).login("user003@example.com", "pass0000") {
-//            Log.d("DEBUG", "ログイン成功")
-////            Api(this).displayErrorAlert(listOf("ログインに成功しました。"), caption = "成功！！！")
-//        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
+                ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID
+            )
+        }
+        else {
+            setupSensor()
+        }
 
         if (Api.isLogin) {
             // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
@@ -148,299 +128,69 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         }
     }
 
-//    private val REQUEST_OAUTH_REQUEST_CODE = 1
-//
-//    private val fitnessOptions: GoogleSignInOptionsExtension
-//        get() =
-//            FitnessOptions.builder()
-//                .addDataType(DataType.AGGREGATE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.AGGREGATE_HEIGHT_SUMMARY, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.AGGREGATE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.TYPE_STEP_COUNT_DELTA, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.TYPE_STEP_COUNT_CADENCE, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.TYPE_DISTANCE_DELTA, FitnessOptions.ACCESS_READ)
-//                .addDataType(DataType.TYPE_HEIGHT, FitnessOptions.ACCESS_READ)
-//                .build()
-//
-//    fun hasGoogleFitPermissions(): Boolean {
-//        return GoogleSignIn.hasPermissions(GoogleSignIn.getLastSignedInAccount(this), fitnessOptions)
-//    }
-//
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//        // OAuthのリクエストについて結果取得
-//        if (REQUEST_OAUTH_REQUEST_CODE == requestCode) {
-//            if (resultCode == Activity.RESULT_OK) {
-//                // データ取得の開始
-//                startFitnessSubscription()
-//            }
-//            else {
-//                // エラー表示
-//                Toast.makeText(applicationContext, "GoogleFitのデータ取得を許可してください", Toast.LENGTH_LONG).show()
-//            }
-//        }
-//    }
-//
-//    fun startFitnessSubscription() {
-//        Toast.makeText(applicationContext, "GoogleFit データ取得を開始します", Toast.LENGTH_LONG).show()
-//
-//        val startTime = Calendar.getInstance().run {
-//            add(Calendar.DATE, -7)
-//            time
-//        }
-//        val endTime = Date()
-//        Log.v("START TIME: ", startTime.toString())
-//        Log.v("END TIME: ", endTime.toString())
-//
-//        val googleSignInAccount: GoogleSignInAccount =
-//            GoogleSignIn.getAccountForExtension(this, fitnessOptions);
-//
-//        val response: Task<DataReadResponse> =
-//            Fitness.getHistoryClient(this, googleSignInAccount)
-//                .readData(
-//                    DataReadRequest.Builder()
-//                        .read(DataType.TYPE_STEP_COUNT_DELTA)
-//                        .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//                        .build())
-//
-//        response.addOnCompleteListener { task ->
-//            if (task.isSuccessful) {
-//                val dataSet: DataSet = task.result!!.getDataSet(DataType.TYPE_STEP_COUNT_DELTA)
-//
-//                dataSet.dataPoints.forEach { point ->
-//                    val start = point.getStartTime(TimeUnit.MILLISECONDS)
-//                    val end = point.getEndTime(TimeUnit.MILLISECONDS)
-//                    val value = point.getValue(Field.FIELD_STEPS)
-//
-//                    Log.v("POINT: START", Date(start).toString())
-//                    Log.v("POINT: END", Date(end).toString())
-//                    Log.v("POINT: VAL", value.toString())
-//                }
-//
-//
-//                Log.v("TASK", dataSet.toString())
-//            }
-//            else {
-//                Log.v("TASK", task.exception?.message ?: "ERROR", task.exception)
-//            }
-//        }
-//    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-//    fun startFitnessSubscription() {
-//        Toast.makeText(applicationContext, "GoogleFit データ取得を開始します", Toast.LENGTH_LONG).show()
-//
-////        val now = Date()
-////        val startTime = DateUtils.beginningOfDay(now)
-////        val endTime = now
-////        Log.v("START TIME: ", startTime.toString())
-////        Log.v("END TIME: ", endTime.toString())
-//
-//        val startTime = Calendar.getInstance().run {
-//            add(Calendar.DATE, -1)
-//            time
-//        }
-//        val endTime = Date()
-//        Log.v("START TIME: ", startTime.toString())
-//        Log.v("END TIME: ", endTime.toString())
-//
-//        val googleSignInAccount: GoogleSignInAccount =
-//            GoogleSignIn.getAccountForExtension(this, fitnessOptions)
-//
-//        readAggregateStepDelta(googleSignInAccount, startTime, endTime)
-//        readAggregateDistanceDelta(googleSignInAccount, startTime, endTime)
-//        readStepCountDelta(googleSignInAccount, startTime, endTime)
-//        readStepCountCumulative(googleSignInAccount, startTime, endTime)
-//        readStepCountCadence(googleSignInAccount, startTime, endTime)
-//        readDistanceDelta(googleSignInAccount, startTime, endTime)
-//        readDistanaceCumlative(googleSignInAccount, startTime, endTime)
-//    }
-//
-//    fun readAggregateStepDelta(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .aggregate(DataType.TYPE_STEP_COUNT_DELTA, DataType.AGGREGATE_STEP_COUNT_DELTA)
-//            .aggregate(DataType.TYPE_DISTANCE_DELTA, DataType.AGGREGATE_DISTANCE_DELTA)
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .bucketByTime(1, TimeUnit.DAYS) // 集計間隔を1日毎に指定
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//                val buckets = it.buckets // 集計データはbucketsというところに入ってくる
-//                buckets.forEach { bucket ->
-//
-//                    val start = Date(bucket.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(bucket.getEndTime(TimeUnit.MILLISECONDS))
-//                    val dataSet = bucket.getDataSet(DataType.AGGREGATE_STEP_COUNT_DELTA)
-//                    dataSet?.dataPoints?.forEach { point ->
-//                        val start2 = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                        val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//                        val value = point.getValue(Field.FIELD_STEPS)
-//                        Log.d("Aggregate Steps", "$start $end $start2 $end2 $value")
-//                    }
-//                }
-//            }
-//    }
-//
-//    fun readAggregateDistanceDelta(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .aggregate(DataType.TYPE_DISTANCE_DELTA, DataType.AGGREGATE_DISTANCE_DELTA)
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .bucketByTime(1, TimeUnit.DAYS) // 集計間隔を1日毎に指定
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//                val buckets = it.buckets // 集計データはbucketsというところに入ってくる
-//                buckets.forEach { bucket ->
-//                    val start = Date(bucket.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(bucket.getEndTime(TimeUnit.MILLISECONDS))
-//                    val dataSet = bucket.getDataSet(DataType.AGGREGATE_DISTANCE_DELTA)
-//                    dataSet?.dataPoints?.forEach { point ->
-//                        val start2 = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                        val end2 = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//                        val value = point.getValue(Field.FIELD_DISTANCE)
-//                        Log.d("Aggregate Distance", "$start $end $start2 $end2 $value")
-//                    }
-//                }
-//            }
-//    }
-//
-//    fun readStepCountDelta(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .read(DataType.TYPE_STEP_COUNT_DELTA)
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//
-//                // DataTypeを指定し、データセットを取得
-//                val dataSet = it.getDataSet(DataType.TYPE_STEP_COUNT_DELTA)
-//
-//                // データセットの中のdataPointsの中に歩数情報リストが含まれてる
-//                dataSet.dataPoints.forEach { point ->
-//
-//                    // getStartTime/getEndTime でその情報がどの時間のものかが分かる
-//                    val start = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//
-//                    // getValueの引数にField.FIELD_STEPSを指定することで、歩数値が取得できる
-//                    val value = point.getValue(Field.FIELD_STEPS)
-//                    Log.d("STEP DELTA", "$start $end $value")
-//                }
-//            }
-//    }
-//
-//    fun readStepCountCumulative(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .read(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//
-//                // DataTypeを指定し、データセットを取得
-//                val dataSet = it.getDataSet(DataType.TYPE_STEP_COUNT_CUMULATIVE)
-//
-//                // データセットの中のdataPointsの中に歩数情報リストが含まれてる
-//                dataSet.dataPoints.forEach { point ->
-//
-//                    // getStartTime/getEndTime でその情報がどの時間のものかが分かる
-//                    val start = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//
-//                    // getValueの引数にField.FIELD_STEPSを指定することで、歩数値が取得できる
-//                    val value = point.getValue(Field.FIELD_STEPS)
-//                    Log.d("STEP CUMULATIVE", "$start $end $value")
-//                }
-//            }
-//    }
-//
-//    fun readStepCountCadence(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .read(DataType.TYPE_STEP_COUNT_CADENCE)
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//
-//                // DataTypeを指定し、データセットを取得
-//                val dataSet = it.getDataSet(DataType.TYPE_STEP_COUNT_CADENCE)
-//
-//                // データセットの中のdataPointsの中に歩数情報リストが含まれてる
-//                dataSet.dataPoints.forEach { point ->
-//
-//                    // getStartTime/getEndTime でその情報がどの時間のものかが分かる
-//                    val start = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//
-//                    // getValueの引数にField.FIELD_STEPSを指定することで、歩数値が取得できる
-//                    val value = point.getValue(Field.FIELD_STEPS)
-//                    Log.d("STEP Cadence", "$start $end $value")
-//                }
-//            }
-//    }
-//
-//    fun readDistanceDelta(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .read(DataType.TYPE_DISTANCE_DELTA)
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//
-//                // DataTypeを指定し、データセットを取得
-//                val dataSet = it.getDataSet(DataType.TYPE_DISTANCE_DELTA)
-//
-//                // データセットの中のdataPointsの中に歩数情報リストが含まれてる
-//                dataSet.dataPoints.forEach { point ->
-//
-//                    // getStartTime/getEndTime でその情報がどの時間のものかが分かる
-//                    val start = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//
-//                    // getValueの引数にField.FIELD_STEPSを指定することで、歩数値が取得できる
-//                    val value = point.getValue(Field.FIELD_DISTANCE)
-//                    Log.d("DISTANCE DELTA", "$start $end $value")
-//                }
-//            }
-//    }
-//
-//    fun readDistanaceCumlative(googleSignInAccount: GoogleSignInAccount, startTime: Date, endTime: Date) {
-//        val request = DataReadRequest.Builder()
-//            .setTimeRange(startTime.time, endTime.time, TimeUnit.MILLISECONDS)
-//            .read(DataType.TYPE_DISTANCE_CUMULATIVE)
-//            .build()
-//
-//        Fitness.getHistoryClient(this, googleSignInAccount)
-//            .readData(request)
-//            .addOnSuccessListener {
-//
-//                // DataTypeを指定し、データセットを取得
-//                val dataSet = it.getDataSet(DataType.TYPE_DISTANCE_CUMULATIVE)
-//
-//                // データセットの中のdataPointsの中に歩数情報リストが含まれてる
-//                dataSet.dataPoints.forEach { point ->
-//
-//                    // getStartTime/getEndTime でその情報がどの時間のものかが分かる
-//                    val start = Date(point.getStartTime(TimeUnit.MILLISECONDS))
-//                    val end = Date(point.getEndTime(TimeUnit.MILLISECONDS))
-//
-//                    // getValueの引数にField.FIELD_STEPSを指定することで、歩数値が取得できる
-//                    val value = point.getValue(Field.FIELD_DISTANCE)
-//                    Log.d("Distance Cumulative", "$start $end $value")
-//                }
-//            }
-//    }
+        when(requestCode) {
+            ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    setupSensor()
+                }
+            }
+        }
+    }
+
+    fun setupSensor() {
+        val sensorManager: SensorManager = getSystemService(Activity.SENSOR_SERVICE) as SensorManager
+        Log.v("SENSOR MANAGER", ToStringBuilder.reflectionToString(sensorManager))
+
+        val sensors = sensorManager.getSensorList(Sensor.TYPE_ALL)
+        sensors.forEach { sensor ->
+            Log.v("SENSOR LIST: ", sensor.name)
+        }
+
+
+        val listener = object: SensorEventListener {
+            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+                Log.v("SENSOR_ACCURACY", "CHANGED")
+            }
+
+            override fun onSensorChanged(event: SensorEvent?) {
+                if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
+                    Log.v("SENSOR CHANGED", ToStringBuilder.reflectionToString(event))
+                }
+            }
+        }
+        val sensorTypes = arrayOf(
+            Sensor.TYPE_STEP_COUNTER
+        )
+        Log.v("FEATURE: ", "step counter: ${packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)}")
+        Log.v("FEATURE: ", "step detector: ${packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_DETECTOR)}")
+
+        sensorTypes.forEach { type ->
+            sensorManager.getDefaultSensor(type)?.let { sensor ->
+                Log.v("SENSOR GET", sensor.name)
+                val result = sensorManager.registerListener(
+                    listener,
+                    sensor,
+                    SensorManager.SENSOR_DELAY_NORMAL,
+                    500
+                )
+                if (result ?: false) {
+                    Log.v("SENSOR REGISTER: ", "${sensor.name} success")
+                }
+                else {
+                    Log.v("SENSOR REGISTER: ", "${sensor.name} failed")
+                }
+            }
+        }
+        sensorManager.flush(listener)
+    }
+
 }
 
 interface StartEventHandlers {

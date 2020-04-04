@@ -342,7 +342,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when(requestCode) {
-            LocationManager.REQUEST_ACCESS_FINE_LOCATION_ID -> {
+            ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     locationManager.start(this)
                 }

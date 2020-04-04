@@ -19,8 +19,6 @@ typealias LocationUpdateCallback = (LatLng) -> Unit
 @Singleton
 class LocationManager {
     companion object {
-        const val REQUEST_ACCESS_FINE_LOCATION_ID = 1
-
         const val Interval: Long = 5000
         const val FastestInterval: Long = 1000
 
@@ -66,7 +64,7 @@ class LocationManager {
             ActivityCompat.requestPermissions(
                 activity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_ACCESS_FINE_LOCATION_ID
+                ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID
             )
         }
     }
@@ -94,7 +92,7 @@ class LocationManager {
                     when (e.statusCode) {
                         LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
                             val e2 = e as ResolvableApiException
-                            e2.startResolutionForResult(activity, REQUEST_ACCESS_FINE_LOCATION_ID)
+                            e2.startResolutionForResult(activity, ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID)
                             Log.d("ERROR", "Dialog Displayed")
                         }
                         LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
