@@ -59,6 +59,8 @@ android {
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
             buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentSandbox"')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+
+            addManifestPlaceholders([erikura_host: "localhost", erikura_protocol: "http"])
         }
         staging {
             buildConfigField("String", "SERVER_BASE_URL", "\"https://dev-app.erikura.net/\"")
@@ -67,6 +69,8 @@ android {
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
             buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentSandbox"')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+
+            addManifestPlaceholders([erikura_host: "dev-app.erikura.net", erikura_protocol: "https"])
         }
         release {
             minifyEnabled false
@@ -77,6 +81,8 @@ android {
             buildConfigField("String", "KARTE_APP_KEY", '"Fnz0u2qNxnY4BmYLtH1LBHOJjUjTgA7Q"')
             buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentProduction"')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+
+            addManifestPlaceholders([erikura_host: "app.erikura.net", erikura_protocol: "https"])
         }
     }
     dataBinding {

@@ -187,6 +187,16 @@
                     android:scheme="erikura" />
                 <data android:path="/user/register/mail_auth" />
             </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="/api/v1/utils/open_android_app" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".presenters.activities.registration.RegisterBirthdayActivity"
