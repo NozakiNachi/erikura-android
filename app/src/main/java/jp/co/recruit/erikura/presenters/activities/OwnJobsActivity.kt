@@ -111,7 +111,7 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
             R.id.tab_menu_search_jobs -> {
                 // 地図画面、またはリスト画面に遷移します
                 Intent(this, MapViewActivity::class.java).let {
-                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }
@@ -120,7 +120,7 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
             }
             R.id.tab_menu_mypage -> {
                 Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }

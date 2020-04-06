@@ -69,7 +69,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
     override fun onClickAppliedJobs(view: View) {
         Intent(this, OwnJobsActivity::class.java).let { intent ->
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
