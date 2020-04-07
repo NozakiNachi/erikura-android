@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
@@ -28,7 +29,6 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.network.ErikuraApiServiceBuilder
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StopDialogFragment
@@ -140,6 +140,28 @@ class WorkingJobDetailsFragment(
     override fun onStop() {
         super.onStop()
         ErikuraApplication.pedometerManager.stop()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults,
+            onPermissionNotGranted = {
+                Toast.makeText(activity, "運動データへのアクセスを許可してください。", Toast.LENGTH_LONG).show()
+                viewModel.stopButtonVisibility.value = View.INVISIBLE
+            }
+            ,onPermissionGranted = {
+                // 納期が過ぎている場合はボタンを非表示
+                if (job?.entry?.limitAt?: Date() < Date()) {
+                    viewModel.stopButtonVisibility.value = View.INVISIBLE
+                }
+                else {
+                    viewModel.stopButtonVisibility.value = View.VISIBLE
+                }
+            })
     }
 
     override fun onClickFavorite(view: View) {
