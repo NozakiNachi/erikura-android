@@ -77,12 +77,9 @@ class Api(var context: Context) {
             onComplete(session)
 
             this.user { user ->
-                userSession?.let {
-                    it.user = user
-                    // ログインのトラッキングの送出
-                    Tracking.logEvent(event= "login", params= bundleOf())
-                    Tracking.identify(user= user, status= "login")
-                }
+                // ログインのトラッキングの送出
+                Tracking.logEvent(event= "login", params= bundleOf())
+                Tracking.identify(user= user, status= "login")
             }
         }
     }
@@ -247,6 +244,9 @@ class Api(var context: Context) {
             erikuraApiService.user(),
             onError = onError
         ) { user ->
+            userSession?.let {
+                it.user = user
+            }
             onComplete(user)
         }
     }
