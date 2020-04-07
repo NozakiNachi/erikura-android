@@ -272,7 +272,7 @@ data class ReportRequest(
     var outputSummariesAttributes: List<OutputSummaryRequest>,
     var workingMinute: Int?,
     var additionalComment: String?,
-    var additionReportPhotoToken: String?,
+    var additionalReportPhotoToken: String?,
     var evaluation: String,
     var comment: String?,
     var additionalReportWillDelete: Boolean?
