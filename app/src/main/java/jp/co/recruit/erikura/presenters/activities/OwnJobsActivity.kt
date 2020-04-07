@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding

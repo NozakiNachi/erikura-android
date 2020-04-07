@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,6 +18,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
@@ -92,8 +94,10 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
             viewModel.reportedJobs.value = jobs
             jobListAdapter.jobs = viewModel.reportedJobs.value ?: listOf()
             jobListAdapter.notifyDataSetChanged()
-            // FIXME: 0件になる場合の表示内容の更新
-            // FIXME: トラッキングタグの送出(jobIdが必要)
+
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_entried_job_list_reported", params= bundleOf())
+            Tracking.viewJobs(name= "/jobs/own/reported", title= "応募した仕事画面（報告済み）", jobId= jobListAdapter.jobs.map { it.id })
         }
     }
 }

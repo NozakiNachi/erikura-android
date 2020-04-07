@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
@@ -71,6 +73,10 @@ class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
             viewModel.finishedJobs.value = jobs.filter { !it.isExpired }
             jobListAdapter.jobs = viewModel.unreportedJobs
             jobListAdapter.notifyDataSetChanged()
+
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_entried_job_list_finished", params= bundleOf())
+            Tracking.viewJobs(name= "/jobs/own/finished", title= "応募した仕事画面（実施済み・未報告）", jobId= jobListAdapter.jobs.map { it.id })
         }
     }
 }

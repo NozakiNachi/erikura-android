@@ -482,6 +482,22 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     private fun saveReport() {
         Api(this).report(job) {
+            // アップロード完了
+            if (job.reportId != null) {
+                // ページ参照のトラッキングの送出
+                Tracking.logEvent(event= "view_edit_job_report_finish", params= bundleOf())
+                Tracking.viewJobDetails(name= "/reports/edit/completed/${job.id}", title= "作業報告編集完了画面", jobId= job.id)
+            }
+            else {
+                // ページ参照のトラッキングの送出
+                Tracking.logEvent(event= "view_job_report_finish", params= bundleOf())
+                Tracking.viewJobDetails(name= "/reports/register/completed/${job.id ?: 0}", title= "作業報告完了画面", jobId= job.id ?: 0)
+            }
+            // 作業報告のトラッキングの送出
+            Tracking.logEvent(event= "job_report", params= bundleOf())
+            Tracking.jobEntry(name= "job_report", title= "", job= job)
+            Tracking.logEventFB(event= "ReportJob")
+
             Intent(this, OwnJobsActivity::class.java).let { intent ->
 //                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
