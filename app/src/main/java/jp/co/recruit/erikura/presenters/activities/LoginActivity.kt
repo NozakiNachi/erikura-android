@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityLoginBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -36,6 +38,13 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         viewModel.email.value = ""
         viewModel.password.value = ""
         viewModel.enableAutoLogin.value = true
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_login", params= bundleOf())
+        Tracking.view(name= "/user/login", title= "ログイン画面")
     }
 
     override fun onClickLogin(view: View) {

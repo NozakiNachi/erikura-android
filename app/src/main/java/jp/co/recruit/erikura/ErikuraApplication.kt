@@ -184,6 +184,10 @@ class AppLifecycle: LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun onStart() {
         ErikuraApplication.instance.checkVersion()
+
+        ErikuraApplication.locationManager.latLng?.let {
+            Tracking.currentLocation("current_location", it.latitude, it.longitude)
+        }
     }
 }
 

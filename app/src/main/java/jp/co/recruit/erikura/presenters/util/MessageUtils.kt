@@ -8,11 +8,13 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.TextView
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.DialogLocationAlertBinding
 import jp.co.recruit.erikura.databinding.DialogMessageAlertBinding
 
@@ -41,6 +43,10 @@ object MessageUtils {
         }.create()
 
         dialog.show()
+
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "error_modal", params= bundleOf())
+        Tracking.track(name= "error_modal")
 
         return dialog
     }

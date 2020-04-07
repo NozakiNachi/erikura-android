@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +16,7 @@ import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.RequiredClientVersion
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityAboutAppBinding
@@ -88,6 +90,13 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
         about_app_recycler_view.adapter = adapter
         val itemDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
         about_app_recycler_view.addItemDecoration(itemDecoration)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_about", params= bundleOf())
+        Tracking.view(name= "/mypage/about", title= "このアプリについて画面")
     }
 
     class AboutAppAdapter(private val menuItems: List<MenuItem>) :

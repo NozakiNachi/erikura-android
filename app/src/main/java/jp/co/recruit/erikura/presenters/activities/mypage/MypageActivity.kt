@@ -11,6 +11,7 @@ import android.view.MenuItem
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Information
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
@@ -38,8 +40,6 @@ import java.util.*
 class MypageActivity : BaseActivity(), MypageEventHandlers {
     private lateinit var informationListView: RecyclerView
     private lateinit var informationListAdapter: InformationAdapter
-
-    data class MypageItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
 
     private val viewModel: MypageViewModel by lazy {
         ViewModelProvider(this).get(MypageViewModel::class.java)
@@ -106,44 +106,12 @@ class MypageActivity : BaseActivity(), MypageEventHandlers {
         mypage_recycler_view.addItemDecoration(itemDecoration)
     }
 
-    class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Adapter<MypageAdapter.ViewHolder>()
-    {
-        class ViewHolder(val binding: FragmentMypageCellBinding) : RecyclerView.ViewHolder(binding.root)
-        var listener: OnItemClickListener? = null
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val binding = DataBindingUtil.inflate<FragmentMypageCellBinding>(
-                LayoutInflater.from(parent.context),
-                R.layout.fragment_mypage_cell,
-                parent,
-                false
-            )
-            return ViewHolder(
-                binding
-            )
-        }
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val MypageListItem = mypageItems.get(position)
-            val viewModel = MypageMenuItemViewModel(MypageListItem)
-            holder.binding.viewModel = viewModel
-
-            holder.binding.root.setOnClickListener {
-                listener?.onItemClickListener(mypageItems[position])
-            }
-        }
-        interface OnItemClickListener{
-            fun onItemClickListener(item: MypageItem)
-        }
-
-        fun setOnItemClickListener(listener: OnItemClickListener){
-            this.listener = listener
-        }
-
-        override fun getItemCount() = mypageItems.size
-    }
-
     override fun onStart() {
         super.onStart()
+
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_mypage_top", params= bundleOf())
+        Tracking.view(name= "/mypage/top", title= "マイページトップ画面")
 
         val api = Api(this)
         if (Api.isLogin) {
@@ -223,6 +191,43 @@ interface MypageEventHandlers {
     fun onNavigationItemSelected(item: MenuItem): Boolean
 }
 
+data class MypageItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)
+
+class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Adapter<MypageAdapter.ViewHolder>() {
+    class ViewHolder(val binding: FragmentMypageCellBinding) : RecyclerView.ViewHolder(binding.root)
+    var listener: OnItemClickListener? = null
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = DataBindingUtil.inflate<FragmentMypageCellBinding>(
+            LayoutInflater.from(parent.context),
+            R.layout.fragment_mypage_cell,
+            parent,
+            false
+        )
+        return ViewHolder(
+            binding
+        )
+    }
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val MypageListItem = mypageItems.get(position)
+        val viewModel = MypageMenuItemViewModel(MypageListItem)
+        holder.binding.viewModel = viewModel
+
+        holder.binding.root.setOnClickListener {
+            listener?.onItemClickListener(mypageItems[position])
+        }
+    }
+    interface OnItemClickListener{
+        fun onItemClickListener(item: MypageItem)
+    }
+
+    fun setOnItemClickListener(listener: OnItemClickListener){
+        this.listener = listener
+    }
+
+    override fun getItemCount() = mypageItems.size
+}
+
 class InformationAdapter(val activity: FragmentActivity) : RecyclerView.Adapter<InformationCellHolder>() {
     var informations: List<Information> = listOf()
 
@@ -284,6 +289,6 @@ class InformationCellViewModel(val information: Information): ViewModel() {
     }
 }
 
-class MypageMenuItemViewModel(val item: MypageActivity.MypageItem) : ViewModel() {
+class MypageMenuItemViewModel(val item: MypageItem) : ViewModel() {
     val icon: Drawable get() = ErikuraApplication.applicationContext.resources.getDrawable(item.iconDrawableId, null)
 }

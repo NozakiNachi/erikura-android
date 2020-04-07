@@ -7,6 +7,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -73,16 +74,25 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
-            Tracking.identify(body.userId)
             onComplete(session)
+
+            this.user { user ->
+                userSession?.let {
+                    it.user = user
+                    // ログインのトラッキングの送出
+                    Tracking.logEvent(event= "login", params= bundleOf())
+                    Tracking.identify(user= user, status= "login")
+                }
+            }
         }
     }
 
-    fun logout(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
+    fun logout(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (deletedSession: UserSession?) -> Unit) {
         executeObservable(
             erikuraApiService.logout(),
             onError =  onError
         ) { body ->
+            val deletedSession = userSession
             if(body.accessToken == null){
                 userSession = null
                 // 保存してある認証情報をクリアします
@@ -90,7 +100,7 @@ class Api(var context: Context) {
             }else{
                 // エラーメッセージを出す
             }
-            onComplete()
+            onComplete(deletedSession)
         }
     }
 
@@ -103,7 +113,6 @@ class Api(var context: Context) {
             val resignTime = (now % (1000 * 60 * 60)) / (1000 * 60) +10
             val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = resignTime)
             userSession = session
-            Tracking.identify(body.userId)
             onComplete(session)
         }
     }
@@ -209,7 +218,6 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
-            Tracking.identify(body.userId)
             onComplete(session)
         }
     }
@@ -690,6 +698,10 @@ class Api(var context: Context) {
                     setPositiveButton(R.string.common_buttons_close) { _, _ -> }
                 }.create()
             if (!isDestroyed()) {
+                // ページ参照のトラッキングの送出
+                Tracking.logEvent(event= "error_modal", params= bundleOf())
+                Tracking.track(name= "error_modal")
+
                 alertDialog.show()
             }
         }

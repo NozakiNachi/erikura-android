@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
@@ -50,6 +52,10 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
     override fun onStart() {
         super.onStart()
         fetchJobs()
+
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_payment_history", params= bundleOf())
+        Tracking.view(name= "/mypage/payment_history", title= "お支払い情報画面")
     }
 
     override fun onTargetYearSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {

@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -74,6 +76,10 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         // 再認証が必要かどうか確認
         checkResignIn() { isResignIn ->
             if (isResignIn) {
+                // ページ参照のトラッキングの送出
+                Tracking.logEvent(event= "view_edit_profile", params= bundleOf())
+                Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
+
                 // 変更するユーザーの現在の登録値を取得
                 Api(this).user() {
                     user = it

@@ -8,11 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import androidx.lifecycle.Observer
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Bank
 import jp.co.recruit.erikura.business.models.BankBranch
 import jp.co.recruit.erikura.business.models.Payment
@@ -68,6 +70,10 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
         // 再認証が必要かどうか確認
         checkResignIn() { isResignIn ->
             if (isResignIn) {
+                // ページ参照のトラッキングの送出
+                Tracking.logEvent(event= "view_edit_bank", params= bundleOf())
+                Tracking.view(name= "/mypage/bank/edit", title= "口座情報変更画面")
+
                 // 変更するユーザーの現在の登録値を取得
                 Api(this).payment() {
                     payment = it

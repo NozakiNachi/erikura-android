@@ -7,10 +7,10 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.NotificationSettingViewModel" />
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.mypage.NotificationSettingEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

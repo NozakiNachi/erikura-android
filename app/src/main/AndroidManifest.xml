@@ -147,7 +147,7 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 口座情報登録更新 -->
         <activity
-            android:name=".presenters.activities.registration.NotificationSettingActivity"
+            android:name=".presenters.activities.mypage.NotificationSettingActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- 通知設定 -->
         <activity

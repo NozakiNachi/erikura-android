@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
@@ -28,7 +30,6 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.ChangeAccountSettingFragment
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationFragment
 import jp.co.recruit.erikura.presenters.activities.job.RegisterAccountSettingFragment
-import jp.co.recruit.erikura.presenters.activities.registration.NotificationSettingActivity
 import kotlinx.android.synthetic.main.activity_configuration.*
 
 
@@ -184,7 +185,19 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
 
     // ログアウト処理
     override fun onClickLogout(view: View) {
-        Api(this).logout() {
+        Api(this).logout() { deletedSession ->
+            // ログアウトのトラッキングの送出
+            Tracking.logEvent(event= "logout", params= bundleOf())
+            deletedSession?.let {
+                it.user?.let { user ->
+                    Tracking.identify(user= user, status= "logout")
+                }
+            }
+
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_logout", params= bundleOf())
+            Tracking.view(name= "/mypage/logout", title= "ログアウト完了画面")
+
             // スタート画面に戻る
             val intent = Intent(this, StartActivity::class.java)
             // 戻るボタンの無効化
