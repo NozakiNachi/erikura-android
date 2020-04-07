@@ -17,6 +17,8 @@ import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.os.bundleOf
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 
@@ -46,10 +48,10 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         val jobInfoView = JobInfoViewFragment(job)
         val thumbnailImage = ThumbnailImageFragment(job)
         val manualButton = ManualButtonFragment(job)
-        val applyFlowLink = ApplyFlowLinkFragment()
+        val applyFlowLink = ApplyFlowLinkFragment(job)
         val jobDetailsView = JobDetailsViewFragment(job)
         val mapView = MapViewFragment(activity, job)
-        val applyFlowView = ApplyFlowViewFragment()
+        val applyFlowView = ApplyFlowViewFragment(job)
         val applyButton = ApplyButtonFragment(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
@@ -63,6 +65,12 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         transaction.commit()
     }
 
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_job_detail", params= bundleOf())
+        Tracking.viewJobDetails(name= "/jobs/${job?.id?.toString() ?: ""}", title= "タスク詳細画面", jobId= job?.id ?: 0)
+    }
 }
 
 class NormalJobDetailsFragmentViewModel: ViewModel() {

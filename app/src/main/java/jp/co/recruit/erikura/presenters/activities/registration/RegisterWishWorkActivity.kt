@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
@@ -42,6 +44,13 @@ class RegisterWishWorkActivity : BaseActivity(),
         binding.handlers = this
     }
 
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_register_job_request", params= bundleOf())
+        Tracking.view(name= "/user/register/wish_works", title= "本登録画面（希望職種）")
+    }
+
     override fun onClickRegister(view: View) {
         val list: MutableList<String> = mutableListOf()
         if(viewModel.interestedSmartPhone.value ?: false){ list.add("smart_phone") }
@@ -53,11 +62,16 @@ class RegisterWishWorkActivity : BaseActivity(),
         Log.v("WISHWORK", list.toString())
         // ユーザ登録Apiの呼び出し
         Api(this).initialUpdateUser(user) {
-            Log.v("DEBUG", "ユーザ登録： userId=${it}")
+            Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
             // 登録完了画面へ遷移
             val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+
+            // 登録完了のトラッキングの送出
+            Tracking.logEvent(event= "signup", params= bundleOf(Pair("user_id", it.userId)))
+            Tracking.identify(user= user, status= "login")
+            Tracking.logCompleteRegistrationEvent()
         }
     }
 

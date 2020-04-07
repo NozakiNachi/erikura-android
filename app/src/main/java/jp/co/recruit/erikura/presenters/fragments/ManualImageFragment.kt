@@ -10,11 +10,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -39,6 +41,10 @@ class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragme
 
     override fun onClickManualImage(view: View) {
         if(job?.manualUrl != null){
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_manual", params= bundleOf())
+            Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job?.id ?: 0)
+
             val manualURLString = job.manualUrl
             val intent = Intent(activity, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW

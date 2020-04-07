@@ -6,11 +6,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterBirthdayBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -53,6 +55,13 @@ class RegisterBirthdayActivity : BaseActivity(),
         calender.set(Calendar.MONTH, 1 - 1)
         calender.set(Calendar.DAY_OF_MONTH, 1)
         viewModel.birthday.value = String.format("%d/%02d/%02d", 1980, 1, 1)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_register_birth", params= bundleOf())
+        Tracking.view(name= "/user/register/birthday", title= "本登録画面（誕生日）")
     }
 
     override fun onClickNext(view: View) {

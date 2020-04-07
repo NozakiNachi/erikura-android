@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -26,6 +28,10 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
 
     override fun onClickManualButton(view: View) {
         if(job?.manualUrl != null){
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_manual", params= bundleOf())
+            Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job?.id ?: 0)
+
             val termsOfServiceURLString = job.manualUrl
             val intent = Intent(activity, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW

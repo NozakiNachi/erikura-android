@@ -11,6 +11,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +28,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
@@ -141,6 +143,14 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
                 layoutManager.scrollToPosition(nearestIndex)
 
                 Log.v("Fetch Job", "Nearest: ${nearestIndex}, ${layoutManager.toString()}")
+
+                // ページ参照のトラッキングの送出
+                val jobId = jobs.map { it.id }
+                Tracking.logEvent(event= "view_job_list_map", params= bundleOf())
+                Tracking.viewJobs(name= "/jobs/map", title= "仕事一覧画面（地図）", jobId= jobId)
+                // 仕事表示のトラッキングの送出
+                Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（地図）", jobId= jobId)
             }
             else {
                 MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
@@ -426,6 +436,10 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
     }
 
     override fun onClickList(view: View) {
+        // 表示変更のトラッキングの送出
+        Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
+        Tracking.track(name= "push_toggle_dispaly")
+
         val intent = Intent(this, ListViewActivity::class.java)
         // FIXME: 検索条件の引き継ぎについて検討する
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
@@ -435,6 +449,10 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
     // 現在地に戻る
     override fun onClickCurrentLocation(view: View) {
+        // 現在地押下のトラッキングの送出
+        Tracking.logEvent(event= "push_reload_location", params= bundleOf())
+        Tracking.track(name= "push_reload_location")
+
         mMap.animateCamera(CameraUpdateFactory.newLatLng(locationManager.latLngOrDefault))
     }
 

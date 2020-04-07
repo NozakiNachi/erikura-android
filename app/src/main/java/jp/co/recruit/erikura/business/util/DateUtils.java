@@ -43,4 +43,24 @@ public class DateUtils extends org.apache.commons.lang.time.DateUtils {
         return cal.getTime();
     }
 
+    public static int diffYears(Date d1, Date d2) {
+        Calendar d1cal = calendarFrom(d1);
+        Calendar d2cal = calendarFrom(d2);
+        int year = d1cal.get(Calendar.YEAR) - d2cal.get(Calendar.YEAR);
+        int d1month = d1cal.get(Calendar.MONTH);
+        int d2month = d2cal.get(Calendar.MONTH);
+        if (d1month <= d2month) {
+            return year;
+        }
+        else {
+            // d1の月まで来ていないので -1 する
+            return year - 1;
+        }
+    }
+
+    public static Calendar calendarFrom(Date d) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(d);
+        return cal;
+    }
 }

@@ -15,11 +15,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
@@ -90,6 +92,13 @@ class AppliedJobDetailsFragment(
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_job_entried", params= bundleOf())
+        Tracking.viewJobDetails(name= "/entries/started/${job?.id ?: 0}", title= "作業開始前画面", jobId= job?.id ?: 0)
+    }
+
     override fun onResume() {
         super.onResume()
         ErikuraApplication.pedometerManager.start()
@@ -125,6 +134,10 @@ class AppliedJobDetailsFragment(
 
     override fun onClickStart(view: View) {
         job?.let {
+            // 作業開始のトラッキングの送出
+            Tracking.logEvent(event= "push_start_job", params= bundleOf())
+            Tracking.trackJobDetails(name= "push_start_job", jobId= job?.id)
+
             Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault,
                 steps = ErikuraApplication.pedometerManager.readStepCount(),
                 distance = null, floorAsc = null, floorDesc = null

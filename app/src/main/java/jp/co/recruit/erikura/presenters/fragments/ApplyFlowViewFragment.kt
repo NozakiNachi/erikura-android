@@ -6,8 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
 
-class ApplyFlowViewFragment : Fragment() {
+class ApplyFlowViewFragment(val job: Job?) : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,7 +21,7 @@ class ApplyFlowViewFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val transaction = childFragmentManager.beginTransaction()
-        val applyFlowLink = ApplyFlowLinkFragment()
+        val applyFlowLink = ApplyFlowLinkFragment(job)
         transaction.add(R.id.applyFlow_applyFlowLinkFragment, applyFlowLink, "applyFlowLink")
         transaction.commit()
     }

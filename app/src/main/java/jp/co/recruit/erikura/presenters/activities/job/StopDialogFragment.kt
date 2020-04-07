@@ -8,11 +8,13 @@ import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogStopBinding
@@ -51,6 +53,11 @@ class StopDialogFragment(private val job: Job?, private val steps: Int?) : Dialo
                 steps = ErikuraApplication.pedometerManager.readStepCount(),
                 distance = null, floorAsc = null, floorDesc = null
             ) {
+                // 作業完了のトラッキングの送出
+                Tracking.logEvent(event= "job_finished", params= bundleOf())
+                Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0)
+
+
                 val intent= Intent(activity, WorkingFinishedActivity::class.java)
                 intent.putExtra("job", job)
                 startActivity(intent)

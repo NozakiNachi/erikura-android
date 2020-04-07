@@ -4,8 +4,10 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.ActivityRegisterJobStatusBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -26,6 +28,13 @@ class RegisterJobStatusActivity : BaseActivity(),
         val binding: ActivityRegisterJobStatusBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_job_status)
         binding.lifecycleOwner = this
         binding.handlers = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_register_job", params= bundleOf())
+        Tracking.view(name= "/user/register/job", title= "本登録画面（職業）")
     }
 
     override fun onClickUnemployed(view: View) {

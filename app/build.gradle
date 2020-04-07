@@ -60,6 +60,11 @@ android {
             buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentSandbox"')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
 
+            buildConfigField("String", "FACEBOOK_APP_ID", "\"633836627103645\"")
+            resValue "string", "facebook_app_id", "633836627103645"
+            resValue "string", "fb_login_protocol_scheme", "fb633836627103645"
+            addManifestPlaceholders([facebook_app_id: "633836627103645"])
+
             addManifestPlaceholders([erikura_host: "localhost", erikura_protocol: "http"])
         }
         staging {
@@ -69,6 +74,11 @@ android {
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
             buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentSandbox"')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+
+            buildConfigField("String", "FACEBOOK_APP_ID", "\"633836627103645\"")
+            resValue "string", "facebook_app_id", "633836627103645"
+            resValue "string", "fb_login_protocol_scheme", "fb633836627103645"
+            addManifestPlaceholders([facebook_app_id: "633836627103645"])
 
             addManifestPlaceholders([erikura_host: "dev-app.erikura.net", erikura_protocol: "https"])
         }
@@ -81,6 +91,11 @@ android {
             buildConfigField("String", "KARTE_APP_KEY", '"Fnz0u2qNxnY4BmYLtH1LBHOJjUjTgA7Q"')
             buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentProduction"')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+
+            buildConfigField("String", "FACEBOOK_APP_ID", "\"196990194298653\"")
+            resValue "string", "facebook_app_id", "196990194298653"
+            resValue "string", "fb_login_protocol_scheme", "fb196990194298653"
+            addManifestPlaceholders([facebook_app_id: "196990194298653"])
 
             addManifestPlaceholders([erikura_host: "app.erikura.net", erikura_protocol: "https"])
         }
@@ -129,7 +144,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.1.2'
     // Karte
     implementation 'io.karte.android:tracker:1.7.3'
-//    // Facebook SDK Core only (Analytics)
+    // Facebook SDK Core only (Analytics)
+    implementation 'com.facebook.android:facebook-android-sdk:4.41.0'
 //    implementation 'com.facebook.android:facebook-core:5.+'
 //    // Adjust
 //    implementation 'com.adjust.sdk:adjust-android:4.20.0'

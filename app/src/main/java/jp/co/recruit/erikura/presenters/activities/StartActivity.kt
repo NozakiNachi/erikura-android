@@ -7,9 +7,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.VideoView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -73,20 +75,22 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent("view_top", bundleOf())
+        Tracking.view(name = "/top", title = "トップ画面")
+    }
+
     override fun onResume() {
         super.onResume()
         video.resume()
         video.start()
-//
-//        if (ErikuraApplication.pedometerManager.checkPermission(this)) {
-//            ErikuraApplication.pedometerManager.start()
-//        }
     }
 
     override fun onPause() {
         super.onPause()
         video.stopPlayback()
-//        ErikuraApplication.pedometerManager.stop()
     }
 
     override fun onClickRegisterButton(view: View) {

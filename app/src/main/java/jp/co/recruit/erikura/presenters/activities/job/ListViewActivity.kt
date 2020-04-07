@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
@@ -67,6 +69,15 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
                 pastJobsAdapter.jobs = viewModel.pastJobs
                 pastJobsAdapter.currentPosition = position
                 pastJobsAdapter.notifyDataSetChanged()
+
+                // ページ参照のトラッキングの送出
+                val jobId = jobs.map { it.id }
+                Tracking.logEvent(event= "view_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
+                // 仕事表示のトラッキングの送出
+                Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
+
             }
             else {
                 // クリアした検索条件での再検索を行います
@@ -233,6 +244,10 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     }
 
     override fun onClickMap(view: View) {
+        // 表示変更のトラッキングの送出
+        Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
+        Tracking.track(name= "push_toggle_dispaly")
+
         val intent = Intent(this, MapViewActivity::class.java)
         // FIXME: 検索条件の引き継ぎについて検討する
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())

@@ -5,9 +5,11 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.ActivityOnboarding0Binding
 import jp.co.recruit.erikura.databinding.ActivityOnboarding1Binding
 import java.util.*
@@ -21,6 +23,13 @@ class Onboarding1Activity : AppCompatActivity(), Onboarding1Handlers {
             DataBindingUtil.setContentView(this, R.layout.activity_onboarding1)
         binding.lifecycleOwner = this
         binding.handlers = this
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_onboarding_1", params= bundleOf())
+        Tracking.view(name= "/intro/description_1", title= "オンボーディング画面（ステップ1）")
     }
 
     override fun onResume() {

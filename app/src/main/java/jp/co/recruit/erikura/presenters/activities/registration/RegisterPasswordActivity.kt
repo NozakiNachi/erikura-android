@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
@@ -63,6 +65,13 @@ class RegisterPasswordActivity : BaseActivity(),
             Log.v("DEBUG", "仮登録確認： userId=${it}")
             user.confirmationToken = confirmationToken
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event = "view_register_password", params = bundleOf())
+        Tracking.view(name = "/user/register/password", title = "本登録画面（パスワード）")
     }
 
     override fun onClickNext(view: View) {

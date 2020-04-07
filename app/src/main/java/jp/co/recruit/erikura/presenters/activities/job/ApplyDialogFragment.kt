@@ -18,6 +18,7 @@ import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +26,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
@@ -94,6 +96,11 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     activity!!.finish()
                 }) {
+                    // 応募のトラッキングの送出
+                    Tracking.logEvent(event= "job_entry", params= bundleOf())
+                    Tracking.jobEntry(name= "job_entry", title= "", job= job)
+                    Tracking.logEventFB(event= "EntryJob")
+
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())

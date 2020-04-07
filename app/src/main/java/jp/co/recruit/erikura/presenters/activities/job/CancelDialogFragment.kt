@@ -10,12 +10,14 @@ import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.CancelReason
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
@@ -61,6 +63,10 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
         job?.let {
             if (job.entry?.limitAt?: Date() > Date()) {
                 Api(activity!!).cancel(job, reasonCode, comment) {
+                    // ページ参照のトラッキングの送出
+                    Tracking.logEvent(event= "view_job_cacel_finish", params= bundleOf())
+                    Tracking.viewJobDetails(name= "/entries/cancelled/${job?.id ?:0}", title= "キャンセル完了画面", jobId= job?.id ?: 0)
+
                     val intent= Intent(activity, JobDetailsActivity::class.java)
                     intent.putExtra("job", job)
                     startActivity(intent)

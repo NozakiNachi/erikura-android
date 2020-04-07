@@ -5,12 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityApplyCompletedBinding
@@ -48,7 +50,14 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         jobList.adapter = recommendedJobsAdapter
         jobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         jobList.addItemDecoration(JobListItemDecorator())
+    }
 
+    override fun onStart() {
+        super.onStart()
+
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_job_entry_finish", params = bundleOf())
+        Tracking.viewJobDetails(name= "/enrtries/completed/${job?.id ?: 0}", title= "応募完了画面", jobId= job?.id ?: 0)
     }
 
     override fun onResume() {
@@ -57,10 +66,18 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
             viewModel.recommendedJobs = jobsList
             recommendedJobsAdapter.jobs = viewModel.recommendedJobs
             recommendedJobsAdapter.notifyDataSetChanged()
+
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "dispaly_list_near_job", params= bundleOf())
+            Tracking.trackJobs(name= "dispaly_list_near_job", jobId= jobsList.map { it.id })
         }
     }
 
     override fun onClickJobDetails(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_job_detail", params= bundleOf())
+        Tracking.trackJobDetails(name= "push_job_detail", jobId= job?.id ?: 0)
+
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
@@ -69,6 +86,10 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
     }
 
     override fun onClickSearchOtherJobs(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_find_other_job", params= bundleOf())
+        Tracking.track(name= "push_find_other_job")
+
         val intent = Intent(this, MapViewActivity::class.java)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         finish()

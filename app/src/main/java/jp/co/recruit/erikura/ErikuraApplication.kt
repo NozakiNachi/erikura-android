@@ -7,9 +7,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -18,7 +20,6 @@ import io.fabric.sdk.android.Fabric
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
 import io.realm.Realm
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.data.storage.RealmManager
@@ -33,11 +34,21 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
-import jp.co.recruit.erikura.business.models.ErikuraConfig
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsConstants
+import com.facebook.appevents.AppEventsLogger
+import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivity
 import jp.co.recruit.erikura.presenters.util.PedometerManager
 import org.apache.commons.lang.builder.ToStringBuilder
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Year
+import java.time.ZoneId
+import java.util.*
 
 
 class ErikuraApplication : Application() {
@@ -179,6 +190,7 @@ class AppLifecycle: LifecycleObserver {
 object Tracking {
     private val TAG = Tracking::class.java.name
     lateinit var firebaseAnalytics: FirebaseAnalytics
+    lateinit var appEventsLogger: AppEventsLogger
     private var fcmToken: String? = null
 
     fun initTrackers(application: Application) {
@@ -206,6 +218,12 @@ object Tracking {
             .build()
         Tracker.init(application, BuildConfig.KARTE_APP_KEY, config)
 
+        // Facebook
+        FacebookSdk.setApplicationId(BuildConfig.FACEBOOK_APP_ID)
+        FacebookSdk.sdkInitialize(application)
+        AppEventsLogger.activateApp(application)
+        appEventsLogger = AppEventsLogger.newLogger(application)
+
         // FIXME: adjust の初期化
     }
 
@@ -225,134 +243,133 @@ object Tracking {
         Tracker.getInstance().identify(JSONObject(mapOf(Pair("user_id", userId))))
     }
 
-    /*
-    class func identify(user: User, status: String){
-        do {
-            let userId = user.id ?? API.sharedInstance.userSession?.userId
-            let name = (user.lastName ?? "") + (user.firstName ?? "")
-            let component = Calendar.current.dateComponents(in: TimeZone.current, from: user.dateOfBirth!)
-            let birthYear = component.year
-            let birthDate = component.date
-            let now = Calendar.current.dateComponents(in: TimeZone.current, from: Date())
-            let age = now.year! - birthYear!
-            let address = (user.prefecture ?? "") + (user.city ?? "")
-            var gender: String = ""
-            if user.gender == .male {
-                gender = "m"
-            }else if user.gender == .female {
-                gender = "f"
+    fun logEvent(event: String, params: Bundle?) {
+        try {
+            firebaseAnalytics.logEvent(event, params)
+        }
+        catch (e: Exception) {
+            Log.e("ERIKURA", "Firebase error", e)
+        }
+    }
+
+    fun identify(user: User, status: String) {
+        try {
+            val birthday = SimpleDateFormat("yyyy/MM/dd").parse(user.dateOfBirth)
+            val now = Date()
+            val gender = when (user.gender) {
+                Gender.MALE -> "m"
+                Gender.FEMALE -> "f"
+                else -> ""
             }
-            let jobStatus = user.jobStatus ?? ""
 
-            Analytics.setUserID(userId?.description)
+            firebaseAnalytics.setUserId(user.id.toString())
 
-            let values: [AnyHashable : Any] = [
-                "user_id": userId ?? 0,
-                "name" : userId?.string ?? "0",
-                "create_date" : Date(),
-                "age" : age,
-                "gender" : gender,
-                "birth_year" : birthYear ?? 0,
-                "birth_date" : birthDate ?? Date(),
-                "address" : address,
-                "job" : jobStatus,
-                "login_status" : status
-            ]
-
-            KarteTracker.shared.identify(values)
-        }
-        catch {
-            print("KARTE identify Error!")
+            val values = bundleOf(
+                Pair("user_id", user.id),
+                Pair("name", user.id.toString()),
+                Pair("create_date", Date()),
+                Pair("age", DateUtils.diffYears(now, birthday)),
+                Pair("gender", gender),
+                Pair("birth_year", DateUtils.calendarFrom(birthday).get(Calendar.YEAR)),
+                Pair("birth_date", birthday),
+                Pair("address", (user.prefecture ?: "") + (user.city ?: "")),
+                Pair("job", user.jobStatus ?: ""),
+                Pair("login_status", status)
+            )
+            Tracker.getInstance().identify(values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
         }
     }
 
-    class func view(name: String, title: String) {
-        print("Sending view tracking: " + name + "(" + title + ")")
-        KarteTracker.shared.view(name, title: title)
+    fun view(name: String) {
+        Log.v("ERIKURA", "Sending view tracking: ${name}")
+        Tracker.getInstance().view(name, bundleOf())
     }
 
-    class func view(name: String) {
-        print("Sending view tracking: " + name )
-        KarteTracker.shared.view(name)
+    fun view(name: String, title: String) {
+        Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+        Tracker.getInstance().view(name, title)
     }
 
-    class func viewJobs(name: String, title: String, jobId: [Int]) {
-        print("Sending view tracking: " + name + "(" + title + ")")
-        KarteTracker.shared.view(name, title: title, values: ["job_id": jobId])
+    fun viewJobs(name: String, title: String, jobId: List<Int>) {
+        Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+        Tracker.getInstance().view(name, title, bundleOf(
+            Pair("job_id", jobId)
+        ))
     }
 
-    class func viewJobDetails(name: String, title: String, jobId: Int) {
-        print("Sending view tracking: " + name + "(" + title + ")")
-        KarteTracker.shared.view(name, title: title, values: ["job_id": jobId])
+    fun viewJobDetails(name: String, title: String, jobId: Int) {
+        Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+        Tracker.getInstance().view(name, title, bundleOf(
+            Pair("job_id", jobId)
+        ))
     }
 
-    class func viewPlaceDetails(name: String, title: String, placeId: Int) {
-        print("Sending view tracking: " + name + "(" + title + ")")
-        KarteTracker.shared.view(name, title: title, values: ["place_id": placeId])
+    fun viewPlaceDetails(name: String, title: String, placeId: Int) {
+        Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+        Tracker.getInstance().view(name, title, bundleOf(
+            Pair("place_id", placeId)
+        ))
     }
 
-    class func trackJobs(name: String, jobId: [Int]) {
-        print("Sending view tracking: " + name)
-        KarteTracker.shared.track(name, values: ["job_id": jobId])
+    fun trackJobs(name: String, jobId: List<Int>) {
+        Log.v("ERIKURA", "Sending view tracking: ${name}")
+        Tracker.getInstance().view(name, bundleOf(
+            Pair("job_id", jobId)
+        ))
     }
 
-    class func trackJobDetails(name: String, jobId: Int) {
-        print("Sending view tracking: " + name)
-        KarteTracker.shared.track(name, values: ["job_id": jobId])
+    fun trackJobDetails(name: String, jobId: Int) {
+        Log.v("ERIKURA", "Sending view tracking: ${name}")
+        Tracker.getInstance().view(name, bundleOf(
+            Pair("job_id", jobId)
+        ))
     }
 
-    class func currentLocation(name: String, latitude: Double, longitude: Double){
-        print("Sending view tracking: " + name)
-        KarteTracker.shared.track(name, values: ["latlng": [longitude, latitude]])
+    fun currentLocation(name: String, latitude: Double, longitude: Double) {
+        Log.v("ERIKURA", "Sending view tracking: ${name}")
+        Tracker.getInstance().view(name, bundleOf(
+            Pair("latlng", arrayOf(latitude, longitude))
+        ))
     }
 
-    class func jobEntry(name: String, title: String, job: Job) {
-        do {
-            print("Sending view tracking: " + name + "(" + title + ")")
-            let jobKindId = job.jobKind!.id
-            let jobKindName = job.jobKind!.name
-            let jobId = job.id
-            let jobName = job.title
-            let workingPlace = job.workingPlace
-            let workingStartAt: Date = job.workingStartAt!
-            let workingFinishAt: Date = job.workingFinishAt!
-
-            let values: [AnyHashable : Any] = [
-                "job_kind_id": jobKindId ?? 0,
-                "job_kind_name": jobKindName ?? "",
-                "job_id": jobId ?? 0,
-                "job_name": jobName ?? "",
-                "working_place": workingPlace ?? "",
-                "working_starts_at": workingStartAt ,
-                "working_finish_at": workingFinishAt
-            ]
-
-            KarteTracker.shared.track(name, values: values)
-//            KarteTracker.shared.view(name, title: title, values: values)
-        }catch {
-            print("KARTE jobEntry Error!")
+    fun jobEntry(name: String, title: String, job: Job) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+            val values = bundleOf(
+                Pair("job_kind_id", job.jobKind?.id),
+                Pair("job_kind_name", job.jobKind?.name),
+                Pair("job_id", job.id),
+                Pair("job_name", job.title),
+                Pair("working_place", job.workingPlace),
+                Pair("working_start_at", job.workingStartAt),
+                Pair("working_finish_at", job.workingFinishAt)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
         }
     }
 
-    class func track(name: String){
-        do {
-            print("Sending view tracking: " + name)
-
-            KarteTracker.shared.track(name, values: [:])
-
-        }catch {
-            print("KARTE jobEntry Error!")
+    fun track(name: String) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name}")
+            Tracker.getInstance().track(name, bundleOf())
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
         }
     }
 
-    class func accpetGeoSetting(){
-        do {
-            KarteTracker.shared.track("accpet_geo_setting", values: [:])
-        }catch {
-            print("KARTE accpet_geo_setting Error!")
+    fun acceptGeoSetting() {
+        try {
+            Tracker.getInstance().track("accpet_geo_setting", bundleOf())
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
         }
     }
 
+    /*
     class func accpetPushNotification(){
         do {
             KarteTracker.shared.track("accpet_push_notification", values: [:])
@@ -360,31 +377,23 @@ object Tracking {
             print("KARTE accpet_push_notification Error!")
         }
     }
-
-    class func logEvent(event: String, params: [String: String]){
-        do {
-            Analytics.logEvent(event, parameters: params)
-        }catch {
-            print("FireBase Error!")
-        }
-    }
-
-    class func logCompleteRegistrationEvent() {
-        do {
-            FBSDKAppEvents.logEvent(FBSDKAppEventNameCompletedRegistration)
-        }catch {
-
-        }
-    }
-
-    class func logEventFB(event: String){
-        do {
-            FBSDKAppEvents.logEvent(event)
-        }catch {
-
-        }
-    }
      */
+
+    fun logCompleteRegistrationEvent() {
+        try {
+            appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_COMPLETED_REGISTRATION)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Facebook LogEvent Failed", e)
+        }
+    }
+
+    fun logEventFB(event: String) {
+        try {
+            appEventsLogger.logEvent(event)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Facebook LogEvent Failed", e)
+        }
+    }
 }
 
 
