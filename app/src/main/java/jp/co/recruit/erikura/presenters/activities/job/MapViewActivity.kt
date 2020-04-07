@@ -255,7 +255,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
-            if (!firstFetchRequested) {
+            if (!firstFetchRequested and ::mMap.isInitialized) {
                 mMap.animateCamera(CameraUpdateFactory.newLatLng(it))
                 firstFetchRequested = true
                 val query = viewModel.query(it)

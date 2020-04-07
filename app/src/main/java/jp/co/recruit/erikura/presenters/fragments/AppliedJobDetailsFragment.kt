@@ -84,6 +84,29 @@ class AppliedJobDetailsFragment(
         )
         transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView, "mapView")
         transaction.commit()
+
+        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
+            ErikuraApplication.pedometerManager.requestPermission(this)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        ErikuraApplication.pedometerManager.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ErikuraApplication.pedometerManager.stop()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults)
     }
 
     override fun onClickFavorite(view: View) {
@@ -102,7 +125,10 @@ class AppliedJobDetailsFragment(
 
     override fun onClickStart(view: View) {
         job?.let {
-            Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
+            Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault,
+                steps = ErikuraApplication.pedometerManager.readStepCount(),
+                distance = null, floorAsc = null, floorDesc = null
+            ) {
                 val intent= Intent(activity, JobDetailsActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("onClickStart", true)
@@ -110,34 +136,7 @@ class AppliedJobDetailsFragment(
                 activity.finish()
             }
         }
-//        if (!fitApiManager.checkPermission()) {
-//            fitApiManager.requestPermission(this)
-//        }else {
-//            job?.let {
-//                Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
-//                    val intent= Intent(activity, JobDetailsActivity::class.java)
-//                    intent.putExtra("job", job)
-//                    intent.putExtra("onClickStart", true)
-//                    startActivity(intent)
-//                    activity.finish()
-//                }
-//            }
-//        }
     }
-
-//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-//        super.onActivityResult(requestCode, resultCode, data)
-//
-//        job?.let {
-//            Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault) {
-//                val intent= Intent(activity, JobDetailsActivity::class.java)
-//                intent.putExtra("job", job)
-//                intent.putExtra("onClickStart", true)
-//                startActivity(intent)
-//                activity.finish()
-//            }
-//        }
-//    }
 
     private fun updateTimeLimit() {
         val str = SpannableStringBuilder()

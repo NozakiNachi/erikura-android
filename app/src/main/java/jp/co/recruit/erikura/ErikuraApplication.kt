@@ -36,6 +36,7 @@ import androidx.preference.PreferenceManager
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivity
+import jp.co.recruit.erikura.presenters.util.PedometerManager
 import org.apache.commons.lang.builder.ToStringBuilder
 
 
@@ -49,6 +50,7 @@ class ErikuraApplication : Application() {
         val applicationContext: Context get() = instance.applicationContext
         val assetsManager: AssetsManager get() = instance.erikuraComponent.assetsManager()
         val locationManager: LocationManager get() = instance.erikuraComponent.locationManger()
+        val pedometerManager: PedometerManager get() = instance.erikuraComponent.pedometerManager()
         val fitApiManager: GoogleFitApiManager get() = instance.erikuraComponent.googleFitApiManager()
         val realm: Realm get() = RealmManager.realm
 

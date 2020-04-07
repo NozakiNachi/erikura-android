@@ -1,20 +1,12 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.Manifest
-import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.VideoView
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -23,10 +15,7 @@ import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
-import jp.co.recruit.erikura.presenters.util.LocationManager
-import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.services.NotificationData
-import org.apache.commons.lang.builder.ToStringBuilder
 
 class StartActivity : BaseActivity(), StartEventHandlers {
     lateinit var video: VideoView
@@ -34,9 +23,6 @@ class StartActivity : BaseActivity(), StartEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-
-//        val pedometerServiceIntent = Intent(this, PedometerService::class.java)
-//        startService(pedometerServiceIntent)
 
         val intent = getIntent()
         if (intent != null) {
@@ -72,14 +58,8 @@ class StartActivity : BaseActivity(), StartEventHandlers {
             video.start()
         }
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_DENIED) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
-                ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID
-            )
-        }
-        else {
-            setupSensor()
+        if (!ErikuraApplication.pedometerManager.checkPermission(this)) {
+            ErikuraApplication.pedometerManager.requestPermission(this)
         }
 
         if (Api.isLogin) {
@@ -97,11 +77,16 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         super.onResume()
         video.resume()
         video.start()
+//
+//        if (ErikuraApplication.pedometerManager.checkPermission(this)) {
+//            ErikuraApplication.pedometerManager.start()
+//        }
     }
 
     override fun onPause() {
         super.onPause()
         video.stopPlayback()
+//        ErikuraApplication.pedometerManager.stop()
     }
 
     override fun onClickRegisterButton(view: View) {
@@ -138,59 +123,11 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         when(requestCode) {
             ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    setupSensor()
+                    ErikuraApplication.pedometerManager.start()
                 }
             }
         }
     }
-
-    fun setupSensor() {
-        val sensorManager: SensorManager = getSystemService(Activity.SENSOR_SERVICE) as SensorManager
-        Log.v("SENSOR MANAGER", ToStringBuilder.reflectionToString(sensorManager))
-
-        val sensors = sensorManager.getSensorList(Sensor.TYPE_ALL)
-        sensors.forEach { sensor ->
-            Log.v("SENSOR LIST: ", sensor.name)
-        }
-
-
-        val listener = object: SensorEventListener {
-            override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-                Log.v("SENSOR_ACCURACY", "CHANGED")
-            }
-
-            override fun onSensorChanged(event: SensorEvent?) {
-                if (event?.sensor?.type == Sensor.TYPE_STEP_COUNTER) {
-                    Log.v("SENSOR CHANGED", ToStringBuilder.reflectionToString(event))
-                }
-            }
-        }
-        val sensorTypes = arrayOf(
-            Sensor.TYPE_STEP_COUNTER
-        )
-        Log.v("FEATURE: ", "step counter: ${packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_COUNTER)}")
-        Log.v("FEATURE: ", "step detector: ${packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_STEP_DETECTOR)}")
-
-        sensorTypes.forEach { type ->
-            sensorManager.getDefaultSensor(type)?.let { sensor ->
-                Log.v("SENSOR GET", sensor.name)
-                val result = sensorManager.registerListener(
-                    listener,
-                    sensor,
-                    SensorManager.SENSOR_DELAY_NORMAL,
-                    500
-                )
-                if (result ?: false) {
-                    Log.v("SENSOR REGISTER: ", "${sensor.name} success")
-                }
-                else {
-                    Log.v("SENSOR REGISTER: ", "${sensor.name} failed")
-                }
-            }
-        }
-        sensorManager.flush(listener)
-    }
-
 }
 
 interface StartEventHandlers {

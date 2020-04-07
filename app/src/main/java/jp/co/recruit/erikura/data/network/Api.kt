@@ -31,7 +31,6 @@ import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.apache.commons.lang.builder.ToStringBuilder
 import java.util.*
 
 
@@ -291,17 +290,17 @@ class Api(var context: Context) {
         }
     }
 
-    fun startJob(job: Job, latLng: LatLng, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun startJob(job: Job, latLng: LatLng, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
                     jobId = job.id,
                     latitude = latLng.latitude,
                     longitude = latLng.longitude,
-                    steps = 0,
-                    distance = 0,
-                    floorAsc = 0,
-                    floorDesc = 0
+                    steps = steps,
+                    distance = distance,
+                    floorAsc = floorAsc,
+                    floorDesc = floorDesc
                 )),
             onError = onError
         ){ body ->
@@ -320,7 +319,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun stopJob(job: Job, latLng: LatLng, steps: Int, distance: Double, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun stopJob(job: Job, latLng: LatLng, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
         executeObservable(
             erikuraApiService.stopJob(
                 StopJobRequest(
@@ -329,8 +328,8 @@ class Api(var context: Context) {
                     longitude = latLng.longitude,
                     steps = steps,
                     distance = distance,
-                    floorAsc = 0,
-                    floorDesc = 0
+                    floorAsc = floorAsc,
+                    floorDesc = floorDesc
                 )
             ),
             onError = onError

@@ -26,6 +26,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.network.ErikuraApiServiceBuilder
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StopDialogFragment
@@ -117,20 +118,19 @@ class WorkingJobDetailsFragment(
             }
         }, 1000, 1000) // 実行したい間隔(ミリ秒)
 
-        // 歩数センサーの初期化
-        sensorManager = activity.getSystemService(AppCompatActivity.SENSOR_SERVICE) as SensorManager
-        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
+            ErikuraApplication.pedometerManager.requestPermission(this)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        // FIXME:センサーの精度は一番低いものに設定する
-        sensorManager.registerListener(sensorEventListener, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
+        ErikuraApplication.pedometerManager.start()
     }
 
     override fun onStop() {
         super.onStop()
-        sensorManager.unregisterListener(sensorEventListener)
+        ErikuraApplication.pedometerManager.stop()
     }
 
     override fun onClickFavorite(view: View) {
@@ -170,7 +170,6 @@ class WorkingJobDetailsFragment(
         dialog.show(childFragmentManager, "Stop")
 
         timer.cancel()
-
     }
 
     // 1秒ごとに呼び出される処理

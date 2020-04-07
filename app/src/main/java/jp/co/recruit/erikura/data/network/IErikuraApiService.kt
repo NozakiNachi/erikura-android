@@ -245,20 +245,20 @@ data class StartJobRequest(
     var jobId: Int,
     var latitude: Double,
     var longitude: Double,
-    var steps: Int,
-    var distance: Int,
-    var floorAsc: Int,
-    var floorDesc: Int
+    var steps: Int?,
+    var distance: Double?,
+    var floorAsc: Int?,
+    var floorDesc: Int?
 )
 
 data class StopJobRequest(
     var jobId: Int,
     var latitude: Double,
     var longitude: Double,
-    var steps: Int,
-    var distance: Double,
-    var floorAsc: Int,
-    var floorDesc: Int
+    var steps: Int?,
+    var distance: Double?,
+    var floorAsc: Int?,
+    var floorDesc: Int?
 )
 
 data class AbortJobRequest(

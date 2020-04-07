@@ -6,6 +6,7 @@ import jp.co.recruit.erikura.data.network.IGoogleMapApiService
 import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.PedometerManager
 import javax.inject.Singleton
 
 
@@ -17,4 +18,5 @@ interface ErikuraComponent {
     fun assetsManager(): AssetsManager
     fun locationManger(): LocationManager
     fun googleFitApiManager(): GoogleFitApiManager
+    fun pedometerManager(): PedometerManager
 }
