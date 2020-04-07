@@ -72,6 +72,7 @@ class WebViewActivity : BaseActivity() {
                     data = Uri.parse(url)
                 }
                 startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                finish()
             }
             webView.loadUrl(url)
         }
