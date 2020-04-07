@@ -483,11 +483,11 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private fun saveReport() {
         Api(this).report(job) {
             Intent(this, OwnJobsActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+//                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra("fromReportCompleted", true)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
-
         }
     }
 
