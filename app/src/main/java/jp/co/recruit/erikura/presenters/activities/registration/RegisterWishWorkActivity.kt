@@ -56,7 +56,7 @@ class RegisterWishWorkActivity : BaseActivity(),
             Log.v("DEBUG", "ユーザ登録： userId=${it}")
             // 登録完了画面へ遷移
             val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }

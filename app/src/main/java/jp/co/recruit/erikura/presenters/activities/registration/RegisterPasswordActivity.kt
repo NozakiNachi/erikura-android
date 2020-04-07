@@ -42,7 +42,11 @@ class RegisterPasswordActivity : BaseActivity(),
         viewModel.error.message.value = null
 
         // 仮登録トークン取得
-        val uri: Uri? = intent.data
+        var uri: Uri? = intent.data
+        if (uri?.path == "/api/v1/utils/open_android_app") {
+            val path = uri?.getQueryParameter("path")
+            uri = Uri.parse("erikura://${path}")
+        }
         val confirmationToken: String? = uri?.getQueryParameter("confirmation_token")
         // ワーカ仮登録の確認
         Api(this).registerConfirm(confirmationToken ?:"", onError = {

@@ -121,7 +121,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when(requestCode) {
-            ErikuraApplication.instance.REQUEST_PERMISSION -> {
+            ErikuraApplication.REQUEST_EXTERNAL_STORAGE_PERMISSION_ID -> {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     displayImagePicker()
                 }else {

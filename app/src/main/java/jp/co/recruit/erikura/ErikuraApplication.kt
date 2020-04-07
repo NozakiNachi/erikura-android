@@ -51,6 +51,11 @@ class ErikuraApplication : Application() {
         val locationManager: LocationManager get() = instance.erikuraComponent.locationManger()
         val fitApiManager: GoogleFitApiManager get() = instance.erikuraComponent.googleFitApiManager()
         val realm: Realm get() = RealmManager.realm
+
+        // バーミッション取得用の定数
+        const val REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID = 0x0001
+        const val REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID = 0x0002
+        const val REQUEST_EXTERNAL_STORAGE_PERMISSION_ID = 0x0003
     }
 
     //    var userSession: UserSession? = null
@@ -83,8 +88,6 @@ class ErikuraApplication : Application() {
     }
 
     // ギャラリーへのアクセス許可関連
-    val REQUEST_PERMISSION = 2
-    val REQUEST_CODE_CHOOSE = 1
 
     fun hasStoragePermission(activity: FragmentActivity): Boolean {
         val permissions = arrayOf(
@@ -99,7 +102,7 @@ class ErikuraApplication : Application() {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
-        ActivityCompat.requestPermissions(activity, permissions, REQUEST_PERMISSION)
+        ActivityCompat.requestPermissions(activity, permissions, REQUEST_EXTERNAL_STORAGE_PERMISSION_ID)
     }
 
     // 画像アップロード終了判定用

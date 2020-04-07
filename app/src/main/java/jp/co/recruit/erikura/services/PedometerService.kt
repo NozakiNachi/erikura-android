@@ -24,12 +24,12 @@ class PedometerService : Service(), SensorEventListener {
 
         // 歩数センサーの初期化
         val sensorManager: SensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val stepDetectSensor: Sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
-        val stepCountSensor: Sensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
-
-        sensorManager.registerListener(this, stepDetectSensor, SensorManager.SENSOR_DELAY_FASTEST)
-        sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
-
+        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)?.let { stepDetectSensor ->
+            sensorManager.registerListener(this, stepDetectSensor, SensorManager.SENSOR_DELAY_FASTEST)
+        }
+        sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)?.let { stepCountSensor ->
+            sensorManager.registerListener(this, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
+        }
         return START_STICKY
     }
 

@@ -211,7 +211,7 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         when(requestCode) {
-            LocationManager.REQUEST_ACCESS_FINE_LOCATION_ID -> {
+            ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID -> {
                 if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     locationManager.start(this)
                 }
@@ -289,14 +289,14 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
             }
             R.id.tab_menu_applied_jobs -> {
                 Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
                 finish()
             }
             R.id.tab_menu_mypage -> {
                 Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                     startActivity(
                         intent,
                         ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
