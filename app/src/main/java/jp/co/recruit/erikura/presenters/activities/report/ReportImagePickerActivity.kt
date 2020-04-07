@@ -14,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
@@ -69,6 +71,17 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
         else {
             ErikuraApplication.instance.requestStoragePermission(this)
+        }
+
+        if (job.reportId == null) {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_report_photo", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/register/photo/${job.id}", title= "作業報告画面（カメラロール）", jobId= job.id)
+        }
+        else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_edit_job_report_photo", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
         }
     }
 

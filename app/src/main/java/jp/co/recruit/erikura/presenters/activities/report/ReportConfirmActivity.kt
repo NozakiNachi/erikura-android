@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -25,6 +26,7 @@ import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoToken
@@ -92,6 +94,16 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     override fun onStart() {
         super.onStart()
         loadData()
+
+        if (job.reportId == null) {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_report_confirm", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/register/confirm/${job.id}", title= "作業報告確認画面", jobId= job.id)
+        }else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_edit_job_report_confirm", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/edit/confirm/${job.id}", title= "作業報告編集確認画面", jobId= job.id)
+        }
     }
 
     override fun onClickComplete(view: View) {

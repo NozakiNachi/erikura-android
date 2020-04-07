@@ -5,12 +5,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
@@ -62,12 +64,20 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     }
 
     override fun onClickReport(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_report_job", params= bundleOf())
+        Tracking.track(name= "push_report_job")
+
         val intent = Intent(this, ReportImagePickerActivity::class.java)
         intent.putExtra("job", job)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
     override fun onClickAppliedJobs(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_display_job_list", params= bundleOf())
+        Tracking.track(name= "push_display_job_list")
+
         Intent(this, OwnJobsActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())

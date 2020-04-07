@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.data.storage.PhotoToken
@@ -54,6 +56,16 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             loadData()
         }
         fromGallery = false
+
+        if (job.reportId == null) {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_report_others", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/register/additional/${job.id}", title= "作業報告画面（マニュアル外）", jobId= job.id)
+        }else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_edit_job_report_others", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/edit/additional/${job.id}", title= "作業報告編集画面（マニュアル外）", jobId= job.id)
+        }
     }
 
     override fun onClickManual(view: View) {

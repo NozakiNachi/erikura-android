@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -41,6 +43,17 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         job = intent.getParcelableExtra<Job>("job")
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
         loadData()
+
+        if (job.reportId == null) {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_report_rating", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/register/evaluation/${job.id}", title= "作業報告画面（案件評価）", jobId= job.id)
+        }else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_edit_job_report_rating", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/edit/evaluation/${job.id}", title= "作業報告編集画面（案件評価）", jobId= job.id)
+        }
+
     }
 
     override fun onClickGood(view: View) {

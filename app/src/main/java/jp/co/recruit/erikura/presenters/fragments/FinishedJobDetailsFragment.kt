@@ -12,11 +12,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
@@ -74,6 +76,13 @@ class FinishedJobDetailsFragment(
         )
         transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView, "mapView")
         transaction.commit()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_job_finished", params= bundleOf())
+        Tracking.viewJobDetails(name= "/entries/finished/${job?.id ?: 0}", title= "作業完了画面", jobId= job?.id ?: 0)
     }
 
     override fun onClickFavorite(view: View) {

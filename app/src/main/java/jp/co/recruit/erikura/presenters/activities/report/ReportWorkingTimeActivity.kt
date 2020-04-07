@@ -7,11 +7,13 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportWorkingTimeBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -41,6 +43,16 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
         createTimeItems()
         loadData()
+
+        if (job.reportId == null) {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_job_report_time", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/register/time/${job.id}", title= "作業報告画面（作業時間）", jobId= job.id)
+        }else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_edit_job_report_time", params= bundleOf())
+            Tracking.viewJobDetails(name= "/reports/edit/time/${job.id}", title= "作業報告編集画面（作業時間）", jobId= job.id)
+        }
     }
 
     override fun onClickManual(view: View) {
