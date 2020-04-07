@@ -53,7 +53,9 @@ class PedometerManager: SensorEventListener {
     }
 
 
-    fun onRequestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    fun onRequestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  onPermissionNotGranted: (() -> Unit)? = null,
+                                  onPermissionGranted: (() -> Unit)? = null) {
         //　ACTIVITY_RECOGNITION 以外の場合にはスキップします
         if (requestCode != ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID)
             return
@@ -61,6 +63,10 @@ class PedometerManager: SensorEventListener {
         if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // センサの読み取りを開始します
             start()
+            onPermissionGranted?.invoke()
+        }
+        else {
+            onPermissionNotGranted?.invoke()
         }
     }
 

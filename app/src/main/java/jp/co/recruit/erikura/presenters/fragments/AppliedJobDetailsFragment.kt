@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
@@ -115,7 +116,14 @@ class AppliedJobDetailsFragment(
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults)
+        ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults,
+            onPermissionNotGranted = {
+                Toast.makeText(activity, "運動データへのアクセスを許可してください。", Toast.LENGTH_LONG).show()
+                updateTimeLimit()
+            },
+            onPermissionGranted = {
+                updateTimeLimit()
+            })
     }
 
     override fun onClickFavorite(view: View) {
@@ -176,11 +184,15 @@ class AppliedJobDetailsFragment(
             str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorking))
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.VISIBLE
+            viewModel.startButtonVisibility.value = View.VISIBLE
         } else {
             str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
             str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.GONE
+            viewModel.startButtonVisibility.value = View.INVISIBLE
+        }
+        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
             viewModel.startButtonVisibility.value = View.INVISIBLE
         }
     }
