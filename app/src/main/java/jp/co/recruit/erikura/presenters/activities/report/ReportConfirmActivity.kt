@@ -637,7 +637,7 @@ class ReportConfirmViewModel : ViewModel() {
     }
 
     private fun isValidSummary(summary: OutputSummary): Boolean {
-        return summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank()
+        return summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank() && !summary.willDelete
     }
 }
 
