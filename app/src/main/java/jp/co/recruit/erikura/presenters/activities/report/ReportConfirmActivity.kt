@@ -52,6 +52,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private lateinit var reportImageAdapter: ReportImageAdapter
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
     private val realm: Realm get() = ErikuraApplication.realm
+    lateinit var positions: Array<Int>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -142,8 +143,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     fun editSummary(view: View, position: Int) {
         val intent = Intent(this, ReportFormActivity::class.java)
+        positions.forEachIndexed { index, i ->
+            if (i == position) {
+                intent.putExtra("pictureIndex", index)
+            }
+        }
         intent.putExtra("job", job)
-        intent.putExtra("pictureIndex", position)
         intent.putExtra("fromConfirm", true)
         startActivityForResult(
             intent,
@@ -169,7 +174,11 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         job.report?.let {
             var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
             outputSummaryList = it.outputSummaries.toMutableList()
-            outputSummaryList[position].willDelete = true
+            positions.forEachIndexed { index, i ->
+                if (i == position) {
+                    outputSummaryList[index].willDelete = true
+                }
+            }
 //            outputSummaryList.removeAt(position)
             it.outputSummaries = outputSummaryList
             loadData()
@@ -536,9 +545,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         job.report?.let {
             // 実施箇所の更新
             var summaries = mutableListOf<OutputSummary>()
-            it.outputSummaries.forEach {summary ->
+            positions = Array(it.outputSummaries.count(), {-1})
+            var i = 0
+            it.outputSummaries.forEachIndexed {index, summary ->
                 if (!summary.willDelete) {
+                    positions[index] = i
                     summaries.add(summary)
+                    i++
                 }
             }
             reportImageAdapter.summaries = summaries
@@ -626,7 +639,13 @@ class ReportConfirmViewModel : ViewModel() {
 
     fun isValid(report: Report): Boolean {
         var valid = true
-        if (report.outputSummaries.count() > 0) {
+        var summaryNotDeletedCount = 0
+        report.outputSummaries.forEach {
+            if (!it.willDelete) {
+                summaryNotDeletedCount++
+            }
+        }
+        if (summaryNotDeletedCount > 0) {
             report.outputSummaries.forEach {
                 valid = valid && isValidSummary(it)
             }
@@ -637,7 +656,7 @@ class ReportConfirmViewModel : ViewModel() {
     }
 
     private fun isValidSummary(summary: OutputSummary): Boolean {
-        return summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank()
+        return (summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank()) || summary.willDelete
     }
 }
 
