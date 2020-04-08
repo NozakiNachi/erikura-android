@@ -409,18 +409,20 @@ class Api(var context: Context) {
         val report = job.report!!
         var outputSummaries: MutableList<OutputSummaryRequest> = mutableListOf()
         report.outputSummaries.forEachIndexed { index, outputSummary ->
-            var outputSummaryRequest = OutputSummaryRequest(
-                outputSummary.id,
-                outputSummary.place?: "",
-                outputSummary.evaluation?: "",
-                outputSummary.latitude?: 0.0,
-                outputSummary.longitude?: 0.0,
-                outputSummary.photoTakedAt?: Date(),
-                outputSummary.comment?: "",
-                outputSummary.beforeCleaningPhotoToken?: "",
-                outputSummary.willDelete
-            )
-            outputSummaries.add(outputSummaryRequest)
+            if (report.id == null && !outputSummary.willDelete) {
+                var outputSummaryRequest = OutputSummaryRequest(
+                    outputSummary.id,
+                    outputSummary.place?: "",
+                    outputSummary.evaluation?: "",
+                    outputSummary.latitude?: 0.0,
+                    outputSummary.longitude?: 0.0,
+                    outputSummary.photoTakedAt?: Date(),
+                    outputSummary.comment?: "",
+                    outputSummary.beforeCleaningPhotoToken?: "",
+                    outputSummary.willDelete
+                )
+                outputSummaries.add(outputSummaryRequest)
+            }
         }
 
         val params = ReportRequest(
