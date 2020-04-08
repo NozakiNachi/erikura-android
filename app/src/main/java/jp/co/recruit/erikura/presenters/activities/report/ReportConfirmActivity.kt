@@ -626,7 +626,13 @@ class ReportConfirmViewModel : ViewModel() {
 
     fun isValid(report: Report): Boolean {
         var valid = true
-        if (report.outputSummaries.count() > 0) {
+        var summaryNotDeletedCount = 0
+        report.outputSummaries.forEach {
+            if (!it.willDelete) {
+                summaryNotDeletedCount++
+            }
+        }
+        if (summaryNotDeletedCount > 0) {
             report.outputSummaries.forEach {
                 valid = valid && isValidSummary(it)
             }
@@ -637,7 +643,7 @@ class ReportConfirmViewModel : ViewModel() {
     }
 
     private fun isValidSummary(summary: OutputSummary): Boolean {
-        return summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank() && !summary.willDelete
+        return (summary.photoAsset?.contentUri != null && !summary.place.isNullOrBlank() && !summary.comment.isNullOrBlank()) || summary.willDelete
     }
 }
 
