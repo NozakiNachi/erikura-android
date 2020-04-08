@@ -231,6 +231,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
+                    android:inputType="text"
                     android:hint="@string/summary_hint"
                     android:text="@={viewModel.summary}"
                     android:visibility="@{viewModel.summaryEditVisibility}" />

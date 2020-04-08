@@ -123,6 +123,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
+                    android:inputType="text"
                     android:hint="@string/register_city_hint"
                     android:text="@={viewModel.city}" />
 
@@ -148,6 +149,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
+                    android:inputType="text"
                     android:hint="@string/register_street_hint"
                     android:text="@={viewModel.street}" />
 

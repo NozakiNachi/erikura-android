@@ -158,6 +158,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="0dp"
                         android:layout_marginRight="8dp"
+                        android:inputType="text"
                         style="@style/textField"
                         android:hint="@string/register_last_name_hint"
                         android:text="@={viewModel.lastName}"
@@ -168,6 +169,7 @@
                         android:layout_weight="1"
                         android:layout_marginLeft="0dp"
                         android:layout_marginRight="8dp"
+                        android:inputType="text"
                         style="@style/textField"
                         android:hint="@string/register_first_name_hint"
                         android:text="@={viewModel.firstName}"
@@ -326,6 +328,7 @@
                     android:layout_marginTop="10dp"
                     android:hint="@string/register_city_hint"
                     android:text="@={viewModel.city}"
+                    android:inputType="text"
                     />
                 <TextView
                     style="@style/errorField"
@@ -349,6 +352,7 @@
                     android:id="@+id/registerAddress_street"
                     style="@style/textField"
                     android:layout_marginTop="10dp"
+                    android:inputType="text"
                     android:hint="@string/register_street_hint"
                     android:text="@={viewModel.street}"
                     />
