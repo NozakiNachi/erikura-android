@@ -129,8 +129,19 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     }
 
     private fun setup() {
-        val max = (job.report?.outputSummaries?.lastIndex?: 0) + 1
-        viewModel.title.value = ErikuraApplication.instance.getString(R.string.report_form_caption, pictureIndex+1, max)
+//        val max = (job.report?.outputSummaries?.lastIndex?: 0) + 1
+        var max = 0
+        var pictureIndexNotDeleted = pictureIndex
+        job.report?.outputSummaries?.forEachIndexed { index, summary ->
+            if (summary.willDelete) {
+                if (index < pictureIndex) {
+                    pictureIndexNotDeleted--
+                }
+            }else {
+                max++
+            }
+        }
+        viewModel.title.value = ErikuraApplication.instance.getString(R.string.report_form_caption, pictureIndexNotDeleted+1, max)
         createSummaryItems()
         createImage()
         loadDate()
