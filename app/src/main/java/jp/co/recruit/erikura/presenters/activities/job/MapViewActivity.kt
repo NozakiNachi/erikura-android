@@ -453,7 +453,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         Tracking.logEvent(event= "push_reload_location", params= bundleOf())
         Tracking.track(name= "push_reload_location")
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(locationManager.latLngOrDefault))
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom))
     }
 
     // カルーセルクリック時の処理
