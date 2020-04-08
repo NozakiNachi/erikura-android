@@ -198,7 +198,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         job.report?.let {
             it.additionalPhotoAsset = viewModel.otherPhoto
             it.additionalComment = viewModel.comment.value
-            if (it.additionalPhotoAsset != null) {
+            if (it.additionalPhotoAsset!!.contentUri != null) {
                 it.additionalReportPhotoWillDelete = false
                 it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
 //                    it.additionalReportPhotoToken = token
