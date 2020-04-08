@@ -612,17 +612,18 @@ class Api(var context: Context) {
         if (showProgress)
             showProgressAlert()
 
+        val complete: () -> Unit = {
+            activeObservables.remove(observable)
+            if (showProgress)
+                hideProgressAlert()
+        }
         activeObservables.add(observable)
         observable
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onComplete = {
-                    activeObservables.remove(observable)
-                    if (showProgress)
-                        hideProgressAlert()
-                },
                 onNext = { response: Response<ApiResponse<T>> ->
+                    complete.invoke()
                     if (response.isSuccessful) {
                         // isSuccessfull の判定をしているので、body は常に取得できる想定です
                         val apiResponse: ApiResponse<T> = response.body()!!
@@ -657,7 +658,8 @@ class Api(var context: Context) {
                 },
                 onError = { throwable ->
                     Log.v("ERROR", throwable.message, throwable)
-                    processError(listOf(throwable.message ?: defaultErrorMessage), onError)
+                    processError(listOf("通信エラーが発生しました。\n電波状況の良い状況で再度お試しください。"), onError)
+                    complete.invoke()
                 }
             )
     }
