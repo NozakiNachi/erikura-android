@@ -41,7 +41,7 @@ class TimeLabelFragmentViewModel: ViewModel() {
 
     fun setup(job: Job?, user: User) {
         var (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, JobUtil.TimeLabelType.OWNED)
-        if ((UserSession.retrieve() != null && user.holdingJobs >= user.maxJobs) || (UserSession.retrieve() != null && job!!.targetGender != null && job!!.targetGender != user.gender) || job!!.banned) {
+        if ((UserSession.retrieve() != null && job!!.targetGender != null && job!!.targetGender != user.gender) || job!!.banned) {
             timeLimitColor = ContextCompat.getColor(ErikuraApplication.instance.applicationContext, R.color.warmGrey)
             timeLimitText = SpannableStringBuilder().apply {
                 append("受付終了")
