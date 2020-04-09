@@ -1,22 +1,26 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +32,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
@@ -45,6 +50,8 @@ class AppliedJobDetailsFragment(
 
     private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+
+    private var inStartJob: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -89,7 +96,24 @@ class AppliedJobDetailsFragment(
         transaction.commit()
 
         if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
-            ErikuraApplication.pedometerManager.requestPermission(this)
+            if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
+                BaseActivity.currentActivity?.let { activity ->
+                    val dialog = AlertDialog.Builder(activity)
+                        .setView(R.layout.dialog_allow_activity_recognition)
+                        .create()
+                    dialog.show()
+
+                    val button: Button = dialog.findViewById(R.id.update_button)
+                    button.setOnClickListener {
+                        val uriString = "package:" + ErikuraApplication.instance.packageName
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+                        startActivity(intent)
+                    }
+                }
+            }
+            else {
+                ErikuraApplication.pedometerManager.requestPermission(this)
+            }
         }
     }
 
@@ -116,12 +140,20 @@ class AppliedJobDetailsFragment(
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults,
+        ErikuraApplication.pedometerManager.onRequestPermissionResult(this, requestCode, permissions, grantResults,
             onPermissionNotGranted = {
                 updateTimeLimit()
+                if (inStartJob) {
+                    startJob()
+                }
+                inStartJob = false
             },
             onPermissionGranted = {
                 updateTimeLimit()
+                if (inStartJob) {
+                    startJob()
+                }
+                inStartJob = false
             })
     }
 
@@ -140,16 +172,52 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickStart(view: View) {
-        job?.let {
-            // 作業開始のトラッキングの送出
-            Tracking.logEvent(event= "push_start_job", params= bundleOf())
-            Tracking.trackJobDetails(name= "push_start_job", jobId= job?.id)
+        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
+            inStartJob = true
+            if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
+                var openSettings = false
+                BaseActivity.currentActivity?.let { activity ->
+                    val dialog = AlertDialog.Builder(activity)
+                        .setView(R.layout.dialog_allow_activity_recognition)
+                        .create()
+                    dialog.show()
 
-            Api(activity).startJob(it, locationManager.latLng ?: locationManager.latLngOrDefault,
+                    val button: Button = dialog.findViewById(R.id.update_button)
+                    button.setOnClickListener {
+                        openSettings = true
+                        val uriString = "package:" + ErikuraApplication.instance.packageName
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+                        startActivity(intent)
+                    }
+                    // ダイアログが消えた場合の対応
+                    dialog.setOnDismissListener {
+                        if (!openSettings) {
+                            startJob()
+                        }
+                    }
+                }
+            }
+            else {
+                ErikuraApplication.pedometerManager.requestPermission(this)
+            }
+        }
+        else {
+            startJob()
+        }
+    }
+
+    private fun startJob() {
+        job?.let { job ->
+            // 作業開始のトラッキングの送出
+            Tracking.logEvent(event = "push_start_job", params = bundleOf())
+            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id)
+
+            Api(activity).startJob(
+                job, locationManager.latLng ?: locationManager.latLngOrDefault,
                 steps = ErikuraApplication.pedometerManager.readStepCount(),
                 distance = null, floorAsc = null, floorDesc = null
             ) {
-                val intent= Intent(activity, JobDetailsActivity::class.java)
+                val intent = Intent(activity, JobDetailsActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("onClickStart", true)
                 startActivity(intent)
@@ -157,6 +225,7 @@ class AppliedJobDetailsFragment(
             }
         }
     }
+
 
     private fun updateTimeLimit() {
         val str = SpannableStringBuilder()
