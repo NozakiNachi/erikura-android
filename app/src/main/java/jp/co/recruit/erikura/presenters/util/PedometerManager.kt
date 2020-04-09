@@ -7,6 +7,7 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
@@ -27,7 +28,15 @@ class PedometerManager: SensorEventListener {
      * パーミッションがあるかを確認します
      */
     fun checkPermission(activity: FragmentActivity): Boolean {
-        return ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q){
+            // Android 10 未満の端末は ACTIVITY_RECOGNITION 権限を持たない
+            return true
+        }
+        else {
+            return ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACTIVITY_RECOGNITION) == PackageManager.PERMISSION_GRANTED
+        }
+
+
     }
 
     /**
@@ -51,7 +60,6 @@ class PedometerManager: SensorEventListener {
             }
         }
     }
-
 
     fun onRequestPermissionResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
                                   onPermissionNotGranted: (() -> Unit)? = null,
