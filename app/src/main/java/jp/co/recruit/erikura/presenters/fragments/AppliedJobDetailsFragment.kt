@@ -118,7 +118,6 @@ class AppliedJobDetailsFragment(
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults,
             onPermissionNotGranted = {
-                Toast.makeText(activity, "運動データへのアクセスを許可してください。", Toast.LENGTH_LONG).show()
                 updateTimeLimit()
             },
             onPermissionGranted = {
@@ -190,9 +189,6 @@ class AppliedJobDetailsFragment(
             str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.GONE
-            viewModel.startButtonVisibility.value = View.INVISIBLE
-        }
-        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
             viewModel.startButtonVisibility.value = View.INVISIBLE
         }
     }

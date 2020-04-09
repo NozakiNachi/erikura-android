@@ -119,10 +119,6 @@ class WorkingJobDetailsFragment(
                 })
             }
         }, 1000, 1000) // 実行したい間隔(ミリ秒)
-
-        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
-            ErikuraApplication.pedometerManager.requestPermission(this)
-        }
     }
 
     override fun onStart() {
@@ -140,28 +136,6 @@ class WorkingJobDetailsFragment(
     override fun onStop() {
         super.onStop()
         ErikuraApplication.pedometerManager.stop()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        ErikuraApplication.pedometerManager.onRequestPermissionResult(requestCode, permissions, grantResults,
-            onPermissionNotGranted = {
-                Toast.makeText(activity, "運動データへのアクセスを許可してください。", Toast.LENGTH_LONG).show()
-                viewModel.stopButtonVisibility.value = View.INVISIBLE
-            }
-            ,onPermissionGranted = {
-                // 納期が過ぎている場合はボタンを非表示
-                if (job?.entry?.limitAt?: Date() < Date()) {
-                    viewModel.stopButtonVisibility.value = View.INVISIBLE
-                }
-                else {
-                    viewModel.stopButtonVisibility.value = View.VISIBLE
-                }
-            })
     }
 
     override fun onClickFavorite(view: View) {
