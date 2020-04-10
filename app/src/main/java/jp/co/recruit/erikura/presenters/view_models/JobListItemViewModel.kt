@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
-import android.util.TypedValue
 import android.view.View
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
@@ -14,7 +13,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import java.text.SimpleDateFormat
 
 class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType): ViewModel() {
@@ -40,7 +38,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val distance: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
 
-    val goodCount: Int get() = job?.report?.operatorLikeCount ?: 0
+    val goodCount: Int get() = job?.report?.operatorLikesCount ?: 0
     val commentCount: Int get() = job?.report?.operatorCommentsCount ?: 0
     val goodText: String get() = String.format("%,d件", goodCount)
     val commentText: String get() = String.format("%,d件", commentCount)

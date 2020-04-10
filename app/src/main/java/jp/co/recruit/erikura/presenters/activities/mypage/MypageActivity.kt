@@ -126,7 +126,7 @@ class MypageActivity : BaseActivity(), MypageEventHandlers {
                 jobs.forEach { job ->
                     reward += job.fee ?: 0
                     count += 1
-                    good += job.report?.operatorLikeCount ?: 0
+                    good += job.report?.operatorLikesCount ?: 0
                 }
                 viewModel.monthlyReward.value = reward
                 viewModel.monthlyCompletedJobs.value = count
