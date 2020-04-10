@@ -75,25 +75,24 @@ class AssetsManager {
         }
     }
 
-    /*
-    func fetchAsset(url: URL, type: Asset.AssetType = .other, completion: @escaping CompletionCallback) {
-        if let asset = lookupAsset(url), let downloadedURL = asset.downloadedURL {
-            if FileManager.default.fileExists(atPath: downloadedURL.path) {
-                completion(asset)
-            }
-            else {
-                downloadAsset(url, type: type) { asset in
-                    completion(asset)
+
+    fun fetchAsset(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (asset: Asset) -> Unit) {
+        lookupAsset(url)?.also { asset ->
+            val file = File(asset.path)
+            if (file.exists()) {
+                onComplete(asset)
+            }else {
+                downloadAsset(activity, url, type) { asset ->
+                    onComplete(asset)
                 }
             }
-        }
-        else {
-            downloadAsset(url, type: type) { asset in
-                completion(asset)
+        } ?: run {
+            downloadAsset(activity, url, type) { asset ->
+                onComplete(asset)
             }
         }
     }
-     */
+
 
     fun lookupAsset(url: String): Asset? {
         var asset: Asset? = null
