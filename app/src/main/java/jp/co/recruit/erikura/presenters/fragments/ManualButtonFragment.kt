@@ -4,17 +4,18 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+
 
 class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEventHandlers {
 
@@ -44,11 +45,10 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(activity, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.path)
-                }
+                val uri = Uri.parse("file://${asset.path}")
+                val intent = Intent(Intent.ACTION_VIEW, uri)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+
             }
         }
     }
