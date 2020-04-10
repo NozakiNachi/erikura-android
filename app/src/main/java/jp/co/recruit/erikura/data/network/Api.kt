@@ -409,7 +409,7 @@ class Api(var context: Context) {
         val report = job.report!!
         var outputSummaries: MutableList<OutputSummaryRequest> = mutableListOf()
         report.outputSummaries.forEachIndexed { index, outputSummary ->
-            if (report.id == null && !outputSummary.willDelete) {
+            if (!(report.id == null && outputSummary.willDelete)) {
                 var outputSummaryRequest = OutputSummaryRequest(
                     outputSummary.id,
                     outputSummary.place?: "",
