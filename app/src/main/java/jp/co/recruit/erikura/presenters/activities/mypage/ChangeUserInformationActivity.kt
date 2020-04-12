@@ -19,9 +19,11 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
@@ -43,14 +45,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     // 生年月日入力のカレンダー設定
     val calender: Calendar = Calendar.getInstance()
-    var date: DatePickerDialog.OnDateSetListener =
-        DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            calender.set(Calendar.YEAR, year)
-            calender.set(Calendar.MONTH, monthOfYear)
-            calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-            viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -122,10 +116,25 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     // 生年月日
     override fun onClickEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
+
+        val calendar = Calendar.getInstance()
+        val dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        calendar.time = dateOfBirth
+
+        var onDateSetListener: DatePickerDialog.OnDateSetListener =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                calender.set(Calendar.YEAR, year)
+                calender.set(Calendar.MONTH, monthOfYear)
+                calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
+            }
+
         val dpd = DatePickerDialog(
-            this@ChangeUserInformationActivity, date, calender
-                .get(Calendar.YEAR), calender.get(Calendar.MONTH),
-            calender.get(Calendar.DAY_OF_MONTH)
+            this@ChangeUserInformationActivity, onDateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         )
 
         val dp = dpd.datePicker
@@ -223,7 +232,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         viewModel.email.value = user.email
         viewModel.lastName.value = user.lastName
         viewModel.firstName.value = user.firstName
-        viewModel.dateOfBirth.value = user.dateOfBirth
+        viewModel.dateOfBirth.value = user.parsedDateOfBirth?.let {
+            SimpleDateFormat("yyyy/MM/dd").format(it)
+        }
 //        viewModel.gender.value = user.gender?.value
         viewModel.postalCode.value = user.postcode
         viewModel.city.value = user.city
