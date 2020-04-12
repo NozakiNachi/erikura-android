@@ -2,15 +2,18 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AccelerateInterpolator
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -18,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
@@ -190,7 +194,11 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             }
         }
 
+        val layoutManager = LinearLayoutManagerExt(this)
+        layoutManager.orientation = RecyclerView.HORIZONTAL
+
         carouselView = findViewById(R.id.map_view_carousel)
+        carouselView.layoutManager = layoutManager
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
 
@@ -616,5 +624,37 @@ class MapViewCoachViewModel: ViewModel() {
 
     fun tap(view: View) {
         this.next()
+    }
+}
+
+class LinearLayoutManagerExt : LinearLayoutManager {
+    constructor(context: Context): super(context)
+    constructor(context: Context, orientation: Int, reverseLayout: Boolean): super(context, orientation, reverseLayout)
+    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int): super(context, attrs, defStyleAttr, defStyleRes)
+
+    override fun smoothScrollToPosition(
+        recyclerView: RecyclerView, state: RecyclerView.State?,
+        position: Int
+    ) {
+        val linearSmoothScroller =
+            OneTimeSmoothScroller(recyclerView)
+        linearSmoothScroller.targetPosition = position
+        startSmoothScroll(linearSmoothScroller)
+    }
+
+}
+
+class OneTimeSmoothScroller(recyclerView: RecyclerView) : LinearSmoothScroller(recyclerView.context) {
+    private var isScrolled: Boolean = false
+
+    override fun updateActionForInterimTarget(action: Action) {
+        if (isScrolled) {
+            action.jumpTo(targetPosition)
+        } else {
+            super.updateActionForInterimTarget(action)
+            action.duration *= 2  // 動きが分かりやすいよう時間を2倍にする
+            action.interpolator = AccelerateInterpolator(1.5F)
+            isScrolled = true
+        }
     }
 }
