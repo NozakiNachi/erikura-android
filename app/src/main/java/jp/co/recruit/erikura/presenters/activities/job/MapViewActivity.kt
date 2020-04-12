@@ -17,7 +17,6 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -263,6 +262,11 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
     override fun onResume() {
         super.onResume()
 
+        if (locationManager.checkPermission(this) && ::mMap.isInitialized) {
+            mMap.isMyLocationEnabled = true
+            hideGoogleMapMyLocationButton()
+        }
+
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested and ::mMap.isInitialized) {
@@ -317,6 +321,11 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
         // ズームの初期設定を行っておきます
         mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
+
+        if (locationManager.checkPermission(this)) {
+            mMap.isMyLocationEnabled = true
+            hideGoogleMapMyLocationButton()
+        }
 
         // 最初のタスク取得
         locationManager.latLng?.let {
@@ -493,6 +502,14 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             }
         }
         return true
+    }
+
+    private fun hideGoogleMapMyLocationButton() {
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.jobs_map_view_map)
+        mapFragment?.view?.let { mapView ->
+            val locationButton: View = mapView.findViewWithTag("GoogleMapMyLocationButton")
+            locationButton.visibility = View.GONE
+        }
     }
 }
 
