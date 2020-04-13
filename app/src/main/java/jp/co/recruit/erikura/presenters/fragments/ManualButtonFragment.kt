@@ -35,17 +35,10 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
             Tracking.logEvent(event= "view_job_manual", params= bundleOf())
             Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job?.id ?: 0)
 
-//            val termsOfServiceURLString = job.manualUrl
-//            val intent = Intent(activity, WebViewActivity::class.java).apply {
-//                action = Intent.ACTION_VIEW
-//                data = Uri.parse(termsOfServiceURLString)
-//            }
-//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
-
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val uri = Uri.parse("file://${asset.path}")
+                val uri = Uri.parse(asset.url)
                 val intent = Intent(Intent.ACTION_VIEW, uri)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
 
