@@ -1,7 +1,10 @@
 package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
+import jp.co.recruit.erikura.business.util.DateUtils
 import kotlinx.android.parcel.Parcelize
+import java.text.ParseException
+import java.util.*
 
 @Parcelize
 data class User(
@@ -28,4 +31,12 @@ data class User(
 ): Parcelable {
     // FIXME: 都道府県の文字列定数を定義するのか？
     // FIXME: double は問題なくパースできるか？
+
+    val parsedDateOfBirth: Date? get() {
+        try {
+            return DateUtils.parseDate(dateOfBirth, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        } catch(e: ParseException) {
+            return null
+        }
+    }
 }
