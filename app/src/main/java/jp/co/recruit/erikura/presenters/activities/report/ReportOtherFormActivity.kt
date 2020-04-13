@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -70,12 +71,14 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
 
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
-            val termsOfServiceURLString = job.manualUrl
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(termsOfServiceURLString)
+            val manualUrl = job.manualUrl
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
+                val uri = Uri.parse(asset.url)
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 
