@@ -113,27 +113,42 @@ class AssetsManager {
         onComplete: CompletionCallback
     ){
         synchronized(lock) {
-            if (completionCallbackMap.containsKey(urlString)) {
-                val callbacks: MutableList<CompletionCallback> = (completionCallbackMap[urlString])!!
-                callbacks.add(onComplete)
+            val callbacks = mutableListOf(onComplete)
+            completionCallbackMap.put(urlString, callbacks)
+            val completeHandler: CompletionCallback = { asset ->
+                val callbacks = completionCallbackMap.remove(urlString)
+                callbacks?.forEach {
+                    it(asset)
+                }
+            }
+
+            if (downloadHandler != null) {
+                downloadHandler(activity, urlString, type, completeHandler)
             }
             else {
-                val callbacks = mutableListOf(onComplete)
-                completionCallbackMap.put(urlString, callbacks)
-                val completeHandler: CompletionCallback = { asset ->
-                    val callbacks = completionCallbackMap.remove(urlString)
-                    callbacks?.forEach {
-                        it(asset)
-                    }
-                }
-
-                if (downloadHandler != null) {
-                    downloadHandler(activity, urlString, type, completeHandler)
-                }
-                else {
-                    downloadAssetImpl(activity, urlString, type, completeHandler)
-                }
+                downloadAssetImpl(activity, urlString, type, completeHandler)
             }
+//            if (completionCallbackMap.containsKey(urlString)) {
+//                val callbacks: MutableList<CompletionCallback> = (completionCallbackMap[urlString])!!
+//                callbacks.add(onComplete)
+//            }
+//            else {
+//                val callbacks = mutableListOf(onComplete)
+//                completionCallbackMap.put(urlString, callbacks)
+//                val completeHandler: CompletionCallback = { asset ->
+//                    val callbacks = completionCallbackMap.remove(urlString)
+//                    callbacks?.forEach {
+//                        it(asset)
+//                    }
+//                }
+//
+//                if (downloadHandler != null) {
+//                    downloadHandler(activity, urlString, type, completeHandler)
+//                }
+//                else {
+//                    downloadAssetImpl(activity, urlString, type, completeHandler)
+//                }
+//            }
         }
     }
 
