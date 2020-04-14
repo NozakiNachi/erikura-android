@@ -57,7 +57,9 @@
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Launcher">
+            android:theme="@style/AppTheme.Launcher"
+            android:launchMode="singleTask"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -86,8 +88,8 @@
         <activity
             android:name=".presenters.activities.job.JobDetailsActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             >
-
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -110,6 +112,7 @@
         <activity
             android:name=".presenters.activities.job.PlaceDetailActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             >
 
             <!-- ディープリンクの設定 -->
@@ -177,6 +180,7 @@
         <activity
             android:name=".presenters.activities.registration.RegisterPasswordActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             >
 
             <!-- ディープリンクの設定 -->

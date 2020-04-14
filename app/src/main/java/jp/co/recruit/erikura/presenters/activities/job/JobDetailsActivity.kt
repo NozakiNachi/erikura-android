@@ -28,8 +28,10 @@ class JobDetailsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_details)
 
+        var jobRestored: Boolean = false
         val value = intent.getParcelableExtra<Job>("job")
         if (value != null) {
+            jobRestored = true
             job = value
         } else {
             handleIntent(intent)
@@ -41,7 +43,36 @@ class JobDetailsActivity : BaseActivity() {
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
 
         // 現時点での案件情報をもとに画面を構築します
-        refreshContents()
+        if (jobRestored) {
+            refreshContents()
+        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        var jobRestored: Boolean = false
+        intent?.let { intent ->
+            val value = intent.getParcelableExtra<Job>("job")
+            if (value != null) {
+                jobRestored = true
+                job = value
+            } else {
+                handleIntent(intent)
+            }
+            Log.v("DEBUG", job.toString())
+
+            // アラート表示
+            fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
+            fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
+        }
+
+        // 現時点での案件情報をもとに画面を構築します
+        if (jobRestored) {
+            refreshContents()
+        }
+
+        onStart()
     }
 
     override fun onStart() {
