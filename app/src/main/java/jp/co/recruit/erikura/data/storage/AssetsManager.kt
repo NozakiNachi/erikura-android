@@ -4,6 +4,8 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import io.realm.Realm
 import io.realm.Sort
 import jp.co.recruit.erikura.BuildConfig
@@ -67,6 +69,39 @@ class AssetsManager {
                     BitmapFactory.decodeFile(asset.path)?.let {
                         onComplete(it)
                     }
+                }
+                catch (e: Exception) {
+                    Log.e("Bitmap decode error", e.message, e)
+                }
+            }
+        }
+    }
+
+    fun fetchImage(activity: Activity, url: String, imageView: ImageView, type: Asset.AssetType = Asset.AssetType.Other) {
+        lookupAsset(url)?.also { asset ->
+            val file = File(asset.path)
+            if (file.exists()) {
+                try {
+                    Glide.with(activity).load(File(asset.path)).into(imageView)
+                }
+                catch (e: Exception) {
+                    Log.e("Bitmap decode error", e.message, e)
+                }
+            }
+            else {
+                downloadAsset(activity, url, type) { asset ->
+                    try {
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
+                    }
+                    catch (e: Exception) {
+                        Log.e("Bitmap decode error", e.message, e)
+                    }
+                }
+            }
+        } ?: run {
+            downloadAsset(activity, url, type) { asset ->
+                try {
+                    Glide.with(activity).load(File(asset.path)).into(imageView)
                 }
                 catch (e: Exception) {
                     Log.e("Bitmap decode error", e.message, e)

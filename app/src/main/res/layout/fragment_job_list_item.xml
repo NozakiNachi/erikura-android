@@ -124,8 +124,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="0dp"
-                app:bitmap="@{viewModel.image}"
                 />
+<!--            app:bitmap="@{viewModel.image}"-->
 
             <LinearLayout
                 android:layout_width="match_parent"
