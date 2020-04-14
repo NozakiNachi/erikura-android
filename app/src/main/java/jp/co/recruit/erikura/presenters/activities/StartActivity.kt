@@ -60,10 +60,6 @@ class StartActivity : BaseActivity(), StartEventHandlers {
             video.start()
         }
 
-        if (!ErikuraApplication.pedometerManager.checkPermission(this)) {
-            ErikuraApplication.pedometerManager.requestPermission(this)
-        }
-
         if (Api.isLogin) {
             // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
             Intent(this, MapViewActivity::class.java).let { intent ->
@@ -113,22 +109,6 @@ class StartActivity : BaseActivity(), StartEventHandlers {
             // 位置情報の許諾、オンボーディングを表示します
             Intent(this, PermitLocationActivity::class.java).let { intent ->
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when(requestCode) {
-            ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    ErikuraApplication.pedometerManager.start()
-                }
             }
         }
     }
