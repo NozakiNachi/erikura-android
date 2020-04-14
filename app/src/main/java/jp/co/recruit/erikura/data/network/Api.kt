@@ -484,7 +484,11 @@ class Api(var context: Context) {
     fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
         // OkHttp3 クライアントを作成します
         var client = ErikuraApiServiceBuilder().httpBuilder.build()
-        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
+//        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
+//            client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
+//        }
+        val regex = Regex(ErikuraApplication.instance.getString(R.string.amazon_url))
+        if(regex.containsMatchIn(url.toString())) {
             client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
         }
 

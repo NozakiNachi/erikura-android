@@ -38,10 +38,11 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val uri = Uri.parse(asset.url)
-                val intent = Intent(Intent.ACTION_VIEW, uri)
+                val intent = Intent(activity, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(asset.url)
+                }
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
-
             }
         }
     }

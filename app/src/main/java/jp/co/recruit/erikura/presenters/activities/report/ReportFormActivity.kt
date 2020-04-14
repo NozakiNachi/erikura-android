@@ -123,10 +123,11 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val uri = Uri.parse(asset.url)
-                val intent = Intent(Intent.ACTION_VIEW, uri)
+                val intent = Intent(this, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(asset.url)
+                }
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-
             }
         }
     }
