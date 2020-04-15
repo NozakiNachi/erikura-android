@@ -66,6 +66,7 @@
 
                         <!-- 建物画像 -->
                         <ImageView
+                            android:id="@+id/place_detail_image"
                             android:layout_width="251dp"
                             android:layout_height="188dp"
                             android:layout_gravity="center"
