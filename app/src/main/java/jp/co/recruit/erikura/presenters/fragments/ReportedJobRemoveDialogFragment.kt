@@ -36,7 +36,6 @@ class ReportedJobRemoveDialogFragment(private val job: Job?) : DialogFragment() 
                 val intent= Intent(activity, JobDetailsActivity::class.java)
                 intent.putExtra("job", job)
                 startActivity(intent)
-                activity!!.finish()
             }
         }
     }

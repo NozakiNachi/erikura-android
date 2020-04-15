@@ -70,7 +70,6 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
                     val intent= Intent(activity, JobDetailsActivity::class.java)
                     intent.putExtra("job", job)
                     startActivity(intent)
-                    activity!!.finish()
                 }
             }else {
                 val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
