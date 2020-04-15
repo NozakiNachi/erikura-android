@@ -59,6 +59,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -69,7 +70,7 @@
         <activity
             android:name=".presenters.activities.LoginActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- スタート画面 -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- スタート画面 -->
         <!-- ============================================================ -->
         <!-- 案件検索関連 -->
         <!-- 地図画面 -->
@@ -79,10 +80,12 @@
             android:screenOrientation="portrait" /> <!-- リスト画面 -->
         <activity
             android:name=".presenters.activities.job.ListViewActivity"
-            android:screenOrientation="portrait" /> <!-- 案件検索画面 -->
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/> <!-- 案件検索画面 -->
         <activity
             android:name=".presenters.activities.job.SearchJobActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <!-- ============================================================ -->
         <!-- 案件詳細関連 -->
         <activity
@@ -138,7 +141,7 @@
         <activity
             android:name=".presenters.activities.mypage.MypageActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- マイページ -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- マイページ -->
         <activity
             android:name=".presenters.activities.mypage.ConfigurationActivity"
             android:screenOrientation="portrait"
@@ -147,11 +150,11 @@
         <activity
             android:name=".presenters.activities.mypage.ChangeUserInformationActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- 会員情報変更 -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- 会員情報変更 -->
         <activity
             android:name=".presenters.activities.mypage.AccountSettingActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- 口座情報登録更新 -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- 口座情報登録更新 -->
         <activity
             android:name=".presenters.activities.mypage.NotificationSettingActivity"
             android:screenOrientation="portrait"
@@ -159,7 +162,7 @@
         <activity
             android:name=".presenters.activities.mypage.ResignInActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- 再認証画面 -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- 再認証画面 -->
         <activity
             android:name=".presenters.activities.mypage.AboutAppActivity"
             android:screenOrientation="portrait"
@@ -170,17 +173,21 @@
         <!-- 新規会員登録関連 -->
         <activity
             android:name=".presenters.activities.registration.RegisterEmailActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterEmailFinishedActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterNameActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterPasswordActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             >
 
             <!-- ディープリンクの設定 -->
@@ -208,25 +215,32 @@
         </activity>
         <activity
             android:name=".presenters.activities.registration.RegisterBirthdayActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterGenderActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterAddressActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterPhoneActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterJobStatusActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterWishWorkActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <activity
             android:name=".presenters.activities.registration.RegisterFinishedActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <!-- ============================================================ -->
         <!-- その他 -->
         <activity android:name=".presenters.activities.errors.UpgradeRequiredActivity"
