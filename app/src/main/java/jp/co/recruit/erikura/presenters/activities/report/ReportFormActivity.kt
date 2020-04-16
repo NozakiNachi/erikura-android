@@ -25,7 +25,6 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 
-
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportFormViewModel::class.java)
@@ -35,6 +34,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     var fromConfirm = false
     var pictureIndex = 0
     var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+    var editCompleted: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +65,10 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
 
         // 戻るボタンの対策として、この時点でロードされている
-        setup()
+        if (editCompleted) {
+            setup()
+            editCompleted = false
+        }
 
         if (job.reportId != null) {
             // ページ参照のトラッキングの送出
@@ -90,6 +93,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             }
             summary.evaluation = viewModel.evaluationSelectedItem.toString().toLowerCase()
             summary.comment = viewModel.comment.value
+            editCompleted = true
 
             var nextIndex = pictureIndex + 1
             while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
@@ -148,7 +152,6 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     }
 
     private fun setup() {
-//        val max = (job.report?.outputSummaries?.lastIndex?: 0) + 1
         var max = 0
         var pictureIndexNotDeleted = pictureIndex
         job.report?.outputSummaries?.forEachIndexed { index, summary ->

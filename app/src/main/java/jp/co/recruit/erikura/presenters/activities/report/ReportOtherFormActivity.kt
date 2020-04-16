@@ -37,6 +37,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     var job = Job()
     var fromConfirm = false
     var fromGallery = false
+    var editCompleted = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +57,12 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         ErikuraApplication.instance.reportingJob?.let {
             job = it
         }
-        if(!fromGallery) {
-            loadData()
+        if (editCompleted) {
+            if (!fromGallery) {
+                loadData()
+            }
         }
+        editCompleted = false
         fromGallery = false
 
         if (job.reportId == null) {
@@ -210,6 +214,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             }else {
                 it.additionalReportPhotoWillDelete = true
             }
+            editCompleted = true
 
             if (fromConfirm) {
                 val intent= Intent()

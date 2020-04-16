@@ -21,7 +21,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -122,11 +121,10 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
         recyclerView.addItemDecoration(decorator)
 
-        // FIXME: onStart で呼ばれているので、ホーム画面、別タスクから戻った場合に選択状態がクリアされてしまう問題が発生する
-        //        戻るボタンでの遷移か、別タスクかを判別する方法を検討する必要がある
-        // 選択状態をクリアします
         if (editComplete) {
+            // 選択状態をクリアします
             viewModel.imageMap.clear()
+            // レポートの内容をもとに選択状態を復元します
             val outputSummaries = (job.report?.activeOutputSummaries ?: listOf())
             val assetsUrls = outputSummaries.map { it.photoAsset?.contentUri }.toSet()
             adapter.forEach { item ->
