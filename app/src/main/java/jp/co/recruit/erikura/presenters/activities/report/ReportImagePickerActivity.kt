@@ -21,7 +21,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -29,7 +28,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
-import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -45,8 +44,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         ViewModelProvider(this).get(ReportImagePickerViewModel::class.java)
     }
     private lateinit var adapter: ImagePickerAdapter
-    private val realm: Realm get() = ErikuraApplication.realm
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+    private var editComplete = true
 
     var job: Job = Job()
 
@@ -56,16 +55,20 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
         job = intent.getParcelableExtra<Job>("job")
         Log.v("DEBUG", job.toString())
+        ErikuraApplication.instance.reportingJob = job
 
         val binding: ActivityReportImagePickerBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-
     }
 
     override fun onStart() {
         super.onStart()
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
+
         if(ErikuraApplication.instance.hasStoragePermission(this)) {
             displayImagePicker()
         }
@@ -83,10 +86,15 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             Tracking.logEvent(event= "view_edit_job_report_photo", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
         }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun displayImagePicker() {
-        adapter = ImagePickerAdapter(this, job).also {
+        adapter = ImagePickerAdapter(this, job, viewModel).also {
             it.onClickListener = object: ImagePickerAdapter.OnClickListener {
                 override fun onClick(item: MediaItem, isChecked: Boolean) {
                     onImageSelected(item, isChecked)
@@ -112,6 +120,20 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
         recyclerView.addItemDecoration(decorator)
+
+        if (editComplete) {
+            // 選択状態をクリアします
+            viewModel.imageMap.clear()
+            // レポートの内容をもとに選択状態を復元します
+            val outputSummaries = (job.report?.activeOutputSummaries ?: listOf())
+            val assetsUrls = outputSummaries.map { it.photoAsset?.contentUri }.toSet()
+            adapter.forEach { item ->
+                if (assetsUrls.contains(item.contentUri)) {
+                    viewModel.imageMap.put(item.id, item)
+                }
+            }
+            editComplete = false
+        }
     }
 
     fun onImageSelected(item: MediaItem, isChecked: Boolean) {
@@ -174,25 +196,16 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             report.outputSummaries = outputSummaryList
             outputSummaryList.forEach { outputSummary ->
                 report.uploadPhoto(this, job, outputSummary.photoAsset){
-//                    outputSummary.beforeCleaningPhotoToken = it
-                    addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), it)
+                    PhotoTokenManager.addToken(job, outputSummary.photoAsset?.contentUri.toString(), it)
                 }
             }
-
         }
+        editComplete = true
 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    private fun addPhotoToken(url: String, token: String) {
-        realm.executeTransaction { realm ->
-            var photo = realm.createObject(PhotoToken::class.java, token)
-            photo.url = url
-            photo.jobId = job.id
-        }
     }
 }
 
@@ -204,21 +217,22 @@ class ReportImagePickerViewModel: ViewModel() {
 class ImagePickerCellViewModel: ViewModel() {
     val checked = MutableLiveData<Boolean>(false)
 
-    fun loadData(job: Job, item: MediaItem) {
-        job.report?.outputSummaries?.let {
-            it.forEach {
-                val uri = it.photoAsset?.contentUri
-                if (item.contentUri == uri) {
-                    checked.value = true
-                }
-            }
-        }
+    fun loadData(job: Job, item: MediaItem, viewModel: ReportImagePickerViewModel) {
+        checked.value = viewModel.imageMap.containsKey(item.id)
+//        job.report?.activeOutputSummaries?.let {
+//            it.forEach {
+//                val uri = it.photoAsset?.contentUri
+//                if (item.contentUri == uri) {
+//                    checked.value = true
+//                }
+//            }
+//        }
     }
 }
 
 class ImagePickerViewHolder(val binding: FragmentReportImagePickerCellBinding): RecyclerView.ViewHolder(binding.root)
 
-class ImagePickerAdapter(val activity: FragmentActivity, val job: Job): RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
+class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewModel: ReportImagePickerViewModel): RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
 
     var onClickListener: OnClickListener? = null
 
@@ -236,6 +250,19 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job): Recycler
             arrayOf<String>(),
             "datetaken DESC"
         )
+    }
+
+    fun forEach(callback: (item: MediaItem) -> Unit) {
+        // 選択済み画像の対応を行います
+        this.cursor?.let { cursor ->
+            cursor.moveToFirst()
+            while(!cursor.isAfterLast) {
+                val item = MediaItem.from(cursor)
+                callback(item)
+                cursor.moveToNext()
+            }
+            cursor.moveToFirst()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImagePickerViewHolder {
@@ -275,7 +302,7 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job): Recycler
             }
         }
         item.loadImage(activity, cellView.imageView)
-        binding.viewModel!!.loadData(job, item)
+        binding.viewModel!!.loadData(job, item, viewModel)
     }
 
     interface OnClickListener {

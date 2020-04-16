@@ -27,6 +27,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
     }
     var job = Job()
     var fromConfirm = false
+    var editCompleted = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,13 +37,21 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        job = intent.getParcelableExtra<Job>("job")
-        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
-        loadData()
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
+        if (editCompleted) {
+            loadData()
+            editCompleted = false
+        }
 
         if (job.reportId == null) {
             // ページ参照のトラッキングの送出
@@ -85,6 +94,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
                 it.evaluation = null
             }
             it.comment = viewModel.comment.value
+            editCompleted = true
             if (fromConfirm) {
                 val intent= Intent()
                 intent.putExtra("job", job)

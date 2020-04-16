@@ -4,13 +4,14 @@ import android.app.Activity
 import android.os.Parcelable
 import android.util.Log
 import com.google.gson.annotations.SerializedName
-import jp.co.recruit.erikura.data.network.Api
-import kotlinx.android.parcel.Parcelize
-import java.util.*
-import io.reactivex.schedulers.Schedulers
 import io.reactivex.Completable
+import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
+import kotlinx.android.parcel.Parcelize
+import java.util.*
 
 
 enum class ReportStatus {
@@ -52,7 +53,8 @@ data class Report (
     var rejectComment: String? = null,
     var createdAt: Date? = null,
     @SerializedName("output_summaries_attributes")
-    var outputSummaries: List<OutputSummary> = listOf()
+    var outputSummaries: List<OutputSummary> = listOf(),
+    var deleted: Boolean = false
 ): Parcelable {
     // photoAsset
     // isUploadCompleted
@@ -60,6 +62,9 @@ data class Report (
     // activeOUputSummary
     // activeIndexOf
     // validate
+
+    // 削除されていない実施箇所のリストを取得します
+    val activeOutputSummaries: List<OutputSummary> get() = outputSummaries.filter { !it.willDelete }
 
     val isAccepted: Boolean get() = (acceptedAt != null)
     val isRejected: Boolean get() = (rejectedAt != null && !isAccepted)
@@ -76,26 +81,44 @@ data class Report (
         }
     }
 
-    val isUploadCompleted: Boolean get() {
-        if (additionalPhotoAsset?.contentUri == null || additionalReportPhotoUrl != null) {
-            return true
-        }else {
-            return !additionalReportPhotoToken.isNullOrBlank()
+
+    /**
+     * 画像を選択して変更したかを返却します
+     */
+    val isPhotoChanged: Boolean get() {
+        // アップロードされた場合、contentUri が設定される。
+        // アプリから取得された作業報告の場合は、contentUri と、PhotoUrlの両方に同じ値が設定されている
+        if (additionalPhotoAsset?.contentUri == null || additionalReportPhotoUrl == additionalPhotoAsset?.contentUri.toString()) {
+            return false
         }
+        return true
+    }
+
+    /**
+     * 画像アップロードが完了しているかを確認します
+     */
+    fun isUploadCompleted(job: Job): Boolean {
+        return if (isPhotoChanged) {
+            if (additionalReportPhotoToken.isNullOrBlank()) {
+                additionalReportPhotoToken = PhotoTokenManager.getToken(job, additionalPhotoAsset?.contentUri.toString())
+            }
+            // トークンが設定されていればアップロード済みとして想定します
+            !additionalReportPhotoToken.isNullOrBlank()
+        }
+        else {
+            // 写真が変更されていないので、アップロード完了として処理します
+            true
+        }
+    }
+
+    /**
+     * 報告箇所のアップロードが完了しているか確認します
+     */
+    fun isOutputSummaryPhotoUploadCompleted(job: Job): Boolean {
+        return activeOutputSummaries.all { it.isUploadCompleted(job) }
     }
 
     /*
-        var isUploadCompleted2: Boolean {
-        get {
-            guard additionalReportPhotoAsset != nil else { return true }
-            if let token = additionalReportPhotoToken, !token.isEmpty {
-                return true
-            } else {
-                return false
-            }
-        }
-    }
-
     // 削除されていないOutputSummariesの数をカウントします
     func activeOutputSummariesCount() -> Int {
         if let summaries = outputSummaries {
@@ -162,7 +185,6 @@ data class Report (
 
     // 画像アップロード処理
     fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
-
         val completable = Completable.fromAction {
             // 画像リサイズ処理
             item?.let {
@@ -174,7 +196,6 @@ data class Report (
                             ErikuraApplication.instance.uploadMonitor.notifyAll()
                         }
                     }) { token ->
-//                        outputSummaries[0].beforeCleaningPhotoToken = token
                         onComplete(token)
                         synchronized(ErikuraApplication.instance.uploadMonitor) {
                             ErikuraApplication.instance.uploadMonitor.notifyAll()
@@ -183,8 +204,6 @@ data class Report (
                 }
             }
         }
-            .subscribeOn(Schedulers.single())
-        completable.subscribe()
-
+        completable.subscribeOn(Schedulers.single()).subscribe()
     }
 }

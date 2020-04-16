@@ -29,7 +29,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
@@ -65,6 +65,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         binding.handlers = this
 
         job = intent.getParcelableExtra<Job>("job")
+        ErikuraApplication.instance.reportingJob = job
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
             it.onClickListener = object : ReportImageAdapter.OnClickListener {
@@ -94,6 +95,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     override fun onStart() {
         super.onStart()
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
+
         loadData()
 
         if (job.reportId == null) {
@@ -278,7 +283,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         job.report?.let {
                             it.outputSummaries = outputSummaryList
                             it.uploadPhoto(this, job, summary.photoAsset){ token ->
-                                addPhotoToken(summary.photoAsset?.contentUri.toString(), token)
+                                PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
                             }
                         }
                     }
@@ -291,21 +296,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     }
 
     private fun checkPhotoToken() {
-        // アップロードが完了しているかの判定
-        // token取得処理
-        job.report?.let { report ->
-            report.outputSummaries.forEach { summary ->
-                if (summary.beforeCleaningPhotoUrl.isNullOrBlank()){
-                    summary.beforeCleaningPhotoToken =
-                        getPhotoToken(summary.photoAsset?.contentUri.toString())
-                }
-            }
-            if (report.additionalReportPhotoUrl.isNullOrBlank()){
-                report.additionalReportPhotoToken =
-                    getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
-            }
-        }
-
         if (isCompletedUploadPhotos()) {
             // アップロードが完了しているので作業報告を保存します
             saveReport()
@@ -322,7 +312,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         val uploadingDialog = UploadingDialogFragment()
         uploadingDialog.isCancelable = false
         uploadingDialog.show(supportFragmentManager, "Uploading")
-
 
         val observable: Observable<Int> = Observable.create {
             try {
@@ -359,7 +348,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 it.onError(e)
             }
         }
-
 
         observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -415,19 +403,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
 
     private fun updateToken() {
-        // token取得処理
-        job.report?.let { report ->
-            report.outputSummaries.forEach { summary ->
-                if (summary.beforeCleaningPhotoToken.isNullOrBlank()) {
-                    summary.beforeCleaningPhotoToken =
-                        getPhotoToken(summary.photoAsset?.contentUri.toString())
-                }
-            }
-            if (report.additionalReportPhotoToken.isNullOrBlank()) {
-                report.additionalReportPhotoToken =
-                    getPhotoToken(report.additionalPhotoAsset?.contentUri.toString())
-            }
-        }
         viewModel.completedUploadPhotos = isCompletedUploadPhotos()
     }
 
@@ -435,17 +410,17 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         var numPhotos = 0
         var numUploadedPhotos = 0
         job.report?.let { report ->
-            report.outputSummaries.forEach { summary ->
+            report.activeOutputSummaries.forEach { summary ->
                 if (summary.photoAsset?.contentUri != null) {
                     numPhotos++
-                    if (!summary.beforeCleaningPhotoToken.isNullOrBlank()) {
+                    if (summary.isUploadCompleted(job)) {
                         numUploadedPhotos++
                     }
                 }
             }
             if (report.additionalPhotoAsset?.contentUri != null) {
                 numPhotos++
-                if (!report.additionalReportPhotoToken.isNullOrBlank()) {
+                if (report.isUploadCompleted(job)) {
                     numUploadedPhotos++
                 }
             }
@@ -454,37 +429,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         return Pair(numPhotos, numUploadedPhotos)
     }
 
-    private fun addPhotoToken(url: String, token: String) {
-        realm.executeTransaction { realm ->
-            var photo = realm.createObject(PhotoToken::class.java, token)
-            photo.url = url
-            photo.jobId = job.id
-        }
-    }
-
-    private fun getPhotoToken(url: String): String {
-        var token = ""
-        realm.executeTransaction { realm ->
-            var photo =
-                realm.where(PhotoToken::class.java).equalTo("url", url).equalTo("jobId", job.id)
-                    .findFirst()
-            token = photo?.token ?: ""
-            photo?.let {
-                // 該当データの削除
-                photo.deleteFromRealm()
-            }
-        }
-        return token
-    }
-
-
     private fun isCompletedUploadPhotos(): Boolean {
         var completed = true
-        completed = completed && job.report?.isUploadCompleted ?: true
-        job.report?.let { report ->
-            report.outputSummaries.forEach { summary ->
-                completed = completed && summary.isUploadCompleted
-            }
+        job.report?.let {
+            completed = it.isUploadCompleted(job) and it.isOutputSummaryPhotoUploadCompleted(job)
         }
         return completed
     }
@@ -502,6 +450,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 Tracking.logEvent(event= "view_job_report_finish", params= bundleOf())
                 Tracking.viewJobDetails(name= "/reports/register/completed/${job.id ?: 0}", title= "作業報告完了画面", jobId= job.id ?: 0)
             }
+
+            // アップロード用のトークンをクリアします
+            PhotoTokenManager.clearToken(job)
+
             // 作業報告のトラッキングの送出
             Tracking.logEvent(event= "job_report", params= bundleOf())
             Tracking.jobEntry(name= "job_report", title= "", job= job)
@@ -520,7 +472,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         var summaryTitles: MutableList<String> = job.summaryTitles.toMutableList()
         var places: MutableList<String> = mutableListOf()
         job.report?.let { report ->
-            report.outputSummaries.forEach { summary ->
+            report.activeOutputSummaries.forEach { summary ->
                 places.add(summary.place ?: "")
             }
         }
@@ -602,14 +554,27 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     private fun retry() {
         job.report?.let { report ->
-            report.outputSummaries.forEach { outputSummary ->
-                report.uploadPhoto(this, job, outputSummary.photoAsset) { token ->
-                    addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), token)
+            report.activeOutputSummaries.forEach { outputSummary ->
+                // FIXME: アップロード失敗しているものだけでいいのでは？
+                if (!outputSummary.isUploadCompleted(job)) {
+                    report.uploadPhoto(this, job, outputSummary.photoAsset) { token ->
+                        PhotoTokenManager.addToken(
+                            job,
+                            outputSummary.photoAsset?.contentUri.toString(),
+                            token
+                        )
+                    }
                 }
             }
             if (report.additionalPhotoAsset != null) {
-                report.uploadPhoto(this, job, report.additionalPhotoAsset) { token ->
-                    addPhotoToken(report.additionalPhotoAsset?.contentUri.toString(), token)
+                if (report.isUploadCompleted(job)) {
+                    report.uploadPhoto(this, job, report.additionalPhotoAsset) { token ->
+                        PhotoTokenManager.addToken(
+                            job,
+                            report.additionalPhotoAsset?.contentUri.toString(),
+                            token
+                        )
+                    }
                 }
             }
         }
@@ -640,13 +605,9 @@ class ReportConfirmViewModel : ViewModel() {
     fun isValid(report: Report): Boolean {
         var valid = true
         var summaryNotDeletedCount = 0
-        report.outputSummaries.forEach {
-            if (!it.willDelete) {
-                summaryNotDeletedCount++
-            }
-        }
+        summaryNotDeletedCount = report.activeOutputSummaries.count()
         if (summaryNotDeletedCount > 0) {
-            report.outputSummaries.forEach {
+            report.activeOutputSummaries.forEach {
                 valid = valid && isValidSummary(it)
             }
         } else {
