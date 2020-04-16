@@ -21,7 +21,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -201,8 +201,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             if (it.additionalPhotoAsset!!.contentUri != null) {
                 it.additionalReportPhotoWillDelete = false
                 it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
-//                    it.additionalReportPhotoToken = token
-                    addPhotoToken(it.additionalPhotoAsset?.contentUri.toString(), token)
+                    PhotoTokenManager.addToken(job, it.additionalPhotoAsset?.contentUri.toString(), token)
                 }
             }else {
                 it.additionalReportPhotoWillDelete = true
@@ -220,14 +219,6 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             }
         }
 
-    }
-
-    private fun addPhotoToken(url: String, token: String) {
-        realm.executeTransaction { realm ->
-            var photo = realm.createObject(PhotoToken::class.java, token)
-            photo.url = url
-            photo.jobId = job.id
-        }
     }
 }
 

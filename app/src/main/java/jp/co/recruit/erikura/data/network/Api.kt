@@ -406,11 +406,9 @@ class Api(var context: Context) {
     }
 
     fun report(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (reportId: Int) -> Unit) {
-        val report = job.report!!
-        var outputSummaries: MutableList<OutputSummaryRequest> = mutableListOf()
-        report.outputSummaries.forEachIndexed { index, outputSummary ->
-            if (!(report.id == null && outputSummary.willDelete)) {
-                var outputSummaryRequest = OutputSummaryRequest(
+        job.report?.let { report ->
+            val outputSummaries = report.outputSummaries.filter{ it.needsToSendAPI }.map { outputSummary ->
+                OutputSummaryRequest(
                     outputSummary.id,
                     outputSummary.place?: "",
                     outputSummary.evaluation?: "",
@@ -421,37 +419,36 @@ class Api(var context: Context) {
                     outputSummary.beforeCleaningPhotoToken?: "",
                     outputSummary.willDelete
                 )
-                outputSummaries.add(outputSummaryRequest)
             }
-        }
 
-        val params = ReportRequest(
-            report.id,
-            job.id,
-            outputSummaries,
-            report.workingMinute,
-            report.additionalComment,
-            report.additionalReportPhotoToken,
-            report.evaluation?: "unanswered",
-            report.comment,
-            report.additionalReportPhotoWillDelete
-        )
+            val params = ReportRequest(
+                report.id,
+                job.id,
+                outputSummaries,
+                report.workingMinute,
+                report.additionalComment,
+                report.additionalReportPhotoToken,
+                report.evaluation?: "unanswered",
+                report.comment,
+                report.additionalReportPhotoWillDelete
+            )
 
-        if (report.id == null) {
-            executeObservable(
-                erikuraApiService.createReport(params),
-                onError = onError
-            ) { body ->
-                val reportId = body.reportId
-                onComplete(reportId)
-            }
-        }else {
-            executeObservable(
-                erikuraApiService.updateReport(params),
-                onError = onError
-            ) { body ->
-                val reportId = body.reportId
-                onComplete(reportId)
+            if (report.id == null) {
+                executeObservable(
+                    erikuraApiService.createReport(params),
+                    onError = onError
+                ) { body ->
+                    val reportId = body.reportId
+                    onComplete(reportId)
+                }
+            }else {
+                executeObservable(
+                    erikuraApiService.updateReport(params),
+                    onError = onError
+                ) { body ->
+                    val reportId = body.reportId
+                    onComplete(reportId)
+                }
             }
         }
     }

@@ -29,7 +29,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
-import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -174,8 +174,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             report.outputSummaries = outputSummaryList
             outputSummaryList.forEach { outputSummary ->
                 report.uploadPhoto(this, job, outputSummary.photoAsset){
-//                    outputSummary.beforeCleaningPhotoToken = it
-                    addPhotoToken(outputSummary.photoAsset?.contentUri.toString(), it)
+                    PhotoTokenManager.addToken(job, outputSummary.photoAsset?.contentUri.toString(), it)
                 }
             }
 
@@ -185,14 +184,6 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    private fun addPhotoToken(url: String, token: String) {
-        realm.executeTransaction { realm ->
-            var photo = realm.createObject(PhotoToken::class.java, token)
-            photo.url = url
-            photo.jobId = job.id
-        }
     }
 }
 
@@ -205,7 +196,7 @@ class ImagePickerCellViewModel: ViewModel() {
     val checked = MutableLiveData<Boolean>(false)
 
     fun loadData(job: Job, item: MediaItem) {
-        job.report?.outputSummaries?.let {
+        job.report?.activeOutputSummaries?.let {
             it.forEach {
                 val uri = it.photoAsset?.contentUri
                 if (item.contentUri == uri) {

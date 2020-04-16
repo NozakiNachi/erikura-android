@@ -1,8 +1,8 @@
 package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 import java.util.*
 
 @Parcelize
@@ -25,11 +25,44 @@ data class OutputSummary(
     // isUploadCompleted
     // validate
 
-    val isUploadCompleted: Boolean get() {
-        if (photoAsset?.contentUri == null || beforeCleaningPhotoUrl != null) {
-            return true
-        }else {
-            return !beforeCleaningPhotoToken.isNullOrBlank()
+    /**
+     * 画像を選択して変更したかを返却します
+     */
+    val isPhotoChanged: Boolean get() {
+        // 画像が選択された場合は、photoAsset.contentUri が取得できるはず
+        if (photoAsset?.contentUri == null) {
+            return false
+        }
+        return true
+    }
+
+    /**
+     * API でのポスト時にリクエストにPOSTする必要があるかを判断します
+     */
+    val needsToSendAPI: Boolean get() {
+        // ID が存在する場合は、一度永続化されているため、APIにポストします
+        if (this.id != null) { return true }
+        // 削除フラグが off の場合も、登録が必要なので、APIにポストします
+        if (!this.willDelete) { return true }
+
+        // それ以外(永続化されておらず、かつ削除予定)の場合は、ポストは不要
+        return false
+    }
+
+    /**
+     * 画像アップロードが完了しているかを確認します
+     */
+    fun isUploadCompleted(job: Job): Boolean {
+        return if (isPhotoChanged) {
+            if (beforeCleaningPhotoToken.isNullOrBlank()) {
+                beforeCleaningPhotoToken = PhotoTokenManager.getToken(job, photoAsset?.contentUri.toString())
+            }
+            // トークンが設定されていればアップロード済みとして想定します
+            !beforeCleaningPhotoToken.isNullOrBlank()
+        }
+        else {
+            // 写真が変更されていないので、アップロード完了として処理します
+            true
         }
     }
 }
