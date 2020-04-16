@@ -16,6 +16,7 @@
         tools:context=".presenters.fragments.ManualImageFragment">
 
         <ImageView
+            android:id="@+id/manual_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:bitmap="@{viewModel.bitmap}"

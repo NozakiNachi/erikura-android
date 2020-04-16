@@ -4,6 +4,8 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import io.realm.Realm
 import io.realm.Sort
 import jp.co.recruit.erikura.BuildConfig
@@ -36,64 +38,42 @@ class AssetsManager {
     private val completionCallbackMap: MutableMap<String, MutableList<CompletionCallback>> = HashMap()
     val realm: Realm = ErikuraApplication.realm
 
-    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+    fun fetchAsset(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (asset: Asset) -> Unit) {
         lookupAsset(url)?.also { asset ->
             val file = File(asset.path)
             if (file.exists()) {
-                try {
-                    BitmapFactory.decodeFile(asset.path)?.let {
-                        onComplete(it)
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
+                onComplete(asset)
             }
             else {
                 downloadAsset(activity, url, type) { asset ->
-                    try {
-                        BitmapFactory.decodeFile(asset.path)?.let {
-                            onComplete(it)
-                        }
-                    }
-                    catch (e: Exception) {
-                        Log.e("Bitmap decode error", e.message, e)
-                    }
+                    onComplete(asset)
                 }
             }
         } ?: run {
             downloadAsset(activity, url, type) { asset ->
-                try {
-                    BitmapFactory.decodeFile(asset.path)?.let {
-                        onComplete(it)
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
+                onComplete(asset)
             }
         }
     }
 
-    /*
-    func fetchAsset(url: URL, type: Asset.AssetType = .other, completion: @escaping CompletionCallback) {
-        if let asset = lookupAsset(url), let downloadedURL = asset.downloadedURL {
-            if FileManager.default.fileExists(atPath: downloadedURL.path) {
-                completion(asset)
-            }
-            else {
-                downloadAsset(url, type: type) { asset in
-                    completion(asset)
+    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+        fetchAsset(activity, url, type) { asset ->
+            try {
+                BitmapFactory.decodeFile(asset.path)?.let {
+                    onComplete(it)
                 }
             }
-        }
-        else {
-            downloadAsset(url, type: type) { asset in
-                completion(asset)
+            catch (e: Exception) {
+                Log.e("Bitmap decode error", e.message, e)
             }
         }
     }
-     */
+
+    fun fetchImage(activity: Activity, url: String, imageView: ImageView, type: Asset.AssetType = Asset.AssetType.Other) {
+        fetchAsset(activity, url, type) { asset ->
+            Glide.with(activity).load(File(asset.path)).into(imageView)
+        }
+    }
 
     fun lookupAsset(url: String): Asset? {
         var asset: Asset? = null
