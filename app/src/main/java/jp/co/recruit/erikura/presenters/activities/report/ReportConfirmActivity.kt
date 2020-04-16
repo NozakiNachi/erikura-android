@@ -65,6 +65,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         binding.handlers = this
 
         job = intent.getParcelableExtra<Job>("job")
+        ErikuraApplication.instance.reportingJob = job
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
             it.onClickListener = object : ReportImageAdapter.OnClickListener {
@@ -94,6 +95,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     override fun onStart() {
         super.onStart()
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
+
         loadData()
 
         if (job.reportId == null) {

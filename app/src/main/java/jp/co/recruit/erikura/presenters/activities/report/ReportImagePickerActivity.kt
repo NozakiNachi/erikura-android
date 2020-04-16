@@ -45,8 +45,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         ViewModelProvider(this).get(ReportImagePickerViewModel::class.java)
     }
     private lateinit var adapter: ImagePickerAdapter
-    private val realm: Realm get() = ErikuraApplication.realm
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+    private var editComplete = true
 
     var job: Job = Job()
 
@@ -56,6 +56,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
         job = intent.getParcelableExtra<Job>("job")
         Log.v("DEBUG", job.toString())
+        ErikuraApplication.instance.reportingJob = job
 
         val binding: ActivityReportImagePickerBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
         binding.lifecycleOwner = this
@@ -65,6 +66,10 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     override fun onStart() {
         super.onStart()
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
+
         if(ErikuraApplication.instance.hasStoragePermission(this)) {
             displayImagePicker()
         }
@@ -82,6 +87,11 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             Tracking.logEvent(event= "view_edit_job_report_photo", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
         }
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     private fun displayImagePicker() {
@@ -112,12 +122,19 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
         recyclerView.addItemDecoration(decorator)
 
-        val outputSummaries = (job.report?.activeOutputSummaries ?: listOf())
-        val assetsUrls = outputSummaries.map { it.photoAsset?.contentUri }.toSet()
-        adapter.forEach { item ->
-            if (assetsUrls.contains(item.contentUri)) {
-                viewModel.imageMap.put(item.id, item)
+        // FIXME: onStart で呼ばれているので、ホーム画面、別タスクから戻った場合に選択状態がクリアされてしまう問題が発生する
+        //        戻るボタンでの遷移か、別タスクかを判別する方法を検討する必要がある
+        // 選択状態をクリアします
+        if (editComplete) {
+            viewModel.imageMap.clear()
+            val outputSummaries = (job.report?.activeOutputSummaries ?: listOf())
+            val assetsUrls = outputSummaries.map { it.photoAsset?.contentUri }.toSet()
+            adapter.forEach { item ->
+                if (assetsUrls.contains(item.contentUri)) {
+                    viewModel.imageMap.put(item.id, item)
+                }
             }
+            editComplete = false
         }
     }
 
@@ -184,8 +201,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                     PhotoTokenManager.addToken(job, outputSummary.photoAsset?.contentUri.toString(), it)
                 }
             }
-
         }
+        editComplete = true
 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)

@@ -44,15 +44,21 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        job = intent.getParcelableExtra<Job>("job")
+        ErikuraApplication.instance.reportingJob = job
+        pictureIndex = intent.getIntExtra("pictureIndex", 0)
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }
 
     override fun onStart() {
         super.onStart()
-        job = intent.getParcelableExtra<Job>("job")
-        pictureIndex = intent.getIntExtra("pictureIndex", 0)
-        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
 
+        // 戻るボタンの対策として、この時点でロードされている
         setup()
 
         if (job.reportId != null) {
@@ -69,6 +75,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     override fun onClickNext(view: View) {
         job.report?.let {
             val summaries = it.outputSummaries
+
             val summary = summaries[pictureIndex]
             if (viewModel.summarySelectedItem == ErikuraApplication.instance.getString(R.string.other_hint)) {
                 summary.place = viewModel.summary.value
@@ -80,16 +87,19 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
             var nextIndex = pictureIndex + 1
             if (fromConfirm) {
+                // 確認画面から来た場合は、確認画面に戻ります
                 val intent= Intent()
                 intent.putExtra("job", job)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
-            }else if (nextIndex < summaries.size) {
+            } else if (nextIndex < summaries.size) {
+                // 写真が残っている場合
                 val intent= Intent(this, ReportFormActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", nextIndex)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }else {
+            } else {
+                // 写真が残っていない場合
                 val intent= Intent(this, ReportWorkingTimeActivity::class.java)
                 intent.putExtra("job", job)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
@@ -144,7 +154,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         viewModel.title.value = ErikuraApplication.instance.getString(R.string.report_form_caption, pictureIndexNotDeleted+1, max)
         createSummaryItems()
         createImage()
-        loadDate()
+        loadData()
         viewModel.summaryError.message.value = null
         viewModel.commentError.message.value = null
     }
@@ -174,7 +184,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
-    private fun loadDate() {
+    private fun loadData() {
         var summaryIndex = job.summaryTitles.count() + 1
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]

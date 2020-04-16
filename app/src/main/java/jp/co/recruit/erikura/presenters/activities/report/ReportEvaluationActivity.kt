@@ -36,12 +36,17 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        job = intent.getParcelableExtra<Job>("job")
-        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
         loadData()
 
         if (job.reportId == null) {
