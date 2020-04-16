@@ -39,10 +39,10 @@ object PhotoTokenManager {
     fun clearToken(job: Job) {
         realm.executeTransaction { realm ->
             val tokens = realm.where(PhotoToken::class.java).equalTo("jobId", job.id).findAll()
-            for(i in 1 .. tokens.count()) {
-                tokens.get(i - 1)?.let {
-                    it.deleteFromRealm()
-                }
+            var i = tokens.count() - 1
+            while (i >= 0) {
+                tokens.get(i)?.deleteFromRealm()
+                i--
             }
         }
     }
