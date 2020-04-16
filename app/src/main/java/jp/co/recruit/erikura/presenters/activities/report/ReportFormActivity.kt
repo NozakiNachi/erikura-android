@@ -58,6 +58,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
 
+        // 戻ってきた場合に、該当の場所詳細が削除されていれば処理をスキップします
+        if (outputSummaryList[pictureIndex].willDelete) {
+            finish()
+            return
+        }
+
         // 戻るボタンの対策として、この時点でロードされている
         setup()
 
@@ -86,6 +92,9 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             summary.comment = viewModel.comment.value
 
             var nextIndex = pictureIndex + 1
+            while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
+                nextIndex++
+
             if (fromConfirm) {
                 // 確認画面から来た場合は、確認画面に戻ります
                 val intent= Intent()

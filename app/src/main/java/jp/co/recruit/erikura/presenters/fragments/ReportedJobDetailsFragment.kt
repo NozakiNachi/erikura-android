@@ -109,14 +109,20 @@ class ReportedJobDetailsFragment(
 
         // reportの再取得
         job?.let {
-            Api(activity).reloadReport(job) {
-                var report = it
-                report.additionalPhotoAsset = if (report.additionalReportPhotoUrl.isNullOrEmpty()){null}else{createAssets(report.additionalReportPhotoUrl?.toUri()?: Uri.EMPTY)}
-                report.outputSummaries.forEach { summary ->
-                    summary.photoAsset = createAssets(summary.beforeCleaningPhotoUrl?.toUri()?: Uri.EMPTY)
-                }
-                job.report = report
+            // 削除済みの場合はリロードせずに、そのまま利用する
+            if (job?.report?.deleted ?: true) {
                 setup()
+            }
+            else {
+                Api(activity).reloadReport(job) {
+                    var report = it
+                    report.additionalPhotoAsset = if (report.additionalReportPhotoUrl.isNullOrEmpty()){null}else{createAssets(report.additionalReportPhotoUrl?.toUri()?: Uri.EMPTY)}
+                    report.outputSummaries.forEach { summary ->
+                        summary.photoAsset = createAssets(summary.beforeCleaningPhotoUrl?.toUri()?: Uri.EMPTY)
+                    }
+                    job.report = report
+                    setup()
+                }
             }
         }
     }

@@ -53,7 +53,8 @@ data class Report (
     var rejectComment: String? = null,
     var createdAt: Date? = null,
     @SerializedName("output_summaries_attributes")
-    var outputSummaries: List<OutputSummary> = listOf()
+    var outputSummaries: List<OutputSummary> = listOf(),
+    var deleted: Boolean = false
 ): Parcelable {
     // photoAsset
     // isUploadCompleted
