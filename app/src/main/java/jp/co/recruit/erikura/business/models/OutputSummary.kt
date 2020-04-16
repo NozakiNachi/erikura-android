@@ -29,8 +29,9 @@ data class OutputSummary(
      * 画像を選択して変更したかを返却します
      */
     val isPhotoChanged: Boolean get() {
-        // 画像が選択された場合は、photoAsset.contentUri が取得できるはず
-        if (photoAsset?.contentUri == null) {
+        // アップロードされた場合、contentUri が設定される。
+        // アプリから取得された作業報告の場合は、contentUri と、PhotoUrlの両方に同じ値が設定されている
+        if (photoAsset?.contentUri == null || photoAsset?.contentUri.toString() == beforeCleaningPhotoUrl) {
             return false
         }
         return true
