@@ -38,97 +38,42 @@ class AssetsManager {
     private val completionCallbackMap: MutableMap<String, MutableList<CompletionCallback>> = HashMap()
     val realm: Realm = ErikuraApplication.realm
 
-    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+    fun fetchAsset(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (asset: Asset) -> Unit) {
         lookupAsset(url)?.also { asset ->
             val file = File(asset.path)
             if (file.exists()) {
-                try {
-                    BitmapFactory.decodeFile(asset.path)?.let {
-                        onComplete(it)
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
+                onComplete(asset)
             }
             else {
                 downloadAsset(activity, url, type) { asset ->
-                    try {
-                        BitmapFactory.decodeFile(asset.path)?.let {
-                            onComplete(it)
-                        }
-                    }
-                    catch (e: Exception) {
-                        Log.e("Bitmap decode error", e.message, e)
-                    }
+                    onComplete(asset)
                 }
             }
         } ?: run {
             downloadAsset(activity, url, type) { asset ->
-                try {
-                    BitmapFactory.decodeFile(asset.path)?.let {
-                        onComplete(it)
-                    }
+                onComplete(asset)
+            }
+        }
+    }
+
+    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+        fetchAsset(activity, url, type) { asset ->
+            try {
+                BitmapFactory.decodeFile(asset.path)?.let {
+                    onComplete(it)
                 }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
+            }
+            catch (e: Exception) {
+                Log.e("Bitmap decode error", e.message, e)
             }
         }
     }
 
     fun fetchImage(activity: Activity, url: String, imageView: ImageView, type: Asset.AssetType = Asset.AssetType.Other) {
-        lookupAsset(url)?.also { asset ->
-            val file = File(asset.path)
-            if (file.exists()) {
-                try {
-                    Glide.with(activity).load(File(asset.path)).into(imageView)
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
-            }
-            else {
-                downloadAsset(activity, url, type) { asset ->
-                    try {
-                        Glide.with(activity).load(File(asset.path)).into(imageView)
-                    }
-                    catch (e: Exception) {
-                        Log.e("Bitmap decode error", e.message, e)
-                    }
-                }
-            }
-        } ?: run {
-            downloadAsset(activity, url, type) { asset ->
-                try {
-                    Glide.with(activity).load(File(asset.path)).into(imageView)
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
-            }
+        fetchAsset(activity, url, type) { asset ->
+            Glide.with(activity).load(File(asset.path)).into(imageView)
         }
     }
-
-    /*
-    func fetchAsset(url: URL, type: Asset.AssetType = .other, completion: @escaping CompletionCallback) {
-        if let asset = lookupAsset(url), let downloadedURL = asset.downloadedURL {
-            if FileManager.default.fileExists(atPath: downloadedURL.path) {
-                completion(asset)
-            }
-            else {
-                downloadAsset(url, type: type) { asset in
-                    completion(asset)
-                }
-            }
-        }
-        else {
-            downloadAsset(url, type: type) { asset in
-                completion(asset)
-            }
-        }
-    }
-     */
 
     fun lookupAsset(url: String): Asset? {
         var asset: Asset? = null
