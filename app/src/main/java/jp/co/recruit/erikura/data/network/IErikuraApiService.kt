@@ -41,10 +41,10 @@ interface IErikuraApiService {
         @Query("latitude") latitude: Double,
         @Query("longitude") longitude: Double,
         @Query("sort_by") sortBy: String,
-        @Query("minimumWorkingTime") minimumWorkingTime: Int? = null,
-        @Query("maximumWorkingTime") maximumWorkingTime: Int? = null,
-        @Query("minimumReward") minimumReward: Int? = null,
-        @Query("maximumReward") maximumReward: Int? = null,
+        @Query("minimum_working_time") minimumWorkingTime: Int? = null,
+        @Query("maximum_working_time") maximumWorkingTime: Int? = null,
+        @Query("minimum_reward") minimumReward: Int? = null,
+        @Query("maximum_reward") maximumReward: Int? = null,
         @Query("job_kind") jobKind: Int? = null
     ): ApiObservable<JobsResponse>
 
