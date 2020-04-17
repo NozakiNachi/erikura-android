@@ -229,13 +229,11 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         if (job?.manualUrl != null) {
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
-            Api(this).showProgressAlert()
             assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
                 val intent = Intent(this, WebViewActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
                     data = Uri.parse(asset.url)
                 }
-                Api(this).hideProgressAlert()
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         }

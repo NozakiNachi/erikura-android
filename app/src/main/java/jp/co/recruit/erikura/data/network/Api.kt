@@ -478,7 +478,10 @@ class Api(var context: Context) {
         }
     }
 
-    fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+    fun downloadResource(url: URL, destination: File, showAlert: Boolean = false, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+        if (showAlert) {
+            showProgressAlert()
+        }
         // OkHttp3 クライアントを作成します
         var client = ErikuraApiServiceBuilder().httpBuilder.build()
 //        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
@@ -499,6 +502,11 @@ class Api(var context: Context) {
             catch (e: IOException) {
                 Log.e("Error in downloading resource", e.message, e)
                 it.onError(e)
+            }
+            finally {
+                if (showAlert) {
+                    hideProgressAlert()
+                }
             }
         }
 
@@ -665,7 +673,7 @@ class Api(var context: Context) {
             )
     }
 
-    fun showProgressAlert() {
+    private fun showProgressAlert() {
         // 同一のAPIインスタンスから呼ばれた場合だけでも、スピナー表示を共通化することを考える
         if (progressAlert == null) {
             progressAlert = AlertDialog.Builder(context).apply {
@@ -681,7 +689,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun hideProgressAlert() {
+    private fun hideProgressAlert() {
         if (!isDestroyed()) {
             progressAlert?.dismiss()
         }

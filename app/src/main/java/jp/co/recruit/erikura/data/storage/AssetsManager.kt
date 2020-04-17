@@ -128,7 +128,8 @@ class AssetsManager {
         synchronized(lock) {
             val url = adjustURL(URL(urlString))
             val dest: File = generateDownloadFile()
-            Api(activity).downloadResource(url, dest) { file ->
+            val showAlert = type == Asset.AssetType.Pdf
+            Api(activity).downloadResource(url, dest, showAlert) { file ->
                 registerAsset(url.toString(), type, file)?.let { asset ->
                     onComplete(asset)
                 }
