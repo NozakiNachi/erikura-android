@@ -102,35 +102,15 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     val openMapButtonText: MutableLiveData<SpannableString> = MutableLiveData()
 
     fun setup(job: Job?){
-        if (job != null) {
+        job?.let { job ->
             // 納期
-            var end: Date
-            if (job.status == JobStatus.Applied || job.status == JobStatus.Working || job.status == JobStatus.Finished) {
-                end = job.entry?.limitAt?: Date()
-                if(end < Date()) {
-                    msgVisibility.value = View.VISIBLE
-                }
-            }else {
-                end = job.workingFinishAt?: Date()
-            }
-            limit.value = "${dateToString(job.workingStartAt?: Date(), "yyyy/MM/dd HH:mm")} ～ ${dateToString(end, "yyyy/MM/dd HH:mm")}"
+            setupLimit(job)
             // 持ち物
-            tool.value = job.tools
+            setupTools(job)
             // 仕事概要
-            summary.value = job.summary
+            setupSummary(job)
             // 報告箇所
-            var summaryTitleStr = ""
-            job.summaryTitles.forEachIndexed { index, s ->
-                if (index == job.summaryTitles.lastIndex) {
-                    summaryTitleStr += "${s}"
-                }else {
-                    summaryTitleStr += "${s}、"
-                }
-            }
-            summaryTitles.value = summaryTitleStr
-            if(summaryTitleStr.isNullOrBlank()) {
-                summaryTitlesVisibility.value = View.GONE
-            }
+            setupSummaryTitles(job)
         }
 
         val str = SpannableString(ErikuraApplication.instance.getString(R.string.openMap))
@@ -139,6 +119,56 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
         val span = ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE)
         str.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
         openMapButtonText.value = str
+    }
+
+    /**
+     * 納期表示を設定します
+     */
+    private fun setupLimit(job: Job) {
+        val format = "yyyy/MM/dd HH:mm"
+        if (job.entry != null && (job.entry?.owner ?: false)) {
+            // 自身が応募したタスクの場合は、エントリ時刻と、24時間のリミット時刻を表示します
+            val startAt = dateToString(job.entry?.startedAt ?: Date(), format)
+            val finishAt = dateToString(job.entry?.limitAt ?: Date(), format)
+            limit.value = "${startAt} 〜 ${finishAt}"
+            job.entry?.limitAt?.also { limitAt ->
+                if (!job.isReported && limitAt < Date()) {
+                    msgVisibility.value = View.VISIBLE
+                }
+            }
+        }
+        else {
+            val startAt = dateToString(job.workingStartAt ?: Date(), format)
+            val finishAt = dateToString(job.workingFinishAt ?: Date(), format)
+            // 自分が応募していないタスクについて募集期間を表示します
+            limit.value = "${startAt} 〜 ${finishAt}"
+        }
+    }
+
+    /**
+     * 持ち物を設定します
+     */
+    private fun setupTools(job: Job) {
+        tool.value = job.tools
+    }
+
+    /**
+     * 仕事概要を設定します
+     */
+    private fun setupSummary(job: Job) {
+        summary.value = job.summary
+    }
+
+    private fun setupSummaryTitles(job: Job) {
+        // 報告箇所がからの場合は非表示とする
+        if (job.summaryTitles.isEmpty()) {
+            summaryTitlesVisibility.value = View.GONE
+            summaryTitles.value = ""
+        }
+        else {
+            summaryTitlesVisibility.value = View.VISIBLE
+            summaryTitles.value = job.summaryTitles.joinToString("、")
+        }
     }
 
     private fun dateToString(date: Date, format: String): String {
