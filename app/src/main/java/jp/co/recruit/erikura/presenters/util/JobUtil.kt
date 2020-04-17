@@ -32,10 +32,16 @@ object JobUtil {
                     append("受付終了")
                 }
             }
-            else if (type == TimeLabelType.SEARCH && job.isPastOrInactive && !job.isOwner) {
+            else if (type == TimeLabelType.SEARCH && job.isPastOrInactive) {
                 color = ContextCompat.getColor(context, R.color.warmGrey)
-                text = SpannableStringBuilder().apply {
-                    append("受付終了")
+                text = if (job.isOwner && job.status == JobStatus.Reported) {
+                    SpannableStringBuilder().apply {
+                        append("作業報告済み")
+                    }
+                }else {
+                    SpannableStringBuilder().apply {
+                        append("受付終了")
+                    }
                 }
             }
             else if (job.isFuture) {
