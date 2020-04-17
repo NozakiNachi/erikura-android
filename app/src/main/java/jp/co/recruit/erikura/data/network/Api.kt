@@ -478,10 +478,17 @@ class Api(var context: Context) {
         }
     }
 
-    fun downloadResource(url: URL, destination: File, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+    fun downloadResource(url: URL, destination: File, showAlert: Boolean = false, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (file: File) -> Unit) {
+        if (showAlert) {
+            showProgressAlert()
+        }
         // OkHttp3 クライアントを作成します
         var client = ErikuraApiServiceBuilder().httpBuilder.build()
-        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
+//        if(url.toString().equals(ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL))) {
+//            client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
+//        }
+        val regex = Regex(ErikuraApplication.instance.getString(R.string.amazon_url))
+        if(regex.containsMatchIn(url.toString())) {
             client = ErikuraApiServiceBuilder().httpBuilderForAWS.build()
         }
 
@@ -495,6 +502,11 @@ class Api(var context: Context) {
             catch (e: IOException) {
                 Log.e("Error in downloading resource", e.message, e)
                 it.onError(e)
+            }
+            finally {
+                if (showAlert) {
+                    hideProgressAlert()
+                }
             }
         }
 

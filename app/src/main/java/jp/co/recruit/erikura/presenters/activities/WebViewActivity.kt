@@ -19,6 +19,8 @@ class WebViewActivity : BaseActivity() {
     private val webView: WebView get() = findViewById(R.id.webview_webview)
     private val progressBar: ProgressBar get() = findViewById(R.id.webview_progress)
 
+    private val FROM_PDF_VIEW = 100
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
@@ -71,10 +73,18 @@ class WebViewActivity : BaseActivity() {
                 val i = Intent(Intent.ACTION_QUICK_VIEW).apply {
                     data = Uri.parse(url)
                 }
-                startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                finish()
+                startActivityForResult(i, FROM_PDF_VIEW)
+//                startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+//                finish()
             }
             webView.loadUrl(url)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == FROM_PDF_VIEW) {
+            finish()
         }
     }
 

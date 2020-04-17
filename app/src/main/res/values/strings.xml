@@ -441,4 +441,6 @@
     <string name="default_notification_channel_id" translatable="false">erikura_default_channel</string>
     <string name="default_notification_channel_name">エリクラ</string>
     <string name="default_notification_channel_description">エリクラからの通知</string>
+
+    <string name="amazon_url">s3-ap-northeast-1.amazonaws.com</string>
 </resources>

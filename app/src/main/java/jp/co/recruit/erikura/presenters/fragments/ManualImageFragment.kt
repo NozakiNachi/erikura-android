@@ -19,6 +19,8 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
@@ -46,12 +48,15 @@ class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragme
             Tracking.logEvent(event= "view_job_manual", params= bundleOf())
             Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job?.id ?: 0)
 
-            val manualURLString = job.manualUrl
-            val intent = Intent(activity, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(manualURLString)
+            val manualUrl = job.manualUrl
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
+                val intent = Intent(activity, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(asset.url)
+                }
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
         }
     }
 

@@ -16,6 +16,8 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -75,12 +77,15 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
 
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
-            val termsOfServiceURLString = job.manualUrl
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(termsOfServiceURLString)
+            val manualUrl = job.manualUrl
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
+                val intent = Intent(this, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(asset.url)
+                }
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 
