@@ -9,7 +9,7 @@ import java.util.*
 data class UserSession(
     val userId: Int,
     val token: String,
-    val resignInExpiredAt: Long? = null,
+    val resignInExpiredAt: Date? = null,
     var user: User? = null
 ) {
     companion object {

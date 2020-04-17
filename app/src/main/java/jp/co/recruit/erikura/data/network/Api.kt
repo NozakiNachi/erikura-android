@@ -106,9 +106,10 @@ class Api(var context: Context) {
             erikuraApiService.login(LoginRequest(email = email, password = password)),
             onError =  onError
         ) { body ->
-            val now = Date().time
-            val resignTime = (now % (1000 * 60 * 60)) / (1000 * 60) +10
-            val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = resignTime)
+            val calendar = Calendar.getInstance()
+            calendar.time = Date()
+            calendar.add(Calendar.SECOND, 10 * 60)
+            val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = calendar.time)
             userSession = session
             onComplete(session)
         }

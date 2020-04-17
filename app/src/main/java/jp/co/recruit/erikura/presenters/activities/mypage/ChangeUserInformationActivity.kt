@@ -211,7 +211,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     // 再認証画面へ遷移
     private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
-        val nowTime = (Date().time % (1000 * 60 * 60)) / (1000 * 60)
+        val nowTime = Date()
         val reSignTime = Api.userSession?.resignInExpiredAt
 
         if (Api.userSession?.resignInExpiredAt !== null) {
