@@ -63,8 +63,7 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
 
     override fun onClickOpenMap(view: View) {
         val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${place.latitude?:0},${place.longitude?:0}")
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
     override fun onClickFavorite(view: View) {
