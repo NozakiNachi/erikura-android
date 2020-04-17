@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import java.text.SimpleDateFormat
@@ -212,9 +213,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     // 再認証画面へ遷移
     private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
         val nowTime = Date()
-        val reSignTime = Api.userSession?.resignInExpiredAt
+        val reSignTime = userSession?.resignInExpiredAt
 
-        if (Api.userSession?.resignInExpiredAt !== null) {
+        if (userSession?.resignInExpiredAt !== null) {
             // 過去の再認証から10分以上経っていたら再認証画面へ
             if (reSignTime!! < nowTime) {
                 onComplete(false)
