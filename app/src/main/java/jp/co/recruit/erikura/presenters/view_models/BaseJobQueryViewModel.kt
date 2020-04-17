@@ -58,7 +58,6 @@ open class BaseJobQueryViewModel: ViewModel() {
         jobKind.value = query.jobKind
         sortType.value = query.sortBy
         periodType.value = query.period
-        // FIXME: 画面状態への反映が必要
     }
 
     val normalizedKeyword: String? get() {
@@ -76,17 +75,15 @@ open class BaseJobQueryViewModel: ViewModel() {
         // 場所
         conditions.add(keyword.value ?: "現在地周辺")
         // 金額
-        // FIXME: 上限なし、下限なしの対応
         if (minimumReward.value != null || maximumReward.value != null) {
-            val minReward = minimumReward.value?.let { String.format("%,d円", it) } ?: ""
-            val maxReward = maximumReward.value?.let { String.format("%,d円", it) } ?: ""
+            val minReward = minimumReward.value?.let { if (it != JobQuery.MIN_REWARD) { String.format("%,d円", it) } else { null } } ?: ""
+            val maxReward = maximumReward.value?.let { if (it != JobQuery.MAX_REWARD) { String.format("%,d円", it) } else { null } } ?: ""
             conditions.add("${minReward} 〜 ${maxReward}")
         }
         // 作業時間
-        // FIXME: 上限なし、下限なしの対応
         if (minimumWorkingTime.value != null || maximumWorkingTime.value != null) {
-            val minWorkTime = minimumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
-            val maxWorkTime = maximumWorkingTime.value?.let { String.format("%,d分", it) } ?: ""
+            val minWorkTime = minimumWorkingTime.value?.let { if (it != JobQuery.MIN_WORKING_TIME) { String.format("%,d分", it) } else { null } } ?: ""
+            val maxWorkTime = maximumWorkingTime.value?.let { if (it != JobQuery.MAX_WORKING_TIME) { String.format("%,d分", it) } else { null } } ?: ""
             conditions.add("${minWorkTime} 〜 ${maxWorkTime}")
         }
         // 業種
