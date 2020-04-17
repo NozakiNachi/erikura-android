@@ -86,8 +86,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
 
     override fun onClickOpenMap(view: View) {
         val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${job?.latitude?:0},${job?.longitude?:0}")
-        val intent = Intent(Intent.ACTION_VIEW, uri)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
     }
 
 }
