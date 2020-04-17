@@ -668,7 +668,7 @@ class Api(var context: Context) {
             )
     }
 
-    private fun showProgressAlert() {
+    fun showProgressAlert() {
         // 同一のAPIインスタンスから呼ばれた場合だけでも、スピナー表示を共通化することを考える
         if (progressAlert == null) {
             progressAlert = AlertDialog.Builder(context).apply {
@@ -684,7 +684,7 @@ class Api(var context: Context) {
         }
     }
 
-    private fun hideProgressAlert() {
+    fun hideProgressAlert() {
         if (!isDestroyed()) {
             progressAlert?.dismiss()
         }

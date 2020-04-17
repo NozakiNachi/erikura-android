@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -37,11 +38,13 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
 
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
+            Api(activity!!).showProgressAlert()
             assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
                 val intent = Intent(activity, WebViewActivity::class.java).apply {
                     action = Intent.ACTION_VIEW
                     data = Uri.parse(asset.url)
                 }
+                Api(activity!!).hideProgressAlert()
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
             }
         }
