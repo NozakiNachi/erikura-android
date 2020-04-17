@@ -14,8 +14,10 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.databinding.ActivityRegisterBirthdayBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.text.SimpleDateFormat
 import java.util.*
 
 class RegisterBirthdayActivity : BaseActivity(),
@@ -72,12 +74,32 @@ class RegisterBirthdayActivity : BaseActivity(),
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
 
+    // 生年月日
     override fun onClickEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
+
+        var onDateSetListener: DatePickerDialog.OnDateSetListener =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                val calendar = Calendar.getInstance()
+
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, monthOfYear)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                var birthday = Date(arrayOf(calendar.timeInMillis, view.maxDate).min()!!)
+
+                val sdf = SimpleDateFormat("yyyy/MM/dd")
+                viewModel.birthday.value = sdf.format(birthday)
+            }
+
+        val calendar = Calendar.getInstance()
+        val dateOfBirth = DateUtils.parseDate(viewModel.birthday.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        calendar.time = dateOfBirth
         val dpd = DatePickerDialog(
-            this@RegisterBirthdayActivity, date, calender
-                .get(Calendar.YEAR), calender.get(Calendar.MONTH),
-            calender.get(Calendar.DAY_OF_MONTH)
+            this@RegisterBirthdayActivity, onDateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
         )
 
         val dp = dpd.datePicker

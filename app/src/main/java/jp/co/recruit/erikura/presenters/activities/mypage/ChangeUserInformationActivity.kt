@@ -44,26 +44,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
-    // カレンダー設定
-    val calender: Calendar = Calendar.getInstance()
-    var date: DatePickerDialog.OnDateSetListener =
-        DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            calender.set(Calendar.YEAR, year)
-            calender.set(Calendar.MONTH, monthOfYear)
-            calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-            var birthday = Date(arrayOf(calender.timeInMillis, view.maxDate).min()!!)
-
-            val sdf = SimpleDateFormat("yyyy/MM/dd")
-            viewModel.dateOfBirth.value = sdf.format(birthday.getTime())
-//            viewModel.birthday.value =
-//                String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_change_user_information)
 
         val binding: ActivityChangeUserInformationBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
@@ -71,11 +54,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         binding.handlers = this
         binding.viewModel = viewModel
 
-        // 生年月日入力のカレンダー設定
-        calender.set(Calendar.YEAR, 1980)
-        calender.set(Calendar.MONTH, 1 - 1)
-        calender.set(Calendar.DAY_OF_MONTH, 1)
-        viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", 1980, 1, 1)
     }
 
     override fun onStart() {
@@ -128,22 +106,26 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     }
 
     // 生年月日
-    override fun onClickEditView(view: View) {
+    override fun onClickBirthdayEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
+
+        var onDateSetListener: DatePickerDialog.OnDateSetListener =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                val calendar = Calendar.getInstance()
+
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, monthOfYear)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                var birthday = Date(arrayOf(calendar.timeInMillis, view.maxDate).min()!!)
+
+                val sdf = SimpleDateFormat("yyyy/MM/dd")
+                viewModel.dateOfBirth.value = sdf.format(birthday)
+            }
 
         val calendar = Calendar.getInstance()
         val dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
         calendar.time = dateOfBirth
-
-        var onDateSetListener: DatePickerDialog.OnDateSetListener =
-            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                calender.set(Calendar.YEAR, year)
-                calender.set(Calendar.MONTH, monthOfYear)
-                calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-                viewModel.dateOfBirth.value = String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
-            }
-
         val dpd = DatePickerDialog(
             this@ChangeUserInformationActivity, onDateSetListener,
             calendar.get(Calendar.YEAR),
@@ -532,7 +514,7 @@ class ChangeUserInformationViewModel : ViewModel() {
 
 interface ChangeUserInformationEventHandlers {
     fun onFocusChanged(view: View, hasFocus: Boolean)
-    fun onClickEditView(view: View)
+    fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
