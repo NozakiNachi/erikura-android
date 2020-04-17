@@ -156,6 +156,7 @@
 
     <!-- 作業報告評価画面 -->
     <string name="report_evaluation_caption">案件の評価（任意）</string>
+    <string name="report_evaluation_caption2">案件の評価</string>
     <string name="report_evaluation_note">今回の仕事はいかがでしたか？</string>
     <string name="report_evaluation_memo">※頂いたフィードバックは、今後のサービス向上に役立てられます</string>
 
