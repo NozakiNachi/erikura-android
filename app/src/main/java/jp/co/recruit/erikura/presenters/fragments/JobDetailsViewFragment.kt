@@ -128,7 +128,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
         val format = "yyyy/MM/dd HH:mm"
         if (job.entry != null && (job.entry?.owner ?: false)) {
             // 自身が応募したタスクの場合は、エントリ時刻と、24時間のリミット時刻を表示します
-            val startAt = dateToString(job.entry?.startedAt ?: Date(), format)
+            val startAt = dateToString(job.entry?.createdAt ?: Date(), format)
             val finishAt = dateToString(job.entry?.limitAt ?: Date(), format)
             limit.value = "${startAt} 〜 ${finishAt}"
             job.entry?.limitAt?.also { limitAt ->
