@@ -478,7 +478,15 @@ class ChangeUserInformationViewModel : ViewModel() {
     private fun isValidVerificationPassword(): Boolean {
         var valid = true
 
-        if (valid && !(password.value.equals(verificationPassword.value))){
+        if(valid && password.value == null || password.value == "") {
+            if(valid && verificationPassword.value == null || verificationPassword.value == "") {
+                valid = true
+                verificationPasswordError.message.value = null
+            } else {
+                valid = false
+                verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+            }
+        }else if (valid && !(password.value.equals(verificationPassword.value))){
             valid = false
             verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
         }else {
