@@ -44,8 +44,21 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
-    // 生年月日入力のカレンダー設定
+    // カレンダー設定
     val calender: Calendar = Calendar.getInstance()
+    var date: DatePickerDialog.OnDateSetListener =
+        DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+            calender.set(Calendar.YEAR, year)
+            calender.set(Calendar.MONTH, monthOfYear)
+            calender.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+            var birthday = Date(arrayOf(calender.timeInMillis, view.maxDate).min()!!)
+
+            val sdf = SimpleDateFormat("yyyy/MM/dd")
+            viewModel.dateOfBirth.value = sdf.format(birthday.getTime())
+//            viewModel.birthday.value =
+//                String.format("%d/%02d/%02d", year, monthOfYear + 1, dayOfMonth)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
