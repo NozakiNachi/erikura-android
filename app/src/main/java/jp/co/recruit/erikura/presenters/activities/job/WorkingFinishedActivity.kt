@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -19,6 +20,7 @@ import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
+import java.util.*
 
 class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     private val viewModel: WorkingFinishedViewModel by lazy {
@@ -56,10 +58,14 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
     override fun onResume() {
         super.onResume()
-        Api(this).recommendedJobs(job) { jobsList ->
-            viewModel.recommendedJobs = jobsList
-            recommendedJobsAdapter.jobs = viewModel.recommendedJobs
-            recommendedJobsAdapter.notifyDataSetChanged()
+        // jobの再取得
+        Api(this).reloadJob(job) {
+            job = it
+            Api(this).recommendedJobs(job) { jobsList ->
+                viewModel.recommendedJobs = jobsList
+                recommendedJobsAdapter.jobs = viewModel.recommendedJobs
+                recommendedJobsAdapter.notifyDataSetChanged()
+            }
         }
     }
 
@@ -68,9 +74,15 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         Tracking.logEvent(event= "push_report_job", params= bundleOf())
         Tracking.track(name= "push_report_job")
 
-        val intent = Intent(this, ReportImagePickerActivity::class.java)
-        intent.putExtra("job", job)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        if (job.entry?.limitAt ?: Date() > Date()) {
+            val intent = Intent(this, ReportImagePickerActivity::class.java)
+            intent.putExtra("job", job)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }else {
+            val errorMessages =
+                mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
+            Api(this).displayErrorAlert(errorMessages)
+        }
     }
 
     override fun onClickAppliedJobs(view: View) {

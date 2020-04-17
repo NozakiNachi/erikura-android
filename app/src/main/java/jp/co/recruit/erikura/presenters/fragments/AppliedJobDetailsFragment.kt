@@ -230,14 +230,15 @@ class AppliedJobDetailsFragment(
         val str = SpannableStringBuilder()
         val today = Date().time
         val limit = job?.entry?.limitAt?.time ?: 0
-        val diff: Int = limit.toInt() - today.toInt()
+        val diff: Long = limit - today
+
         if (diff >= 0) {
             val diffHours = diff / (1000 * 60 * 60)
             val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
 
-            if (diffHours == 0) {
+            if (diffHours == 0L) {
                 str.append("あと${diffMinutes}分以内\n")
-            } else if (diffMinutes == 0) {
+            } else if (diffMinutes == 0L) {
                 str.append("あと${diffHours}時間以内\n")
             } else {
                 str.append("あと${diffHours}時間${diffMinutes}分以内\n")
