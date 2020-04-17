@@ -71,44 +71,31 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
                 pastJobsAdapter.notifyDataSetChanged()
 
                 // ページ参照のトラッキングの送出
-                val jobId = jobs.map { it.id }
-                Tracking.logEvent(event= "view_job_list", params= bundleOf())
-                Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
-                // 仕事表示のトラッキングの送出
-                Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
-                Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
 
             }
             else {
-                // クリアした検索条件での再検索を行います
-                val newQuery = JobQuery(
-                    latitude = locationManager.latLngOrDefault.latitude,
-                    longitude = locationManager.latLngOrDefault.longitude)
+                viewModel.jobs = listOf()
+                val position = LatLng(query.latitude!!, query.longitude!!)
 
-                if (query != newQuery) {
-                    MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
-                        viewModel.apply(newQuery)
-                        fetchJobs(newQuery)
-                    }
-                }
-                else {
-                    viewModel.jobs = jobs
+                activeJobsAdapter.jobs = listOf()
+                activeJobsAdapter.currentPosition = position
+                activeJobsAdapter.notifyDataSetChanged()
 
-                    val position = LatLng(query.latitude!!, query.longitude!!)
+                futureJobsAdapter.jobs = listOf()
+                futureJobsAdapter.currentPosition = position
+                futureJobsAdapter.notifyDataSetChanged()
 
-                    activeJobsAdapter.jobs = viewModel.activeJobs
-                    activeJobsAdapter.currentPosition = position
-                    activeJobsAdapter.notifyDataSetChanged()
-
-                    futureJobsAdapter.jobs = viewModel.futureJobs
-                    futureJobsAdapter.currentPosition = position
-                    futureJobsAdapter.notifyDataSetChanged()
-
-                    pastJobsAdapter.jobs = viewModel.pastJobs
-                    pastJobsAdapter.currentPosition = position
-                    pastJobsAdapter.notifyDataSetChanged()
-                }
+                pastJobsAdapter.jobs = listOf()
+                pastJobsAdapter.currentPosition = position
+                pastJobsAdapter.notifyDataSetChanged()
             }
+
+            val jobId = jobs.map { it.id }
+            Tracking.logEvent(event= "view_job_list", params= bundleOf())
+            Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
+            // 仕事表示のトラッキングの送出
+            Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+            Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
         }
     }
 

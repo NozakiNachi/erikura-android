@@ -29,6 +29,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
 
     var job = Job()
     var fromConfirm = false
+    var editCompleted = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,14 +39,22 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        job = intent.getParcelableExtra<Job>("job")
-        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
         createTimeItems()
-        loadData()
+        if (editCompleted) {
+            loadData()
+            editCompleted = false
+        }
 
         if (job.reportId == null) {
             // ページ参照のトラッキングの送出
@@ -77,6 +86,8 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
     override fun onClickNext(view: View) {
         job.report?.let {
             it.workingMinute = viewModel.timeSelectedItem
+            editCompleted = true
+
             if (fromConfirm) {
                 val intent= Intent()
                 intent.putExtra("job", job)

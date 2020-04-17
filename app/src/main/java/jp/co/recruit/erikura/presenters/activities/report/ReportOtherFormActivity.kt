@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.PhotoToken
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
@@ -39,6 +40,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     var job = Job()
     var fromConfirm = false
     var fromGallery = false
+    var editCompleted = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,15 +50,22 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+        job = intent.getParcelableExtra<Job>("job")
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        job = intent.getParcelableExtra<Job>("job")
-        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
-        if(!fromGallery) {
-            loadData()
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
         }
+        if (editCompleted) {
+            if (!fromGallery) {
+                loadData()
+            }
+        }
+        editCompleted = false
         fromGallery = false
 
         if (job.reportId == null) {
@@ -208,12 +217,12 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             if (it.additionalPhotoAsset!!.contentUri != null) {
                 it.additionalReportPhotoWillDelete = false
                 it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
-//                    it.additionalReportPhotoToken = token
-                    addPhotoToken(it.additionalPhotoAsset?.contentUri.toString(), token)
+                    PhotoTokenManager.addToken(job, it.additionalPhotoAsset?.contentUri.toString(), token)
                 }
             }else {
                 it.additionalReportPhotoWillDelete = true
             }
+            editCompleted = true
 
             if (fromConfirm) {
                 val intent= Intent()
@@ -227,14 +236,6 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             }
         }
 
-    }
-
-    private fun addPhotoToken(url: String, token: String) {
-        realm.executeTransaction { realm ->
-            var photo = realm.createObject(PhotoToken::class.java, token)
-            photo.url = url
-            photo.jobId = job.id
-        }
     }
 }
 

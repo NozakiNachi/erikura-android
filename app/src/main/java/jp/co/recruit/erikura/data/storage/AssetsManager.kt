@@ -4,6 +4,8 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import io.realm.Realm
 import io.realm.Sort
 import jp.co.recruit.erikura.BuildConfig
@@ -36,52 +38,13 @@ class AssetsManager {
     private val completionCallbackMap: MutableMap<String, MutableList<CompletionCallback>> = HashMap()
     val realm: Realm = ErikuraApplication.realm
 
-    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
-        lookupAsset(url)?.also { asset ->
-            val file = File(asset.path)
-            if (file.exists()) {
-                try {
-                    BitmapFactory.decodeFile(asset.path)?.let {
-                        onComplete(it)
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
-            }
-            else {
-                downloadAsset(activity, url, type) { asset ->
-                    try {
-                        BitmapFactory.decodeFile(asset.path)?.let {
-                            onComplete(it)
-                        }
-                    }
-                    catch (e: Exception) {
-                        Log.e("Bitmap decode error", e.message, e)
-                    }
-                }
-            }
-        } ?: run {
-            downloadAsset(activity, url, type) { asset ->
-                try {
-                    BitmapFactory.decodeFile(asset.path)?.let {
-                        onComplete(it)
-                    }
-                }
-                catch (e: Exception) {
-                    Log.e("Bitmap decode error", e.message, e)
-                }
-            }
-        }
-    }
-
-
     fun fetchAsset(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (asset: Asset) -> Unit) {
         lookupAsset(url)?.also { asset ->
             val file = File(asset.path)
             if (file.exists()) {
                 onComplete(asset)
-            }else {
+            }
+            else {
                 downloadAsset(activity, url, type) { asset ->
                     onComplete(asset)
                 }
@@ -90,6 +53,25 @@ class AssetsManager {
             downloadAsset(activity, url, type) { asset ->
                 onComplete(asset)
             }
+        }
+    }
+
+    fun fetchImage(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (image: Bitmap) -> Unit) {
+        fetchAsset(activity, url, type) { asset ->
+            try {
+                BitmapFactory.decodeFile(asset.path)?.let {
+                    onComplete(it)
+                }
+            }
+            catch (e: Exception) {
+                Log.e("Bitmap decode error", e.message, e)
+            }
+        }
+    }
+
+    fun fetchImage(activity: Activity, url: String, imageView: ImageView, type: Asset.AssetType = Asset.AssetType.Other) {
+        fetchAsset(activity, url, type) { asset ->
+            Glide.with(activity).load(File(asset.path)).into(imageView)
         }
     }
 
@@ -113,42 +95,27 @@ class AssetsManager {
         onComplete: CompletionCallback
     ){
         synchronized(lock) {
-            val callbacks = mutableListOf(onComplete)
-            completionCallbackMap.put(urlString, callbacks)
-            val completeHandler: CompletionCallback = { asset ->
-                val callbacks = completionCallbackMap.remove(urlString)
-                callbacks?.forEach {
-                    it(asset)
-                }
-            }
-
-            if (downloadHandler != null) {
-                downloadHandler(activity, urlString, type, completeHandler)
+            if (completionCallbackMap.containsKey(urlString)) {
+                val callbacks: MutableList<CompletionCallback> = (completionCallbackMap[urlString])!!
+                callbacks.add(onComplete)
             }
             else {
-                downloadAssetImpl(activity, urlString, type, completeHandler)
+                val callbacks = mutableListOf(onComplete)
+                completionCallbackMap.put(urlString, callbacks)
+                val completeHandler: CompletionCallback = { asset ->
+                    val callbacks = completionCallbackMap.remove(urlString)
+                    callbacks?.forEach {
+                        it(asset)
+                    }
+                }
+
+                if (downloadHandler != null) {
+                    downloadHandler(activity, urlString, type, completeHandler)
+                }
+                else {
+                    downloadAssetImpl(activity, urlString, type, completeHandler)
+                }
             }
-//            if (completionCallbackMap.containsKey(urlString)) {
-//                val callbacks: MutableList<CompletionCallback> = (completionCallbackMap[urlString])!!
-//                callbacks.add(onComplete)
-//            }
-//            else {
-//                val callbacks = mutableListOf(onComplete)
-//                completionCallbackMap.put(urlString, callbacks)
-//                val completeHandler: CompletionCallback = { asset ->
-//                    val callbacks = completionCallbackMap.remove(urlString)
-//                    callbacks?.forEach {
-//                        it(asset)
-//                    }
-//                }
-//
-//                if (downloadHandler != null) {
-//                    downloadHandler(activity, urlString, type, completeHandler)
-//                }
-//                else {
-//                    downloadAssetImpl(activity, urlString, type, completeHandler)
-//                }
-//            }
         }
     }
 

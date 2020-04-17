@@ -27,7 +27,6 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 
-
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportFormViewModel::class.java)
@@ -37,6 +36,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     var fromConfirm = false
     var pictureIndex = 0
     var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+    var editCompleted: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,16 +46,31 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        job = intent.getParcelableExtra<Job>("job")
+        ErikuraApplication.instance.reportingJob = job
+        pictureIndex = intent.getIntExtra("pictureIndex", 0)
+        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }
 
     override fun onStart() {
         super.onStart()
-        job = intent.getParcelableExtra<Job>("job")
-        pictureIndex = intent.getIntExtra("pictureIndex", 0)
-        fromConfirm = intent.getBooleanExtra("fromConfirm", false)
+        ErikuraApplication.instance.reportingJob?.let {
+            job = it
+        }
         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
 
-        setup()
+        // 戻ってきた場合に、該当の場所詳細が削除されていれば処理をスキップします
+        if (outputSummaryList[pictureIndex].willDelete) {
+            finish()
+            return
+        }
+
+        // 戻るボタンの対策として、この時点でロードされている
+        if (editCompleted) {
+            setup()
+            editCompleted = false
+        }
 
         if (job.reportId != null) {
             // ページ参照のトラッキングの送出
@@ -71,6 +86,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     override fun onClickNext(view: View) {
         job.report?.let {
             val summaries = it.outputSummaries
+
             val summary = summaries[pictureIndex]
             if (viewModel.summarySelectedItem == ErikuraApplication.instance.getString(R.string.other_hint)) {
                 summary.place = viewModel.summary.value
@@ -79,19 +95,26 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             }
             summary.evaluation = viewModel.evaluationSelectedItem.toString().toLowerCase()
             summary.comment = viewModel.comment.value
+            editCompleted = true
 
             var nextIndex = pictureIndex + 1
+            while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
+                nextIndex++
+
             if (fromConfirm) {
+                // 確認画面から来た場合は、確認画面に戻ります
                 val intent= Intent()
                 intent.putExtra("job", job)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
-            }else if (nextIndex < summaries.size) {
+            } else if (nextIndex < summaries.size) {
+                // 写真が残っている場合
                 val intent= Intent(this, ReportFormActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", nextIndex)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }else {
+            } else {
+                // 写真が残っていない場合
                 val intent= Intent(this, ReportWorkingTimeActivity::class.java)
                 intent.putExtra("job", job)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
@@ -136,7 +159,6 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     }
 
     private fun setup() {
-//        val max = (job.report?.outputSummaries?.lastIndex?: 0) + 1
         var max = 0
         var pictureIndexNotDeleted = pictureIndex
         job.report?.outputSummaries?.forEachIndexed { index, summary ->
@@ -151,7 +173,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         viewModel.title.value = ErikuraApplication.instance.getString(R.string.report_form_caption, pictureIndexNotDeleted+1, max)
         createSummaryItems()
         createImage()
-        loadDate()
+        loadData()
         viewModel.summaryError.message.value = null
         viewModel.commentError.message.value = null
     }
@@ -181,7 +203,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
-    private fun loadDate() {
+    private fun loadData() {
         var summaryIndex = job.summaryTitles.count() + 1
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]

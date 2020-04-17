@@ -60,17 +60,13 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
 
         // ダウンロード
         val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+
+        val imageView: ImageView = itemView.findViewById(R.id.carousel_cell_image)
         if (thumbnailUrl.isNullOrBlank()) {
-            val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
-            image.setImageBitmap(drawable.toBitmap())
+            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
         }else {
             val assetsManager = ErikuraApplication.assetsManager
-
-            assetsManager.fetchImage(activity, thumbnailUrl) { bitmap ->
-                activity.runOnUiThread {
-                    image.setImageBitmap(bitmap)
-                }
-            }
+            assetsManager.fetchImage(activity, thumbnailUrl, imageView)
         }
 
     }

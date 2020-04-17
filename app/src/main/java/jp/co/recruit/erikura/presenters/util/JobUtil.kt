@@ -32,7 +32,7 @@ object JobUtil {
                     append("受付終了")
                 }
             }
-            else if (type == TimeLabelType.SEARCH && job.isPastOrInactive) {
+            else if (type == TimeLabelType.SEARCH && job.isPastOrInactive && !job.isOwner) {
                 color = ContextCompat.getColor(context, R.color.warmGrey)
                 text = SpannableStringBuilder().apply {
                     append("受付終了")

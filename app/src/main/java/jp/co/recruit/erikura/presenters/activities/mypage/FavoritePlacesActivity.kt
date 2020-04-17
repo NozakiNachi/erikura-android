@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -110,22 +111,6 @@ class FavoritePlaceItemViewModel(activity: FragmentActivity, place: Place): View
         }else {
             workingPlace.value = place.workingPlaceShort
         }
-
-        // ダウンロード
-        val url = place.thumbnailUrl
-        if (url.isNullOrBlank()) {
-            val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(
-                jp.co.recruit.erikura.R.drawable.ic_noimage, null)
-            image.value = drawable.toBitmap()
-        }else {
-            val assetsManager = ErikuraApplication.assetsManager
-
-            assetsManager.fetchImage(activity, url!!) { result ->
-                activity.runOnUiThread {
-                    image.value = result
-                }
-            }
-        }
     }
 }
 
@@ -159,6 +144,18 @@ class FavoritePlaceAdapter(
             onClickListener?.apply {
                 onClick(position)
             }
+        }
+
+        // ダウンロード
+        val place = places[position]
+        val imageView: ImageView = holder.binding.root.findViewById(R.id.favorite_place_item_image)
+        val url = place.thumbnailUrl
+        if (url.isNullOrBlank()) {
+            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+        }
+        else {
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchImage(activity, url!!, imageView)
         }
     }
 

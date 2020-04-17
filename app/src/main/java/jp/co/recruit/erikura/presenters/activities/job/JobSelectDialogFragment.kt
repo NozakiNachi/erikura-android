@@ -9,12 +9,15 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
+import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogJobSelectBinding
@@ -121,6 +124,18 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
             onClickListner?.apply {
                 onClick(jobs[position])
             }
+        }
+
+        val image: ImageView = holder.binding.root.findViewById(R.id.job_list_item_image)
+        // ダウンロード
+        val job = jobs[position]
+        val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+        if (thumbnailUrl.isNullOrBlank()) {
+            image.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+        }
+        else {
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchImage(activity, thumbnailUrl, image)
         }
     }
 

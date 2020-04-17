@@ -31,13 +31,12 @@
                     android:id="@+id/owned_jobs_tab_layout"
                     style="@style/owned_jobs_tab_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="122dp"
+                    android:layout_height="102dp"
                     android:background="@color/white"
                     android:elevation="@dimen/default_elevation"
                     app:tabBackground="@drawable/background_owned_jobs_tab"
                     app:tabIndicatorColor="@color/blackTwo"
                     app:tabIndicatorHeight="4dp"
-                    app:tabPaddingTop="60dp"
                     app:tabSelectedTextColor="@color/blackTwo"
                     app:tabTextColor="@color/blackTwo">
 

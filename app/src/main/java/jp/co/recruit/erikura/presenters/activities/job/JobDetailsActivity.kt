@@ -1,10 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.content.Intent
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -27,37 +23,15 @@ class JobDetailsActivity : BaseActivity() {
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
 
-//    lateinit var sensorManager: SensorManager
-//    lateinit var stepCountSensor: Sensor
-//    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
-//        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-//            // Accuracy の変更時
-//        }
-//
-//        override fun onSensorChanged(event: SensorEvent?) {
-//            event?.let { event ->
-//                val sensor: Sensor = event.sensor
-//                val values: FloatArray = event.values
-//                val timestamp: Long = event.timestamp
-//
-//                if (sensor.type == Sensor.TYPE_STEP_COUNTER) {
-//                    values.forEach {
-//                        Log.v("SENSOR", String.format("VAL: %f", it))
-//                    }
-//                }
-//
-//            }
-//        }
-//    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_job_details)
 
+        var jobRestored: Boolean = false
         val value = intent.getParcelableExtra<Job>("job")
         if (value != null) {
+            jobRestored = true
             job = value
         } else {
             handleIntent(intent)
@@ -68,16 +42,38 @@ class JobDetailsActivity : BaseActivity() {
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
 
-//        // 歩数センサーの初期化
-//        sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-//        stepCountSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER)
+        // 現時点での案件情報をもとに画面を構築します
+        if (jobRestored) {
+            refreshContents()
+        }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        // FIXME:センサーの精度は一番低いものに設定する
-//        sensorManager.registerListener(sensorEventListener, stepCountSensor, SensorManager.SENSOR_DELAY_FASTEST)
-//    }
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        var jobRestored: Boolean = false
+        intent?.let { intent ->
+            val value = intent.getParcelableExtra<Job>("job")
+            if (value != null) {
+                jobRestored = true
+                job = value
+            } else {
+                handleIntent(intent)
+            }
+            Log.v("DEBUG", job.toString())
+
+            // アラート表示
+            fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
+            fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
+        }
+
+        // 現時点での案件情報をもとに画面を構築します
+        if (jobRestored) {
+            refreshContents()
+        }
+
+        onStart()
+    }
 
     override fun onStart() {
         super.onStart()
@@ -94,13 +90,10 @@ class JobDetailsActivity : BaseActivity() {
             dialog.show(supportFragmentManager, "Start")
             fromAppliedJobDetailsFragment = false
         }
+
+        // 案件情報を取得し直して画面を描画します
         fetchJob()
     }
-
-//    override fun onStop() {
-//        super.onStop()
-//        sensorManager.unregisterListener(sensorEventListener)
-//    }
 
     private fun fetchJob() {
         // jobの再取得

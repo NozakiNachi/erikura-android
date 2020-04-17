@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
@@ -35,9 +36,9 @@ class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragme
     ): View? {
         val binding = FragmentManualImageBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(activity!!)
         binding.viewModel = viewModel
         binding.handler = this
+        viewModel.setup(activity!!, binding.root)
         return binding.root
     }
 
@@ -66,15 +67,12 @@ class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragme
 class ManualImageFragmentViewModel: ViewModel() {
     val bitmap: MutableLiveData<Bitmap> = MutableLiveData()
 
-    fun setup(activity: Activity) {
+    fun setup(activity: Activity, root: View) {
+        val imageView: ImageView = root.findViewById(R.id.manual_image)
         val assetsManager = ErikuraApplication.assetsManager
         val url = ErikuraApplication.instance.getString(R.string.jobDetails_manualImageURL)
 
-        assetsManager.fetchImage(activity, url) { result ->
-            activity.runOnUiThread {
-                bitmap.value = result
-            }
-        }
+        assetsManager.fetchImage(activity, url, imageView)
     }
 }
 

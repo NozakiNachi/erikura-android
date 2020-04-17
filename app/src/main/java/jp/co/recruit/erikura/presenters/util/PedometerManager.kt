@@ -87,7 +87,7 @@ class PedometerManager: SensorEventListener {
         }
         else {
             // 次回以降表示しないに回答しているか
-            checkedNotAskAgain = !activity.shouldShowRequestPermissionRationale(permissions[0])
+            checkedNotAskAgain = !activity.shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION)
 
             onPermissionNotGranted?.invoke()
         }
@@ -109,7 +109,7 @@ class PedometerManager: SensorEventListener {
         }
         else {
             // 次回以降表示しないに回答しているか
-            checkedNotAskAgain = !fragment.shouldShowRequestPermissionRationale(permissions[0])
+            checkedNotAskAgain = !fragment.shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION)
 
             onPermissionNotGranted?.invoke()
         }

@@ -221,7 +221,6 @@ class AppliedJobDetailsFragment(
                 intent.putExtra("job", job)
                 intent.putExtra("onClickStart", true)
                 startActivity(intent)
-                activity.finish()
             }
         }
     }

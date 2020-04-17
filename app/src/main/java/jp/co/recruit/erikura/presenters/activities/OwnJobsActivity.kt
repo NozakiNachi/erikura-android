@@ -61,15 +61,7 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
             override fun getPageTitle(position: Int): CharSequence? {
                 return when(position) {
                     0 -> "未実施"
-                    1 -> {
-                        val sb = SpannableStringBuilder()
-                        sb.append("実施済み\n")
-                        val start = sb.length
-                        sb.append("(未報告)")
-                        val end = sb.length
-                        sb.setSpan(RelativeSizeSpan(12.0f / 16.0f), start, end, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-                        sb.toString()
-                    }
+                    1 -> "実施済み\n(未報告)"
                     2 -> "報告済み"
                     else -> throw IllegalArgumentException("Invalid position: " + position.toString())
                 }
@@ -81,29 +73,19 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
         }
         viewPager = findViewById(R.id.applied_jobs_view_pager)
         viewPager.adapter = adapter
-//        viewPager.addOnPageChangeListener(object: ViewPager.OnPageChangeListener {
-//            override fun onPageScrollStateChanged(state: Int) {
-//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//            }
-//
-//            override fun onPageScrolled(
-//                position: Int,
-//                positionOffset: Float,
-//                positionOffsetPixels: Int
-//            ) {
-//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//            }
-//
-//            override fun onPageSelected(position: Int) {
-//                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-//            }
-//        })
 
         val tabLayout: TabLayout = findViewById(R.id.owned_jobs_tab_layout)
         tabLayout.setupWithViewPager(viewPager)
 
-
-        val tab = tabLayout.getTabAt(0)
+        tabLayout.getTabAt(0)?.let {
+            it.setCustomView(R.layout.fragment_tab_applied_jobs)
+        }
+        tabLayout.getTabAt(1)?.let {
+            it.setCustomView(R.layout.fragment_tab_working_jobs)
+        }
+        tabLayout.getTabAt(2)?.let {
+            it.setCustomView(R.layout.fragment_tab_reported_jobs)
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

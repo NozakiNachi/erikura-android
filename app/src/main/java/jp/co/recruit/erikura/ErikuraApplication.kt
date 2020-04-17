@@ -74,6 +74,8 @@ class ErikuraApplication : Application() {
     //    var userSession: UserSession? = null
     val erikuraComponent: ErikuraComponent = DaggerErikuraComponent.create()
 
+    var reportingJob: Job? = null
+
     override fun onCreate() {
         super.onCreate()
         instance = this

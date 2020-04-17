@@ -1,22 +1,15 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
-import android.content.Context
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 
 import jp.co.recruit.erikura.R
@@ -77,7 +70,7 @@ class ImplementationLocationListFragment : AppCompatActivity() {
 class ImplementationLocationListViewModel( activity: Activity, view: View, summary: OutputSummary, summariesCount: Int, position: Int,val job: Job, val timeLabelType: JobUtil.TimeLabelType): ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
 
-    val goodCount: Int get() = job?.report?.operatorLikeCount ?: 0
+    val goodCount: Int get() = job?.report?.operatorLikesCount ?: 0
     val commentCount: Int get() = job?.report?.operatorCommentsCount ?: 0
     val goodText: String get() = String.format("%,d件", goodCount)
     val commentText: String get() = String.format("%,d件", commentCount)
