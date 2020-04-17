@@ -37,6 +37,7 @@ class WorkingTimeCircleFragment(private val job: Job?) : Fragment(), WorkingTime
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        updateTimer()
         timer.schedule(object : TimerTask() {
             override fun run() {
                 timerHandler.post(Runnable {
@@ -58,8 +59,16 @@ class WorkingTimeCircleFragment(private val job: Job?) : Fragment(), WorkingTime
         job?.let {
             var now = Date()
             var startTime = job.entry?.startedAt?: job.entry?.createdAt?: now
-            var time = now.time - startTime.time
-            viewModel.workingTime.value = String.format("%d分%02d秒", time/(60 * 1000), (time%(60 * 1000))/1000)
+            var diff = now.time - startTime.time
+            // タイマーの表示形式を設定
+            var total_in_seconds = diff / 1000
+            var second = (total_in_seconds % 60).toInt()
+            var minute = (total_in_seconds / 60).toInt()
+            if(minute == 0){
+                viewModel.workingTime.value = String.format("%d秒", second)
+            } else {
+                viewModel.workingTime.value = String.format("%d分%d秒", minute, second)
+            }
         }
     }
 }
