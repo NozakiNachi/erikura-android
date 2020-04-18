@@ -106,6 +106,10 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
+        intent.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
+            viewModel.apply(query)
+        }
+
         // 下部のタブの選択肢を仕事を探すに変更
         val nav: BottomNavigationView = findViewById(R.id.list_view_navigation)
         nav.selectedItemId = R.id.tab_menu_search_jobs
@@ -154,11 +158,21 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
             locationManager.requestPermission(this)
         }
 
-        // FIXME: キーワードが指定されている場合の対策を検討する
-        locationManager.latLng?.let {
-            firstFetchRequested = true
-            val query = viewModel.query(it)
-            fetchJobs(query)
+        if (viewModel.keyword.value.isNullOrBlank()) {
+            // 現在地からの検索の場合
+            locationManager.latLng?.let {
+                firstFetchRequested = true
+                val query = viewModel.query(it)
+                fetchJobs(query)
+            }
+        }
+        else {
+            // キーワードをもとにした緯度経度からの検索
+            viewModel.latLng.value?.let {
+                firstFetchRequested = true
+                val query = viewModel.query(it)
+                fetchJobs(query)
+            }
         }
 
         Log.d("SORT TYPES", viewModel.sortLabels.toString())
@@ -173,9 +187,8 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     override fun onResume() {
         super.onResume()
         locationManager.addLocationUpdateCallback {
-            if (!firstFetchRequested) {
+            if (!firstFetchRequested && !viewModel.keyword.value.isNullOrBlank()) {
                 firstFetchRequested = true
-                // FIXME: キーワードが指定されている場合の対策を検討する
                 val query = viewModel.query(it)
                 fetchJobs(query)
             }
@@ -236,7 +249,7 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         Tracking.track(name= "push_toggle_dispaly")
 
         val intent = Intent(this, MapViewActivity::class.java)
-        // FIXME: 検索条件の引き継ぎについて検討する
+        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         // リストビューは破棄しておきます
         finish()
