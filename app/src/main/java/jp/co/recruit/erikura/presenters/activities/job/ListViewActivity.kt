@@ -158,7 +158,6 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
             locationManager.requestPermission(this)
         }
 
-        // FIXME: キーワードが指定されている場合の対策を検討する
         if (viewModel.keyword.value.isNullOrBlank()) {
             // 現在地からの検索の場合
             locationManager.latLng?.let {
@@ -188,9 +187,8 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     override fun onResume() {
         super.onResume()
         locationManager.addLocationUpdateCallback {
-            if (!firstFetchRequested) {
+            if (!firstFetchRequested && !viewModel.keyword.value.isNullOrBlank()) {
                 firstFetchRequested = true
-                // FIXME: キーワードが指定されている場合の対策を検討する
                 val query = viewModel.query(it)
                 fetchJobs(query)
             }
