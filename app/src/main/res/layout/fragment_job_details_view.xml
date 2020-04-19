@@ -189,7 +189,8 @@
                         android:lineSpacingExtra="10dp"
                         android:textSize="14dp"
                         android:textColor="@color/black"
-                        android:textColorLink="@color/topaz" />
+                        android:textColorLink="@color/topaz"
+                        android:textIsSelectable="true" />
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="44dp"
