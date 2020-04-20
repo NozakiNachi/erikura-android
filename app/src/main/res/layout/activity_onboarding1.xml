@@ -27,10 +27,18 @@
             android:layout_marginRight="20dp"
             android:onClick="@{handlers::onClickSkip}" />
 
+        <ImageView
+            android:layout_width="201dp"
+            android:layout_height="42dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginRight="106dp"
+            android:layout_marginLeft="106dp"
+            android:src="@drawable/stepTitle_2x"/>
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="オンボーディング１"
+            android:text="@string/"
             android:textColor="@color/white"
             android:textSize="22dp"
             />
