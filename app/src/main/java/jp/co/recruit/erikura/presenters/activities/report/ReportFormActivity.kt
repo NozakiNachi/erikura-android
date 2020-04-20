@@ -257,6 +257,7 @@ class ReportFormViewModel: ViewModel() {
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(summaryEditVisibility) {result.value = isValid()}
         result.addSource(summary) { result.value = isValid() }
+        result.addSource(statusId) { result.value = isValid() }
         result.addSource(comment) { result.value = isValid()  }
     }
 
@@ -267,6 +268,7 @@ class ReportFormViewModel: ViewModel() {
         }else {
             summaryError.message.value = null
         }
+        valid = isValidStatusId() && valid
         valid = isValidComment() && valid
         valid = summarySelectedItem != null && evaluationSelectedItem != null && valid
         return valid
@@ -285,6 +287,10 @@ class ReportFormViewModel: ViewModel() {
             summaryError.message.value = null
         }
         return valid
+    }
+
+    private fun isValidStatusId(): Boolean {
+        return !(statusId.value == 0 || statusId.value == null)
     }
 
     private fun isValidComment(): Boolean {
