@@ -32,6 +32,8 @@ open class BaseJobQueryViewModel: ViewModel() {
     }
 
     open fun query(latLng: LatLng): JobQuery {
+        this.latLng.value = latLng
+
         return JobQuery(
             latitude = latLng.latitude,
             longitude = latLng.longitude,
@@ -46,6 +48,17 @@ open class BaseJobQueryViewModel: ViewModel() {
             period = periodType.value
                 ?: PeriodType.ALL
         )
+    }
+
+    open fun clearWithoutPeriod() {
+        keyword.value = null
+        latLng.value = null
+        minimumWorkingTime.value = null
+        maximumWorkingTime.value = null
+        minimumReward.value = null
+        maximumReward.value = null
+        jobKind.value = null
+        sortType.value = null
     }
 
     open fun apply(query: JobQuery) {

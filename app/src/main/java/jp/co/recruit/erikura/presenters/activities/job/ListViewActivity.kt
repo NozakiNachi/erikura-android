@@ -18,6 +18,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.engine.bitmap_recycle.IntegerArrayAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
@@ -350,6 +351,10 @@ class ListViewViewModel : BaseJobQueryViewModel() {
 
     val sortTypes = SortType.values()
     val sortLabels: List<String> = sortTypes.map { ErikuraApplication.applicationContext.getString(it.resourceId) }
+
+    val sortTypeId = MediatorLiveData<Int>().also { result ->
+        result.addSource(sortType) { result.value = sortTypes.indexOf(it) }
+    }
 
     val activeListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val futureListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)

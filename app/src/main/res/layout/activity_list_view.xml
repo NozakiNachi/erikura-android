@@ -57,6 +57,7 @@
                             android:layout_alignParentTop="true"
                             android:spinnerMode="dialog"
                             android:entries="@{viewModel.sortLabels}"
+                            android:selectedItemPosition="@{viewModel.sortTypeId}"
                             android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onItemSelected(parent, view, position, id)}}"
                              />
                     </androidx.constraintlayout.widget.ConstraintLayout>
