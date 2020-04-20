@@ -259,7 +259,11 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             MediaStore.Files.FileColumns._ID,
                             MediaStore.MediaColumns.DISPLAY_NAME,
                             MediaStore.MediaColumns.MIME_TYPE,
-                            MediaStore.MediaColumns.SIZE
+                            MediaStore.MediaColumns.SIZE,
+                            MediaStore.MediaColumns.DATE_TAKEN,
+                            MediaStore.MediaColumns.DATE_ADDED,
+                            MediaStore.MediaColumns.DATE_EXPIRES,
+                            MediaStore.MediaColumns.DATE_MODIFIED
                         ),
                         MediaStore.MediaColumns.SIZE + ">0",
                         arrayOf<String>(),
@@ -277,8 +281,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
                         val size =
                             cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
+                        val takenAt = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_TAKEN))
+                        val a = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_ADDED))
+                        val b = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_EXPIRES))
+                        val c = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_MODIFIED))
+
                         val item =
-                            MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
+                            MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri, photoTakenAt = takenAt.toString())
                         val summary = OutputSummary()
                         summary.photoAsset = item
                         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()

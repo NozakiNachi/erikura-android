@@ -176,7 +176,8 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                         MediaStore.Files.FileColumns._ID,
                         MediaStore.MediaColumns.DISPLAY_NAME,
                         MediaStore.MediaColumns.MIME_TYPE,
-                        MediaStore.MediaColumns.SIZE
+                        MediaStore.MediaColumns.SIZE,
+                        MediaStore.MediaColumns.DATE_TAKEN
                     ),
                     MediaStore.MediaColumns.SIZE + ">0",
                     arrayOf<String>(),
