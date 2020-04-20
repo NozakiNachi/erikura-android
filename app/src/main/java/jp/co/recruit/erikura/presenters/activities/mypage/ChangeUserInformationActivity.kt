@@ -455,18 +455,19 @@ class ChangeUserInformationViewModel : ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
-        if(valid && password.value == null || password.value == ""){
-            valid = true
+        if(valid && password.value.isNullOrBlank()) {
             passwordError.message.value = null
-        }else if (valid && password.value !== null && !(pattern.matcher(password.value).find())) {
-            valid = false
-            passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-        } else if (valid && password.value !== null && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
-            valid = false
-            passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-        } else {
-            valid = true
-            passwordError.message.value = null
+        }else{
+            if(valid && password.value !== null && !(pattern.matcher(password.value).find())) {
+                valid = false
+                passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+            } else if (valid && password.value !== null && (!(alPattern.matcher(password.value).find()) && !(numPattern.matcher(password.value).find()))) {
+                valid = false
+                passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+            } else {
+                valid = true
+                passwordError.message.value = null
+            }
         }
         return valid
     }
@@ -474,12 +475,16 @@ class ChangeUserInformationViewModel : ViewModel() {
     private fun isValidVerificationPassword(): Boolean {
         var valid = true
 
-        if (valid && !(password.value.equals(verificationPassword.value))){
-            valid = false
-            verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
-        }else {
-            valid = true
+        if(valid && password.value.isNullOrBlank() && verificationPassword.value.isNullOrBlank()) {
             verificationPasswordError.message.value = null
+        } else {
+            if (valid && !(password.value.equals(verificationPassword.value))) {
+                valid = false
+                verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+            } else {
+                valid = true
+                verificationPasswordError.message.value = null
+            }
         }
         return valid
     }
