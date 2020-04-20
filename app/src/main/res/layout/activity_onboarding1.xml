@@ -15,8 +15,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/pumpkinOrange"
+        android:background="@drawable/background_onboarding_gradation"
         android:orientation="vertical">
+
+        <Button
+            style="@style/onboardingSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginTop="40dp"
+            android:layout_marginRight="20dp"
+            android:onClick="@{handlers::onClickSkip}" />
 
         <TextView
             android:layout_width="match_parent"
@@ -30,7 +39,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="40dp"
             style="@style/secondaryButton"
-            android:text="次へ"
+            android:text="進む"
             android:onClick="@{handlers::onClickNext}"
             />
     </LinearLayout>

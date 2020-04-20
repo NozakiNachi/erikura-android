@@ -17,7 +17,6 @@ import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import java.util.*
 
 class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
-    val timer: Timer = Timer()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,29 +33,15 @@ class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
         Tracking.view(name= "/intro/description_5", title= "オンボーディング画面（ステップ5）")
     }
 
-    override fun onResume() {
-        super.onResume()
-
-//        timer.schedule(object: TimerTask() {
-//            override fun run() {
-//                AndroidSchedulers.mainThread().scheduleDirect {
-//                    startNextActivity()
-//                }
-//            }
-//        }, 5000)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        timer.cancel()
-    }
-
     override fun onClickNext(view: View) {
         startNextActivity()
     }
 
-    fun startNextActivity() {
-        timer.cancel()
+    override fun onClickSkip(view: View) {
+        startNextActivity()
+    }
+
+    private fun startNextActivity() {
         ErikuraApplication.instance.setOnboardingDisplayed(true)
         Intent(this, MapViewActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -67,4 +52,5 @@ class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
 
 interface Onboarding5Handlers {
     fun onClickNext(view: View)
+    fun onClickSkip(view: View)
 }
