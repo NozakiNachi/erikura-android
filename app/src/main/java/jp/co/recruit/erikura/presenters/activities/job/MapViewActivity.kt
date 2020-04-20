@@ -86,7 +86,8 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         binding.coachViewModel = coachViewModel
 
         intent.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
-            query.sortBy = SortType.DISTANCE_ASC
+            // リストからの切替時に、ソート条件も引き継ぐ (ERIKURA-1051)
+            // query.sortBy = SortType.DISTANCE_ASC
             viewModel.apply(query)
         }
 
@@ -440,8 +441,9 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
     override fun onClickReSearch(view: View) {
         val position = mMap.cameraPosition
-        viewModel.keyword.value = null
-        viewModel.latLng.value = position.target
+        // 募集中/すべてのフラグ以外は検索条件をクリアします
+        viewModel.clearWithoutPeriod()
+        viewModel.clearWithoutPeriod()
         fetchJobs(viewModel.query(position.target))
     }
 
