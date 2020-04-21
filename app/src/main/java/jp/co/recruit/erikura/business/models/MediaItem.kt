@@ -9,14 +9,11 @@ import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.widget.ImageView
-import androidx.core.net.toUri
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import jp.co.recruit.erikura.business.util.UrlUtils
 import kotlinx.android.parcel.Parcelize
 import java.io.ByteArrayOutputStream
-import java.io.FileOutputStream
-import java.net.URL
 
 
 @Parcelize

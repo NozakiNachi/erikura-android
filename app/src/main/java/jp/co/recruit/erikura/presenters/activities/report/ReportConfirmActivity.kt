@@ -1,8 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -30,7 +32,6 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
-import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
@@ -239,6 +240,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         }
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -277,10 +279,17 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
                         val size =
                             cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
+                        val cr = getContentResolver().openInputStream(uri)
+                        val exifInterface = ExifInterface(cr)
+                        val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
+                        val takenAt = SimpleDateFormat("yyyy:MM:dd HH:mm").parse(takenAtString?: "")
+
                         val item =
                             MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
                         val summary = OutputSummary()
                         summary.photoAsset = item
+                        summary.photoTakedAt = takenAt
+
                         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
                         outputSummaryList =
                             job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
