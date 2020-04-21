@@ -22,11 +22,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="300dp"
-            android:layout_marginRight="72dp"
-            android:layout_marginLeft="72dp"
             android:text="これからエリクラの\n説明が始まります"
             android:textColor="@color/white"
             android:textSize="30dp"
+            android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
             android:layout_gravity="center_horizontal"
             android:gravity="center_horizontal"
             />

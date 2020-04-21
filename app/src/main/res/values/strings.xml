@@ -444,4 +444,11 @@
     <string name="default_notification_channel_description">エリクラからの通知</string>
 
     <string name="amazon_url">s3-ap-northeast-1.amazonaws.com</string>
+
+    <!--オンボーディング画面-->
+    <string name="onboarding_1_explain">エリクラは、清掃などの\n短時間のお仕事で\n報酬がもらえるアプリ！</string>
+    <string name="onboarding_2_explain">まずは\n地図上のピンを押して\nお仕事を探そう！</string>
+    <string name="onboarding_4_explain">応募した後は、\n24時間以内に\n現地でお仕事を実行！</string>
+    <string name="onboarding_5_explain">終わったら、写真を\n撮って作業報告！\n翌月末に報酬GET！</string>
+
 </resources>
