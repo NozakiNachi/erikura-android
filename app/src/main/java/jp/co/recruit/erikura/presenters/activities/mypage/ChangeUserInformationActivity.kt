@@ -201,8 +201,8 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         Api(this).updateUser(user) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             intent.putExtra("onClickChangeUserInformationFragment", true)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-            finish()
         }
     }
 
