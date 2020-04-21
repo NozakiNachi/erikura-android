@@ -19,7 +19,9 @@
         android:layout_height="match_parent"
         android:background="@color/paleGrey"
         android:fitsSystemWindows="true"
-        tools:context=".presenters.activities.LoginActivity">
+        tools:context=".presenters.activities.LoginActivity"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
 
         <ScrollView
             android:layout_width="match_parent"
