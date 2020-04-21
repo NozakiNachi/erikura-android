@@ -20,7 +20,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="0dp"
             app:layout_goneMarginTop="0dp"
-            android:src="@drawable/search_button_2x"
+            android:src="@drawable/search_button_500w"
             />
         
         <androidx.recyclerview.widget.RecyclerView

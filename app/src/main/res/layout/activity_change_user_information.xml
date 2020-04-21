@@ -15,7 +15,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -51,6 +53,7 @@
                             android:textColor="@color/black"
                             android:text="会員情報変更" />
                     </LinearLayout>
+
 
                     <!--ログインID(登録メールアドレスを表示する。)-->
                     <TextView
@@ -212,6 +215,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="62dp"
                         android:layout_marginTop="10dp"
+                        android:focusable="false"
                         android:onClick="@{handlers::onClickBirthdayEditView}"
                         android:text="@={viewModel.dateOfBirth}"
                         />
