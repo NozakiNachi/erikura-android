@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -29,9 +30,7 @@ import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
-import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -39,7 +38,7 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
-import java.util.*
+import java.text.SimpleDateFormat
 import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
@@ -189,7 +188,11 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         viewModel.imageMap.forEach { (k, v) ->
             val summary = OutputSummary()
             summary.photoAsset = v
-            summary.photoTakedAt = Date()
+            val cr = getContentResolver().openInputStream(v.contentUri?: Uri.EMPTY)
+            val exifInterface = ExifInterface(cr)
+            val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
+            val takenAt = SimpleDateFormat("yyyy:MM:dd HH:mm").parse(takenAtString)
+            summary.photoTakedAt = takenAt
             summary.latitude = locationManager.latLng?.latitude
             summary.longitude = locationManager.latLng?.longitude
             outputSummaryList.add(summary)
