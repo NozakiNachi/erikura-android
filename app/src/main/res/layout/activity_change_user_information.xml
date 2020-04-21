@@ -45,6 +45,10 @@
                         android:text="会員情報変更" />
                 </LinearLayout>
 
+                <EditText
+                    android:id="@+id/focusView"
+                    android:layout_width="1dp"
+                    android:layout_height="1dp" />
 
                 <!--ログインID(登録メールアドレスを表示する。)-->
                 <TextView
