@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -53,7 +52,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
-
     }
 
     override fun onStart() {
@@ -84,16 +82,19 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     // 所在地
     override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if (!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
-            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                viewModel.city.value = city
-                viewModel.street.value = street
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (user.postcode != viewModel.postalCode.value && viewModel.postalCode.value?.length ?: 0 == 7) {
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
 
-                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                streetEditText.requestFocus()
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
+                }
             }
-        }
+        })
     }
 
     private fun getPrefectureId(prefecture: String): Int {
