@@ -362,9 +362,9 @@ class ListViewViewModel : BaseJobQueryViewModel() {
     val activeOnlyButtonBackground = MediatorLiveData<Drawable>().also { result ->
         result.addSource(periodType) {
             result.value = when (it) {
-                PeriodType.ALL -> resources.getDrawable(R.drawable.before_open_2x, null)
-                PeriodType.ACTIVE -> resources.getDrawable(R.drawable.before_entry_2x_on, null)
-                else -> resources.getDrawable(R.drawable.before_open_2x, null)
+                PeriodType.ALL -> resources.getDrawable(R.drawable.before_open_500w, null)
+                PeriodType.ACTIVE -> resources.getDrawable(R.drawable.before_entry_500w_on, null)
+                else -> resources.getDrawable(R.drawable.before_open_500w, null)
             }
         }
     }
