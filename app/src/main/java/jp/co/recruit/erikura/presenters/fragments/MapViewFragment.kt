@@ -50,6 +50,10 @@ class MapViewFragment(private val activity: AppCompatActivity, val job: Job?) : 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.setScrollGesturesEnabled(false)
+        mMap.uiSettings.setZoomControlsEnabled(false)
+        mMap.uiSettings.setZoomGesturesEnabled(false)
+        mMap.uiSettings.setTiltGesturesEnabled(false)
+        mMap.uiSettings.setRotateGesturesEnabled(false)
         mMap.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(job?.latitude?: 0.0, job?.longitude?: 0.0),
