@@ -456,18 +456,23 @@ class ChangeUserInformationViewModel : ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
+        val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
+        val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
+
         if(valid && password.value.isNullOrBlank()) {
             passwordError.message.value = null
         }else{
-            if(valid && password.value !== null && !(pattern.matcher(password.value).find())) {
-                valid = false
-                passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-            } else if (valid && password.value !== null && (!(alPattern.matcher(password.value).find()) && !(numPattern.matcher(password.value).find()))) {
-                valid = false
-                passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-            } else {
-                valid = true
-                passwordError.message.value = null
+            password.value?.let { pwd ->
+                if(valid && !(pattern.matcher(pwd).find())) {
+                    valid = false
+                    passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+                } else if (valid && !(hasAlphabet(pwd) && hasNumeric(pwd))) {
+                    valid = false
+                    passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+                } else {
+                    valid = true
+                    passwordError.message.value = null
+                }
             }
         }
         return valid
