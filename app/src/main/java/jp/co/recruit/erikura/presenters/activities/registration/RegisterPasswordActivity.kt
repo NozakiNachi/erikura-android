@@ -97,13 +97,16 @@ class RegisterPasswordViewModel: ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
+        val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
+        val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
+
         if (valid && password.value?.isBlank() ?:true) {
             valid = false
             error.message.value = null
         }else if(valid && !(pattern.matcher(password.value).find())) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-        }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
+        }else if(valid && !(hasAlphabet(password.value ?: "") && hasNumeric(password.value ?: ""))) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
         } else {
