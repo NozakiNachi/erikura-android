@@ -56,7 +56,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         binding.handlers = this
         binding.viewModel = viewModel
 
-        focusView = findViewById(R.id.focusView)
+        focusView = findViewById(R.id.change_user_information_focusView)
         focusView.requestFocus()
     }
 
@@ -89,7 +89,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val view = this.currentFocus
         if (view != null) {
-            val focusView = findViewById<EditText>(R.id.focusView)
+            val focusView = findViewById<EditText>(R.id.change_user_information_focusView)
             focusView.requestFocus()
 
             val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager

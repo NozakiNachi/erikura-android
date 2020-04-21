@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <EditText
-                android:id="@+id/focusView"
+                android:id="@+id/change_user_information_focusView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
             <ScrollView
