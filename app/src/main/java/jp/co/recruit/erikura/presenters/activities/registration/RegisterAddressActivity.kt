@@ -69,7 +69,7 @@ class RegisterAddressActivity : BaseActivity(),
         Log.v("STREET", viewModel.street.value ?: "")
         user.street = viewModel.street.value
 
-        val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
+        val intent: Intent = Intent(this@RegisterAddressActivity, RegisterSmsVerifyActivity::class.java)
         intent.putExtra("user", user)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
 

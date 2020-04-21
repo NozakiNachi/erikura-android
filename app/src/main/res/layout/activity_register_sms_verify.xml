@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presenters.activities.registration.RegisterSmsVerifyActivity"
+    >
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyViewModel"/>
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyEventHandlers" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
+                android:layout_marginRight="29dp"
+                android:layout_marginLeft="20dp"
+                android:text="@string/registerSmsVerify_title"
+                android:textColor="@color/black"
+                android:textSize="22dp"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"/>
+
+            <TextView
+                android:id="@+id/registerSmsVerify_caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:layout_marginRight="29dp"
+                android:layout_marginLeft="20dp"
+                android:textColor="@color/black"
+                android:textSize="18dp"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/fieldLabel"
+                android:layout_marginTop="40dp"
+                android:text="@string/passcode" />
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="62dp"
+                style="@style/textField"
+                android:layout_marginTop="10dp"
+                android:text="@={viewModel.pass_code}"
+                android:hint="@string/register_passcode_hint"
+                android:inputType="number"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginBottom="40dp"
+                style="@style/primaryButton"
+                android:text="@string/authenticate"
+                android:onClick="@{handlers::onClickAuthenticate}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:textSize="14dp"
+                style="@style/linkText"
+                android:text="@string/registerSmsVerify_passcode_resend"
+                android:onClick="@{handlers::onClickPassCodeResend}"
+                android:layout_gravity="center_horizontal"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="308dp"
+                android:textSize="14dp"
+                style="@style/linkText"
+                android:text="@string/registerSmsVerify_register_phone"
+                android:onClick="@{handlers::onClickRegisterPhone}"
+                android:layout_gravity="center_horizontal"
+                />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

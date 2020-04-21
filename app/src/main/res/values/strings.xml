@@ -51,6 +51,7 @@
 
     <!-- 電話番号登録画面 -->
     <string name="registerPhone_caption">電話番号を教えてください。</string>
+    <string name="registerCellPhone_caption">携帯電話の番号を教えてください。\n後ほどSMS認証を行います。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
 
     <!-- 職業登録画面 -->
@@ -58,6 +59,11 @@
 
     <!-- 希望する仕事登録画面 -->
     <string name="registerWishWork_caption">どんなお仕事がやってみたいか教えてください。（複数回答可）</string>
+
+    <!-- SMS認証画面 -->
+    <string name="registerSmsVerify_title">SMS認証</string>
+    <string name="registerSmsVerify_passcode_resend">パスコードを再送する</string>
+    <string name="registerSmsVerify_register_phone">電話番号を編集する</string>
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
@@ -209,6 +215,7 @@
     <string name="city">ご住所</string>
     <string name="street">番地以降</string>
     <string name="phone">電話番号</string>
+    <string name="passcode">パスコード</string>
     <string name="cancelReason">キャンセル理由</string>
     <string name="cancelReasonDetail">具体的なキャンセル理由</string>
     <string name="summary_select">箇所</string>
@@ -232,6 +239,8 @@
     <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
     <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
     <string name="password_verificationPassword_match_error">パスワードと同じものを入力してください。</string>
+    <string name="passcode_pattern_error">パスコードは数字で入力してください。</string>
+    <string name="passcode_count_error">パスコードは4桁で入力してください。</string>
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
     <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>
@@ -316,6 +325,7 @@
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>
+    <string name="authenticate">認証</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -330,6 +340,7 @@
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
     <string name="register_phone_hint">例）08046015529</string>
+    <string name="register_passcode_hint">例）1234</string>
     <string name="cancel_reason_hint">例）急用が入り仕事が完了できなくなった</string>
     <string name="other_hint">その他(自由記入)</string>
     <string name="summary_hint">例）エレベータ</string>

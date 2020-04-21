@@ -57,7 +57,7 @@
                         android:layout_marginTop="24dp"
                         android:layout_marginBottom="10dp"
                         style="@style/titleLabel"
-                        android:text="@string/registerPhone_caption" />
+                        android:text="@string/registerCellPhone_caption" />
                 </LinearLayout>
 
                 <View
