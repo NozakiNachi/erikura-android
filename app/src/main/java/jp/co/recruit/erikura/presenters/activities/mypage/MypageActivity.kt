@@ -38,6 +38,10 @@ import kotlinx.android.synthetic.main.activity_mypage.*
 import java.util.*
 
 class MypageActivity : BaseActivity(), MypageEventHandlers {
+    companion object {
+        val FROM_MYPAGE_KEY = "fromMypage"
+    }
+
     private lateinit var informationListView: RecyclerView
     private lateinit var informationListAdapter: InformationAdapter
 
@@ -48,23 +52,26 @@ class MypageActivity : BaseActivity(), MypageEventHandlers {
     var mypageItems: List<MypageItem> = listOf(
         MypageItem(0, "お支払情報", R.drawable.ic_account, true) {
             Intent(this, PaymentInformationActivity::class.java).let {
+                it.putExtra(FROM_MYPAGE_KEY, true)
                 startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         },
         MypageItem(1, "お気に入り", R.drawable.icon_star_18, true) {
-            // FIXME: 正しいリンク先の作成
             val intent = Intent(this, FavoritePlacesActivity::class.java)
+            intent.putExtra(FROM_MYPAGE_KEY, true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
         MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
             Intent(this, OwnJobsActivity::class.java).let { intent ->
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra(FROM_MYPAGE_KEY, true)
                 intent.putExtra("fromMypageJobCommentGoodButton", true)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         },
         MypageItem(3, "設定", R.drawable.ic_preferences, true) {
             val intent = Intent(this, ConfigurationActivity::class.java)
+            intent.putExtra(FROM_MYPAGE_KEY, true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     )
