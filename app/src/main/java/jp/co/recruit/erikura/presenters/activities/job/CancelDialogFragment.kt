@@ -47,7 +47,7 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
                 val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(view.windowToken, 0)
             }
-            return@setOnTouchListener true
+            return@setOnTouchListener false
         }
 
         val builder = AlertDialog.Builder(activity)

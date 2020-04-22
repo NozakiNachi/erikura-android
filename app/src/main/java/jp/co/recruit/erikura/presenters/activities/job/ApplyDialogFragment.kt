@@ -57,7 +57,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                 val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.hideSoftInputFromWindow(view.windowToken, 0)
             }
-            return@setOnTouchListener true
+            return@setOnTouchListener false
         }
 
         val builder = AlertDialog.Builder(activity)
