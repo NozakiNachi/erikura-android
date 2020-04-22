@@ -35,7 +35,6 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
-import jp.co.recruit.erikura.business.models.SortType
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
