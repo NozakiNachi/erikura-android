@@ -3,9 +3,6 @@ package jp.co.recruit.erikura.presenters.activities
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.RelativeSizeSpan
 import android.util.Log
 import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
@@ -16,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
@@ -131,14 +127,20 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
         }
 
         Api(this).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
+            val transaction = supportFragmentManager.beginTransaction()
             if (!jobs.isNullOrEmpty()) {
-                val transaction = supportFragmentManager.beginTransaction()
                 val sortedJobs = jobs.sortedBy{
                     it.entry?.limitAt
                 }.first()
                 val timerCircle = WorkingTimeCircleFragment(sortedJobs)
                 transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
                 transaction.commit()
+            }else {
+                val fragment = supportFragmentManager.findFragmentByTag("timerCircle")
+                fragment?.let {
+                    transaction.remove(fragment)
+                    transaction.commit()
+                }
             }
         }
     }
