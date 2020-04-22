@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Parcelable
 import android.provider.MediaStore
 import android.widget.ImageView
+import androidx.core.database.getLongOrNull
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import jp.co.recruit.erikura.business.util.UrlUtils
@@ -17,7 +18,7 @@ import java.io.ByteArrayOutputStream
 
 
 @Parcelize
-data class MediaItem(val id: Long = 0, val mimeType: String = "", val size: Long = 0, val contentUri: Uri? = null) :
+data class MediaItem(val id: Long = 0, val mimeType: String = "", val size: Long = 0, val contentUri: Uri? = null, val dateAdded: Long? = null, val dateTaken: Long? = null) :
     Parcelable {
     companion object {
         fun from(cursor: Cursor): MediaItem {
@@ -25,8 +26,10 @@ data class MediaItem(val id: Long = 0, val mimeType: String = "", val size: Long
             val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
             val size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
             val uri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id)
+            val dateAdded = cursor.getLongOrNull(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_ADDED))
+            val dateTaken = cursor.getLongOrNull(cursor.getColumnIndex(MediaStore.MediaColumns.DATE_TAKEN))
 
-            return MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
+            return MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri, dateAdded = dateAdded, dateTaken = dateTaken)
         }
     }
 
