@@ -206,12 +206,12 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             summary.photoTakedAt = takenAt
             summary.latitude = latitude?.let { lat ->
                 latitudeRef?.let { ref ->
-                    exifLatitudeToDegrees(ref, lat)
+                    MediaItem.exifLatitudeToDegrees(ref, lat)
                 }
             }
             summary.longitude = longitude?.let { lon ->
                 longitudeRef?.let { ref ->
-                    exifLongitudeToDegrees(ref, lon)
+                    MediaItem.exifLongitudeToDegrees(ref, lon)
                 }
             }
             outputSummaryList.add(summary)
@@ -234,35 +234,6 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    fun parseExifHourMinSrcToDegrees(hourMinSec: String): Double {
-        val (hourStr, minStr, secStr) = hourMinSec.split(",")
-        val (hourN, hourD) = hourStr.split("/").map { it.toInt() }
-        val (minN,  minD)  = minStr.split("/").map { it.toInt() }
-        val (secN,  secD)  = secStr.split("/").map { it.toInt() }
-        val hour = hourN.toDouble() / hourD.toDouble()
-        val min  = minN.toDouble() / minD.toDouble()
-        val sec  = secN.toDouble() / secD.toDouble()
-        return hour + (min / 60.0) + (sec / 3600.0)
-    }
-
-    fun exifLatitudeToDegrees(ref: String, latitude: String): Double {
-        return if (ref == "S") {
-            -1.0 * parseExifHourMinSrcToDegrees(latitude)
-        }
-        else {
-            1.0  * parseExifHourMinSrcToDegrees(latitude)
-        }
-    }
-
-    fun exifLongitudeToDegrees(ref: String, longitude: String): Double {
-        return if (ref == "W") {
-            -1.0 * parseExifHourMinSrcToDegrees(longitude)
-        }
-        else {
-            1.0  * parseExifHourMinSrcToDegrees(longitude)
-        }
     }
 }
 

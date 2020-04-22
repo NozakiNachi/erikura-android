@@ -3,10 +3,12 @@ package jp.co.recruit.erikura.presenters.activities.report
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
+import android.content.ContentResolver
 import android.content.Intent
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
@@ -14,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import androidx.core.database.getLongOrNull
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -255,40 +258,50 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             GET_FILE -> {
                 val uri = data?.data
                 uri?.let {
-                    val cursor = this.contentResolver.query(
-                        uri,
+                    val id = DocumentsContract.getDocumentId(uri)
+                    val cursor = contentResolver.query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         arrayOf(
                             MediaStore.Files.FileColumns._ID,
                             MediaStore.MediaColumns.DISPLAY_NAME,
                             MediaStore.MediaColumns.MIME_TYPE,
-                            MediaStore.MediaColumns.SIZE
+                            MediaStore.MediaColumns.SIZE,
+                            MediaStore.Files.FileColumns.DATE_ADDED,
+                            MediaStore.MediaColumns.DATE_TAKEN
                         ),
-                        MediaStore.MediaColumns.SIZE + ">0",
-                        arrayOf<String>(),
-                        "datetaken DESC"
+                        "_id=?", arrayOf(id.split(":")[1]), null
                     )
-
                     cursor?.moveToFirst()
                     cursor?.let {
-                        // val item = MediaItem.from(cursor)
-                        // MEMO: cursorを渡すとIDの値が0になるので手動で値を入れています
-                        val uriString = uri.toString()
-                        val arr = uriString.split("%3A")
-                        val id = arr.last().toLong()
-                        val mimeType =
-                            cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
-                        val size =
-                            cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
-                        val cr = getContentResolver().openInputStream(uri)
-                        val exifInterface = ExifInterface(cr)
-                        val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-                        val takenAt = SimpleDateFormat("yyyy:MM:dd HH:mm").parse(takenAtString?: "")
-
-                        val item =
-                            MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
+                        val item = MediaItem.from(cursor)
                         val summary = OutputSummary()
                         summary.photoAsset = item
+
+                        val cr = contentResolver.openInputStream(uri)
+                        val exifInterface = ExifInterface(cr)
+                        val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
+                        val takenAt = takenAtString?.let {
+                            SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
+                        } ?: item.dateTaken?.let {
+                            Date(item.dateTaken)
+                        } ?: item.dateAdded?.let {
+                            Date(item.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
+                        }
+                        val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+                        val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+                        val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+                        val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
                         summary.photoTakedAt = takenAt
+                        summary.latitude = latitude?.let { lat ->
+                            latitudeRef?.let { ref ->
+                                MediaItem.exifLatitudeToDegrees(ref, lat)
+                            }
+                        }
+                        summary.longitude = longitude?.let { lon ->
+                            longitudeRef?.let { ref ->
+                                MediaItem.exifLongitudeToDegrees(ref, lon)
+                            }
+                        }
 
                         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
                         outputSummaryList =
