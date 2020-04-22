@@ -111,9 +111,8 @@ class AppliedJobDetailsFragment(
     override fun onResume() {
         super.onResume()
         ErikuraApplication.pedometerManager.start()
-        if (ErikuraApplication.pedometerManager.checkPermission(activity)) {
-            allowPedometerDialog?.dismiss()
-        }
+        allowPedometerDialog?.dismiss()
+        allowPedometerDialog = null
     }
 
     override fun onPause() {
