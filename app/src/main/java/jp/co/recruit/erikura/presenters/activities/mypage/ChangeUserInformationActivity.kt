@@ -163,7 +163,10 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     override fun onClickRegister(view: View) {
         // パスワード
-        user.password = viewModel.password.value
+        if(!viewModel.password.value.isNullOrBlank()) {
+            // パスワードが設定されている場合のみ、更新するようにします
+            user.password = viewModel.password.value
+        }
         // 氏名
         user.lastName = viewModel.lastName.value
         user.firstName = viewModel.firstName.value
