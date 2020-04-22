@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +17,7 @@ import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.databinding.FragmentMarkerBinding
 import jp.co.recruit.erikura.presenters.view_models.JobDetailMarkerView
 import jp.co.recruit.erikura.presenters.view_models.MarkerViewModel
+import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.util.*
@@ -66,10 +66,9 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
         val markerUrl = markerViewModel.markerUrl
 
         return assetsManager.lookupAsset(markerUrl)?.let {
-            val bitmap = BitmapFactory.decodeFile(it.path)
             marker = map.addMarker(
                 MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    .icon(BitmapDescriptorFactory.fromPath(it.path))
                     .position(job.latLng)
             )
             marker
@@ -90,14 +89,12 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
         return assetsManager.lookupAsset(markerUrl)?.let {
             activity.run {
-                val bitmap = BitmapFactory.decodeFile(it.path)
-                marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
             }
         } ?: run {
             buildMarkerImage() {
                 activity.run {
-                    val bitmap = BitmapFactory.decodeFile(it.path)
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bitmap))
+                    marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
                 }
             }
         }
@@ -123,38 +120,19 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
     private fun buildMarkerImageImpl(callback: (Asset) -> Unit, markerUrl: String, viewModel: MarkerViewModel, saveCache: Boolean) {
         val lifecycleOwner = activity
 
-        val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { activity, _urlString, type, onComplete ->
-            val binding = FragmentMarkerBinding.inflate(activity.layoutInflater, null, false)
-            binding.lifecycleOwner = lifecycleOwner
-            binding.viewModel = viewModel
-
-            binding.executePendingBindings()
-
-            val markerView = binding.root
-            markerView.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-            )
-            markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
-
-            val markerImage = markerView.drawToBitmap(Bitmap.Config.ARGB_8888)
-
-            val dest = assetsManager.generateDownloadFile()
+        val downloadHandler: (Activity, String, Asset.AssetType, (Asset) -> Unit) -> Unit = { _, _, type, onComplete ->
+            val dest = generateMarkerImage(viewModel)
             try {
-                FileOutputStream(dest).use { out ->
-                    markerImage.compress(Bitmap.CompressFormat.PNG, 100, out)
-                    out.flush()
-                }
-
                 if (saveCache) {
                     assetsManager.removeExpiredCache(type)
+                    lateinit var asset: Asset
                     assetsManager.realm.executeTransaction { realm ->
-                        val asset = realm.createObject(Asset::class.java, markerUrl)
+                        asset = realm.where(Asset::class.java).equalTo("url", markerUrl).findFirst() ?: realm.createObject(Asset::class.java, markerUrl)
                         asset.path = dest.path
                         asset.lastAccessedAt = Date()
                         asset.type = type
-                        onComplete(asset)
                     }
+                    onComplete(asset)
                 }
                 else {
                     val asset = Asset()
@@ -162,17 +140,41 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
                     asset.path = dest.path
                     asset.lastAccessedAt = Date()
                     asset.type = type
+
                     onComplete(asset)
 
                     dest.delete()
                 }
             } catch (e: IOException) {
-                Log.e("Error", e.message, e)
-                // FIXME: エラー処理として何をするべきか?
+                Log.e("ERIKURA", "Marker Image Creation Failed: ${e.message}", e)
             }
         }
         assetsManager.downloadAsset(activity, markerUrl, Asset.AssetType.Marker, downloadHandler) { asset ->
             callback(asset)
         }
+    }
+
+    private fun generateMarkerImage(viewModel: MarkerViewModel): File {
+        val binding = FragmentMarkerBinding.inflate(activity.layoutInflater, null, false)
+        binding.lifecycleOwner = activity
+        binding.viewModel = viewModel
+
+        binding.executePendingBindings()
+
+        val markerView = binding.root
+        markerView.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        markerView.layout(0, 0, markerView.measuredWidth, markerView.measuredHeight)
+
+        val markerImage = markerView.drawToBitmap(Bitmap.Config.ARGB_8888)
+        val dest = assetsManager.generateDownloadFile()
+        FileOutputStream(dest).use { out ->
+            markerImage.compress(Bitmap.CompressFormat.PNG, 100, out)
+            out.flush()
+        }
+
+        return dest
     }
 }
