@@ -6,14 +6,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.AttributeSet
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.AccelerateInterpolator
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -106,7 +107,22 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             }
         }
 
-        val layoutManager = LinearLayoutManagerExt(this)
+        val layoutManager = object: LinearLayoutManager(this) {
+            override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
+                val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
+                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+                        val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
+                        val current = layoutManager.findFirstCompletelyVisibleItemPosition()
+                        val diff = Math.abs(current - position)
+                        val width = displayMetrics?.widthPixels ?: 1
+
+                        return 1000.0f / (diff * width)
+                    }
+                }
+                speedUpSmoothScroller.setTargetPosition(position);
+                startSmoothScroll(speedUpSmoothScroller)
+            }
+        }
         layoutManager.orientation = RecyclerView.HORIZONTAL
 
         carouselView = findViewById(R.id.map_view_carousel)
@@ -119,9 +135,15 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
 
         carouselView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
 
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    animateCamera()
+                }
+            }
+
+            fun animateCamera() {
                 val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
 
@@ -130,7 +152,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
                     val job = adapter.data[position]
                     Log.v("VISIBLE JOB: ", job.toString())
 
-                    this@MapViewActivity.runOnUiThread{
+                    this@MapViewActivity.runOnUiThread {
                         if (::mMap.isInitialized) {
                             mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
                         }
@@ -641,37 +663,5 @@ class MapViewCoachViewModel: ViewModel() {
 
     fun tap(view: View) {
         this.next()
-    }
-}
-
-class LinearLayoutManagerExt : LinearLayoutManager {
-    constructor(context: Context): super(context)
-    constructor(context: Context, orientation: Int, reverseLayout: Boolean): super(context, orientation, reverseLayout)
-    constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int, defStyleRes: Int): super(context, attrs, defStyleAttr, defStyleRes)
-
-    override fun smoothScrollToPosition(
-        recyclerView: RecyclerView, state: RecyclerView.State?,
-        position: Int
-    ) {
-        val linearSmoothScroller =
-            OneTimeSmoothScroller(recyclerView)
-        linearSmoothScroller.targetPosition = position
-        startSmoothScroll(linearSmoothScroller)
-    }
-
-}
-
-class OneTimeSmoothScroller(recyclerView: RecyclerView) : LinearSmoothScroller(recyclerView.context) {
-    private var isScrolled: Boolean = false
-
-    override fun updateActionForInterimTarget(action: Action) {
-        if (isScrolled) {
-            action.jumpTo(targetPosition)
-        } else {
-            super.updateActionForInterimTarget(action)
-            action.duration *= 2  // 動きが分かりやすいよう時間を2倍にする
-            action.interpolator = AccelerateInterpolator(1.5F)
-            isScrolled = true
-        }
     }
 }
