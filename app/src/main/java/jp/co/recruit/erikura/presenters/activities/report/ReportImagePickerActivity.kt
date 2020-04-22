@@ -39,6 +39,7 @@ import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
@@ -191,10 +192,28 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             val cr = getContentResolver().openInputStream(v.contentUri?: Uri.EMPTY)
             val exifInterface = ExifInterface(cr)
             val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-            val takenAt = SimpleDateFormat("yyyy:MM:dd HH:mm").parse(takenAtString)
+            val takenAt = takenAtString?.let {
+                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
+            } ?: v.dateTaken?.let {
+                Date(v.dateTaken)
+            } ?: v.dateAdded?.let {
+                Date(v.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
+            }
+            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
             summary.photoTakedAt = takenAt
-            summary.latitude = locationManager.latLng?.latitude
-            summary.longitude = locationManager.latLng?.longitude
+            summary.latitude = latitude?.let { lat ->
+                latitudeRef?.let { ref ->
+                    MediaItem.exifLatitudeToDegrees(ref, lat)
+                }
+            }
+            summary.longitude = longitude?.let { lon ->
+                longitudeRef?.let { ref ->
+                    MediaItem.exifLongitudeToDegrees(ref, lon)
+                }
+            }
             outputSummaryList.add(summary)
         }
 
@@ -253,7 +272,9 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.SIZE
+                MediaStore.MediaColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_ADDED,
+                MediaStore.MediaColumns.DATE_TAKEN
             ),
             MediaStore.MediaColumns.SIZE + ">0",
             arrayOf<String>(),
