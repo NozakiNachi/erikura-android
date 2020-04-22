@@ -10,9 +10,12 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.InverseBindingAdapter
@@ -81,6 +84,18 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
         Api(this).jobKinds { jobKinds ->
             viewModel.jobKinds.value = jobKinds
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val layout = findViewById<ConstraintLayout>(R.id.search_job_layout)
+            layout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(layout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     fun getHistoryItems(limit: Int = 3): List<SearchHistory> {
