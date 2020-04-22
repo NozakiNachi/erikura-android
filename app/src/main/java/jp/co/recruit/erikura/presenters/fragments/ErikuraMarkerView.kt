@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -69,7 +68,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
         return assetsManager.lookupAsset(markerUrl)?.let {
             marker = map.addMarker(
                 MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromFile(it.path))
+                    .icon(BitmapDescriptorFactory.fromPath(it.path))
                     .position(job.latLng)
             )
             marker
@@ -90,14 +89,12 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
         return assetsManager.lookupAsset(markerUrl)?.let {
             activity.run {
-                val bmp = BitmapFactory.decodeFile(it.path)
-                marker.setIcon(BitmapDescriptorFactory.fromBitmap(bmp))
+                marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
             }
         } ?: run {
             buildMarkerImage() {
                 activity.run {
-                    val bmp = BitmapFactory.decodeFile(it.path)
-                    marker.setIcon(BitmapDescriptorFactory.fromBitmap(bmp))
+                    marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
                 }
             }
         }
@@ -128,14 +125,14 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
             try {
                 if (saveCache) {
                     assetsManager.removeExpiredCache(type)
+                    lateinit var asset: Asset
                     assetsManager.realm.executeTransaction { realm ->
-                        val asset = realm.where(Asset::class.java).equalTo("url", markerUrl).findFirst() ?: realm.createObject(Asset::class.java, markerUrl)
+                        asset = realm.where(Asset::class.java).equalTo("url", markerUrl).findFirst() ?: realm.createObject(Asset::class.java, markerUrl)
                         asset.path = dest.path
                         asset.lastAccessedAt = Date()
                         asset.type = type
-
-                        onComplete(asset)
                     }
+                    onComplete(asset)
                 }
                 else {
                     val asset = Asset()
@@ -143,6 +140,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
                     asset.path = dest.path
                     asset.lastAccessedAt = Date()
                     asset.type = type
+
                     onComplete(asset)
 
                     dest.delete()
