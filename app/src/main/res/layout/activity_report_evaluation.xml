@@ -13,8 +13,11 @@
             type="jp.co.recruit.erikura.presenters.activities.report.ReportEvaluationEventHandler" />
     </data>
     <FrameLayout
+        android:id="@+id/report_evaluation_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
 
         <ScrollView
             android:layout_width="match_parent"
