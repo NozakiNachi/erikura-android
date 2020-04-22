@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterSmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
 
@@ -31,15 +32,22 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 
     var user: User = User()
+    var requestCode: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         // ユーザ情報を受け取る
-        user = intent.getParcelableExtra("user")
-
-        //SMS認証送信メールAPIを呼び出す
+        requestCode = intent.getIntExtra("requestCode",0)
+        if (requestCode == 1 || requestCode == 3) {
+            user = intent.getParcelableExtra("user")
+        } else {
+            Api(this).user() {
+                user = it
+            }
+        }
+        //FIXME SMS認証送信メールAPIを呼び出す
 
         val binding: ActivityRegisterSmsVerifyBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
         binding.lifecycleOwner = this
@@ -58,26 +66,23 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickAuthenticate(view: View) {
-        Log.v("PHONE", viewModel.pass_code.value ?: "")
-
-
-        //FIXME SMS認証APIを呼び出す
+        Log.v("PHONE", viewModel.passCode.value ?: "")
+        //FIXME trueの箇所をSMS認証APIを呼び出す
+        if (true) {
+            //認証成功後 onActivityResultへ飛ぶ
+            val intent: Intent = Intent()
+            intent.putExtra("user",user)
+            setResult(RESULT_OK,intent)
+            finish()
+        }
+        else {
+            //認証に失敗したことをメッセージに出す
 //        val intent: Intent = Intent(this@RegisterSmsVerifyActivity, RegisterJobStatusActivity::class.java)
 //        intent.putExtra("user", user)
 //        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        //FIXME 認証成功後　本登録完了画面を表示
-        // ユーザ登録Apiの呼び出し
-//        Api(this).initialUpdateUser(user) {
-//            Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
-//            // 登録完了画面へ遷移
-//            val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
-//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-//            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-//
-//            // 登録完了のトラッキングの送出
-//            Tracking.logEvent(event= "signup", params= bundleOf(Pair("user_id", it.userId)))
-//            Tracking.identify(user= user, status= "login")
-//            Tracking.logCompleteRegistrationEvent()
+
+
+        }
     }
 
     override fun onClickPassCodeResend(view: View) {
@@ -91,8 +96,17 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickRegisterPhone(view: View) {
-        val intent = Intent(this, RegisterPhoneActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
+        if (requestCode == 1) {
+            val intent = Intent(this, RegisterPhoneActivity::class.java)
+            intent.putExtra("user",user)
+            intent.putExtra("requestCode",requestCode)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        } else {
+            val intent = Intent(this, ChangeUserInformationActivity::class.java)
+            intent.putExtra("user",user)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
     }
 
     private fun makeCaption(phoneNumber: String): String {
@@ -102,20 +116,20 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 }
 
 class RegisterSmsVerifyViewModel: ViewModel() {
-    val pass_code: MutableLiveData<String> = MutableLiveData()
+    val passCode: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
     private fun isValid(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
-        if (valid && pass_code.value?.isBlank() ?:true) {
+        if (valid && passCode.value?.isBlank() ?:true) {
             valid = false
             error.message.value = null
-        }else if(valid && !(pattern.matcher(pass_code.value).find())) {
+        }else if(valid && !(pattern.matcher(passCode.value).find())) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.passcode_pattern_error)
-        }else if(valid && !(pass_code.value?.length ?: 0 == 4)) {
+        }else if(valid && !(passCode.value?.length ?: 0 == 4)) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.passcode_count_error)
         } else {

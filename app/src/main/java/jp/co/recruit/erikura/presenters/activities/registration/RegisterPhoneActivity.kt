@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPhoneBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
@@ -27,6 +28,7 @@ class RegisterPhoneActivity : BaseActivity(),
     }
 
     var user: User = User()
+    var requestCode: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -34,6 +36,7 @@ class RegisterPhoneActivity : BaseActivity(),
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
+        requestCode = intent.getIntExtra("requestCode",0)
 
         val binding: ActivityRegisterPhoneBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_phone)
         binding.lifecycleOwner = this
@@ -53,9 +56,38 @@ class RegisterPhoneActivity : BaseActivity(),
         Log.v("PHONE", viewModel.phone.value ?: "")
         user.phoneNumber = viewModel.phone.value
 
-        val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
-        intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        //新規登録のSMS認証経由で来た場合SMS認証画面へ遷移する
+        if (requestCode == 1) {
+            //登録処理を行う前にSMS認証を行う
+            val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+            intent.putExtra("user", user)
+            intent.putExtra("requestCode",1)
+            startActivityForResult(intent,1)
+        } else {
+            val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
+            intent.putExtra("user", user)
+            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            user = data!!.getParcelableExtra("user")
+            Api(this).initialUpdateUser(user) {
+                Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
+                // 登録完了画面へ遷移
+                val intent: Intent =
+                    Intent(this@RegisterPhoneActivity, RegisterFinishedActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+
+                // 登録完了のトラッキングの送出
+                Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))
+                Tracking.identify(user = user, status = "login")
+                Tracking.logCompleteRegistrationEvent()
+            }
+        }
     }
 }
 

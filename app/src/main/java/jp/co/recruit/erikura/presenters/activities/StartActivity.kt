@@ -16,6 +16,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import jp.co.recruit.erikura.services.NotificationData
 
@@ -61,13 +62,21 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         }
 
         if (Api.isLogin) {
-            // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
-            Intent(this, MapViewActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+            //FIXME trueの箇所をSMS認証チェックAPI
+            if (true) {
+                // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
+                Intent(this, MapViewActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+                finish()
+                return
+            } else {
+                //SMS未認証の場合、認証画面へ遷移します。
+                val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                intent.putExtra("requestCode",2)
+                startActivityForResult(intent, 2)
             }
-            finish()
-            return
         }
     }
 
@@ -109,6 +118,16 @@ class StartActivity : BaseActivity(), StartEventHandlers {
             // 位置情報の許諾、オンボーディングを表示します
             Intent(this, PermitLocationActivity::class.java).let { intent ->
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 2 && resultCode == RESULT_OK) {
+            Intent(this, MapViewActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
             }
         }
     }

@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -174,6 +175,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         user.city = viewModel.city.value
         user.street = viewModel.street.value
         // 電話番号
+        val checkPhoneNumber = user.phoneNumber
         user.phoneNumber = viewModel.phone.value
         // 職業
         user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
@@ -195,6 +197,14 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             wishWorks.add("car")
         }
         user.wishWorks = wishWorks
+
+        // FIXME SMS認証チェックがfalse　または　電話番号が変更対象の場合SMS認証を行う
+//        if ( !SMS認証チェックAPI ||checkPhoneNumber != viewModel.phone.value) {
+//            val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+//            intent.putExtra("user", user)
+//            intent.putExtra("requestCode",3)
+//            startActivityForResult(intent,3)
+//        }
 
         // 会員情報変更Apiの呼び出し
         Api(this).updateUser(user) {
@@ -261,7 +271,19 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 viewModel.female.value = true
             }
         }
-
+    }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 3 && resultCode == RESULT_OK) {
+            user = data!!.getParcelableExtra("user")
+            // 会員情報変更Apiの呼び出し
+            Api(this).updateUser(user) {
+                val intent = Intent(this, ConfigurationActivity::class.java)
+                intent.putExtra("onClickChangeUserInformationFragment", true)
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 }
 
