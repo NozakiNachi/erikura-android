@@ -248,6 +248,8 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
             } else if (viewModel.settingFragment.value == null) {
                 intent.putExtra("onClickChangeAccountFragment", true)
             }
+
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
         }
@@ -558,8 +560,7 @@ class BankNameAdapter(context: Context): ArrayAdapter<Bank>(context, android.R.l
 }
 
 class BranchNameAdapter(context: Context): ArrayAdapter<BankBranch>(context, android.R.layout.simple_dropdown_item_1line, mutableListOf()) {
-    val filter =
-        BranchNameFilter(this)
+    val filter = BranchNameFilter(this)
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val convertView = convertView ?: run {
@@ -579,7 +580,7 @@ class BranchNameAdapter(context: Context): ArrayAdapter<BankBranch>(context, and
 
     class BranchNameFilter(val adapter: BranchNameAdapter): Filter() {
         override fun convertResultToString(resultValue: Any?): CharSequence {
-            return (resultValue as? Bank)?.let {
+            return (resultValue as? BankBranch)?.let {
                 it.name
             } ?: run {
                 super.convertResultToString(resultValue)

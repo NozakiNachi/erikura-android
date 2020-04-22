@@ -97,16 +97,19 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     // 所在地
     override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if (!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
-            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                viewModel.city.value = city
-                viewModel.street.value = street
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (user.postcode != viewModel.postalCode.value && viewModel.postalCode.value?.length ?: 0 == 7) {
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
 
-                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                streetEditText.requestFocus()
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
+                }
             }
-        }
+        })
     }
 
     private fun getPrefectureId(prefecture: String): Int {
@@ -175,7 +178,10 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     override fun onClickRegister(view: View) {
         // パスワード
-        user.password = viewModel.password.value
+        if(!viewModel.password.value.isNullOrBlank()) {
+            // パスワードが設定されている場合のみ、更新するようにします
+            user.password = viewModel.password.value
+        }
         // 氏名
         user.lastName = viewModel.lastName.value
         user.firstName = viewModel.firstName.value
@@ -213,8 +219,8 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         Api(this).updateUser(user) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             intent.putExtra("onClickChangeUserInformationFragment", true)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-            finish()
         }
     }
 
@@ -468,18 +474,23 @@ class ChangeUserInformationViewModel : ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
+        val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
+        val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
+
         if(valid && password.value.isNullOrBlank()) {
             passwordError.message.value = null
         }else{
-            if(valid && password.value !== null && !(pattern.matcher(password.value).find())) {
-                valid = false
-                passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-            } else if (valid && password.value !== null && (!(alPattern.matcher(password.value).find()) && !(numPattern.matcher(password.value).find()))) {
-                valid = false
-                passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-            } else {
-                valid = true
-                passwordError.message.value = null
+            password.value?.let { pwd ->
+                if(valid && !(pattern.matcher(pwd).find())) {
+                    valid = false
+                    passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+                } else if (valid && !(hasAlphabet(pwd) && hasNumeric(pwd))) {
+                    valid = false
+                    passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+                } else {
+                    valid = true
+                    passwordError.message.value = null
+                }
             }
         }
         return valid
