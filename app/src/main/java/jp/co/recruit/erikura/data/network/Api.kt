@@ -8,6 +8,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,6 +21,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -647,11 +649,17 @@ class Api(var context: Context) {
                     else {
                         when(response.code()) {
                             401 -> {
-                                // 元画面は表示できないはずなので閉じておきます
-                                (context as? Activity)?.finish()
+                                var fromMypage = false
+                                (context as? FragmentActivity)?.let { activity ->
+                                    // マイページから遷移してきたかのフラグを取得します
+                                    fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
+                                    // 元画面は表示できないはずなので閉じておきます
+                                    activity.finish()
+                                }
                                 // ログイン必須画面に遷移させます
                                 Intent(context, LoginRequiredActivity::class.java).let {
                                     it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                    it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
                                     context.startActivity(it)
                                 }
                             }
