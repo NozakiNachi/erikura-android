@@ -17,7 +17,9 @@ import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -50,6 +52,13 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
         binding.viewModel = viewModel
         binding.handlers = this
 
+        binding.root.setOnTouchListener { view, event ->
+            if (view != null) {
+                val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            return@setOnTouchListener true
+        }
 
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
