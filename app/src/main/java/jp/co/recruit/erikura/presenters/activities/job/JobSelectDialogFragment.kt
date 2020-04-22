@@ -16,6 +16,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -23,6 +24,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogJobSelectBinding
 import jp.co.recruit.erikura.databinding.FragmentJobListItemBinding
 import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
+import java.io.File
 
 class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectDialogHandler {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -117,6 +119,7 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
     }
 
     override fun onBindViewHolder(holder: JobListHolder, position: Int) {
+        holder.currentPosition = position
         holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition = currentPosition, timeLabelType = timeLabelType)
         holder.binding.lifecycleOwner = activity
 
@@ -130,12 +133,15 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
         // ダウンロード
         val job = jobs[position]
         val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
-        if (thumbnailUrl.isNullOrBlank()) {
-            image.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
-        }
-        else {
+        image.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+        if (!thumbnailUrl.isNullOrBlank()) {
             val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchImage(activity, thumbnailUrl, image)
+            assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
+                // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
+                if (position == holder.currentPosition) {
+                    Glide.with(activity).load(File(asset.path)).into(image)
+                }
+            }
         }
     }
 
@@ -144,7 +150,9 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
     }
 }
 
-class JobListHolder(val binding: FragmentJobListItemBinding) : RecyclerView.ViewHolder(binding.root)
+class JobListHolder(val binding: FragmentJobListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    var currentPosition: Int = -1
+}
 
 class JobListItemDecorator: RecyclerView.ItemDecoration() {
     override fun getItemOffsets(

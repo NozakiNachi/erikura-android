@@ -2,14 +2,11 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
@@ -126,6 +123,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         layoutManager.orientation = RecyclerView.HORIZONTAL
 
         carouselView = findViewById(R.id.map_view_carousel)
+        carouselView.setHasFixedSize(false)
         carouselView.layoutManager = layoutManager
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
@@ -601,7 +599,6 @@ class MapViewViewModel: BaseJobQueryViewModel() {
     init {
         periodType.value = PeriodType.ALL
     }
-
 }
 
 interface MapViewEventHandlers {
