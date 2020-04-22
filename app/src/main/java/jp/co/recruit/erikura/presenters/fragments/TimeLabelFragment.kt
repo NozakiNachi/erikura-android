@@ -40,7 +40,8 @@ class TimeLabelFragmentViewModel: ViewModel() {
     val color: MutableLiveData<Int> = MutableLiveData()
 
     fun setup(job: Job?, user: User) {
-        var (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, JobUtil.TimeLabelType.OWNED)
+        val timeLabelType: JobUtil.TimeLabelType = if(job!!.isOwner) {JobUtil.TimeLabelType.OWNED} else {JobUtil.TimeLabelType.SEARCH}
+        var (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType)
         if ((UserSession.retrieve() != null && job!!.targetGender != null && job!!.targetGender != user.gender) || job!!.banned) {
             timeLimitColor = ContextCompat.getColor(ErikuraApplication.instance.applicationContext, R.color.warmGrey)
             timeLimitText = SpannableStringBuilder().apply {
