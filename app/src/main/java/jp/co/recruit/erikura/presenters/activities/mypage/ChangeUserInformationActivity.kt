@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -37,7 +38,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
     }
-    lateinit var focusView: View
 
     // 都道府県のリスト
     val prefectureList =
@@ -55,9 +55,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
-
-        focusView = findViewById(R.id.change_user_information_focusView)
-        focusView.requestFocus()
     }
 
     override fun onStart() {
@@ -89,11 +86,11 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val view = this.currentFocus
         if (view != null) {
-            val focusView = findViewById<EditText>(R.id.change_user_information_focusView)
-            focusView.requestFocus()
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
+            constraintLayout.requestFocus()
 
             val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(focusView.windowToken, 0)
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
     }
