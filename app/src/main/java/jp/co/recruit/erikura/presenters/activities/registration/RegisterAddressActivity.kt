@@ -8,7 +8,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Spinner
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -47,9 +46,6 @@ class RegisterAddressActivity : BaseActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
 
-//        val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
-//        prefectureSpinner.isFocusable = true
-//        prefectureSpinner.isFocusableInTouchMode = true
         viewModel.postalCodeError.message.value = null
         viewModel.cityError.message.value = null
         viewModel.streetError.message.value = null
