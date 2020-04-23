@@ -58,7 +58,6 @@
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             >
             <intent-filter>
