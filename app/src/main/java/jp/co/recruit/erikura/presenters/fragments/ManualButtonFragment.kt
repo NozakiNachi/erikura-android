@@ -1,21 +1,20 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.app.ActivityOptions
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import java.io.File
 
 
 class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEventHandlers {
@@ -39,11 +38,11 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
             val manualUrl = job.manualUrl
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(activity, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                val file = File(asset.path)
+                val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".provider", file)
+                val intent = Intent(Intent.ACTION_VIEW, uri)
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                startActivity(intent)
             }
         }
     }
