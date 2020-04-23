@@ -135,6 +135,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                     viewModel.imageMap.put(item.id, item)
                 }
             }
+            viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
             editComplete = false
         }
     }
@@ -247,14 +248,6 @@ class ImagePickerCellViewModel: ViewModel() {
 
     fun loadData(job: Job, item: MediaItem, viewModel: ReportImagePickerViewModel) {
         checked.value = viewModel.imageMap.containsKey(item.id)
-//        job.report?.activeOutputSummaries?.let {
-//            it.forEach {
-//                val uri = it.photoAsset?.contentUri
-//                if (item.contentUri == uri) {
-//                    checked.value = true
-//                }
-//            }
-//        }
     }
 }
 
