@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterSmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -80,22 +81,24 @@ class RegisterSmsVerifyActivity : BaseActivity(),
                 intent.putExtra("user",user)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
-        }){}
-
-        val binding: ActivityRegisterSmsVerifyBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-        binding.handlers = this
-        viewModel.error.message.value = null
+        }){
+            val binding: ActivityRegisterSmsVerifyBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
+            binding.lifecycleOwner = this
+            binding.viewModel = viewModel
+            binding.handlers = this
+            viewModel.error.message.value = null
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
-        caption.setText(makeCaption(user.phoneNumber.toString()))
-        // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "view_register_sms_verify", params= bundleOf())
-        Tracking.view(name= "/user/register/sms_verify", title= "SMS認証")
+        Api(this).user() {
+            var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
+            caption.setText(it.phoneNumber?.let { makeCaption(it) })
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_register_sms_verify", params= bundleOf())
+            Tracking.view(name= "/user/register/sms_verify", title= "SMS認証")
+        }
     }
 
     override fun onClickAuthenticate(view: View) {

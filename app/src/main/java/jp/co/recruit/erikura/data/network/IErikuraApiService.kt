@@ -30,7 +30,7 @@ interface IErikuraApiService {
     fun user(): ApiObservable<User>
 
     @GET("users/sms_verify_check")
-    fun smsVerifyCheck(@Body request: PhoneNumberRequest):  ApiObservable<ResultResponse>
+    fun smsVerifyCheck(@Query("phone_number") phoneNumber: String):  ApiObservable<ResultResponse>
 
     @PATCH("users/initial_update")
     fun initialUpdateUser(@Body request: User): ApiObservable<InitialUpdateResponse>
@@ -243,10 +243,6 @@ data class SmsVerifyRequest(
     var confirmationToken: String,
     var phoneNumber: String,
     var passcode: String
-)
-
-data class PhoneNumberRequest(
-    var phoneNumber: String
 )
 
 data class LoginRequest(

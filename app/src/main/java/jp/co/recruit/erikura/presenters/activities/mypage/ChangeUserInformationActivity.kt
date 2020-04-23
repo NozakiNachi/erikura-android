@@ -204,21 +204,24 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         }
         user.wishWorks = wishWorks
 
-        Log.v("DEBUG", "SMS認証チェック： userId=${Api.userSession?.userId}")
-        Api(this).smsVerifyCheck(Api.userSession?.user!!.phoneNumber ?: "") { result ->
-            if (!result || checkPhoneNumber != viewModel.phone.value) {
-                val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
-                intent.putExtra("user", user)
-                intent.putExtra("requestCode", 3)
-                startActivityForResult(intent, 3)
-            }
-
-            // 会員情報変更Apiの呼び出し
-            Api(this).updateUser(user) {
-                val intent = Intent(this, ConfigurationActivity::class.java)
-                intent.putExtra("onClickChangeUserInformationFragment", true)
-                startActivity(intent)
-                finish()
+        Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
+        if (checkPhoneNumber != null) {
+            Api(this).smsVerifyCheck(checkPhoneNumber) { result ->
+                if (!result || checkPhoneNumber != viewModel.phone.value) {
+                    val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                    intent.putExtra("user", user)
+                    intent.putExtra("requestCode", 3)
+                    startActivityForResult(intent, 3)
+                }
+                else {
+                    // 会員情報変更Apiの呼び出し
+                    Api(this).updateUser(user) {
+                        val intent = Intent(this, ConfigurationActivity::class.java)
+                        intent.putExtra("onClickChangeUserInformationFragment", true)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
             }
         }
     }

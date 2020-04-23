@@ -56,31 +56,34 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         Log.v("PASS", viewModel.password.value ?: "")
         Api(this).login(viewModel.email.value ?: "", viewModel.password.value ?: "") { userSession ->
             Log.v("DEBUG", "SMS認証チェック： userId=${userSession.userId}")
-            Api(this).smsVerifyCheck(userSession.user!!.phoneNumber ?:"") { result->
-                if (result) {
-                    //SMS認証済みの場合
-                    Log.v("DEBUG", "ログイン成功: userId=${userSession.userId}")
-                    // 自動ログインが有効になっている場合はセッション情報を永続化します
-                    if (viewModel.enableAutoLogin.value ?: false) {
-                        userSession.store()
-                    }
-                    // 地図画面へ遷移します
-                    if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                        val intent = Intent(this, MapViewActivity::class.java)
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                    }
-                    else {
-                        // 位置情報の許諾、オンボーディングを表示します
-                        Intent(this, PermitLocationActivity::class.java).let { intent ->
+            Api(this).user(){user ->
+                Log.v("DEBUG", "SMS認証チェック電話番号： phoneNumber=${user?.phoneNumber}")
+                Api(this).smsVerifyCheck(user?.phoneNumber ?:"") { result->
+                    if (result) {
+                        //SMS認証済みの場合
+                        Log.v("DEBUG", "ログイン成功: userId=${userSession.userId}")
+                        // 自動ログインが有効になっている場合はセッション情報を永続化します
+                        if (viewModel.enableAutoLogin.value ?: false) {
+                            userSession.store()
+                        }
+                        // 地図画面へ遷移します
+                        if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                            val intent = Intent(this, MapViewActivity::class.java)
                             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                         }
+                        else {
+                            // 位置情報の許諾、オンボーディングを表示します
+                            Intent(this, PermitLocationActivity::class.java).let { intent ->
+                                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                            }
+                        }
                     }
-                }
-                else {
-                    //SMS未認証の場合、認証画面へ遷移します。
-                    val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
-                    intent.putExtra("requestCode",2)
-                    startActivityForResult(intent, 2)
+                    else {
+                        //SMS未認証の場合、認証画面へ遷移します。
+                        val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                        intent.putExtra("requestCode",2)
+                        startActivityForResult(intent, 2)
+                    }
                 }
             }
         }

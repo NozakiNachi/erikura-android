@@ -63,21 +63,22 @@ class StartActivity : BaseActivity(), StartEventHandlers {
         }
 
         if (Api.isLogin) {
-            Log.v("DEBUG", "SMS認証チェック： userId=${Api.userSession?.userId}")
-            Api(this).smsVerifyCheck(Api.userSession?.user!!.phoneNumber ?:"") {result ->
-                if (result) {
-                    // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
-                    Intent(this, MapViewActivity::class.java).let { intent ->
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
+            Api(this).user(){user ->
+                Log.v("DEBUG", "SMS認証チェック： userId=${user?.id}")
+                Api(this).smsVerifyCheck(user?.phoneNumber ?:"") {result ->
+                    if (result) {
+                        // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
+                        Intent(this, MapViewActivity::class.java).let { intent ->
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                        }
+                        finish()
+                    } else {
+                        //SMS未認証の場合、認証画面へ遷移します。
+                        val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                        intent.putExtra("requestCode",2)
+                        startActivityForResult(intent, 2)
                     }
-                    finish()
-                    return@smsVerifyCheck
-                } else {
-                    //SMS未認証の場合、認証画面へ遷移します。
-                    val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
-                    intent.putExtra("requestCode",2)
-                    startActivityForResult(intent, 2)
                 }
             }
         }

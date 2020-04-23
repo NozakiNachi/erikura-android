@@ -127,7 +127,7 @@ class Api(var context: Context) {
 
     fun smsVerifyCheck(phoneNumber: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
         executeObservable(
-            erikuraApiService.smsVerifyCheck(PhoneNumberRequest(phoneNumber = phoneNumber)),
+            erikuraApiService.smsVerifyCheck(phoneNumber),
             onError = onError
         ) { body ->
             val result = body.result
