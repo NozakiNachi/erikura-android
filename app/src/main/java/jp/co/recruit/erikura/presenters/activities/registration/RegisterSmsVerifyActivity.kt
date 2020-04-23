@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -33,6 +34,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
     var user: User = User()
     var requestCode: Int = 0
+    var confirmationToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -47,7 +49,38 @@ class RegisterSmsVerifyActivity : BaseActivity(),
                 user = it
             }
         }
-        //FIXME SMS認証送信メールAPIを呼び出す
+        // 仮登録トークン取得
+        var uri: Uri? = intent.data
+        if (uri?.path == "/api/v1/utils/open_android_app") {
+            val path = uri?.getQueryParameter("path")
+            uri = Uri.parse("erikura://${path}")
+        }
+        confirmationToken = uri?.getQueryParameter("confirmation_token")
+
+        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${user.phoneNumber}")
+        // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
+        Api(this).sendSms(confirmationToken ?:"",user.phoneNumber ?:"", onError = {
+            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${user.phoneNumber}")
+            //本登録電話番号画面か会員情報変更画面へ遷移
+            if (requestCode == 1) {
+                val intent = Intent(this, RegisterPhoneActivity::class.java)
+                if(it != null) {
+                    val array = it.toTypedArray()
+                    intent.putExtra("errorMessages", array)
+                }
+                intent.putExtra("user",user)
+                intent.putExtra("requestCode",requestCode)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            } else {
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                if(it != null) {
+                    val array = it.toTypedArray()
+                    intent.putExtra("errorMessages", array)
+                }
+                intent.putExtra("user",user)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+        }){}
 
         val binding: ActivityRegisterSmsVerifyBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
         binding.lifecycleOwner = this
@@ -66,33 +99,44 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickAuthenticate(view: View) {
-        Log.v("PHONE", viewModel.passCode.value ?: "")
-        //FIXME trueの箇所をSMS認証APIを呼び出す
-        if (true) {
+        Log.v("DEBUG", "SMS認証： phoneNumber=${user.phoneNumber}")
+        // TODO 現段階ではresultはtrueしか返ってこないので認証結果の判定は入れていない
+        Api(this).smsVerify(confirmationToken ?:"",user.phoneNumber ?:"", viewModel.passCode.value ?: "", onError = {
+            Log.v("DEBUG","SMS認証失敗： phoneNumber=${user.phoneNumber}")
+        }){
             //認証成功後 onActivityResultへ飛ぶ
             val intent: Intent = Intent()
             intent.putExtra("user",user)
             setResult(RESULT_OK,intent)
             finish()
         }
-        else {
-            //認証に失敗したことをメッセージに出す
-//        val intent: Intent = Intent(this@RegisterSmsVerifyActivity, RegisterJobStatusActivity::class.java)
-//        intent.putExtra("user", user)
-//        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-
-
-        }
     }
 
     override fun onClickPassCodeResend(view: View) {
-        //FIXME　SMS認証送信APIを呼ぶ
-//        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
-//        val intent = Intent(this, WebViewActivity::class.java).apply {
-//            action = Intent.ACTION_VIEW
-//            data = Uri.parse(termsOfServiceURLString)
-//        }
-//        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${user.phoneNumber}")
+        // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
+        Api(this).sendSms(confirmationToken ?:"",user.phoneNumber ?:"", onError = {
+            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${user.phoneNumber}")
+            //本登録電話番号画面か会員情報変更画面へ遷移
+            if (requestCode == 1) {
+                val intent = Intent(this, RegisterPhoneActivity::class.java)
+                if(it != null) {
+                    val array = it.toTypedArray()
+                    intent.putExtra("errorMessages", array)
+                }
+                intent.putExtra("user",user)
+                intent.putExtra("requestCode",requestCode)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            } else {
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                if(it != null) {
+                    val array = it.toTypedArray()
+                    intent.putExtra("errorMessages", array)
+                }
+                intent.putExtra("user",user)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+        }){}
     }
 
     override fun onClickRegisterPhone(view: View) {

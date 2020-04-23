@@ -38,6 +38,12 @@ class RegisterPhoneActivity : BaseActivity(),
         user = intent.getParcelableExtra("user")
         requestCode = intent.getIntExtra("requestCode",0)
 
+        // エラーメッセージを受け取る
+        val errorMessages = intent.getStringArrayExtra("errorMessages")
+        if(errorMessages != null){
+            Api(this).displayErrorAlert(errorMessages.asList())
+        }
+
         val binding: ActivityRegisterPhoneBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_phone)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
