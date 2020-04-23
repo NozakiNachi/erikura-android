@@ -47,9 +47,9 @@ class RegisterAddressActivity : BaseActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
 
-        val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
-        prefectureSpinner.isFocusable = true
-        prefectureSpinner.isFocusableInTouchMode = true
+//        val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
+//        prefectureSpinner.isFocusable = true
+//        prefectureSpinner.isFocusableInTouchMode = true
         viewModel.postalCodeError.message.value = null
         viewModel.cityError.message.value = null
         viewModel.streetError.message.value = null
