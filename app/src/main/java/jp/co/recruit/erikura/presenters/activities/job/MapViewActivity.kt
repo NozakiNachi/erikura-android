@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
@@ -97,7 +98,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             longitude = LocationManager.defaultLatLng.longitude
         )
 
-        adapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
+        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
         adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
@@ -593,6 +594,12 @@ class MapViewViewModel: BaseJobQueryViewModel() {
                 PeriodType.ACTIVE -> resources.getDrawable(R.drawable.before_entry_500w_on, null)
                 else -> resources.getDrawable(R.drawable.before_open_500w, null)
             }
+        }
+    }
+
+    val carouselVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(jobs) {
+            result.value = if (it.isEmpty()) { View.GONE } else { View.VISIBLE }
         }
     }
 
