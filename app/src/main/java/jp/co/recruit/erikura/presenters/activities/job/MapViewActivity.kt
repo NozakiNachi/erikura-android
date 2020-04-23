@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
@@ -107,14 +106,33 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         val layoutManager = object: LinearLayoutManager(this) {
             override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
                 val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-                        val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
-                        val current = layoutManager.findFirstCompletelyVisibleItemPosition()
-                        val diff = Math.abs(current - position)
-                        val width = displayMetrics?.widthPixels ?: 1
+                    private var isScrolled: Boolean = false
 
-                        return 1000.0f / (diff * width)
+                    override fun getHorizontalSnapPreference(): Int {
+//                        return if (reverseLayout) SNAP_TO_START else SNAP_TO_END
+                        return SNAP_TO_START
                     }
+
+                    override fun getVerticalSnapPreference(): Int {
+                        return SNAP_TO_START
+                    }
+
+                    override fun updateActionForInterimTarget(action: Action?) {
+                        if (isScrolled) {
+                            Log.v("ERIKURA", "TARGET POSITION: ${targetPosition}")
+                            action?.jumpTo(targetPosition)
+                            stop()
+                            isScrolled = false
+                        } else {
+                            Log.v("ERIKURA", "TARGET POSITION: ${targetPosition}")
+                            isScrolled = true
+                            super.updateActionForInterimTarget(action)
+                        }
+                    }
+
+//                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+//                        return 0.00001f / (displayMetrics?.densityDpi ?: 1)
+//                    }
                 }
                 speedUpSmoothScroller.setTargetPosition(position);
                 startSmoothScroll(speedUpSmoothScroller)
@@ -145,7 +163,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
                 val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-                Log.v("INDEX:", "Position: ${position}, length: ${adapter.data.size}")
+                Log.v("ERIKURA", "Position: ${position}, length: ${adapter.data.size}")
                 if (position >= 0 && adapter.data.size > 0) {
                     val job = adapter.data[position]
                     Log.v("VISIBLE JOB: ", job.toString())
@@ -240,6 +258,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
         mMap.setOnMarkerClickListener { marker ->
             val index: Int = marker.tag as Int
+            Log.v("ERIKURA", "Marker index: ${index}")
             val jobs = viewModel.jobs.value ?: listOf()
             if (index >= 0) {
                 val job: Job? = jobs[index]
