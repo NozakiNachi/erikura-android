@@ -50,7 +50,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:text="（端末により「身体活動」は「運動データ」「XXX」などの表記の場合があります。適宜お読み替えください。）"
+        android:text="（端末により「身体活動」は「運動データ」などの表記の場合があります。適宜お読み替えください。）"
         style="@style/label_w2"
         android:textSize="12dp"
         android:textColor="@color/black"
