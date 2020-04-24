@@ -95,11 +95,22 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
-            var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
-            caption.setText(phoneNumber?.let { makeCaption(it) })
-            // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_register_sms_verify", params= bundleOf())
-            Tracking.view(name= "/user/register/sms_verify", title= "SMS認証")
+        // ユーザ情報を受け取る
+        requestCode = intent.getIntExtra("requestCode", 0)
+        if (requestCode == 1 || requestCode == 3) {
+            user = intent.getParcelableExtra("user")
+            phoneNumber = intent.getStringExtra("phoneNumber")
+        } else {
+            Api(this).user() {
+                user = it
+                phoneNumber = user.phoneNumber
+            }
+        }
+        var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
+        caption.setText(phoneNumber?.let { makeCaption(it) })
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event = "view_register_sms_verify", params = bundleOf())
+        Tracking.view(name = "/user/register/sms_verify", title = "SMS認証")
     }
 
     override fun onClickAuthenticate(view: View) {
