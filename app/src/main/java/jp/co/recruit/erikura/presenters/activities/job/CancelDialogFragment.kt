@@ -70,11 +70,14 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
         val reasonCode: Int = if (viewModel.reasonSelected == viewModel.reasonsItems.value?.lastIndex) {0}else {viewModel.reasonSelected}
         val comment: String = if(reasonCode == 0) {viewModel.reasonText.value?:""} else {""}
         job?.let {
-            if (job.entry?.limitAt?: Date() > Date()) {
+            if (isCancellable()) {
                 Api(activity!!).cancel(job, reasonCode, comment) {
                     // ページ参照のトラッキングの送出
                     Tracking.logEvent(event= "view_job_cacel_finish", params= bundleOf())
                     Tracking.viewJobDetails(name= "/entries/cancelled/${job?.id ?:0}", title= "キャンセル完了画面", jobId= job?.id ?: 0)
+
+                    // 応募キャンセルに合わせて作業報告も削除されるので、削除済みのフラグを立てます
+                    job?.report?.deleted = true
 
                     val intent= Intent(activity, JobDetailsActivity::class.java)
                     intent.putExtra("job", job)
@@ -85,6 +88,23 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
                 Api(activity!!).displayErrorAlert(errorMessages)
             }
         }
+    }
+
+    /**
+     * キャンセル処理を行えるか
+     */
+    private fun isCancellable(): Boolean {
+        val expired = job?.entry?.isExpired() ?: false
+        val rejected = job?.report?.isRejected ?: false
+
+        // 作業期間内であればキャンセル可能
+        if (!expired) { return true }
+        // 作業期間を過ぎていても、作業報告がリジェクト状態であればキャンセル可能
+        if (rejected) { return true }
+        // 作業期間を過ぎていて、リジェクトされていない場合はキャンセル不可
+        //   => 作業報告済みの場合はクライアントで確認されるのを待っているか、承認済みのため
+        //   => 未報告の場合はバッチ等で削除される?
+        return false
     }
 }
 
