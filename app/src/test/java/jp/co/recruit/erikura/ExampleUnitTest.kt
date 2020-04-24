@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
 import org.apache.commons.lang.builder.ToStringBuilder
-import org.junit.Assert.assertEquals
+import org.junit.Assert.*
 import org.junit.Test
 
 /**
@@ -19,6 +19,21 @@ class ExampleUnitTest {
     }
 
     open class NotificationData(val open: String)
+
+    @Test
+    fun emailPatternTest() {
+        val emailPattern = """\A[\w._%+-|]+@[\w0-9.-]+\.[A-Za-z]{2,}\z""".toRegex()
+
+        assertTrue(emailPattern.matches("test@example.com"))
+        assertTrue(emailPattern.matches("test.hoge@example.com"))
+        assertTrue(emailPattern.matches("test-hoge@example.com"))
+        assertTrue(emailPattern.matches("test%hoge@example.com"))
+        assertTrue(emailPattern.matches("test+hoge@example.com"))
+        assertTrue(emailPattern.matches("test_hoge@example.com"))
+        assertTrue(emailPattern.matches("test|hoge@example.com"))
+        assertTrue(emailPattern.matches("test@example.test-sample.com"))
+        assertFalse(emailPattern.matches("test!hoge@example.com"))
+    }
 
     @Test
     fun gsonParse() {

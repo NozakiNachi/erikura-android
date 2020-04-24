@@ -82,7 +82,7 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
         adapter.addAll(getHistoryItems().map { SearchHistoryItem.Item(it.keyword) })
 
         Api(this).jobKinds { jobKinds ->
-            viewModel.jobKinds.value = jobKinds
+            viewModel.jobKinds.value = jobKinds.filter { it.refine ?: false }
         }
     }
 
