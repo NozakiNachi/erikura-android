@@ -30,4 +30,11 @@ data class Entry(
 ): Parcelable {
     val isStarted: Boolean get() = (startedAt != null)
     val isFinished: Boolean get() = (finishedAt != null)
+
+    /**
+     * at で指定した時刻で作業リミットの時間を超過しているかを判定します
+     */
+    fun isExpired(at: Date = Date()): Boolean {
+        return limitAt?.let { it <= at } ?: false
+    }
 }
