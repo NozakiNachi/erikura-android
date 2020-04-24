@@ -69,6 +69,33 @@ class LocationManager {
         }
     }
 
+    fun onRequestPermissionResult(activity: FragmentActivity,
+                                  requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  onPermissionNotGranted: (() -> Unit)? = null,
+                                  onPermissionGranted: (() -> Unit)? = null) {
+        // ACCESS_FINE_LOCATION_PERMISSION 以外の場合にはスキップします
+        if (requestCode != ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID)
+            return
+
+        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            start(activity)
+            onPermissionGranted?.invoke()
+        }
+        else {
+            // 次回以降表示しないにしている場合は警告モーダルを表示します
+            if (!activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                val dialog = MessageUtils.displayLocationAlert(activity)
+                dialog.setOnDismissListener {
+                    onPermissionNotGranted?.invoke()
+                }
+            }
+            else {
+                onPermissionNotGranted?.invoke()
+            }
+        }
+
+    }
+
     fun start(activity: FragmentActivity) {
         val locationRequest = LocationRequest().apply {
             setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY)

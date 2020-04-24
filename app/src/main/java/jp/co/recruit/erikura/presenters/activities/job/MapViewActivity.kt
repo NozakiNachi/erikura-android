@@ -211,7 +211,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && ::mMap.isInitialized && viewModel.keyword.value.isNullOrBlank()) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(it))
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, defaultZoom))
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
@@ -263,14 +263,26 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             mMap.isMyLocationEnabled = true
             hideGoogleMapMyLocationButton()
         }
+        else {
+            // デフォルト位置にカメラを移動させます
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LocationManager.defaultLatLng, defaultZoom))
+        }
 
         // 最初のタスク取得
         if (!firstFetchRequested) {
             if (viewModel.keyword.value.isNullOrBlank()) {
-                locationManager.latLng?.let {
+                // 検索キーワードが指定されていないので、現在値より検索します
+                locationManager.latLng?.also {
+                    // 位置情報が取得可能なので、位置情報を返却します
                     firstFetchRequested = true
                     val query = viewModel.query(it)
                     fetchJobs(query)
+                } ?: run {
+                    if (!locationManager.checkPermission(this)) {
+                        firstFetchRequested = true
+                        val query = viewModel.query(LocationManager.defaultLatLng)
+                        fetchJobs(query)
+                    }
                 }
             } else {
                 viewModel.latLng.value?.let {
@@ -306,17 +318,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when(requestCode) {
-            ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    locationManager.start(this)
-                }
-                else {
-                    MessageUtils.displayLocationAlert(this)
-                }
-            }
-        }
+        locationManager.onRequestPermissionResult(this, requestCode, permissions, grantResults)
     }
 
     private fun fetchJobs(query: JobQuery) {

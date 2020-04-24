@@ -161,10 +161,16 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
 
         if (viewModel.keyword.value.isNullOrBlank()) {
             // 現在地からの検索の場合
-            locationManager.latLng?.let {
+            locationManager.latLng?.also {
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
+            } ?: run {
+                if (!locationManager.checkPermission(this)) {
+                    firstFetchRequested = true
+                    val query = viewModel.query(LocationManager.defaultLatLng)
+                    fetchJobs(query)
+                }
             }
         }
         else {
@@ -175,8 +181,6 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
                 fetchJobs(query)
             }
         }
-
-        Log.d("SORT TYPES", viewModel.sortLabels.toString())
     }
 
     override fun onPause() {
@@ -221,17 +225,7 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when(requestCode) {
-            ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    locationManager.start(this)
-                }
-                else {
-                    MessageUtils.displayLocationAlert(this)
-                }
-            }
-        }
+        locationManager.onRequestPermissionResult(this, requestCode, permissions, grantResults)
     }
 
     override fun onClickSearch(view: View) {
