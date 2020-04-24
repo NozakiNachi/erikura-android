@@ -48,7 +48,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
         } else {
-            Api(this).user() {
+            Api(this).user {
                 user = it
                 phoneNumber = user.phoneNumber
             }
@@ -56,7 +56,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
         // 仮登録トークン取得
         var uri: Uri? = intent.data
         if (uri?.path == "/api/v1/utils/open_android_app") {
-            val path = uri?.getQueryParameter("path")
+            val path = uri.getQueryParameter("path")
             uri = Uri.parse("erikura://${path}")
         }
         confirmationToken = uri?.getQueryParameter("confirmation_token")
@@ -101,13 +101,13 @@ class RegisterSmsVerifyActivity : BaseActivity(),
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
         } else {
-            Api(this).user() {
+            Api(this).user {
                 user = it
                 phoneNumber = user.phoneNumber
             }
         }
         var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
-        caption.setText(phoneNumber?.let { makeCaption(it) })
+        caption.text = phoneNumber?.let { makeCaption(it) }
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event = "view_register_sms_verify", params = bundleOf())
         Tracking.view(name = "/user/register/sms_verify", title = "SMS認証")
@@ -182,7 +182,7 @@ class RegisterSmsVerifyViewModel: ViewModel() {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
-        if (valid && passCode.value?.isBlank() ?:true) {
+        if (valid && passCode.value?.isBlank() != false) {
             valid = false
             error.message.value = null
         }else if(valid && !(pattern.matcher(passCode.value).find())) {
