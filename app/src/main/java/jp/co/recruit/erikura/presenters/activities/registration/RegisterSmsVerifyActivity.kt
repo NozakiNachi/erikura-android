@@ -37,7 +37,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     var phoneNumber: String? = null
     var requestCode: Int = 0
     var confirmationToken: String? = null
-    var caption: String? = null
+    var captionExplain: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -86,7 +86,8 @@ class RegisterSmsVerifyActivity : BaseActivity(),
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
         }){
-            caption = phoneNumber?.let { makeCaption(it) }
+            var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
+            caption.setText(String.format("ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。", phoneNumber))
             val binding: ActivityRegisterSmsVerifyBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
             binding.lifecycleOwner = this
             binding.viewModel = viewModel
@@ -97,8 +98,6 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
-        var captionExplain = findViewById<TextView>(R.id.registerSmsVerify_caption)
-        captionExplain.text = caption
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event = "view_register_sms_verify", params = bundleOf())
         Tracking.view(name = "/user/register/sms_verify", title = "SMS認証")
@@ -157,11 +156,6 @@ class RegisterSmsVerifyActivity : BaseActivity(),
             intent.putExtra("user",user)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
-    }
-
-    private fun makeCaption(phoneNumber: String): String {
-        var str = "ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。".format(phoneNumber)
-        return str
     }
 }
 
