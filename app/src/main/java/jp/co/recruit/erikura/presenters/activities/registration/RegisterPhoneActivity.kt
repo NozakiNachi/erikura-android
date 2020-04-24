@@ -67,6 +67,7 @@ class RegisterPhoneActivity : BaseActivity(),
             //登録処理を行う前にSMS認証を行う
             val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
             intent.putExtra("user", user)
+            intent.putExtra("phoneNumber", user.phoneNumber)
             intent.putExtra("requestCode",1)
             startActivityForResult(intent,1)
         } else {

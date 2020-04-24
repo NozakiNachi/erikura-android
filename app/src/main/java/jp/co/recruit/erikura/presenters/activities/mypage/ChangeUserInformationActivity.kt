@@ -209,6 +209,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             Api(this).smsVerifyCheck(checkPhoneNumber) { result ->
                 if (!result || checkPhoneNumber != viewModel.phone.value) {
                     val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                    intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)
                     intent.putExtra("requestCode", 3)
                     startActivityForResult(intent, 3)

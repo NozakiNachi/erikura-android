@@ -34,6 +34,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 
     var user: User = User()
+    var phoneNumber: String? = null
     var requestCode: Int = 0
     var confirmationToken: String? = null
 
@@ -45,9 +46,11 @@ class RegisterSmsVerifyActivity : BaseActivity(),
         requestCode = intent.getIntExtra("requestCode",0)
         if (requestCode == 1 || requestCode == 3) {
             user = intent.getParcelableExtra("user")
+            phoneNumber = intent.getStringExtra("phoneNumber")
         } else {
             Api(this).user() {
                 user = it
+                phoneNumber = user.phoneNumber
             }
         }
         // 仮登録トークン取得
@@ -58,10 +61,10 @@ class RegisterSmsVerifyActivity : BaseActivity(),
         }
         confirmationToken = uri?.getQueryParameter("confirmation_token")
 
-        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${user.phoneNumber}")
+        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
-        Api(this).sendSms(confirmationToken ?:"",user.phoneNumber ?:"", onError = {
-            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${user.phoneNumber}")
+        Api(this).sendSms(confirmationToken ?:"",phoneNumber ?:"", onError = {
+            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${phoneNumber}")
             //本登録電話番号画面か会員情報変更画面へ遷移
             if (requestCode == 1) {
                 val intent = Intent(this, RegisterPhoneActivity::class.java)
@@ -93,17 +96,17 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     override fun onStart() {
         super.onStart()
             var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
-            caption.setText(user.phoneNumber?.let { makeCaption(it) })
+            caption.setText(phoneNumber?.let { makeCaption(it) })
             // ページ参照のトラッキングの送出
             Tracking.logEvent(event= "view_register_sms_verify", params= bundleOf())
             Tracking.view(name= "/user/register/sms_verify", title= "SMS認証")
     }
 
     override fun onClickAuthenticate(view: View) {
-        Log.v("DEBUG", "SMS認証： phoneNumber=${user.phoneNumber}")
+        Log.v("DEBUG", "SMS認証： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので認証結果の判定は入れていない
-        Api(this).smsVerify(confirmationToken ?:"",user.phoneNumber ?:"", viewModel.passCode.value ?: "", onError = {
-            Log.v("DEBUG","SMS認証失敗： phoneNumber=${user.phoneNumber}")
+        Api(this).smsVerify(confirmationToken ?:"",phoneNumber ?:"", viewModel.passCode.value ?: "", onError = {
+            Log.v("DEBUG","SMS認証失敗： phoneNumber=${phoneNumber}")
         }){
             //認証成功後 onActivityResultへ飛ぶ
             val intent: Intent = Intent()
@@ -114,10 +117,10 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickPassCodeResend(view: View) {
-        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${user.phoneNumber}")
+        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
-        Api(this).sendSms(confirmationToken ?:"",user.phoneNumber ?:"", onError = {
-            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${user.phoneNumber}")
+        Api(this).sendSms(confirmationToken ?:"",phoneNumber ?:"", onError = {
+            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${phoneNumber}")
             //本登録電話番号画面か会員情報変更画面へ遷移
             if (requestCode == 1) {
                 val intent = Intent(this, RegisterPhoneActivity::class.java)
