@@ -3,10 +3,8 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
@@ -104,46 +102,43 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             }
         }
 
-        val layoutManager = object: LinearLayoutManager(this) {
+        val carouselLayoutManager = object: LinearLayoutManager(this) {
             override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
+                val self = this
                 val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
-                    private var isScrolled: Boolean = false
-
-                    override fun getHorizontalSnapPreference(): Int {
-//                        return if (reverseLayout) SNAP_TO_START else SNAP_TO_END
-                        return SNAP_TO_START
-                    }
-
-                    override fun getVerticalSnapPreference(): Int {
-                        return SNAP_TO_START
-                    }
-
+                    var scrolling = false
                     override fun updateActionForInterimTarget(action: Action?) {
-                        if (isScrolled) {
-                            Log.v("ERIKURA", "TARGET POSITION: ${targetPosition}")
+                        Log.v("ERIKURA", "POSITION: $scrolling, $targetPosition, $position")
+                        if (scrolling) {
+                            scrolling = false
                             action?.jumpTo(targetPosition)
                             stop()
-                            isScrolled = false
-                        } else {
-                            Log.v("ERIKURA", "TARGET POSITION: ${targetPosition}")
-                            isScrolled = true
+                        }
+                        else {
+                            scrolling = true
                             super.updateActionForInterimTarget(action)
                         }
                     }
 
-//                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-//                        return 0.00001f / (displayMetrics?.densityDpi ?: 1)
-//                    }
+                    override fun onStart() {
+                        super.onStart()
+                        Log.v("ERIKURA", "POSITION: START $targetPosition")
+                    }
+
+                    override fun onStop() {
+                        super.onStop()
+                        Log.v("ERIKURA", "POSITION: END:$targetPosition, ${self.findFirstCompletelyVisibleItemPosition()}")
+                    }
                 }
-                speedUpSmoothScroller.setTargetPosition(position);
+                speedUpSmoothScroller.targetPosition = position;
                 startSmoothScroll(speedUpSmoothScroller)
             }
         }
-        layoutManager.orientation = RecyclerView.HORIZONTAL
+        carouselLayoutManager.orientation = RecyclerView.HORIZONTAL
 
         carouselView = findViewById(R.id.map_view_carousel)
         carouselView.setHasFixedSize(false)
-        carouselView.layoutManager = layoutManager
+        carouselView.layoutManager = carouselLayoutManager
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
 
