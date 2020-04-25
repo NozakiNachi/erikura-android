@@ -38,7 +38,9 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
+import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
@@ -46,7 +48,7 @@ import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
 
-class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers {
+class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
         // SearchJob にわたすID
         const val REQUEST_SEARCH_CONDITIONS = 1
@@ -88,10 +90,6 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             // query.sortBy = SortType.DISTANCE_ASC
             viewModel.apply(query)
         }
-
-        // 下部のタブの選択肢を仕事を探すに変更
-        val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
-        nav.selectedItemId = R.id.tab_menu_search_jobs
 
         val dummyJob = Job(
             latitude = LocationManager.defaultLatLng.latitude,
@@ -202,6 +200,8 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
     override fun onResume() {
         super.onResume()
+        // 仕事を探すタブの画面を保存しておきます
+        searchJobCurrentActivity = this.javaClass
 
         if (locationManager.checkPermission(this) && ::mMap.isInitialized) {
             mMap.isMyLocationEnabled = true
@@ -531,28 +531,6 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_applied_jobs -> {
-                Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-        }
-        return true
-    }
-
     private fun hideGoogleMapMyLocationButton() {
         val mapFragment = supportFragmentManager.findFragmentById(R.id.jobs_map_view_map)
         mapFragment?.view?.let { mapView ->
@@ -610,7 +588,7 @@ class MapViewViewModel: BaseJobQueryViewModel() {
     }
 }
 
-interface MapViewEventHandlers {
+interface MapViewEventHandlers: TabEventHandlers {
     fun onClickReSearch(view: View)
     fun onClickSearch(view: View)
     fun onClickSearchBar(view: View)
@@ -619,8 +597,6 @@ interface MapViewEventHandlers {
     fun onClickCurrentLocation(view: View)
 
     fun onClickCarouselItem(job: Job)
-
-    fun onNavigationItemSelected(item: MenuItem): Boolean
 }
 
 class MapViewCoachViewModel: ViewModel() {

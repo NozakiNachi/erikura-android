@@ -25,7 +25,7 @@ import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingTimeCircleFragment
 import kotlinx.android.synthetic.main.activity_own_jobs.*
 
-class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
+class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsHandlers {
     companion object {
         var savedTabPosition: Int? = null
     }
@@ -130,34 +130,9 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
         super.onPause()
         savedTabPosition = owned_jobs_tab_layout.selectedTabPosition
     }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 地図画面、またはリスト画面に遷移します
-                Intent(this, MapViewActivity::class.java).let {
-                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_applied_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-        }
-        return true
-    }
-
 }
 
 class OwnJobsViewModel: ViewModel() {}
 
-interface OwnJobsHandlers {
-    fun onNavigationItemSelected(item: MenuItem): Boolean
+interface OwnJobsHandlers: TabEventHandlers {
 }

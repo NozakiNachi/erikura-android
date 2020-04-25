@@ -3,7 +3,6 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -18,7 +17,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.bitmap_recycle.IntegerArrayAdapter
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
@@ -30,14 +28,14 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.models.SortType
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
+import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
-import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
-class ListViewActivity : BaseActivity(), ListViewHandlers {
+class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListViewHandlers {
     companion object {
         val REQUEST_SEARCH_CONDITIONS = 1
     }
@@ -110,10 +108,6 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         intent.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
             viewModel.apply(query)
         }
-
-        // 下部のタブの選択肢を仕事を探すに変更
-        val nav: BottomNavigationView = findViewById(R.id.list_view_navigation)
-        nav.selectedItemId = R.id.tab_menu_search_jobs
 
         activeJobsAdapter = JobListAdapter(this, listOf(), null).also {
             it.onClickListner =  object: JobListAdapter.OnClickListener {
@@ -191,6 +185,9 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
 
     override fun onResume() {
         super.onResume()
+        // 仕事を探すタブの画面を保存します
+        searchJobCurrentActivity = this.javaClass
+
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && !viewModel.keyword.value.isNullOrBlank()) {
                 firstFetchRequested = true
@@ -290,32 +287,6 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     ) {
         viewModel.searchBarVisible.value = View.GONE
     }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_applied_jobs -> {
-                Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-                finish()
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(
-                        intent,
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-                    )
-                }
-            }
-        }
-        return true
-    }
 }
 
 class ListViewViewModel : BaseJobQueryViewModel() {
@@ -374,7 +345,7 @@ class ListViewViewModel : BaseJobQueryViewModel() {
     }
 }
 
-interface ListViewHandlers {
+interface ListViewHandlers: TabEventHandlers {
     fun onClickSearch(view: View)
     fun onClickSearchBar(view: View)
     fun onToggleActiveOnly(view: View)
@@ -382,6 +353,4 @@ interface ListViewHandlers {
     fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
 
     fun onScrollChange(v: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int)
-
-    fun onNavigationItemSelected(item: MenuItem): Boolean
 }
