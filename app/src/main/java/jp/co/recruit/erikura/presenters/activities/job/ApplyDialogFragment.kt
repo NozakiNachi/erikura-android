@@ -40,6 +40,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
     private val viewModel: ApplyDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(ApplyDialogFragmentViewModel::class.java)
     }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogApplyBinding>(
             LayoutInflater.from(activity),
@@ -189,11 +190,21 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     }
 
     private fun isValid(): Boolean {
-        if (entryQuestionVisibility.value == View.VISIBLE && entryQuestionAnswer.value.isNullOrBlank()) {
-            return false
-        }else {
-            return true
+        var valid = true
+
+        // 応募時の質問がある場合のみバリデーションを行います
+        if (entryQuestionVisibility.value == View.VISIBLE) {
+            // 必須チェック
+            if (valid && entryQuestionAnswer.value.isNullOrBlank()) {
+                valid = false
+            }
+            // 長さチェック
+            if (valid && (entryQuestionAnswer.value?.length ?: 0) > 2000) {
+                valid = false
+            }
         }
+
+        return valid
     }
 }
 
