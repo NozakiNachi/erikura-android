@@ -19,7 +19,7 @@ import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailAct
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import jp.co.recruit.erikura.services.NotificationData
 
-class StartActivity : BaseActivity(), StartEventHandlers {
+class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandlers {
     lateinit var video: VideoView
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -6,7 +6,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
-abstract class BaseActivity: AppCompatActivity() {
+abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatActivity() {
     companion object {
         var currentActivity: Activity? = null
     }
@@ -18,7 +18,7 @@ abstract class BaseActivity: AppCompatActivity() {
 
     // 戻るボタンの動きを再定義して、ルートで遷移している場合には、地図画面に戻るようにします
     override fun onBackPressed() {
-        if (isTaskRoot) {
+        if (isTaskRoot && !finishByBackButton) {
             backToDefaultActivity()
         }
         else {

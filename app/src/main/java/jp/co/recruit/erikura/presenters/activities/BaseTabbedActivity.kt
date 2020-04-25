@@ -10,7 +10,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 
-open class BaseTabbedActivity(private val currentTabId: Int): BaseActivity(), TabEventHandlers {
+open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton: Boolean = false): BaseActivity(finishByBackButton = finishByBackButton), TabEventHandlers {
     companion object {
         var searchJobCurrentActivity: Class<*> = MapViewActivity::class.java
         var mypageCurrentActivity: Class<*> = MypageActivity::class.java
