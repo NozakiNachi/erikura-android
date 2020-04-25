@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -57,6 +58,12 @@ class LocationManager {
         return ActivityCompat.checkSelfPermission(activity,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun checkPermission(fragment: Fragment): Boolean {
+        return fragment.activity?.let {
+            checkPermission(it)
+        } ?: false
     }
 
     fun requestPermission(activity: FragmentActivity) {
