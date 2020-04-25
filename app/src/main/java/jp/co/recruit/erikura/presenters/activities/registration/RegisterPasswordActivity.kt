@@ -96,6 +96,14 @@ class RegisterPasswordActivity : BaseActivity(),
         intent.putExtra("user", user)
         startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
     }
+
+    override fun backToDefaultActivity() {
+        // 会員登録中なので、スタート画面に遷移させます
+        Intent(this, StartActivity::class.java)?.let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+    }
 }
 
 class RegisterPasswordViewModel: ViewModel() {
