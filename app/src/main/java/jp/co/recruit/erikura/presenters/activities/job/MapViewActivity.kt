@@ -41,7 +41,7 @@ import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
 
-class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), OnMapReadyCallback, MapViewEventHandlers {
+class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
         // SearchJob にわたすID
         const val REQUEST_SEARCH_CONDITIONS = 1
