@@ -61,15 +61,25 @@ data class Job(
     // isReportEditable
     // getSummaryTitles
 
-    val isActive: Boolean get() = !(isFuture || isPastOrInactive)
+    val isActive: Boolean get() {
+        return !(isFuture || isPastOrInactive)
+    }
     /** 期限切れ、もしくは応募済みかを判定します */
-    val isPastOrInactive: Boolean get() = (isPast || isEntried)
+    val isPastOrInactive: Boolean get() {
+        return (isPast || isEntried)
+    }
     /** 募集期間が過ぎたタスクか? */
-    val isPast: Boolean get() = (workingFinishAt?.let { Date() > it } ?: false)
+    val isPast: Boolean get() {
+        return (workingFinishAt?.let { Date() > it } ?: false)
+    }
     /** 募集期間前のタスクか? */
-    val isFuture: Boolean get() = (workingStartAt?.let { Date() < it } ?: false)
+    val isFuture: Boolean get() {
+        return (workingStartAt?.let { Date() < it } ?: false)
+    }
     /** 作業期間切れのタスクか? */
-    val isExpired: Boolean get() = (this.limitAt?.let { Date() > it } ?: false)
+    val isExpired: Boolean get() {
+        return (this.limitAt?.let { Date() > it } ?: false)
+    }
     /** 応募済みの場合の作業リミット時間 */
     val limitAt: Date? get() = entry?.limitAt
     /** 自身が応募済みか */
