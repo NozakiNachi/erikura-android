@@ -53,6 +53,8 @@ import java.util.*
 
 class ErikuraApplication : Application() {
     companion object {
+        const val LOG_TAG = "ERIKURA"
+
         lateinit var instance: ErikuraApplication private set
 
         val versionCode : Int = BuildConfig.VERSION_CODE
