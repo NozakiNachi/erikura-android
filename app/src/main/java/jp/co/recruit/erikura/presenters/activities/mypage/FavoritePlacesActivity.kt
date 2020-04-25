@@ -73,7 +73,7 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         super.onBackPressed()
 
         Intent(this, MypageActivity::class.java).let {
-            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }

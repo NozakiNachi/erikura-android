@@ -6,8 +6,6 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import androidx.core.os.bundleOf
@@ -18,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -29,9 +26,7 @@ import jp.co.recruit.erikura.business.models.SortType
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
 import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
-import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
@@ -240,11 +235,11 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
         Tracking.track(name= "push_toggle_dispaly")
 
-        val intent = Intent(this, MapViewActivity::class.java)
-        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        // リストビューは破棄しておきます
-        finish()
+        Intent(this, MapViewActivity::class.java).let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
+            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
     }
 
     override fun onToggleActiveOnly(view: View) {

@@ -3,15 +3,12 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
-import android.view.MenuItem
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -26,7 +23,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -37,11 +33,8 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
-import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
@@ -498,11 +491,11 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), OnMapRead
         Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
         Tracking.track(name= "push_toggle_dispaly")
 
-        val intent = Intent(this, ListViewActivity::class.java)
-        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        // 地図画面は閉じておきます
-        finish()
+        Intent(this, ListViewActivity::class.java)?.let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
+            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
     }
 
     // 現在地に戻る

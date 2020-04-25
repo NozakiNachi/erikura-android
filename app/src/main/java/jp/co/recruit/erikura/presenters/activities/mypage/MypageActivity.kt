@@ -59,6 +59,7 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
         },
         MypageItem(1, "お気に入り", R.drawable.icon_star_18, true) {
             val intent = Intent(this, FavoritePlacesActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra(FROM_MYPAGE_KEY, true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
