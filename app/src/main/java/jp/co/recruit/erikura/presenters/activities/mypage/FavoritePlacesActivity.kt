@@ -69,6 +69,15 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         mypageCurrentActivity = this.javaClass
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        Intent(this, MypageActivity::class.java).let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+    }
+
     private fun onClickItem(position: Int) {
         // 場所詳細画面へ遷移
         val intent= Intent(this, PlaceDetailActivity::class.java)
