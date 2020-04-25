@@ -243,8 +243,8 @@ data class CancelRequest(
 
 data class StartJobRequest(
     var jobId: Int,
-    var latitude: Double,
-    var longitude: Double,
+    var latitude: Double?,
+    var longitude: Double?,
     var steps: Int?,
     var distance: Double?,
     var floorAsc: Int?,
@@ -253,8 +253,8 @@ data class StartJobRequest(
 
 data class StopJobRequest(
     var jobId: Int,
-    var latitude: Double,
-    var longitude: Double,
+    var latitude: Double?,
+    var longitude: Double?,
     var steps: Int?,
     var distance: Double?,
     var floorAsc: Int?,

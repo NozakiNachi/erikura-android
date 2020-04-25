@@ -301,13 +301,13 @@ class Api(var context: Context) {
         }
     }
 
-    fun startJob(job: Job, latLng: LatLng, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
                     jobId = job.id,
-                    latitude = latLng.latitude,
-                    longitude = latLng.longitude,
+                    latitude = latLng?.latitude,
+                    longitude = latLng?.longitude,
                     steps = steps,
                     distance = distance,
                     floorAsc = floorAsc,
@@ -330,13 +330,13 @@ class Api(var context: Context) {
         }
     }
 
-    fun stopJob(job: Job, latLng: LatLng, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
         executeObservable(
             erikuraApiService.stopJob(
                 StopJobRequest(
                     jobId = job.id,
-                    latitude = latLng.latitude,
-                    longitude = latLng.longitude,
+                    latitude = latLng?.latitude,
+                    longitude = latLng?.longitude,
                     steps = steps,
                     distance = distance,
                     floorAsc = floorAsc,

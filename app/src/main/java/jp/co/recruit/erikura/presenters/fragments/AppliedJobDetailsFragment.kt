@@ -29,6 +29,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -213,8 +214,14 @@ class AppliedJobDetailsFragment(
             Tracking.logEvent(event = "push_start_job", params = bundleOf())
             Tracking.trackJobDetails(name = "push_start_job", jobId = job.id)
 
+            val latLng: LatLng? = if (locationManager.checkPermission(this)) {
+                locationManager.latLng
+            } else {
+                null
+            }
+
             Api(activity).startJob(
-                job, locationManager.latLng ?: locationManager.latLngOrDefault,
+                job, latLng,
                 steps = ErikuraApplication.pedometerManager.readStepCount(),
                 distance = null, floorAsc = null, floorDesc = null
             ) {
