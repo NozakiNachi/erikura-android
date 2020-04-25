@@ -13,43 +13,38 @@ import android.widget.Button
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
+import androidx.preference.PreferenceManager
 import com.crashlytics.android.Crashlytics
+import com.facebook.FacebookSdk
+import com.facebook.appevents.AppEventsConstants
+import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 import io.fabric.sdk.android.Fabric
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
 import io.realm.Realm
+import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.data.storage.RealmManager
 import jp.co.recruit.erikura.di.DaggerErikuraComponent
 import jp.co.recruit.erikura.di.ErikuraComponent
-import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
-import jp.co.recruit.erikura.presenters.util.LocationManager
-import jp.co.recruit.erikura.services.ErikuraMessagingService
-import org.json.JSONObject
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
-import androidx.preference.PreferenceManager
-import com.facebook.FacebookSdk
-import com.facebook.appevents.AppEventsConstants
-import com.facebook.appevents.AppEventsLogger
-import jp.co.recruit.erikura.business.models.*
-import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivity
+import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
+import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.PedometerManager
+import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
-import java.lang.Exception
+import org.json.JSONObject
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.Year
-import java.time.ZoneId
 import java.util.*
-
 
 class ErikuraApplication : Application() {
     companion object {
