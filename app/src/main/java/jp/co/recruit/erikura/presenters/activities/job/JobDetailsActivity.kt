@@ -51,6 +51,7 @@ class JobDetailsActivity : BaseActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        this.intent = intent
 
         var jobRestored: Boolean = false
         intent?.let { intent ->
