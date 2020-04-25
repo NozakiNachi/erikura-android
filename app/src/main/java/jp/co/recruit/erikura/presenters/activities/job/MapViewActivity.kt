@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.MenuItem
@@ -118,6 +119,10 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
                             scrolling = true
                             super.updateActionForInterimTarget(action)
                         }
+                    }
+
+                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
+                        return super.calculateSpeedPerPixel(displayMetrics) / 4
                     }
 
                     override fun onStart() {
