@@ -1,10 +1,12 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -14,7 +16,11 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 
 class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEventHandlers {
@@ -31,18 +37,8 @@ class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEven
 
     override fun onClickManualButton(view: View) {
         if(job?.manualUrl != null){
-            // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_job_manual", params= bundleOf())
-            Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job?.id ?: 0)
-
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val file = File(asset.path)
-                val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".provider", file)
-                val intent = Intent(Intent.ACTION_VIEW, uri)
-                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-                startActivity(intent)
+            activity?.let { activity ->
+                JobUtil.openManual(activity, job!!)
             }
         }
     }

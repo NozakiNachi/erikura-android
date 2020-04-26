@@ -1,12 +1,26 @@
 import android.content.Context
+import android.content.Intent
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
+import android.webkit.MimeTypeMap
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
+import jp.co.recruit.erikura.BuildConfig
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
+import jp.co.recruit.erikura.data.storage.Asset
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.util.*
 
 object JobUtil {
@@ -14,7 +28,6 @@ object JobUtil {
         SEARCH,
         OWNED,
     }
-
 
     fun setupTimeLabel(context: Context, job: Job?, type: TimeLabelType = TimeLabelType.SEARCH): Pair<SpannableStringBuilder, Int> {
         // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
@@ -161,5 +174,34 @@ object JobUtil {
         }
 
         return text to color
+    }
+
+    fun openManual(activity: FragmentActivity, job: Job) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_job_manual", params= bundleOf())
+        Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job.id)
+
+        val manualUrl = job.manualUrl
+        val assetsManager = ErikuraApplication.assetsManager
+        assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
+            // PDFディレクトリにコピーします
+            val filesDir = activity.filesDir
+            val pdfDir = File(filesDir, "pdfs")
+            if (!pdfDir.exists()) {
+                pdfDir.mkdirs()
+            }
+            val pdfFile = File(pdfDir, "manual.pdf")
+            val out = FileOutputStream(pdfFile)
+            val input = FileInputStream(File(asset.path))
+            IOUtils.copy(input, out)
+            out.closeQuietly()
+            input.closeQuietly()
+
+            val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".fileprovider", pdfFile)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
+            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+            activity.startActivity(intent)
+        }
     }
 }
