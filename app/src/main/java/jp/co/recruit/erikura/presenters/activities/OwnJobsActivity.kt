@@ -115,12 +115,12 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
                 }.first()
                 val timerCircle = WorkingTimeCircleFragment(sortedJobs)
                 transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
-                transaction.commit()
+                transaction.commitAllowingStateLoss()
             }else {
                 val fragment = supportFragmentManager.findFragmentByTag("timerCircle")
                 fragment?.let {
                     transaction.remove(fragment)
-                    transaction.commit()
+                    transaction.commitAllowingStateLoss()
                 }
             }
         }

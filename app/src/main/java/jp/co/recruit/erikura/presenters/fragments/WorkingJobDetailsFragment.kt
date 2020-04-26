@@ -109,7 +109,7 @@ class WorkingJobDetailsFragment(
             "jobDetailsView"
         )
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView, "mapView")
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
 
         timer.schedule(object : TimerTask() {
             override fun run() {

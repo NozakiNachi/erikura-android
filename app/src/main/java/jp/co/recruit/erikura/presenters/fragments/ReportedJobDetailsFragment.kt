@@ -105,7 +105,7 @@ class ReportedJobDetailsFragment(
             jobDetailsView,
             "jobDetailsView"
         )
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
 
         // reportの再取得
         job?.let {

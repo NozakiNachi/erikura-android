@@ -23,6 +23,6 @@ class ApplyFlowViewFragment(val job: Job?) : Fragment() {
         val transaction = childFragmentManager.beginTransaction()
         val applyFlowLink = ApplyFlowLinkFragment(job)
         transaction.add(R.id.applyFlow_applyFlowLinkFragment, applyFlowLink, "applyFlowLink")
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 }

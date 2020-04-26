@@ -114,6 +114,8 @@ class JobDetailsActivity : BaseActivity() {
     }
 
     private fun refreshContents() {
+        if (isDestroyed) { return }
+
         val transaction = supportFragmentManager.beginTransaction()
         // fragmentの作成
         // jobのステータスで挿しこむフラグメントを変更します
@@ -139,7 +141,7 @@ class JobDetailsActivity : BaseActivity() {
         }
         // fragmentの更新
         transaction.replace(R.id.job_details, fragment)
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 
 

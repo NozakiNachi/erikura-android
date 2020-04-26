@@ -145,7 +145,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun searchJobs(query: JobQuery, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
+    fun searchJobs(query: JobQuery, runCompleteOnUIThread: Boolean = true, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
         val observable = erikuraApiService.searchJob(
             period = query.period.value,
             latitude = query.latitude ?: LocationManager.defaultLatLng.latitude,
@@ -156,7 +156,7 @@ class Api(var context: Context) {
             minimumWorkingTime = query.minimumWorkingTime,
             maximumWorkingTime = query.maximumWorkingTime,
             jobKind = query.jobKind?.id)
-        executeObservable(observable, onError = onError) {
+        executeObservable(observable, runCompleteOnUIThread = runCompleteOnUIThread, onError = onError) {
             val jobs = it.jobs
             onComplete(jobs)
         }
@@ -619,20 +619,26 @@ class Api(var context: Context) {
 
     private val activeObservables = mutableSetOf<Observable<*>>()
 
-    private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>, showProgress: Boolean = true, defaultError: String? = null, onError: ((messages: List<String>?) -> Unit)?, onComplete: (response: T) -> Unit) {
+    private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>,
+                                      showProgress: Boolean = true,
+                                      defaultError: String? = null,
+                                      runCompleteOnUIThread: Boolean = true,
+                                      onError: ((messages: List<String>?) -> Unit)?,
+                                      onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
         if (showProgress)
             showProgressAlert()
 
         val complete: () -> Unit = {
             activeObservables.remove(observable)
-            if (showProgress)
-                hideProgressAlert()
+            AndroidSchedulers.mainThread().scheduleDirect {
+                if (showProgress)
+                    hideProgressAlert()
+            }
         }
         activeObservables.add(observable)
         observable
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { response: Response<ApiResponse<T>> ->
                     complete.invoke()
@@ -640,44 +646,57 @@ class Api(var context: Context) {
                         // isSuccessfull の判定をしているので、body は常に取得できる想定です
                         val apiResponse: ApiResponse<T> = response.body()!!
                         if (apiResponse.hasError) {
-                            processError(apiResponse.errors ?: listOf(defaultErrorMessage), onError)
+                            AndroidSchedulers.mainThread().scheduleDirect {
+                                processError(apiResponse.errors ?: listOf(defaultErrorMessage), onError)
+                            }
                         }
                         else {
-                            onComplete(apiResponse.body)
+                            if (runCompleteOnUIThread) {
+                                AndroidSchedulers.mainThread().scheduleDirect {
+                                    onComplete(apiResponse.body)
+                                }
+                            }
+                            else {
+                                onComplete(apiResponse.body)
+                            }
                         }
                     }
                     else {
-                        when(response.code()) {
-                            401 -> {
-                                var fromMypage = false
-                                (context as? FragmentActivity)?.let { activity ->
-                                    // マイページから遷移してきたかのフラグを取得します
-                                    fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
-                                    // 元画面は表示できないはずなので閉じておきます
-                                    activity.finish()
+                        AndroidSchedulers.mainThread().scheduleDirect {
+                            when(response.code()) {
+                                401 -> {
+                                    var fromMypage = false
+                                    (context as? FragmentActivity)?.let { activity ->
+                                        // マイページから遷移してきたかのフラグを取得します
+                                        fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
+                                        // 元画面は表示できないはずなので閉じておきます
+                                        activity.finish()
+                                    }
+                                    // ログイン必須画面に遷移させます
+                                    Intent(context, LoginRequiredActivity::class.java).let {
+                                        it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                        it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                        context.startActivity(it)
+                                    }
                                 }
-                                // ログイン必須画面に遷移させます
-                                Intent(context, LoginRequiredActivity::class.java).let {
-                                    it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                    it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
-                                    context.startActivity(it)
+                                500 -> {
+                                    Log.v("ERROR RESPONSE", response.errorBody().toString())
+                                    processError(listOf(defaultErrorMessage), onError)
                                 }
-                            }
-                            500 -> {
-                                Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                processError(listOf(defaultErrorMessage), onError)
-                            }
-                            else -> {
-                                Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                processError(listOf(defaultErrorMessage), onError)
+                                else -> {
+                                    Log.v("ERROR RESPONSE", response.errorBody().toString())
+                                    processError(listOf(defaultErrorMessage), onError)
+                                }
                             }
                         }
                     }
                 },
                 onError = { throwable ->
-                    Log.v("ERROR", throwable.message, throwable)
-                    processError(listOf("通信エラーが発生しました。\n電波状況の良い状況で再度お試しください。"), onError)
                     complete.invoke()
+                    AndroidSchedulers.mainThread().scheduleDirect {
+                        Log.v("ERROR", throwable.message, throwable)
+                        processError(listOf("通信エラーが発生しました。\n電波状況の良い状況で再度お試しください。"), onError)
+                    }
                 }
             )
     }
