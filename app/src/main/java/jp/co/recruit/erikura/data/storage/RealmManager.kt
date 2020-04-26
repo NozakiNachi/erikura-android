@@ -12,8 +12,6 @@ class RealmManager {
         val realm: Realm get() = instance.realm
     }
 
-    private val realm: Realm
-
     init {
         // 初期化処理
         Realm.init(ErikuraApplication.instance.applicationContext)
@@ -28,6 +26,7 @@ class RealmManager {
             .deleteRealmIfMigrationNeeded()
             .build()
         Realm.setDefaultConfiguration(realmConfig)
-        realm = Realm.getDefaultInstance()
     }
+
+    val realm: Realm get() = Realm.getDefaultInstance()
 }

@@ -335,6 +335,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
 
     private fun waitUpload() {
+        val maxCount = 100
+
         // 画像アップ中モーダルの表示
         val uploadingDialog = UploadingDialogFragment()
         uploadingDialog.isCancelable = false
@@ -345,7 +347,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 var count = 0
 
                 while (!isCompletedUploadPhotos()) {
-                    if (count < 5) {
+                    if (count < maxCount) {
                         this.runOnUiThread {
                             // 画像アップの進捗表示更新
                             val (numPhotos, numUploadedPhotos) = updateProgress()
@@ -353,7 +355,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             uploadingDialog.numUploadedPhotos = numUploadedPhotos
                         }
 
-                        waitUpload()
+                        ErikuraApplication.instance.waitUpload()
 
                         this.runOnUiThread {
                             // token 再取得処理
@@ -381,7 +383,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 onNext = { count ->
                     Log.d("Upload Next", count.toString())
                     uploadingDialog.dismiss()
-                    if (count >= 5) {
+                    if (count >= maxCount) {
                         // 画像アップ不可モーダル表示
                         val failedDialog = UploadFailedDialogFragment().also {
                             it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {

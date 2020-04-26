@@ -60,6 +60,7 @@ class ErikuraApplication : Application() {
         val locationManager: LocationManager get() = instance.erikuraComponent.locationManger()
         val pedometerManager: PedometerManager get() = instance.erikuraComponent.pedometerManager()
         val fitApiManager: GoogleFitApiManager get() = instance.erikuraComponent.googleFitApiManager()
+
         val realm: Realm get() = RealmManager.realm
 
         // バーミッション取得用の定数
