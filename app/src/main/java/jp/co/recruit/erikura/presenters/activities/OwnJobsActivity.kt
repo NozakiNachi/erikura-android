@@ -23,8 +23,12 @@ import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingTimeCircleFragment
+import kotlinx.android.synthetic.main.activity_own_jobs.*
 
-class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
+class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsHandlers {
+    companion object {
+        var savedTabPosition: Int? = null
+    }
 
     private val viewModel: OwnJobsViewModel by lazy {
         ViewModelProvider(this).get(OwnJobsViewModel::class.java)
@@ -39,10 +43,6 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-
-        // FIXME: viewPager の設定
-        // FIXME: tabItem のカスタマイズ
-        // FIXME: fragment の実装
 
         val adapter = object: FragmentPagerAdapter(supportFragmentManager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             override fun getItem(position: Int): Fragment {
@@ -84,31 +84,12 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 地図画面、またはリスト画面に遷移します
-                Intent(this, MapViewActivity::class.java).let {
-                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_applied_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-        }
-        return true
-    }
-
     override fun onResume() {
         super.onResume()
+
+        savedTabPosition?.let { position ->
+            owned_jobs_tab_layout.getTabAt(position)?.select()
+        }
 
         fromReportCompleted = intent.getBooleanExtra("fromReportCompleted", false)
         if (fromReportCompleted) {
@@ -134,20 +115,24 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
                 }.first()
                 val timerCircle = WorkingTimeCircleFragment(sortedJobs)
                 transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
-                transaction.commit()
+                transaction.commitAllowingStateLoss()
             }else {
                 val fragment = supportFragmentManager.findFragmentByTag("timerCircle")
                 fragment?.let {
                     transaction.remove(fragment)
-                    transaction.commit()
+                    transaction.commitAllowingStateLoss()
                 }
             }
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        savedTabPosition = owned_jobs_tab_layout.selectedTabPosition
     }
 }
 
 class OwnJobsViewModel: ViewModel() {}
 
-interface OwnJobsHandlers {
-    fun onNavigationItemSelected(item: MenuItem): Boolean
+interface OwnJobsHandlers: TabEventHandlers {
 }

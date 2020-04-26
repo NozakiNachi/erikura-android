@@ -81,7 +81,6 @@ data class Report (
         }
     }
 
-
     /**
      * 画像を選択して変更したかを返却します
      */
@@ -111,6 +110,10 @@ data class Report (
         }
     }
 
+    fun isUploading(): Boolean {
+        return if (isPhotoChanged) { additionalPhotoAsset?.uploading ?: false } else { false }
+    }
+
     /**
      * 報告箇所のアップロードが完了しているか確認します
      */
@@ -118,88 +121,26 @@ data class Report (
         return activeOutputSummaries.all { it.isUploadCompleted(job) }
     }
 
-    /*
-    // 削除されていないOutputSummariesの数をカウントします
-    func activeOutputSummariesCount() -> Int {
-        if let summaries = outputSummaries {
-            return summaries.reduce(0) { (result, summary) -> Int in
-                return summary.willDelete ?? false ? result : result + 1
-            }
-        }
-        else {
-            return 0
-        }
+    fun isOutputSummaryPhotoUploading(): Boolean {
+        return activeOutputSummaries.any { it.isUploading() }
     }
-
-    func activeOtputSummary(index: Int) -> OutputSummary? {
-        if let summaries = outputSummaries {
-            let activeSummaries = summaries.filter { (summary) -> Bool in
-                return !(summary.willDelete ?? false)
-            }
-            return activeSummaries[index]
-        }
-        else {
-            return nil
-        }
-    }
-
-    func activeIndexOf(summary: OutputSummary) -> Int {
-        var index = 0;
-        if let summaries = outputSummaries {
-            for (_, s) in summaries.enumerated() {
-                if s === summary {
-                    return index
-                }
-                if !(s.willDelete ?? false) {
-                    index = index + 1
-                }
-            }
-        }
-        return -1
-    }
-
-    func validate() -> Bool {
-        var valid = true
-        if let summaries = outputSummaries {
-            // 報告箇所が存在することを確認します
-            if summaries.filter({ !($0.willDelete ?? false) }).count < 1 {
-                valid = false
-            }
-            for summary in summaries {
-                if !(summary.willDelete ?? false) {
-                    valid = summary.validate() && valid
-                }
-            }
-        }
-        else {
-            valid = false
-        }
-
-        valid = Validator.maxLength(5000).apply(additionalComment) && valid
-        valid = Validator.maxLength(5000).apply(comment) && valid
-
-        return valid
-    }
-     */
-
 
     // 画像アップロード処理
     fun uploadPhoto(activity: Activity, job: Job, item: MediaItem?, onComplete: (token: String) -> Unit) {
         val completable = Completable.fromAction {
             // 画像リサイズ処理
             item?.let {
+                item.uploading = true
                 item.resizeImage(activity, 640, 640) { bytes ->
                     // 画像アップロード処理
                     Api(activity).imageUpload(item, bytes, onError = {
                         Log.e("Error in waiting upload", it.toString())
-                        synchronized(ErikuraApplication.instance.uploadMonitor) {
-                            ErikuraApplication.instance.uploadMonitor.notifyAll()
-                        }
+                        item.uploading = false
+                        ErikuraApplication.instance.notifyUpload()
                     }) { token ->
+                        item.uploading = false
                         onComplete(token)
-                        synchronized(ErikuraApplication.instance.uploadMonitor) {
-                            ErikuraApplication.instance.uploadMonitor.notifyAll()
-                        }
+                        ErikuraApplication.instance.notifyUpload()
                     }
                 }
             }

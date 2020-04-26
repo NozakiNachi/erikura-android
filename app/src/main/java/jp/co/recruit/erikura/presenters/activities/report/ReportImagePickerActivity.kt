@@ -64,6 +64,26 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        // RecyclerView の初期化を行います
+        val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
+        recyclerView.setHasFixedSize(true)
+
+        val decorator = object: RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
+                outRect.left = space
+                outRect.right = space
+                outRect.top = space
+                outRect.bottom = space
+            }
+        }
+        recyclerView.addItemDecoration(decorator)
     }
 
     override fun onStart() {
@@ -92,10 +112,6 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     private fun displayImagePicker() {
         adapter = ImagePickerAdapter(this, job, viewModel).also {
             it.onClickListener = object: ImagePickerAdapter.OnClickListener {
@@ -105,24 +121,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
         val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
-        recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
-
-        val decorator = object: RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(
-                outRect: Rect,
-                view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State
-            ) {
-                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
-                outRect.left = space
-                outRect.right = space
-                outRect.top = space
-                outRect.bottom = space
-            }
-        }
-        recyclerView.addItemDecoration(decorator)
 
         if (editComplete) {
             // 選択状態をクリアします
@@ -135,6 +134,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                     viewModel.imageMap.put(item.id, item)
                 }
             }
+            viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
             editComplete = false
         }
     }
@@ -247,14 +247,6 @@ class ImagePickerCellViewModel: ViewModel() {
 
     fun loadData(job: Job, item: MediaItem, viewModel: ReportImagePickerViewModel) {
         checked.value = viewModel.imageMap.containsKey(item.id)
-//        job.report?.activeOutputSummaries?.let {
-//            it.forEach {
-//                val uri = it.photoAsset?.contentUri
-//                if (item.contentUri == uri) {
-//                    checked.value = true
-//                }
-//            }
-//        }
     }
 }
 

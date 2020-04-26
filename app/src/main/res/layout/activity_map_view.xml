@@ -28,7 +28,7 @@
                 android:id="@+id/map_view_top_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_above="@id/map_view_navigation">
+                android:layout_above="@id/tab_navigation">
 
                 <!-- 地図画面のフレーム -->
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -153,12 +153,13 @@
                         map:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         android:orientation="horizontal"
                         android:foregroundGravity="bottom"
+                        android:visibility="@{viewModel.carouselVisibility}"
                         />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </FrameLayout>
 
             <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
-                android:id="@+id/map_view_navigation"
+                android:id="@+id/tab_navigation"
                 android:layout_width="match_parent"
                 android:layout_height="90dp"
                 android:layout_alignParentBottom="true"

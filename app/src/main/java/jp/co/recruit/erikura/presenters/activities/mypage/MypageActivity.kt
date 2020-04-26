@@ -31,13 +31,14 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMypageBinding
 import jp.co.recruit.erikura.databinding.FragmentInformationCellBinding
 import jp.co.recruit.erikura.databinding.FragmentMypageCellBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
+import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import kotlinx.android.synthetic.main.activity_mypage.*
 import java.util.*
 
-class MypageActivity : BaseActivity(), MypageEventHandlers {
+class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHandlers {
     companion object {
         val FROM_MYPAGE_KEY = "fromMypage"
     }
@@ -58,6 +59,7 @@ class MypageActivity : BaseActivity(), MypageEventHandlers {
         },
         MypageItem(1, "お気に入り", R.drawable.icon_star_18, true) {
             val intent = Intent(this, FavoritePlacesActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra(FROM_MYPAGE_KEY, true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         },
@@ -80,15 +82,10 @@ class MypageActivity : BaseActivity(), MypageEventHandlers {
         super.onCreate(savedInstanceState)
         setTheme(R.style.AppTheme)
 
-
         val binding: ActivityMypageBinding = DataBindingUtil.setContentView(this, R.layout.activity_mypage)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-
-        // 下部のタブの選択肢を仕事を探すに変更
-        val nav: BottomNavigationView = findViewById(R.id.mypage_view_navigation)
-        nav.selectedItemId = R.id.tab_menu_mypage
 
         informationListAdapter =
             InformationAdapter(this)
@@ -147,29 +144,11 @@ class MypageActivity : BaseActivity(), MypageEventHandlers {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                Intent(this, MapViewActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_applied_jobs -> {
-                Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_mypage -> {
-                // 何も行いません
-            }
-        }
-        return true
+        mypageCurrentActivity = this.javaClass
     }
-
 }
 
 class MypageViewModel: ViewModel() {
@@ -194,8 +173,7 @@ class MypageViewModel: ViewModel() {
     }
 }
 
-interface MypageEventHandlers {
-    fun onNavigationItemSelected(item: MenuItem): Boolean
+interface MypageEventHandlers: TabEventHandlers {
 }
 
 data class MypageItem(val id: Int, val label: String, val iconDrawableId: Int, val requireLogin: Boolean, val onSelect: () -> Unit)

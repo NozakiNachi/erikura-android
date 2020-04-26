@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -49,14 +50,19 @@ class StopDialogFragment(private val job: Job?, private val steps: Int?) : Dialo
     override fun onClikStop(view: View) {
         // stopJobの呼び出し
         job?.let {
-            Api(activity!!).stopJob(job, locationManager.latLng ?: locationManager.latLngOrDefault,
+            val latLng: LatLng? = if (locationManager.checkPermission(this)) {
+                locationManager.latLng
+            } else {
+                null
+            }
+
+            Api(activity!!).stopJob(job, latLng,
                 steps = ErikuraApplication.pedometerManager.readStepCount(),
                 distance = null, floorAsc = null, floorDesc = null
             ) {
                 // 作業完了のトラッキングの送出
                 Tracking.logEvent(event= "job_finished", params= bundleOf())
                 Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0)
-
 
                 val intent= Intent(activity, WorkingFinishedActivity::class.java)
                 intent.putExtra("job", job)

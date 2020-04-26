@@ -18,8 +18,16 @@ import java.io.ByteArrayOutputStream
 
 
 @Parcelize
-data class MediaItem(val id: Long = 0, val mimeType: String = "", val size: Long = 0, val contentUri: Uri? = null, val dateAdded: Long? = null, val dateTaken: Long? = null) :
-    Parcelable {
+data class MediaItem(
+    val id: Long = 0,
+    val mimeType: String = "",
+    val size: Long = 0,
+    val contentUri: Uri? = null,
+    val dateAdded: Long? = null,
+    val dateTaken: Long? = null
+) : Parcelable {
+    var uploading: Boolean = false
+
     companion object {
         fun from(cursor: Cursor): MediaItem {
             val id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))

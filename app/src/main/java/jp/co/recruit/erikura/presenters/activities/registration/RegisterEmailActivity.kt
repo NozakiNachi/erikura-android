@@ -91,6 +91,8 @@ class RegisterEmailActivity : BaseActivity(),
 }
 
 class RegisterEmailViewModel: ViewModel() {
+    private val emailPattern = """\A[\w._%+-|]+@[\w0-9.-]+\.[A-Za-z]{2,}\z""".toRegex()
+
     val email: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
@@ -104,10 +106,9 @@ class RegisterEmailViewModel: ViewModel() {
         if (valid && email.value?.isBlank() ?: true) {
             valid = false
             error.message.value = null
-        }else if (valid && !(android.util.Patterns.EMAIL_ADDRESS.matcher(email.value ?:"").matches())) {
+        }else if (valid && !(emailPattern.matches(email.value ?: ""))) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.email_format_error)
-
         } else {
             valid = true
             error.message.value = null

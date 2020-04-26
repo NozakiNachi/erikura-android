@@ -32,9 +32,11 @@ class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), Repor
         binding.handler = this
 
         job?.let { job ->
-            if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
+            if (isExpiredAndRejected()) {
+                // 納期切れ、かつ差し戻し案件の場合は、「応募と報告をキャンセルする」ボタンを表示します
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.cancel_report_entry)
             }else {
+                // それ以外は作業報告の削除ボタンを表示します
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.remove_report)
             }
         }
@@ -44,7 +46,7 @@ class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), Repor
 
     override fun onClickReportedJobRemoveButton(view: View) {
         job?.let { job ->
-            if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
+            if (isExpiredAndRejected()) {
                 val dialog = CancelDialogFragment(job)
                 dialog.show(childFragmentManager, "Cancel")
             }else {
@@ -53,6 +55,13 @@ class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), Repor
             }
         }
     }
+
+    private fun isExpiredAndRejected(): Boolean {
+        val expired = job?.entry?.isExpired() ?: false
+        val rejected = job?.report?.isRejected ?: false
+        return expired && rejected
+    }
+
 }
 
 class ReportedJobRemoveButtonViewModel: ViewModel() {
