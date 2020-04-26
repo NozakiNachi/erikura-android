@@ -346,7 +346,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             try {
                 var count = 0
 
-                while (!isCompletedUploadPhotos()) {
+                // アップロードが完了する、もしくはアップロード中のものがなくなるまで繰り返します
+                while (!(isCompletedUploadPhotos() || !isUploadingPhotos())) {
                     if (count < maxCount) {
                         this.runOnUiThread {
                             // 画像アップの進捗表示更新
@@ -356,11 +357,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         }
 
                         ErikuraApplication.instance.waitUpload()
-
-                        this.runOnUiThread {
-                            // token 再取得処理
-                            updateToken()
-                        }
 
                         count++
                     } else {
@@ -383,7 +379,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 onNext = { count ->
                     Log.d("Upload Next", count.toString())
                     uploadingDialog.dismiss()
-                    if (count >= maxCount) {
+                    if (!isCompletedUploadPhotos()) {
                         // 画像アップ不可モーダル表示
                         val failedDialog = UploadFailedDialogFragment().also {
                             it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
@@ -429,11 +425,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             )
     }
 
-
-    private fun updateToken() {
-        viewModel.completedUploadPhotos = isCompletedUploadPhotos()
-    }
-
     private fun updateProgress(): Pair<Int, Int> {
         var numPhotos = 0
         var numUploadedPhotos = 0
@@ -463,6 +454,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             completed = it.isUploadCompleted(job) and it.isOutputSummaryPhotoUploadCompleted(job)
         }
         return completed
+    }
+
+    private fun isUploadingPhotos(): Boolean {
+        return job.report?.let {
+            it.isUploading() || it.isOutputSummaryPhotoUploading()
+        } ?: false
     }
 
     private fun saveReport() {
@@ -583,7 +580,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private fun retry() {
         job.report?.let { report ->
             report.activeOutputSummaries.forEach { outputSummary ->
-                // FIXME: アップロード失敗しているものだけでいいのでは？
                 if (!outputSummary.isUploadCompleted(job)) {
                     report.uploadPhoto(this, job, outputSummary.photoAsset) { token ->
                         PhotoTokenManager.addToken(
@@ -595,7 +591,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 }
             }
             if (report.additionalPhotoAsset != null) {
-                if (report.isUploadCompleted(job)) {
+                if (!report.isUploadCompleted(job)) {
                     report.uploadPhoto(this, job, report.additionalPhotoAsset) { token ->
                         PhotoTokenManager.addToken(
                             job,
@@ -627,8 +623,6 @@ class ReportConfirmViewModel : ViewModel() {
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
-
-    var completedUploadPhotos = false
 
     fun isValid(report: Report): Boolean {
         var valid = true
