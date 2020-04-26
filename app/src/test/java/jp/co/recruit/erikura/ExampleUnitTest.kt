@@ -22,7 +22,7 @@ class ExampleUnitTest {
 
     @Test
     fun whenTest() {
-        data class DummyReport(val reported: Boolean, val expired: Boolean, val accepted: Boolean, val rejected: Boolean) {
+        data class DummyReport(var reported: Boolean, val expired: Boolean, val accepted: Boolean, val rejected: Boolean) {
             val isReportCreatable: Boolean get() {
                 return when {
                     reported -> false
@@ -38,6 +38,13 @@ class ExampleUnitTest {
                     else      -> true
                 }
             }
+            val isReportEditable2: Boolean get() =
+                when {
+                    !reported -> false
+                    accepted  -> false
+                    rejected  -> true
+                    else      -> true
+                }
         }
 
         DummyReport(reported = false, expired = false, accepted = false, rejected = false).let {
@@ -73,6 +80,14 @@ class ExampleUnitTest {
         DummyReport(reported = true, expired = true, accepted = false, rejected = true).let {
             assertFalse(it.isReportCreatable)
             assertTrue(it.isReportEditable)
+        }
+
+        DummyReport(reported = false, expired = false, accepted = false, rejected = true).let {
+            assertFalse(it.isReportEditable2)
+
+            it.reported = true
+
+            assertTrue(it.isReportEditable2)
         }
     }
 

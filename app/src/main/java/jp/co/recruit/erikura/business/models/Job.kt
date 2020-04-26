@@ -49,18 +49,13 @@ data class Job(
     var jobKind: JobKind? = null,
     var entryId: Int? = 0,
     var entry: Entry? = null,
-    var reportId: Int? = 0,
+    var reportId: Int? = null,
     var report: Report? = null,
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf(),
     var targetGender: Gender? = null,
     var banned: Boolean = false
 ): Parcelable {
-
-    // isReportCreatable
-    // isReportEditable
-    // getSummaryTitles
-
     val isActive: Boolean get() {
         return !(isFuture || isPastOrInactive)
     }
@@ -87,7 +82,7 @@ data class Job(
     /** 応募済みか */
     val isEntried: Boolean get() = (entry != null)
     /** 作業報告済みか */
-    val isReported: Boolean get() = (report != null)
+    val isReported: Boolean get() = (reportId != null)
     /** 作業終了済みか */
     val isFinished: Boolean get() = (entry?.isFinished ?: false)
     /** 作業開始済みか */
