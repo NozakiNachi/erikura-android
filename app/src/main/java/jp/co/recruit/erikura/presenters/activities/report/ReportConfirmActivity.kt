@@ -353,14 +353,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             uploadingDialog.numUploadedPhotos = numUploadedPhotos
                         }
 
-                        synchronized(ErikuraApplication.instance.uploadMonitor) {
-                            ErikuraApplication.instance.uploadMonitor.wait(15000)
-                        }
+                        waitUpload()
 
                         this.runOnUiThread {
                             // token 再取得処理
                             updateToken()
                         }
+
                         count++
                     } else {
                         break

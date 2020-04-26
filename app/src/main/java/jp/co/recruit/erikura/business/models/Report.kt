@@ -192,14 +192,10 @@ data class Report (
                     // 画像アップロード処理
                     Api(activity).imageUpload(item, bytes, onError = {
                         Log.e("Error in waiting upload", it.toString())
-                        synchronized(ErikuraApplication.instance.uploadMonitor) {
-                            ErikuraApplication.instance.uploadMonitor.notifyAll()
-                        }
+                        ErikuraApplication.instance.notifyUpload()
                     }) { token ->
                         onComplete(token)
-                        synchronized(ErikuraApplication.instance.uploadMonitor) {
-                            ErikuraApplication.instance.uploadMonitor.notifyAll()
-                        }
+                        ErikuraApplication.instance.notifyUpload()
                     }
                 }
             }

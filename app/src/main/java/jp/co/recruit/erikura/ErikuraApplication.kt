@@ -120,6 +120,19 @@ class ErikuraApplication : Application() {
     // 画像アップロード終了判定用
     var uploadMonitor = Object()
 
+    fun notifyUpload() {
+        synchronized(uploadMonitor) {
+            uploadMonitor.notifyAll()
+        }
+    }
+
+    fun waitUpload() {
+        synchronized(uploadMonitor) {
+            uploadMonitor.wait(15000)
+        }
+    }
+
+
     private val onboardingDisplayedKey = "OnboardingDisplayed"
     private val coachMarkDisplayedKey = "CoachMarkDisplayed"
 
