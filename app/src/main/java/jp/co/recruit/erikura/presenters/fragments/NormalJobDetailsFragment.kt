@@ -62,7 +62,7 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         transaction.add(R.id.jobDetails_mapViewFragment, mapView, "mapView")
         transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView, "applyFlowView")
         transaction.add(R.id.jobDetails_applyButtonFragment, applyButton, "applyButton")
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 
     override fun onStart() {

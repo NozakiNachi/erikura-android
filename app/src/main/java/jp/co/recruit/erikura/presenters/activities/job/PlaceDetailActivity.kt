@@ -94,7 +94,7 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
             val jobsList = JobsListFragment(place.jobs)
             transaction.replace(R.id.placeDetail_workingPlaceView, workingPlaceView)
             transaction.replace(R.id.placeDetail_jobsList, jobsList)
-            transaction.commit()
+            transaction.commitAllowingStateLoss()
         }
     }
 

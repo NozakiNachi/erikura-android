@@ -75,7 +75,7 @@ class FinishedJobDetailsFragment(
             "jobDetailsView"
         )
         transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView, "mapView")
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 
     override fun onStart() {
