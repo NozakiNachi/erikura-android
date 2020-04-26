@@ -60,6 +60,7 @@ class ErikuraApplication : Application() {
         val locationManager: LocationManager get() = instance.erikuraComponent.locationManger()
         val pedometerManager: PedometerManager get() = instance.erikuraComponent.pedometerManager()
         val fitApiManager: GoogleFitApiManager get() = instance.erikuraComponent.googleFitApiManager()
+
         val realm: Realm get() = RealmManager.realm
 
         // バーミッション取得用の定数
@@ -119,6 +120,19 @@ class ErikuraApplication : Application() {
 
     // 画像アップロード終了判定用
     var uploadMonitor = Object()
+
+    fun notifyUpload() {
+        synchronized(uploadMonitor) {
+            uploadMonitor.notifyAll()
+        }
+    }
+
+    fun waitUpload() {
+        synchronized(uploadMonitor) {
+            uploadMonitor.wait(15000)
+        }
+    }
+
 
     private val onboardingDisplayedKey = "OnboardingDisplayed"
     private val coachMarkDisplayedKey = "CoachMarkDisplayed"

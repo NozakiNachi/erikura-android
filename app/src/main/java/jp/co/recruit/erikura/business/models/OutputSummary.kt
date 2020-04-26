@@ -66,4 +66,8 @@ data class OutputSummary(
             true
         }
     }
+
+    fun isUploading(): Boolean {
+        return if (isPhotoChanged) { photoAsset?.uploading ?: false } else { false }
+    }
 }
