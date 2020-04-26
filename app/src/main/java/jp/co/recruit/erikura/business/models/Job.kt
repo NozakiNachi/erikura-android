@@ -49,13 +49,14 @@ data class Job(
     var jobKind: JobKind? = null,
     var entryId: Int? = 0,
     var entry: Entry? = null,
-    var reportId: Int? = null,
     var report: Report? = null,
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf(),
     var targetGender: Gender? = null,
     var banned: Boolean = false
 ): Parcelable {
+    val reportId: Int? get() = report?.id
+
     val isActive: Boolean get() {
         return !(isFuture || isPastOrInactive)
     }
