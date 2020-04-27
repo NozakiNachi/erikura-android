@@ -491,6 +491,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
         // 現在位置をもとに検索し直します
         val position = mMap.cameraPosition
+        viewModel.searchBarVisible.value = View.GONE
         fetchJobs(viewModel.query(position.target))
     }
 
