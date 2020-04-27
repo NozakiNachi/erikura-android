@@ -208,7 +208,7 @@ object Tracking {
     private val TAG = Tracking::class.java.name
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var appEventsLogger: AppEventsLogger
-    private var fcmToken: String? = null
+    var fcmToken: String? = null
 
     fun initTrackers(application: Application) {
         firebaseAnalytics = FirebaseAnalytics.getInstance(application)
@@ -248,7 +248,7 @@ object Tracking {
         this.fcmToken = token
         if (Api.isLogin) {
             Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
-                Log.v("Erikura", "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")
+                Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")
             }
         }
     }
