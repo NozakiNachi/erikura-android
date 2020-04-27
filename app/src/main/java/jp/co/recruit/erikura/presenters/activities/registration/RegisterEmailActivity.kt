@@ -67,7 +67,7 @@ class RegisterEmailActivity : BaseActivity(),
         Api(this).registerEmail(viewModel.email.value ?:"") {
             Log.v("DEBUG", "仮登録メール送信： userId=${it}")
             val intent: Intent = Intent(this@RegisterEmailActivity, RegisterEmailFinishedActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 
@@ -77,7 +77,7 @@ class RegisterEmailActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -86,7 +86,7 @@ class RegisterEmailActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

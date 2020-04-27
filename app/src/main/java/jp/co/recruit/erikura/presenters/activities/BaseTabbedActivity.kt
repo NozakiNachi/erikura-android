@@ -36,21 +36,24 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
             R.id.tab_menu_applied_jobs -> {
                 Intent(this, OwnJobsActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    //startActivity(intent)
+                    startActivity(intent)
                 }
             }
             // 仕事を探すタブ
             R.id.tab_menu_search_jobs -> {
                 Intent(this, searchJobCurrentActivity).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    //startActivity(intent)
+                    startActivity(intent)
                 }
             }
             // マイページタブ
             R.id.tab_menu_mypage -> {
                 Intent(this, mypageCurrentActivity).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    //startActivity(intent)
+                    startActivity(intent)
                 }
             }
         }

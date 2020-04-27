@@ -233,7 +233,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

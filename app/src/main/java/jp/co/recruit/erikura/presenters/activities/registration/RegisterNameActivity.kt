@@ -71,7 +71,7 @@ class RegisterNameActivity : BaseActivity(),
         user.firstName = viewModel.firstName.value
         val intent: Intent = Intent(this@RegisterNameActivity, RegisterBirthdayActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

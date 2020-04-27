@@ -88,7 +88,7 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromAccountSetting", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    startActivity(intent)
                 }
             }
         }

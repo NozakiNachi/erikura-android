@@ -71,7 +71,7 @@ class RegisterBirthdayActivity : BaseActivity(),
         user.dateOfBirth = viewModel.birthday.value
         val intent: Intent = Intent(this@RegisterBirthdayActivity, RegisterGenderActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     // 生年月日

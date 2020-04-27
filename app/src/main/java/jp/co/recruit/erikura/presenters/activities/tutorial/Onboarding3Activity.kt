@@ -47,13 +47,13 @@ class Onboarding3Activity : AppCompatActivity(), Onboarding3Handlers {
         ErikuraApplication.instance.setOnboardingDisplayed(true)
         Intent(this, MapViewActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 
     private fun startNextActivity() {
         Intent(this, Onboarding4Activity::class.java).let { intent ->
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 

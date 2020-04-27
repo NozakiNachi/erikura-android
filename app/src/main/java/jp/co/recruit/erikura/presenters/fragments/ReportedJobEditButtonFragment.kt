@@ -47,7 +47,7 @@ class ReportedJobEditButtonFragment(private val job: Job?) : Fragment(), Reporte
         if(job?.isReportEditable?: false) {
             val intent = Intent(activity,ReportConfirmActivity::class.java)
             intent.putExtra("job",job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+            startActivity(intent)
          }
     }
 }

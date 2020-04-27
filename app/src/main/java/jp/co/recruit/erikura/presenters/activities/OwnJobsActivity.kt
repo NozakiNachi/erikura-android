@@ -1,10 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -16,8 +12,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportCompletedDialogFragment
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment

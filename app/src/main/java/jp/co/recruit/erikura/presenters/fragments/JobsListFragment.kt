@@ -99,7 +99,7 @@ class JobsListFragment(private val jobs: Map<PlaceJobType, List<Job>>) : Fragmen
         val intent= Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 
 }

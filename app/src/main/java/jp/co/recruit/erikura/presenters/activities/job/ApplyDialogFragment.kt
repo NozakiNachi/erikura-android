@@ -79,7 +79,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -88,7 +88,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickEntryButton(view: View) {
@@ -103,7 +103,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                         intent.putExtra("errorMessages", array)
                     }
                     intent.putExtra("job", job)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                    startActivity(intent)
                 }) {
                     // 応募のトラッキングの送出
                     Tracking.logEvent(event= "job_entry", params= bundleOf())
@@ -112,12 +112,12 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
 
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                    startActivity(intent)
                 }
             }
         }else {
             val intent= Intent(activity, LoginRequiredActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+            startActivity(intent)
         }
     }
 
