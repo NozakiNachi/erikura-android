@@ -62,7 +62,7 @@ class WebViewActivity : BaseActivity() {
                         // 上記以外の場合は、外部Activityを開きます
                         Intent(Intent.ACTION_VIEW).apply {
                             data = request?.url
-                            startActivity(this, ActivityOptions.makeSceneTransitionAnimation(this@WebViewActivity).toBundle())
+                            startActivity(this)
                         }
                         return true
                     }
@@ -74,7 +74,7 @@ class WebViewActivity : BaseActivity() {
                     data = Uri.parse(url)
                 }
                 startActivityForResult(i, FROM_PDF_VIEW)
-//                startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+//                startActivity(i)
 //                finish()
             }
             webView.loadUrl(url)

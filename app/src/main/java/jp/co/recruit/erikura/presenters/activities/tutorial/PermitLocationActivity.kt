@@ -69,7 +69,7 @@ class PermitLocationActivity : AppCompatActivity(), PermitLocationHandlers {
 
     private fun startNextActivity() {
         Intent(this, Onboarding0Activity::class.java).let { intent ->
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 }

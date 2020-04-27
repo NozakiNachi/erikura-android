@@ -44,12 +44,12 @@ class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
 
     override fun onClickRegisterButton(view: View) {
         val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickLoginButton(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onBackPressed() {
@@ -57,12 +57,12 @@ class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
         if (fromMypage) {
             val intent = Intent(this, MypageActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
         else {
             val intent = Intent(this, MapViewActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 }

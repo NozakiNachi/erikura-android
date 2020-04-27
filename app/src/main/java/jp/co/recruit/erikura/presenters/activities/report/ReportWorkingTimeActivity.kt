@@ -94,7 +94,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
             }else {
                 val intent= Intent(this, ReportOtherFormActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

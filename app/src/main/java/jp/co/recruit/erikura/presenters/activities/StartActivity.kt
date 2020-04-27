@@ -91,24 +91,24 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
 
     override fun onClickRegisterButton(view: View) {
         val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickLoginButton(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickStartWithoutLogin(view: View) {
         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
             // 地図画面へ遷移
             val intent = Intent(this, MapViewActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
         else {
             // 位置情報の許諾、オンボーディングを表示します
             Intent(this, PermitLocationActivity::class.java).let { intent ->
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

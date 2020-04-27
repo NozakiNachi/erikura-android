@@ -76,7 +76,7 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
                     val intent= Intent(activity, PlaceDetailActivity::class.java)
                     intent.putExtra("workingPlace", job.place)
                     intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                    startActivity(intent)
                 }
             }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
         }

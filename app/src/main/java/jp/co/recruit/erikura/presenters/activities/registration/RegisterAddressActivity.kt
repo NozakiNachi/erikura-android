@@ -82,7 +82,7 @@ class RegisterAddressActivity : BaseActivity(),
 
         val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
 
     }
 

@@ -77,7 +77,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromChangeUserInformation", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    startActivity(intent)
                 }
             }
         }

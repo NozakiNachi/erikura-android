@@ -74,7 +74,7 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
 
         Intent(this, MypageActivity::class.java).let {
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(it)
         }
     }
 
@@ -83,7 +83,7 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         val intent= Intent(this, PlaceDetailActivity::class.java)
         intent.putExtra("workingPlace", placeList[position])
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

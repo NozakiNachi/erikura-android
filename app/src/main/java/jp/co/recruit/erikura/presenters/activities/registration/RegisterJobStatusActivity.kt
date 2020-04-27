@@ -80,7 +80,7 @@ class RegisterJobStatusActivity : BaseActivity(),
     private fun moveToNext() {
         val intent: Intent = Intent(this@RegisterJobStatusActivity, RegisterWishWorkActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 
