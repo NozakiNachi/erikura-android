@@ -123,7 +123,14 @@ class Api(var context: Context) {
     fun resignIn(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
         executeObservable(
             erikuraApiService.login(LoginRequest(email = email, password = password)),
-            onError =  onError
+            onError = { errorMessages ->
+                if (errorMessages?.first() == "メールアドレスまたはパスワードが無効です。") {
+                    displayErrorAlert(listOf("パスワードが誤っています。", "もう一度入力してください。"))
+                }
+                else {
+                    displayErrorAlert(errorMessages)
+                }
+            }
         ) { body ->
             val calendar = Calendar.getInstance()
             calendar.time = Date()
