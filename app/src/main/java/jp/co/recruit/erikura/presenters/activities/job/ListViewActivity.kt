@@ -49,6 +49,9 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             if (jobs.isNotEmpty()) {
                 viewModel.jobs = jobs
 
+                android.R.layout.simple_spinner_item
+
+
                 val position = LatLng(query.latitude!!, query.longitude!!)
 
                 activeJobsAdapter.jobs = viewModel.activeJobs
