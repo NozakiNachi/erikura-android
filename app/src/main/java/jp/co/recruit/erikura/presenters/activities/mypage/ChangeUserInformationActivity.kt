@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -30,10 +29,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-
 class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
-
     var user: User = User()
+    var previousPostalCode: String? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -55,6 +53,23 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
+
+        // 郵便番号が変更された場合に、住所を取り直すように修正します
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                previousPostalCode = viewModel.postalCode.value
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
+
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
+                }
+            }
+        })
+
     }
 
     override fun onStart() {
@@ -93,23 +108,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
-    }
-
-    // 所在地
-    override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
-            if (user.postcode != viewModel.postalCode.value && viewModel.postalCode.value?.length ?: 0 == 7) {
-                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                    user.postcode = viewModel.postalCode.value
-                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                    viewModel.city.value = city
-                    viewModel.street.value = street
-
-                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                    streetEditText.requestFocus()
-                }
-            }
-        })
     }
 
     private fun getPrefectureId(prefecture: String): Int {
@@ -250,14 +248,14 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         viewModel.dateOfBirth.value = user.parsedDateOfBirth?.let {
             SimpleDateFormat("yyyy/MM/dd").format(it)
         }
-//        viewModel.gender.value = user.gender?.value
+
+        previousPostalCode = user.postcode
         viewModel.postalCode.value = user.postcode
         viewModel.city.value = user.city
         viewModel.street.value = user.street
         viewModel.phone.value = user.phoneNumber
         viewModel.wishWalk.value = user.wishWorks.size
 
-        // FIXME: 数回に1回初期値がプルダウンに表示されない不具合あり。
         // 都道府県のプルダウン初期表示
         val id = getPrefectureId(user.prefecture ?: "")
         viewModel.prefectureId.value = id
@@ -400,7 +398,7 @@ class ChangeUserInformationViewModel : ViewModel() {
         return valid
     }
 
-    private fun isValidPostalCode(): Boolean {
+    fun isValidPostalCode(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
@@ -542,7 +540,6 @@ class ChangeUserInformationViewModel : ViewModel() {
 }
 
 interface ChangeUserInformationEventHandlers {
-    fun onFocusChanged(view: View, hasFocus: Boolean)
     fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
     fun onClickMale(view: View)

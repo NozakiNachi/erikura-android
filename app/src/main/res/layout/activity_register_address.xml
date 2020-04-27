@@ -84,7 +84,7 @@
                     android:hint="@string/register_postal_code_hint"
                     android:inputType="number"
                     android:text="@={viewModel.postalCode}"
-                    android:onFocusChanged="@{handlers::onFocusChanged}"/>
+                    />
 
                 <TextView
                     style="@style/errorField"

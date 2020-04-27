@@ -280,7 +280,6 @@
                     android:inputType="number"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.postalCode}"
-                    android:onFocusChanged="@{handlers::onFocusChanged}"
                     />
                 <TextView
                     android:layout_width="match_parent"
