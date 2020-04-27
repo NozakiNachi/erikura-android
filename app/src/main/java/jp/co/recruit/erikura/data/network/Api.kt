@@ -689,19 +689,34 @@ class Api(var context: Context) {
                         AndroidSchedulers.mainThread().scheduleDirect {
                             when(response.code()) {
                                 401 -> {
+                                    // セッション情報があればクリアしておきます
+                                    userSession?.let {
+                                        userSession = null
+                                        UserSession.clear()
+                                    }
+
                                     var fromMypage = false
-                                    (context as? FragmentActivity)?.let { activity ->
+                                    (context as? FragmentActivity)?.also { activity ->
                                         // マイページから遷移してきたかのフラグを取得します
                                         fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
                                         // 元画面は表示できないはずなので閉じておきます
                                         activity.finish()
+
+                                        // ログイン必須画面に遷移させます
+                                        Intent(context, LoginRequiredActivity::class.java).let {
+                                            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                            it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                            context.startActivity(it)
+                                        }
+                                    } ?: run {
+                                       // ログイン必須画面に遷移させます
+                                        Intent(context, LoginRequiredActivity::class.java).let {
+                                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                            it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                            context.startActivity(it)
+                                        }
                                     }
-                                    // ログイン必須画面に遷移させます
-                                    Intent(context, LoginRequiredActivity::class.java).let {
-                                        it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
-                                        context.startActivity(it)
-                                    }
+
                                 }
                                 500 -> {
                                     Log.v("ERROR RESPONSE", response.errorBody().toString())
