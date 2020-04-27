@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -176,6 +175,8 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         super.onPause()
         locationManager.stop()
         locationManager.clearLocationUpdateCallback()
+
+        searchJobQuery = viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng)
     }
 
     override fun onResume() {

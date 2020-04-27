@@ -7,12 +7,16 @@ import android.view.MenuItem
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.job.SearchJobActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
+import jp.co.recruit.erikura.presenters.util.LocationManager
 
 open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton: Boolean = false): BaseActivity(finishByBackButton = finishByBackButton), TabEventHandlers {
     companion object {
         var searchJobCurrentActivity: Class<*> = MapViewActivity::class.java
+        var searchJobQuery: JobQuery? = null
         var mypageCurrentActivity: Class<*> = MypageActivity::class.java
     }
 
@@ -36,7 +40,6 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
             R.id.tab_menu_applied_jobs -> {
                 Intent(this, OwnJobsActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    //startActivity(intent)
                     startActivity(intent)
                 }
             }
@@ -44,7 +47,9 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
             R.id.tab_menu_search_jobs -> {
                 Intent(this, searchJobCurrentActivity).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    //startActivity(intent)
+                    searchJobQuery?.let {
+                        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, it)
+                    }
                     startActivity(intent)
                 }
             }
@@ -52,7 +57,6 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
             R.id.tab_menu_mypage -> {
                 Intent(this, mypageCurrentActivity).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    //startActivity(intent)
                     startActivity(intent)
                 }
             }
