@@ -89,7 +89,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             longitude = LocationManager.defaultLatLng.longitude
         )
 
-        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
+        carouselView = findViewById(R.id.map_view_carousel)
+
+        adapter = ErikuraCarouselAdapter(this, carouselView, listOf(), viewModel.jobsByLocation.value ?: mapOf())
         adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
@@ -114,7 +116,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
         layoutManager.orientation = RecyclerView.HORIZONTAL
 
-        carouselView = findViewById(R.id.map_view_carousel)
         carouselView.setHasFixedSize(false)
         carouselView.layoutManager = layoutManager
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
@@ -161,7 +162,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             ErikuraApplication.instance.setCoachMarkDisplayed(true)
         }
 
-        tutorialAdapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
+        tutorialAdapter = ErikuraCarouselAdapter(this, map_view_carousel_highlight, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
         tutorialAdapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 coachViewModel.next()
