@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
 import androidx.core.os.bundleOf
@@ -237,15 +239,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
     }
 
     override fun onClickMap(view: View) {
-        // 表示変更のトラッキングの送出
-        Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
-        Tracking.track(name= "push_toggle_dispaly")
-
-        Intent(this, MapViewActivity::class.java).let {
-            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
-            startActivity(it)
-        }
+        navigateToMapView()
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -287,6 +281,31 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         oldScrollY: Int
     ) {
         viewModel.searchBarVisible.value = View.GONE
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // 仕事を探すがタップされている場合は、地図画面に遷移させます
+        if (item.itemId == R.id.tab_menu_search_jobs) {
+            Log.v(ErikuraApplication.LOG_TAG, "Navigation Item Selected: ${item.toString()}")
+
+            navigateToMapView()
+            return true
+        }
+
+        // それ以外はデフォルトの動作を行います
+        return super.onNavigationItemSelected(item)
+    }
+
+    private fun navigateToMapView() {
+        // 表示変更のトラッキングの送出
+        Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
+        Tracking.track(name= "push_toggle_dispaly")
+
+        Intent(this, MapViewActivity::class.java).let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
+            startActivity(it)
+        }
     }
 }
 
