@@ -120,11 +120,13 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 val intent = Intent(this, MapViewActivity::class.java)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                finish()
             }
             else {
                 // 位置情報の許諾、オンボーディングを表示します
                 Intent(this, PermitLocationActivity::class.java).let { intent ->
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    finish()
                 }
             }
         }

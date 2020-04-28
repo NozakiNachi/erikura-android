@@ -65,6 +65,7 @@ class RegisterWishWorkActivity : BaseActivity(),
         //登録処理を行う前にSMS認証を行う
         val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
         intent.putExtra("user", user)
+        intent.putExtra("phoneNumber",user.phoneNumber)
         intent.putExtra("requestCode",1)
         startActivityForResult(intent,1)
     }
@@ -98,6 +99,7 @@ class RegisterWishWorkActivity : BaseActivity(),
                     Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                finish()
 
                 // 登録完了のトラッキングの送出
                 Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))

@@ -64,7 +64,7 @@ class StartActivity : BaseActivity(), StartEventHandlers {
 
         if (Api.isLogin) {
             Api(this).user(){user ->
-                Log.v("DEBUG", "SMS認証チェック： userId=${user?.id}")
+                Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
                 Api(this).smsVerifyCheck(user?.phoneNumber ?:"") {result ->
                     if (result) {
                         // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
@@ -132,6 +132,7 @@ class StartActivity : BaseActivity(), StartEventHandlers {
             Intent(this, MapViewActivity::class.java).let { intent ->
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
+                finish()
             }
         }
     }

@@ -2,16 +2,12 @@ package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.AbsoluteSizeSpan
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -37,14 +33,13 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     var phoneNumber: String? = null
     var requestCode: Int = 0
     var confirmationToken: String? = null
-    var captionExplain: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
         // ユーザ情報を受け取る
-        requestCode = intent.getIntExtra("requestCode",0)
+        requestCode = intent.getIntExtra("requestCode", 0)
         if (requestCode == 1 || requestCode == 3) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
@@ -54,41 +49,14 @@ class RegisterSmsVerifyActivity : BaseActivity(),
                 phoneNumber = user.phoneNumber
             }
         }
-        // 仮登録トークン取得
-        var uri: Uri? = intent.data
-        if (uri?.path == "/api/v1/utils/open_android_app") {
-            val path = uri.getQueryParameter("path")
-            uri = Uri.parse("erikura://${path}")
-        }
-        confirmationToken = uri?.getQueryParameter("confirmation_token")
+        confirmationToken = user.confirmationToken
 
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
-        Api(this).sendSms(confirmationToken ?:"",phoneNumber ?:"", onError = {
-            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${phoneNumber}")
-            //本登録電話番号画面か会員情報変更画面へ遷移
-            if (requestCode == 1) {
-                val intent = Intent(this, RegisterPhoneActivity::class.java)
-                if(it != null) {
-                    val array = it.toTypedArray()
-                    intent.putExtra("errorMessages", array)
-                }
-                intent.putExtra("user",user)
-                intent.putExtra("requestCode",requestCode)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            } else {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                if(it != null) {
-                    val array = it.toTypedArray()
-                    intent.putExtra("errorMessages", array)
-                }
-                intent.putExtra("user",user)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
-        }){
-            var caption = findViewById<TextView>(R.id.registerSmsVerify_caption)
-            caption.setText(String.format("ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。", phoneNumber))
-            val binding: ActivityRegisterSmsVerifyBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
+        Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
+            phoneNumber?.let { viewModel.setCaption(it) }
+            val binding: ActivityRegisterSmsVerifyBinding =
+                DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
             binding.lifecycleOwner = this
             binding.viewModel = viewModel
             binding.handlers = this
@@ -106,13 +74,15 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     override fun onClickAuthenticate(view: View) {
         Log.v("DEBUG", "SMS認証： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので認証結果の判定は入れていない
-        Api(this).smsVerify(confirmationToken ?:"",phoneNumber ?:"", viewModel.passCode.value ?: "", onError = {
-            Log.v("DEBUG","SMS認証失敗： phoneNumber=${phoneNumber}")
-        }){
+        Api(this).smsVerify(
+            confirmationToken ?: "",
+            phoneNumber ?: "",
+            viewModel.passCode.value ?: ""
+        ) {
             //認証成功後 onActivityResultへ飛ぶ
             val intent: Intent = Intent()
-            intent.putExtra("user",user)
-            setResult(RESULT_OK,intent)
+            intent.putExtra("user", user)
+            setResult(RESULT_OK, intent)
             finish()
         }
     }
@@ -120,48 +90,35 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     override fun onClickPassCodeResend(view: View) {
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
-        Api(this).sendSms(confirmationToken ?:"",phoneNumber ?:"", onError = {
-            Log.v("DEBUG","SMS認証送信失敗： phoneNumber=${phoneNumber}")
-            //本登録電話番号画面か会員情報変更画面へ遷移
-            if (requestCode == 1) {
-                val intent = Intent(this, RegisterPhoneActivity::class.java)
-                if(it != null) {
-                    val array = it.toTypedArray()
-                    intent.putExtra("errorMessages", array)
-                }
-                intent.putExtra("user",user)
-                intent.putExtra("requestCode",requestCode)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            } else {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                if(it != null) {
-                    val array = it.toTypedArray()
-                    intent.putExtra("errorMessages", array)
-                }
-                intent.putExtra("user",user)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
-        }){}
+        Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
+            phoneNumber?.let { viewModel.setCaption(it) }
+        }
     }
 
     override fun onClickRegisterPhone(view: View) {
         //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
         if (requestCode == 1) {
             val intent = Intent(this, RegisterPhoneActivity::class.java)
-            intent.putExtra("user",user)
-            intent.putExtra("requestCode",requestCode)
+            intent.putExtra("user", user)
+            intent.putExtra("requestCode", requestCode)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         } else {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
-            intent.putExtra("user",user)
+            intent.putExtra("user", user)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         }
     }
 }
 
-class RegisterSmsVerifyViewModel: ViewModel() {
+class RegisterSmsVerifyViewModel : ViewModel() {
     val passCode: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
+    var caption: MutableLiveData<String> = MutableLiveData()
+
+    val isAuthenticateButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(passCode) { result.value = isValid() }
+    }
+
 
     private fun isValid(): Boolean {
         var valid = true
@@ -170,18 +127,27 @@ class RegisterSmsVerifyViewModel: ViewModel() {
         if (valid && passCode.value?.isBlank() != false) {
             valid = false
             error.message.value = null
-        }else if(valid && !(pattern.matcher(passCode.value).find())) {
+        } else if (valid && !(pattern.matcher(passCode.value).find())) {
             valid = false
-            error.message.value = ErikuraApplication.instance.getString(R.string.passcode_pattern_error)
-        }else if(valid && !(passCode.value?.length ?: 0 == 4)) {
+            error.message.value =
+                ErikuraApplication.instance.getString(R.string.passcode_pattern_error)
+        } else if (valid && !(passCode.value?.length ?: 0 == 4)) {
             valid = false
-            error.message.value = ErikuraApplication.instance.getString(R.string.passcode_count_error)
+            error.message.value =
+                ErikuraApplication.instance.getString(R.string.passcode_count_error)
         } else {
             valid = true
             error.message.value = null
         }
 
         return valid
+    }
+
+    fun setCaption(phoneNumber: String) {
+        caption.value = String.format(
+            "ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。",
+            phoneNumber
+        )
     }
 }
 

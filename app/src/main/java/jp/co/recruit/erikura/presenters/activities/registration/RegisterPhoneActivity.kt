@@ -88,6 +88,7 @@ class RegisterPhoneActivity : BaseActivity(),
                     Intent(this@RegisterPhoneActivity, RegisterFinishedActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                finish()
 
                 // 登録完了のトラッキングの送出
                 Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))

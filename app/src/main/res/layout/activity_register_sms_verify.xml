@@ -36,12 +36,12 @@
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"/>
 
             <TextView
-                android:id="@+id/registerSmsVerify_caption"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="28dp"
                 android:layout_marginRight="29dp"
                 android:layout_marginLeft="20dp"
+                android:text="@={viewModel.caption}"
                 android:textColor="@color/black"
                 android:textSize="18dp"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"/>
@@ -69,6 +69,7 @@
                 android:layout_marginBottom="40dp"
                 style="@style/primaryButton"
                 android:text="@string/authenticate"
+                android:enabled="@{viewModel.isAuthenticateButtonEnabled()}"
                 android:onClick="@{handlers::onClickAuthenticate}" />
 
             <TextView
