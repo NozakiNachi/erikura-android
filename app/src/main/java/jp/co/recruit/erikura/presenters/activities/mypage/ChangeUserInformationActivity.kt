@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -146,6 +147,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+
+        dpd.setButton(DatePickerDialog.BUTTON_POSITIVE, getString(R.string.button_ok), dpd);
+        dpd.setButton(DatePickerDialog.BUTTON_NEGATIVE, getString(R.string.button_cancel), dpd);
 
         val dp = dpd.datePicker
         val maxDate: Calendar = Calendar.getInstance()

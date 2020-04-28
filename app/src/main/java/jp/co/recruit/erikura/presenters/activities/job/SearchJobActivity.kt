@@ -380,14 +380,14 @@ class MinMaxPickerDialogFragment<T>(
 
         builder
             .setView(binding.root)
-            .setPositiveButton("OK") { dialog: DialogInterface, which: Int ->
+            .setPositiveButton(getString(R.string.button_ok)) { dialog: DialogInterface, which: Int ->
                 val min: PickerItem<T> = viewModel.minItem as PickerItem<T>
                 val max: PickerItem<T> = viewModel.maxItem as PickerItem<T>
 
                 Log.v("MIN-MAX:", "min: ${min.toString()}, max: ${max.toString()}")
                 onComplete(min.value, max.value)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.button_cancel), null)
         return builder.create()
     }
 }
