@@ -82,13 +82,25 @@ class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, Lis
     val hasOtherJobs: Boolean get() = jobsCountAt > 1
     val jobsCountText: String get() = String.format("ほか%d件の仕事", jobsCountAt - 1)
     val jobsCountTextVisibility: Int get() = if(hasOtherJobs) { View.VISIBLE } else { View.GONE }
+    val disabled: Boolean get() = job.isFuture || job.isPastOrInactive
     val bodyBackgroundDrawable: Drawable
         get() {
             return if (hasOtherJobs) {
-                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+                if(disabled) {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi_disabled, null)
+                }
+                else {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+                }
             }
             else {
-                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+                if(disabled) {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_disabled, null)
+
+                }
+                else {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+                }
             }
         }
 }
