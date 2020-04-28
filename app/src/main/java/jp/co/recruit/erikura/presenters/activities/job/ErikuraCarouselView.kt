@@ -105,7 +105,7 @@ class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, Lis
         }
 }
 
-class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+class ErikuraCarouselAdapter(val activity: FragmentActivity, val carousel: RecyclerView, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
@@ -130,15 +130,19 @@ class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>
         holder.currentPosition = position
         holder.binding.viewModel = viewModel
         holder.binding.lifecycleOwner = activity
-
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
+
+        holder.binding.executePendingBindings()
 
         holder.binding.root.setOnClickListener {
             onClickListener?.apply {
                 onClick(job)
             }
         }
+
+        holder.binding.root.forceLayout()
+        carousel.forceLayout()
     }
 
     override fun getItemCount(): Int {

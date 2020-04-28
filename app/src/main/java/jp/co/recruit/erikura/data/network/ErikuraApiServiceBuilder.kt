@@ -80,7 +80,6 @@ class ErikuraApiServiceBuilder {
         val sslContext = SSLContext.getInstance("TLS")
         sslContext.init(null, trustManagers, null)
 
-        val builder = OkHttpClient.Builder()
         builder.sslSocketFactory(sslContext.socketFactory, x509TrustManager)
         builder.hostnameVerifier(object: HostnameVerifier{
             override fun verify(hostname: String?, session: SSLSession?): Boolean {
