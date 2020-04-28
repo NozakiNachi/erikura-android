@@ -1,8 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -18,9 +16,11 @@ import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import jp.co.recruit.erikura.services.NotificationData
+import kotlinx.android.synthetic.main.activity_start.*
 
 class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandlers {
     lateinit var video: VideoView
+    var pausedPosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -49,7 +49,7 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         binding.lifecycleOwner = this
         binding.handlers = this
 
-        video = findViewById(R.id.v)
+        video = findViewById(R.id.start_video)
 
         // ビデオの設定
         video.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
@@ -80,12 +80,12 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
 
     override fun onResume() {
         super.onResume()
-        video.resume()
-        video.start()
+        resumeVideo()
     }
 
     override fun onPause() {
         super.onPause()
+        pauseVideo()
         video.stopPlayback()
     }
 
@@ -112,10 +112,30 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
             }
         }
     }
+
+    override fun onClickVideo(view: View) {
+        if (start_video.canPause() && start_video.isPlaying) {
+            pauseVideo()
+        }
+        else {
+            resumeVideo()
+        }
+    }
+
+    private fun pauseVideo() {
+        pausedPosition = start_video.currentPosition
+        start_video.pause()
+    }
+
+    private fun resumeVideo() {
+        start_video.seekTo(pausedPosition)
+        start_video.start()
+    }
 }
 
 interface StartEventHandlers {
     fun onClickRegisterButton(view: View)
     fun onClickLoginButton(view: View)
     fun onClickStartWithoutLogin(view: View)
+    fun onClickVideo(view: View)
 }
