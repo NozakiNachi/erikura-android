@@ -12,7 +12,9 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.*
 
 class ErikuraApiServiceBuilder {
     val apiBaseURL: String get() {
@@ -54,7 +56,36 @@ class ErikuraApiServiceBuilder {
             connectTimeout(30, TimeUnit.SECONDS)
             // FIXME: キャッシュが無効になっていることを確認
             // FIXME: cookie が無効になっていることを書くに
+
+            setupAllTrustSSLSocketFactory(this)
         }
+    }
+
+    fun setupAllTrustSSLSocketFactory(builder: OkHttpClient.Builder) {
+        val x509TrustManager = object: X509TrustManager {
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            }
+
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            }
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+        }
+
+        val trustManagers = arrayOf<TrustManager>(x509TrustManager)
+
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustManagers, null)
+
+        val builder = OkHttpClient.Builder()
+        builder.sslSocketFactory(sslContext.socketFactory, x509TrustManager)
+        builder.hostnameVerifier(object: HostnameVerifier{
+            override fun verify(hostname: String?, session: SSLSession?): Boolean {
+                return true
+            }
+        })
     }
 
     fun create(): IErikuraApiService {
