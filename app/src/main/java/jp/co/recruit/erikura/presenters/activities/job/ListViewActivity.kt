@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
+import io.reactivex.android.schedulers.AndroidSchedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -45,50 +46,54 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
     }
 
     fun fetchJobs(query: JobQuery) {
-        Api(this).searchJobs(query) { jobs ->
-            if (jobs.isNotEmpty()) {
-                viewModel.jobs = jobs
+        Api(this).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
+            val activeJobs = mutableListOf<Job>()
+            val futureJobs = mutableListOf<Job>()
+            val pastJobs = mutableListOf<Job>()
+            jobs.forEach { job ->
+                when {
+                    job.isActive -> activeJobs.add(job)
+                    job.isFuture -> futureJobs.add(job)
+                    job.isPastOrInactive -> pastJobs.add(job)
+                }
+            }
+
+            AndroidSchedulers.mainThread().scheduleDirect {
+                viewModel.activeJobs = activeJobs
+                viewModel.futureJobs = futureJobs
+                viewModel.pastJobs = pastJobs
 
                 val position = LatLng(query.latitude!!, query.longitude!!)
 
                 activeJobsAdapter.jobs = viewModel.activeJobs
                 activeJobsAdapter.currentPosition = position
                 activeJobsAdapter.notifyDataSetChanged()
+                viewModel.activeListVisible.value = if (viewModel.activeJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
                 futureJobsAdapter.jobs = viewModel.futureJobs
                 futureJobsAdapter.currentPosition = position
                 futureJobsAdapter.notifyDataSetChanged()
+                viewModel.futureListVisible.value = if (viewModel.futureJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
                 pastJobsAdapter.jobs = viewModel.pastJobs
                 pastJobsAdapter.currentPosition = position
                 pastJobsAdapter.notifyDataSetChanged()
+                viewModel.pastListVisible.value = if (viewModel.pastJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
-                // ページ参照のトラッキングの送出
+                if (jobs.isNotEmpty()) {
+                    viewModel.notFoundVisibility.value = View.GONE
+                }
+                else {
+                    viewModel.notFoundVisibility.value = View.VISIBLE
+                }
 
+                val jobId = jobs.map { it.id }
+                Tracking.logEvent(event= "view_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
+                // 仕事表示のトラッキングの送出
+                Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
             }
-            else {
-                viewModel.jobs = listOf()
-                val position = LatLng(query.latitude!!, query.longitude!!)
-
-                activeJobsAdapter.jobs = listOf()
-                activeJobsAdapter.currentPosition = position
-                activeJobsAdapter.notifyDataSetChanged()
-
-                futureJobsAdapter.jobs = listOf()
-                futureJobsAdapter.currentPosition = position
-                futureJobsAdapter.notifyDataSetChanged()
-
-                pastJobsAdapter.jobs = listOf()
-                pastJobsAdapter.currentPosition = position
-                pastJobsAdapter.notifyDataSetChanged()
-            }
-
-            val jobId = jobs.map { it.id }
-            Tracking.logEvent(event= "view_job_list", params= bundleOf())
-            Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
-            // 仕事表示のトラッキングの送出
-            Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
-            Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
         }
     }
 
@@ -288,6 +293,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 class ListViewViewModel : BaseJobQueryViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
 
+    /*
     var jobs: List<Job> = listOf()
         set(value) {
             field = value
@@ -306,6 +312,7 @@ class ListViewViewModel : BaseJobQueryViewModel() {
             }
 
         }
+         */
     var activeJobs: List<Job> = listOf()
     var futureJobs: List<Job> = listOf()
     var pastJobs: List<Job> = listOf()
