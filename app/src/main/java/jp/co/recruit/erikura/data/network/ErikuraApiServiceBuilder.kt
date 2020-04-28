@@ -27,6 +27,8 @@ class ErikuraApiServiceBuilder {
         return buildClient(false)
     }
 
+    constructor()
+
     private fun buildClient(isIconDownload: Boolean): OkHttpClient.Builder {
         return OkHttpClient.Builder().apply {
             // 独自ヘッダを追加します
@@ -55,7 +57,8 @@ class ErikuraApiServiceBuilder {
             // FIXME: キャッシュが無効になっていることを確認
             // FIXME: cookie が無効になっていることを書くに
 
-            setupAllTrustSSLSocketFactory(this)
+            // テスト時に自己署名の証明書を受け付けるようにするには下記をコメントアウトする
+//            setupAllTrustSSLSocketFactory(this)
         }
     }
 
