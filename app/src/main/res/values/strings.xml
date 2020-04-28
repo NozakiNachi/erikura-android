@@ -7,6 +7,9 @@
 
     <string name="common_buttons_close">閉じる</string>
 
+    <string name="button_ok">決定</string>
+    <string name="button_cancel">キャンセル</string>
+
     <!-- スタート画面 -->
     <string name="start_startWithoutLogin"><a href="">スキップして近くの仕事を探す</a></string>
 
