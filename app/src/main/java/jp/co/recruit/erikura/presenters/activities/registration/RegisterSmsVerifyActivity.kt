@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterSmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
@@ -33,6 +34,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     var phoneNumber: String? = null
     var requestCode: Int = 0
     var confirmationToken: String? = null
+    var isCameThroughLogin: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -50,6 +52,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
             }
         }
         confirmationToken = user.confirmationToken
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
 
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
@@ -82,6 +85,9 @@ class RegisterSmsVerifyActivity : BaseActivity(),
             //認証成功後 onActivityResultへ飛ぶ
             val intent: Intent = Intent()
             intent.putExtra("user", user)
+            if (isCameThroughLogin){
+                intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+            }
             setResult(RESULT_OK, intent)
             finish()
         }
@@ -105,7 +111,40 @@ class RegisterSmsVerifyActivity : BaseActivity(),
         } else {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
             intent.putExtra("user", user)
+            intent.putExtra("requestCode", requestCode)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        }
+    }
+
+    override fun onBackPressed() {
+        //ログイン、自動ログインから遷移してきた場合、戻るボタンを制御します。
+        if (requestCode == 2) {
+            Logout()
+        } else {
+            //　その他からの遷移は通常遷移
+            super.onBackPressed()
+        }
+    }
+
+    open fun Logout() {
+        Api(this).logout() { deletedSession ->
+            // ログアウトのトラッキングの送出
+            Tracking.logEvent(event= "logout", params= bundleOf())
+            deletedSession?.let {
+                it.user?.let { user ->
+                    Tracking.identify(user= user, status= "logout")
+                }
+            }
+
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_logout", params= bundleOf())
+            Tracking.view(name= "/mypage/logout", title= "ログアウト完了画面")
+
+            // スタート画面に戻る
+            val intent = Intent(this, StartActivity::class.java)
+            // 戻るボタンの無効化
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
         }
     }
 }

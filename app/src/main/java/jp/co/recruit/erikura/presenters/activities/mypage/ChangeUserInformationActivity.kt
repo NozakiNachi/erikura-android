@@ -24,7 +24,9 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyActivity
+import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -33,6 +35,7 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
 
     var user: User = User()
+    var requestCode: Int = 0
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -54,6 +57,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         if(errorMessages != null){
             Api(this).displayErrorAlert(errorMessages.asList())
         }
+        requestCode = intent.getIntExtra("requestCode", 0)
 
         val binding: ActivityChangeUserInformationBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
@@ -211,8 +215,13 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                     val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
                     intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)
-                    intent.putExtra("requestCode", 3)
-                    startActivityForResult(intent, 3)
+                    if (requestCode == 2) {
+                        intent.putExtra("isCameThroughLogin", true)
+                        startActivityForResult(intent, 3)
+                    } else {
+                        intent.putExtra("requestCode", 3)
+                        startActivityForResult(intent, 3)
+                    }
                 }
                 else {
                     // 会員情報変更Apiの呼び出し
@@ -286,7 +295,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 3 && resultCode == RESULT_OK) {
+        if (requestCode == 3 && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
             user = data!!.getParcelableExtra("user")
             // 会員情報変更Apiの呼び出し
             Api(this).updateUser(user) {
@@ -294,6 +303,23 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 intent.putExtra("onClickChangeUserInformationFragment", true)
                 startActivity(intent)
                 finish()
+            }
+        } else if(requestCode == 3 && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
+            //地図画面へ遷移
+            val it = Api.userSession
+            Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
+            // 地図画面へ遷移します
+            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                val intent = Intent(this, MapViewActivity::class.java)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                finish()
+            }
+            else {
+                // 位置情報の許諾、オンボーディングを表示します
+                Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    finish()
+                }
             }
         }
     }

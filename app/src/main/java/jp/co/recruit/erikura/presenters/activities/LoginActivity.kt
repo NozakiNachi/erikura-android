@@ -55,17 +55,17 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         Log.v("EMAIL", viewModel.email.value ?: "")
         Log.v("PASS", viewModel.password.value ?: "")
         Api(this).login(viewModel.email.value ?: "", viewModel.password.value ?: "") { userSession ->
+            Log.v("DEBUG", "ログイン成功: userId=${userSession.userId}")
+            // 自動ログインが有効になっている場合はセッション情報を永続化します
+            if (viewModel.enableAutoLogin.value ?: false) {
+                userSession.store()
+            }
             Log.v("DEBUG", "SMS認証チェック： userId=${userSession.userId}")
             Api(this).user(){user ->
                 Log.v("DEBUG", "SMS認証チェック電話番号： phoneNumber=${user?.phoneNumber}")
                 Api(this).smsVerifyCheck(user?.phoneNumber ?:"") { result->
                     if (result) {
                         //SMS認証済みの場合
-                        Log.v("DEBUG", "ログイン成功: userId=${userSession.userId}")
-                        // 自動ログインが有効になっている場合はセッション情報を永続化します
-                        if (viewModel.enableAutoLogin.value ?: false) {
-                            userSession.store()
-                        }
                         // 地図画面へ遷移します
                         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                             val intent = Intent(this, MapViewActivity::class.java)
@@ -82,6 +82,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                         //SMS未認証の場合、認証画面へ遷移します。
                         val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
                         intent.putExtra("requestCode",2)
+                        intent.putExtra("enableAutoLogin", viewModel.enableAutoLogin.value ?: false)
                         startActivityForResult(intent, 2)
                     }
                 }
@@ -110,12 +111,6 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 2 && resultCode == RESULT_OK) {
-            val it = Api.userSession
-            Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
-            // 自動ログインが有効になっている場合はセッション情報を永続化します
-            if (viewModel.enableAutoLogin.value ?: false) {
-                it?.store()
-            }
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 val intent = Intent(this, MapViewActivity::class.java)
