@@ -16,6 +16,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -26,16 +27,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
+                android:fillViewport="true"
                 android:background="@color/white"
-                android:fillViewport="true">
+                >
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -277,52 +279,59 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:divider="@drawable/condition_divider">
+
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/mypage_recycler_view"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-                            android:orientation="vertical"
                             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                            tools:itemCount="11" />
+                            android:orientation="vertical"
+                             />
                     </LinearLayout>
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="40dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        style="@style/label_w2"
-                        android:textSize="20dp"
-                        android:textColor="@color/blackTwo"
-                        android:text="お知らせ" />
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="40dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            style="@style/label_w2"
+                            android:textSize="20dp"
+                            android:textColor="@color/blackTwo"
+                            android:text="お知らせ" />
 
-                    <View
-                        android:layout_height="4px"
-                        android:layout_width="match_parent"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:layout_marginTop="20dp"
-                        android:background="#dddddd"
-                        />
+                        <View
+                            android:layout_height="4px"
+                            android:layout_width="match_parent"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginTop="20dp"
+                            android:background="#dddddd"
+                            />
 
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/mypage_information_list"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        />
-                    <View
-                        android:layout_height="1px"
-                        android:layout_width="match_parent"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
-                        android:background="#dddddd"
-                        />
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/mypage_information_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            android:orientation="vertical"
+                            />
+<!--                        <View-->
+<!--                            android:layout_height="1px"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_marginLeft="20dp"-->
+<!--                            android:layout_marginRight="20dp"-->
+<!--                            android:background="#dddddd"-->
+<!--                            />-->
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.constraintlayout.widget.ConstraintLayout>
