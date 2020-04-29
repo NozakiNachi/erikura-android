@@ -60,7 +60,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     /** GoogleMap のカメラ位置を移動中かを保持します (true は移動中) */
     private var cameraMoving: Boolean = false
-    private var zoomInitialized: Boolean = false
     private var displaySearchBar: Boolean = true
     private var resetCameraPosition: Boolean = false
 
@@ -145,7 +144,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
                     this@MapViewActivity.runOnUiThread {
                         if (::mMap.isInitialized) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
+                            val updateRequest = CameraUpdateFactory.newLatLng(job.latLng)
+                            Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(carousel): $updateRequest")
+                            mMap.animateCamera(updateRequest)
                         }
                         viewModel.activeMaker = viewModel.markerMap[job.id]
                     }
@@ -207,7 +208,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && ::mMap.isInitialized && viewModel.keyword.value.isNullOrBlank()) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, defaultZoom))
+                val updateRequest = CameraUpdateFactory.newLatLngZoom(it, defaultZoom)
+                Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(resume): $updateRequest")
+                mMap.moveCamera(updateRequest)
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
@@ -253,15 +256,13 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
 
         // ズームの初期設定を行っておきます
-        mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
+        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+        Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+        mMap.moveCamera(updateRequest)
 
         if (locationManager.checkPermission(this)) {
             mMap.isMyLocationEnabled = true
             hideGoogleMapMyLocationButton()
-        }
-        else {
-            // デフォルト位置にカメラを移動させます
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LocationManager.defaultLatLng, defaultZoom))
         }
 
         // 最初のタスク取得
@@ -348,10 +349,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                     viewModel.activeMaker = nearestMarker
                     // 最も近い案件に地図を移動します
                     resetCameraPosition = true
-                    val updateRequest: CameraUpdate = if (zoomInitialized)
-                        CameraUpdateFactory.newLatLng(nearestJob.latLng)
-                    else
-                        CameraUpdateFactory.newLatLngZoom(nearestJob.latLng, defaultZoom)
+                    val updateRequest: CameraUpdate = CameraUpdateFactory.newLatLng(nearestJob.latLng)
+                    Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(fetchJob): $updateRequest")
                     mMap.animateCamera(updateRequest)
 
                     // カルーセルを最も近い案件に変更します
@@ -422,7 +421,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
     }
 
-    fun onCameraMoveStarted(_reason: Int) {
+    private fun onCameraMoveStarted(_reason: Int) {
         cameraMoving = true
         // 案件取得によるカメラリセット以外の場合
         if (!resetCameraPosition) {
@@ -433,19 +432,18 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
     }
 
-    fun onCameraMoveCanceled() {
+    private fun onCameraMoveCanceled() {
         cameraMoving = false
     }
 
-    fun onCameraIdle() {
+    private fun onCameraIdle() {
         if (cameraMoving) {
-            zoomInitialized = true
             cameraMoving = false
             onCameraMoveFinished()
         }
     }
 
-    fun onCameraMoveFinished() {
+    private fun onCameraMoveFinished() {
         cameraMoving = false
 
         if (resetCameraPosition) {
@@ -514,7 +512,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         Tracking.logEvent(event= "push_reload_location", params= bundleOf())
         Tracking.track(name= "push_reload_location")
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom))
+        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+        Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(currentLocation): $updateRequest")
+        mMap.animateCamera(updateRequest)
     }
 
     // カルーセルクリック時の処理
