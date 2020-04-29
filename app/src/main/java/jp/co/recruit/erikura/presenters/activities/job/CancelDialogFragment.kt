@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.business.models.CancelReason
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogCancelBinding
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import java.util.*
 
 class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialogFragmentEventHandlers {
@@ -79,9 +80,12 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
                     // 応募キャンセルに合わせて作業報告も削除されるので、削除済みのフラグを立てます
                     job?.report?.deleted = true
 
-                    val intent= Intent(activity, JobDetailsActivity::class.java)
-                    intent.putExtra("job", job)
-                    startActivity(intent)
+                    // キャンセル後は応募した仕事一覧に戻る
+                    Intent(activity, OwnJobsActivity::class.java).let { intent ->
+                        intent.putExtra(OwnJobsActivity.EXTRA_FROM_CANCEL_JOB, true)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
                 }
             }else {
                 val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))

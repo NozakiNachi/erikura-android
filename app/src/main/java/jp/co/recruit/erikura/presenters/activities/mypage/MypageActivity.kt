@@ -68,7 +68,7 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
             Intent(this, OwnJobsActivity::class.java).let { intent ->
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra(FROM_MYPAGE_KEY, true)
-                intent.putExtra("fromMypageJobCommentGoodButton", true)
+                intent.putExtra(OwnJobsActivity.EXTRA_FROM_MYPAGE_JOB_COMMENT_GOOD_BUTTON, true)
                 startActivity(intent)
             }
         },

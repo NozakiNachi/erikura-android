@@ -125,6 +125,9 @@
     <string name="cancel_caption">この仕事をキャンセルしますか？</string>
     <string name="cancel_note">キャンセル理由が今後のお仕事に影響することはありません</string>
 
+    <!-- 仕事キャンセルモーダル -->
+    <string name="canceledDialog_caption">仕事をキャンセルしました。</string>
+
     <!-- 作業開始モーダル -->
     <string name="startDialog_caption">作業を開始しました！</string>
 
