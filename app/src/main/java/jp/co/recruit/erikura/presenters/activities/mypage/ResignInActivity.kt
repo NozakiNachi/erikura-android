@@ -69,10 +69,10 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             // 画面遷移
             if(fromChangeUserInformationFragment) {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }else if(fromAccountSettingFragment){
                 val intent = Intent(this, AccountSettingActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

@@ -14,8 +14,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.ImageView
+import androidx.core.content.FileProvider
 import androidx.core.database.getLongOrNull
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -29,6 +31,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -43,6 +46,11 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -231,15 +239,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     override fun onClickManual(view: View) {
         if (job?.manualUrl != null) {
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(this, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            JobUtil.openManual(this, job!!)
         }
     }
 
@@ -335,6 +335,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
 
     private fun waitUpload() {
+        val maxCount = 100
+
         // 画像アップ中モーダルの表示
         val uploadingDialog = UploadingDialogFragment()
         uploadingDialog.isCancelable = false
@@ -344,8 +346,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             try {
                 var count = 0
 
-                while (!isCompletedUploadPhotos()) {
-                    if (count < 5) {
+                // アップロードが完了する、もしくはアップロード中のものがなくなるまで繰り返します
+                while (!(isCompletedUploadPhotos() || !isUploadingPhotos())) {
+                    if (count < maxCount) {
                         this.runOnUiThread {
                             // 画像アップの進捗表示更新
                             val (numPhotos, numUploadedPhotos) = updateProgress()
@@ -353,14 +356,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             uploadingDialog.numUploadedPhotos = numUploadedPhotos
                         }
 
-                        synchronized(ErikuraApplication.instance.uploadMonitor) {
-                            ErikuraApplication.instance.uploadMonitor.wait(15000)
-                        }
+                        ErikuraApplication.instance.waitUpload()
 
-                        this.runOnUiThread {
-                            // token 再取得処理
-                            updateToken()
-                        }
                         count++
                     } else {
                         break
@@ -382,7 +379,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 onNext = { count ->
                     Log.d("Upload Next", count.toString())
                     uploadingDialog.dismiss()
-                    if (count >= 5) {
+                    if (!isCompletedUploadPhotos()) {
                         // 画像アップ不可モーダル表示
                         val failedDialog = UploadFailedDialogFragment().also {
                             it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
@@ -428,11 +425,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             )
     }
 
-
-    private fun updateToken() {
-        viewModel.completedUploadPhotos = isCompletedUploadPhotos()
-    }
-
     private fun updateProgress(): Pair<Int, Int> {
         var numPhotos = 0
         var numUploadedPhotos = 0
@@ -464,6 +456,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         return completed
     }
 
+    private fun isUploadingPhotos(): Boolean {
+        return job.report?.let {
+            it.isUploading() || it.isOutputSummaryPhotoUploading()
+        } ?: false
+    }
+
     private fun saveReport() {
         Api(this).report(job) {
             // アップロード完了
@@ -490,7 +488,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 //                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 intent.putExtra("fromReportCompleted", true)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }
@@ -582,7 +580,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private fun retry() {
         job.report?.let { report ->
             report.activeOutputSummaries.forEach { outputSummary ->
-                // FIXME: アップロード失敗しているものだけでいいのでは？
                 if (!outputSummary.isUploadCompleted(job)) {
                     report.uploadPhoto(this, job, outputSummary.photoAsset) { token ->
                         PhotoTokenManager.addToken(
@@ -594,7 +591,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 }
             }
             if (report.additionalPhotoAsset != null) {
-                if (report.isUploadCompleted(job)) {
+                if (!report.isUploadCompleted(job)) {
                     report.uploadPhoto(this, job, report.additionalPhotoAsset) { token ->
                         PhotoTokenManager.addToken(
                             job,
@@ -613,7 +610,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         val intent = Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 
@@ -626,8 +623,6 @@ class ReportConfirmViewModel : ViewModel() {
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
-
-    var completedUploadPhotos = false
 
     fun isValid(report: Report): Boolean {
         var valid = true

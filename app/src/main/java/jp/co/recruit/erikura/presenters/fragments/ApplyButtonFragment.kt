@@ -56,7 +56,7 @@ class ApplyButtonFragment(val job: Job?, val user: User) : Fragment(), ApplyButt
             dialog.show(childFragmentManager, "Apply")
         }else {
             val intent= Intent(activity, LoginRequiredActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+            startActivity(intent)
         }
     }
 

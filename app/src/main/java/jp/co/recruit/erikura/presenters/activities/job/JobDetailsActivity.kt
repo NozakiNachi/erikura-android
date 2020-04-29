@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -50,6 +51,7 @@ class JobDetailsActivity : BaseActivity() {
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
+        this.intent = intent
 
         var jobRestored: Boolean = false
         intent?.let { intent ->
@@ -112,6 +114,8 @@ class JobDetailsActivity : BaseActivity() {
     }
 
     private fun refreshContents() {
+        if (isDestroyed) { return }
+
         val transaction = supportFragmentManager.beginTransaction()
         // fragmentの作成
         // jobのステータスで挿しこむフラグメントを変更します
@@ -137,7 +141,7 @@ class JobDetailsActivity : BaseActivity() {
         }
         // fragmentの更新
         transaction.replace(R.id.job_details, fragment)
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 
 

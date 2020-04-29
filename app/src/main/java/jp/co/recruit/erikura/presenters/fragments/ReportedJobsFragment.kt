@@ -54,7 +54,7 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
                 override fun onClick(job: Job) {
                     Intent(activity, JobDetailsActivity::class.java).let { intent ->
                         intent.putExtra("job", job)
-                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity!!).toBundle())
+                        startActivity(intent)
                     }
                 }
             }

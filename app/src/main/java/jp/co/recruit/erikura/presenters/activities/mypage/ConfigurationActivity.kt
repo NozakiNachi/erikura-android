@@ -49,19 +49,19 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(1, "口座情報登録・変更", R.drawable.icon_card_15, true) {
             val intent = Intent(this, AccountSettingActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(2, "通知設定", R.drawable.icon_slide_15, true) {
             val intent = Intent(this, NotificationSettingActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(3, "このアプリについて", R.drawable.icon_smartphone_15, false) {
             val intent = Intent(this, AboutAppActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
             val frequentlyQuestionsURLString = "https://faq.erikura.net/hc/ja/sections/360003690953-FAQ"
@@ -69,7 +69,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(frequentlyQuestionsURLString)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
             val inquiryURLString = "https://support.erikura.net/"
@@ -77,7 +77,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(inquiryURLString)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()
@@ -202,7 +202,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             val intent = Intent(this, StartActivity::class.java)
             // 戻るボタンの無効化
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 
@@ -212,7 +212,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         val intent = Intent(this, StartActivity::class.java)
         // 戻るボタンの無効化
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

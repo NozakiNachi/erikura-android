@@ -1,10 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
@@ -16,8 +12,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportCompletedDialogFragment
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment
@@ -25,7 +19,7 @@ import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingTimeCircleFragment
 import kotlinx.android.synthetic.main.activity_own_jobs.*
 
-class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
+class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsHandlers {
     companion object {
         var savedTabPosition: Int? = null
     }
@@ -115,12 +109,12 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
                 }.first()
                 val timerCircle = WorkingTimeCircleFragment(sortedJobs)
                 transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
-                transaction.commit()
+                transaction.commitAllowingStateLoss()
             }else {
                 val fragment = supportFragmentManager.findFragmentByTag("timerCircle")
                 fragment?.let {
                     transaction.remove(fragment)
-                    transaction.commit()
+                    transaction.commitAllowingStateLoss()
                 }
             }
         }
@@ -130,34 +124,9 @@ class OwnJobsActivity : BaseActivity(), OwnJobsHandlers {
         super.onPause()
         savedTabPosition = owned_jobs_tab_layout.selectedTabPosition
     }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 地図画面、またはリスト画面に遷移します
-                Intent(this, MapViewActivity::class.java).let {
-                    it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_applied_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-        }
-        return true
-    }
-
 }
 
 class OwnJobsViewModel: ViewModel() {}
 
-interface OwnJobsHandlers {
-    fun onNavigationItemSelected(item: MenuItem): Boolean
+interface OwnJobsHandlers: TabEventHandlers {
 }

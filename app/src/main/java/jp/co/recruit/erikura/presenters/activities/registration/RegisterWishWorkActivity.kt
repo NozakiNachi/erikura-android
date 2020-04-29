@@ -66,7 +66,7 @@ class RegisterWishWorkActivity : BaseActivity(),
             // 登録完了画面へ遷移
             val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
 
             // 登録完了のトラッキングの送出
             Tracking.logEvent(event= "signup", params= bundleOf(Pair("user_id", it.userId)))
@@ -81,7 +81,7 @@ class RegisterWishWorkActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -90,7 +90,7 @@ class RegisterWishWorkActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

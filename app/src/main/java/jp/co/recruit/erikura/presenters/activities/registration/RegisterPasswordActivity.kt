@@ -62,7 +62,7 @@ class RegisterPasswordActivity : BaseActivity(),
                 val array = it.toTypedArray()
                 intent.putExtra("errorMessages", array)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
             finish()
         }) {
             Log.v("DEBUG", "仮登録確認： userId=${it}")
@@ -94,7 +94,15 @@ class RegisterPasswordActivity : BaseActivity(),
         user.password = viewModel.password.value
         val intent: Intent = Intent(this@RegisterPasswordActivity, RegisterNameActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
+    }
+
+    override fun backToDefaultActivity() {
+        // 会員登録中なので、スタート画面に遷移させます
+        Intent(this, StartActivity::class.java)?.let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(it)
+        }
     }
 }
 

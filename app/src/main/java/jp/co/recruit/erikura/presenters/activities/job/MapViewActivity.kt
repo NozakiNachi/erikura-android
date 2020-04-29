@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
@@ -9,7 +8,6 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
-import android.view.MenuItem
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -24,8 +22,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.maps.android.SphericalUtil
+import io.reactivex.android.schedulers.AndroidSchedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -35,16 +33,15 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityMapViewBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
+import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.fragments.ErikuraMarkerView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
 
-class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers {
+class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
         // SearchJob にわたすID
         const val REQUEST_SEARCH_CONDITIONS = 1
@@ -63,7 +60,6 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
     /** GoogleMap のカメラ位置を移動中かを保持します (true は移動中) */
     private var cameraMoving: Boolean = false
-    private var zoomInitialized: Boolean = false
     private var displaySearchBar: Boolean = true
     private var resetCameraPosition: Boolean = false
 
@@ -87,16 +83,14 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             viewModel.apply(query)
         }
 
-        // 下部のタブの選択肢を仕事を探すに変更
-        val nav: BottomNavigationView = findViewById(R.id.map_view_navigation)
-        nav.selectedItemId = R.id.tab_menu_search_jobs
-
         val dummyJob = Job(
             latitude = LocationManager.defaultLatLng.latitude,
             longitude = LocationManager.defaultLatLng.longitude
         )
 
-        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
+        carouselView = findViewById(R.id.map_view_carousel)
+
+        adapter = ErikuraCarouselAdapter(this, carouselView, listOf(), viewModel.jobsByLocation.value ?: mapOf())
         adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
@@ -141,7 +135,6 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
         carouselLayoutManager.orientation = RecyclerView.HORIZONTAL
 
-        carouselView = findViewById(R.id.map_view_carousel)
         carouselView.setHasFixedSize(false)
         carouselView.layoutManager = carouselLayoutManager
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
@@ -171,7 +164,9 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
 
                     this@MapViewActivity.runOnUiThread {
                         if (::mMap.isInitialized) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
+                            val updateRequest = CameraUpdateFactory.newLatLng(job.latLng)
+                            Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(carousel): $updateRequest")
+                            mMap.animateCamera(updateRequest)
                         }
                         viewModel.activeMaker = viewModel.markerMap[job.id]
                     }
@@ -188,7 +183,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
             ErikuraApplication.instance.setCoachMarkDisplayed(true)
         }
 
-        tutorialAdapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
+        tutorialAdapter = ErikuraCarouselAdapter(this, map_view_carousel_highlight, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
         tutorialAdapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 coachViewModel.next()
@@ -216,10 +211,14 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         super.onPause()
         locationManager.stop()
         locationManager.clearLocationUpdateCallback()
+
+        searchJobQuery = viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng)
     }
 
     override fun onResume() {
         super.onResume()
+        // 仕事を探すタブの画面を保存しておきます
+        searchJobCurrentActivity = this.javaClass
 
         if (locationManager.checkPermission(this) && ::mMap.isInitialized) {
             mMap.isMyLocationEnabled = true
@@ -229,7 +228,9 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && ::mMap.isInitialized && viewModel.keyword.value.isNullOrBlank()) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, defaultZoom))
+                val updateRequest = CameraUpdateFactory.newLatLngZoom(it, defaultZoom)
+                Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(resume): $updateRequest")
+                mMap.moveCamera(updateRequest)
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
@@ -276,15 +277,13 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
 
         // ズームの初期設定を行っておきます
-        mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
+        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+        Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+        mMap.moveCamera(updateRequest)
 
         if (locationManager.checkPermission(this)) {
             mMap.isMyLocationEnabled = true
             hideGoogleMapMyLocationButton()
-        }
-        else {
-            // デフォルト位置にカメラを移動させます
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LocationManager.defaultLatLng, defaultZoom))
         }
 
         // 最初のタスク取得
@@ -341,61 +340,65 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
     }
 
     private fun fetchJobs(query: JobQuery) {
-        Api(this@MapViewActivity).searchJobs(query) { jobs ->
+        Api(this@MapViewActivity).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
             Log.d("JOBS: ", jobs.toString())
             if (jobs.isNotEmpty()) {
-                // viewModel の案件情報を更新します
-                viewModel.jobs.value = jobs
-                viewModel.jobsByLocation.value = JobUtils.summarizeJobsByLocation(jobs)
+                val summarizedJobs = JobUtils.summarizeJobsByLocation(jobs)
+                val nearestJob = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
 
-                // カルーセルの更新を行います
-                val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-                adapter.data = jobs
-                adapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
-                adapter.notifyDataSetChanged()
-                tutorialAdapter.data = jobs
-                tutorialAdapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
-                tutorialAdapter.notifyDataSetChanged()
+                AndroidSchedulers.mainThread().scheduleDirect {
+                    // viewModel の案件情報を更新します
+                    viewModel.jobs.value = jobs
+                    viewModel.jobsByLocation.value = summarizedJobs
 
-                // マーカを設定します
-                rebuildMarkers(jobs)
+                    // カルーセルの更新を行います
+                    val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
+                    adapter.data = jobs
+                    adapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
+                    adapter.notifyDataSetChanged()
+                    tutorialAdapter.data = jobs
+                    tutorialAdapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
+                    tutorialAdapter.notifyDataSetChanged()
 
-                // 最も距離が近い案件を取得します
-                val nearest = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
-                var nearestMarker: ErikuraMarkerView = viewModel.markerMap[nearest.id]!!
-                var nearestIndex: Int = nearestMarker.marker.tag as Int
-                // マーカーをアクティブに変更します
-                viewModel.activeMaker = nearestMarker
-                // 最も近い案件に地図を移動します
-                resetCameraPosition = true
-                val updateRequest: CameraUpdate = if (zoomInitialized)
-                    CameraUpdateFactory.newLatLng(nearest.latLng)
-                else
-                    CameraUpdateFactory.newLatLngZoom(nearest.latLng, defaultZoom)
-                mMap.animateCamera(updateRequest)
-                // カルーセルを最も近い案件に変更します
-                var layoutManager = carouselView.layoutManager as LinearLayoutManager
-                layoutManager.scrollToPosition(nearestIndex)
+                    // マーカを設定します
+                    rebuildMarkers(jobs)
 
-                Log.v("Fetch Job", "Nearest: ${nearestIndex}, ${layoutManager.toString()}")
+                    // 最も距離が近い案件を取得します
+                    var nearestMarker: ErikuraMarkerView = viewModel.markerMap[nearestJob.id]!!
+                    var nearestIndex: Int = nearestMarker.marker.tag as Int
+                    // マーカーをアクティブに変更します
+                    viewModel.activeMaker = nearestMarker
+                    // 最も近い案件に地図を移動します
+                    resetCameraPosition = true
+                    val updateRequest: CameraUpdate = CameraUpdateFactory.newLatLng(nearestJob.latLng)
+                    Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(fetchJob): $updateRequest")
+                    mMap.animateCamera(updateRequest)
 
-                // ページ参照のトラッキングの送出
-                val jobId = jobs.map { it.id }
-                Tracking.logEvent(event= "view_job_list_map", params= bundleOf())
-                Tracking.viewJobs(name= "/jobs/map", title= "仕事一覧画面（地図）", jobId= jobId)
-                // 仕事表示のトラッキングの送出
-                Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
-                Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（地図）", jobId= jobId)
+                    // カルーセルを最も近い案件に変更します
+                    var layoutManager = carouselView.layoutManager as LinearLayoutManager
+                    layoutManager.scrollToPosition(nearestIndex)
+
+                    // ページ参照のトラッキングの送出
+                    val jobId = jobs.map { it.id }
+
+                    Tracking.logEvent(event= "view_job_list_map", params= bundleOf())
+                    Tracking.viewJobs(name= "/jobs/map", title= "仕事一覧画面（地図）", jobId= jobId)
+                    // 仕事表示のトラッキングの送出
+                    Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+                    Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（地図）", jobId= jobId)
+                }
             }
             else {
-                MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
-                    // クリアした検索条件での再検索を行います
-                    val newQuery = JobQuery(
-                        latitude = locationManager.latLngOrDefault.latitude,
-                        longitude = locationManager.latLngOrDefault.longitude)
-                    if (query != newQuery) {
-                        viewModel.apply(newQuery)
-                        fetchJobs(newQuery)
+                AndroidSchedulers.mainThread().scheduleDirect {
+                    MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
+                        // クリアした検索条件での再検索を行います
+                        val newQuery = JobQuery(
+                            latitude = locationManager.latLngOrDefault.latitude,
+                            longitude = locationManager.latLngOrDefault.longitude)
+                        if (query != newQuery) {
+                            viewModel.apply(newQuery)
+                            fetchJobs(newQuery)
+                        }
                     }
                 }
             }
@@ -439,7 +442,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
     }
 
-    fun onCameraMoveStarted(_reason: Int) {
+    private fun onCameraMoveStarted(_reason: Int) {
         cameraMoving = true
         // 案件取得によるカメラリセット以外の場合
         if (!resetCameraPosition) {
@@ -450,19 +453,18 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
     }
 
-    fun onCameraMoveCanceled() {
+    private fun onCameraMoveCanceled() {
         cameraMoving = false
     }
 
-    fun onCameraIdle() {
+    private fun onCameraIdle() {
         if (cameraMoving) {
-            zoomInitialized = true
             cameraMoving = false
             onCameraMoveFinished()
         }
     }
 
-    fun onCameraMoveFinished() {
+    private fun onCameraMoveFinished() {
         cameraMoving = false
 
         if (resetCameraPosition) {
@@ -495,7 +497,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
         intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
-        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -509,6 +511,7 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         }
         // 現在位置をもとに検索し直します
         val position = mMap.cameraPosition
+        viewModel.searchBarVisible.value = View.GONE
         fetchJobs(viewModel.query(position.target))
     }
 
@@ -517,11 +520,11 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
         Tracking.track(name= "push_toggle_dispaly")
 
-        val intent = Intent(this, ListViewActivity::class.java)
-        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        // 地図画面は閉じておきます
-        finish()
+        Intent(this, ListViewActivity::class.java)?.let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
+            startActivity(it)
+        }
     }
 
     // 現在地に戻る
@@ -530,7 +533,9 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         Tracking.logEvent(event= "push_reload_location", params= bundleOf())
         Tracking.track(name= "push_reload_location")
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom))
+        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+        Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(currentLocation): $updateRequest")
+        mMap.animateCamera(updateRequest)
     }
 
     // カルーセルクリック時の処理
@@ -540,36 +545,14 @@ class MapViewActivity : BaseActivity(), OnMapReadyCallback, MapViewEventHandlers
         val jobsOnLocation = viewModel.jobsByLocation.value?.get(job.latLng) ?: listOf()
         if (jobsOnLocation.size > 1) {
             // 案件選択モーダルを表示する
-            val dialog = JobSelectDialogFragment(jobsOnLocation)
+            val dialog = JobSelectDialogFragment(JobUtils.sortJobs(jobsOnLocation))
             dialog.show(supportFragmentManager, "JobSelector")
         }
         else {
             val intent= Intent(this, JobDetailsActivity::class.java)
             intent.putExtra("job", job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_applied_jobs -> {
-                Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-        }
-        return true
     }
 
     private fun hideGoogleMapMyLocationButton() {
@@ -629,7 +612,7 @@ class MapViewViewModel: BaseJobQueryViewModel() {
     }
 }
 
-interface MapViewEventHandlers {
+interface MapViewEventHandlers: TabEventHandlers {
     fun onClickReSearch(view: View)
     fun onClickSearch(view: View)
     fun onClickSearchBar(view: View)
@@ -638,8 +621,6 @@ interface MapViewEventHandlers {
     fun onClickCurrentLocation(view: View)
 
     fun onClickCarouselItem(job: Job)
-
-    fun onNavigationItemSelected(item: MenuItem): Boolean
 }
 
 class MapViewCoachViewModel: ViewModel() {

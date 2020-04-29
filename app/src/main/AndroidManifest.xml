@@ -25,6 +25,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
         <!-- チュートリアル -->
         <activity android:name=".presenters.activities.tutorial.PermitLocationActivity"
             android:screenOrientation="portrait"/>

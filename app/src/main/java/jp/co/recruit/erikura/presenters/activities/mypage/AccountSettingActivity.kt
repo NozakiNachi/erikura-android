@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,10 +24,10 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityAccountSettingBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import kotlinx.android.synthetic.main.activity_account_setting.*
 import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.regex.Pattern
-
 
 class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
     val api = Api(this)
@@ -52,7 +51,6 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
         setupBankNameAdapter()
         setupBranchNameAdapter()
 
-        // FIXME: isCheckedでないとRadioButtonを制御できない。
         api.payment() {
             payment = it
 
@@ -88,7 +86,7 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromAccountSetting", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    startActivity(intent)
                 }
             }
         }
@@ -219,15 +217,42 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
 
     // 口座種別
     override fun onOrdinaryButton(view: View) {
-        payment.accountType = "ordinary_account"
+        if (payment.accountType == "ordinary_account") {
+            (view as? RadioButton)?.isChecked = false
+            this.table.clearCheck()
+            viewModel.accountType.value = null
+            payment.accountType = null
+        }
+        else {
+            viewModel.accountType.value = "ordinary_account"
+            payment.accountType = "ordinary_account"
+        }
     }
 
     override fun onCurrentButton(view: View) {
-        payment.accountType = "current_account"
+        if (payment.accountType == "current_account") {
+            (view as? RadioButton)?.isChecked = false
+            this.table.clearCheck()
+            viewModel.accountType.value = null
+            payment.accountType = null
+        }
+        else {
+            viewModel.accountType.value = "current_account"
+            payment.accountType = "current_account"
+        }
     }
 
     override fun onSavingsButton(view: View) {
-        payment.accountType = "savings"
+        if (payment.accountType == "savings") {
+            (view as? RadioButton)?.isChecked = false
+            this.table.clearCheck()
+            viewModel.accountType.value = null
+            payment.accountType = null
+        }
+        else {
+            viewModel.accountType.value = "savings"
+            payment.accountType = "savings"
+        }
     }
 
     override fun onClickSetting(view: View) {
@@ -352,14 +377,13 @@ class AccountSettingViewModel: ViewModel() {
         valid = isValidBranchOfficeName() && valid
         valid = isValidBranchOfficeNumber() && valid
         valid = isValidAccountNumber() && valid
+        valid = isValidAccountType() && valid
         valid = isValidAccountHolderFamily() && valid
         valid = isValidAccountHolder() && valid
 
         return valid
     }
 
-
-    // FIXME: 足りないバリデーションルールがないか確認
     private fun isValidBankName(): Boolean {
         var valid = true
 
@@ -397,7 +421,6 @@ class AccountSettingViewModel: ViewModel() {
         return valid
     }
 
-
     private fun isValidBranchOfficeName(): Boolean {
         var valid = true
 
@@ -413,7 +436,6 @@ class AccountSettingViewModel: ViewModel() {
         }
         return valid
     }
-
 
     private fun isValidBranchOfficeNumber(): Boolean {
         var valid = true
@@ -451,6 +473,14 @@ class AccountSettingViewModel: ViewModel() {
         } else {
             valid = true
             accountNumberError.message.value = null
+        }
+        return valid
+    }
+
+    private fun isValidAccountType(): Boolean {
+        var valid = true
+        if (valid && accountType.value.isNullOrBlank()) {
+            valid = false
         }
         return valid
     }

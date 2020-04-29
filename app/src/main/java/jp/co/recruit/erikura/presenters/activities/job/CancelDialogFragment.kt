@@ -135,7 +135,21 @@ class CancelDialogFragmentViewModel: ViewModel() {
     }
 
     private fun isValid(): Boolean {
-        return !(reasonVisibility.value == View.VISIBLE && reasonText.value.isNullOrBlank())
+        var valid = true
+
+        if (reasonVisibility.value == View.VISIBLE) {
+            // その他理由の入力項目が表示されているのでバリデーションを行います
+
+            // 必須チェック
+            if (valid && reasonText.value.isNullOrBlank()) {
+                valid = false
+            }
+            // 文字数チェック
+            if (valid && (reasonText.value?.length ?: 0) > 50) {
+                valid = false
+            }
+        }
+        return valid
     }
 }
 

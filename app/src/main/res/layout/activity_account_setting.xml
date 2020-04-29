@@ -252,6 +252,7 @@
                                 android:layout_marginRight="10dp"
                                 android:text="普通"
                                 android:orientation="horizontal"
+
                                 android:onClick="@{handlers::onOrdinaryButton}" />
                             <RadioButton
                                 android:id="@+id/current_button"

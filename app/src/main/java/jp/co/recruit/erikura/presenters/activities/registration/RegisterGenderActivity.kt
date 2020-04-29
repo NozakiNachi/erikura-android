@@ -54,7 +54,7 @@ class RegisterGenderActivity : BaseActivity(),
     fun moveToNext(user: User) {
         val intent: Intent = Intent(this@RegisterGenderActivity, RegisterAddressActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

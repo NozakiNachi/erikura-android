@@ -87,7 +87,7 @@ class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectD
 
         val intent= Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
         dialog?.dismiss()
     }
 

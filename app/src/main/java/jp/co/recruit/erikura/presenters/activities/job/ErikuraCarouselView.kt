@@ -82,18 +82,30 @@ class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, Lis
     val hasOtherJobs: Boolean get() = jobsCountAt > 1
     val jobsCountText: String get() = String.format("ほか%d件の仕事", jobsCountAt - 1)
     val jobsCountTextVisibility: Int get() = if(hasOtherJobs) { View.VISIBLE } else { View.GONE }
+    val disabled: Boolean get() = job.isFuture || job.isPastOrInactive
     val bodyBackgroundDrawable: Drawable
         get() {
             return if (hasOtherJobs) {
-                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+                if(disabled) {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi_disabled, null)
+                }
+                else {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+                }
             }
             else {
-                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+                if(disabled) {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_disabled, null)
+
+                }
+                else {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+                }
             }
         }
 }
 
-class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+class ErikuraCarouselAdapter(val activity: FragmentActivity, val carousel: RecyclerView, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
@@ -118,15 +130,19 @@ class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>
         holder.currentPosition = position
         holder.binding.viewModel = viewModel
         holder.binding.lifecycleOwner = activity
-
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
+
+        holder.binding.executePendingBindings()
 
         holder.binding.root.setOnClickListener {
             onClickListener?.apply {
                 onClick(job)
             }
         }
+
+        holder.binding.root.forceLayout()
+        carousel.forceLayout()
     }
 
     override fun getItemCount(): Int {

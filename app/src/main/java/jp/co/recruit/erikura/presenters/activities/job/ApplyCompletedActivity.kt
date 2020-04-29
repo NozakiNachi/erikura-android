@@ -81,7 +81,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
         finish()
     }
 
@@ -91,7 +91,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         Tracking.track(name= "push_find_other_job")
 
         val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
         finish()
     }
 
@@ -99,7 +99,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

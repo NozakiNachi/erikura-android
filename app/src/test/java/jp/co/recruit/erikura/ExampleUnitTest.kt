@@ -21,6 +21,77 @@ class ExampleUnitTest {
     open class NotificationData(val open: String)
 
     @Test
+    fun whenTest() {
+        data class DummyReport(var reported: Boolean, val expired: Boolean, val accepted: Boolean, val rejected: Boolean) {
+            val isReportCreatable: Boolean get() {
+                return when {
+                    reported -> false
+                    expired  -> false
+                    else     -> true
+                }
+            }
+            val isReportEditable: Boolean get() {
+                return when {
+                    !reported -> false
+                    accepted  -> false
+                    rejected  -> true
+                    else      -> true
+                }
+            }
+            val isReportEditable2: Boolean get() =
+                when {
+                    !reported -> false
+                    accepted  -> false
+                    rejected  -> true
+                    else      -> true
+                }
+        }
+
+        DummyReport(reported = false, expired = false, accepted = false, rejected = false).let {
+            assertTrue(it.isReportCreatable)
+            assertFalse(it.isReportEditable)
+        }
+        DummyReport(reported = false, expired = true, accepted = false, rejected = false).let {
+            assertFalse(it.isReportCreatable)
+            assertFalse(it.isReportEditable)
+        }
+
+        DummyReport(reported = true, expired = false, accepted = false, rejected = false).let {
+            assertFalse(it.isReportCreatable)
+            assertTrue(it.isReportEditable)
+        }
+        DummyReport(reported = true, expired = false, accepted = true, rejected = false).let {
+            assertFalse(it.isReportCreatable)
+            assertFalse(it.isReportEditable)
+        }
+        DummyReport(reported = true, expired = false, accepted = false, rejected = true).let {
+            assertFalse(it.isReportCreatable)
+            assertTrue(it.isReportEditable)
+        }
+
+        DummyReport(reported = true, expired = true, accepted = false, rejected = false).let {
+            assertFalse(it.isReportCreatable)
+            assertTrue(it.isReportEditable)
+        }
+        DummyReport(reported = true, expired = true, accepted = true, rejected = false).let {
+            assertFalse(it.isReportCreatable)
+            assertFalse(it.isReportEditable)
+        }
+        DummyReport(reported = true, expired = true, accepted = false, rejected = true).let {
+            assertFalse(it.isReportCreatable)
+            assertTrue(it.isReportEditable)
+        }
+
+        DummyReport(reported = false, expired = false, accepted = false, rejected = true).let {
+            assertFalse(it.isReportEditable2)
+
+            it.reported = true
+
+            assertTrue(it.isReportEditable2)
+        }
+    }
+
+    @Test
     fun emailPatternTest() {
         val emailPattern = """\A[\w._%+-|]+@[\w0-9.-]+\.[A-Za-z]{2,}\z""".toRegex()
 

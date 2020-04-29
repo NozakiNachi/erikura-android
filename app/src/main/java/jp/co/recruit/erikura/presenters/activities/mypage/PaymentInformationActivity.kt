@@ -114,7 +114,7 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
     // 未登録の場合、口座情報登録画面へ
     override fun onClickAccountSetting(view: View) {
         val intent = Intent(this, AccountSettingActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

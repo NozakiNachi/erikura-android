@@ -14,7 +14,9 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -22,6 +24,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -38,6 +41,11 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -64,6 +72,26 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        // RecyclerView の初期化を行います
+        val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
+        recyclerView.setHasFixedSize(true)
+
+        val decorator = object: RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
+                outRect.left = space
+                outRect.right = space
+                outRect.top = space
+                outRect.bottom = space
+            }
+        }
+        recyclerView.addItemDecoration(decorator)
     }
 
     override fun onStart() {
@@ -92,10 +120,6 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     private fun displayImagePicker() {
         adapter = ImagePickerAdapter(this, job, viewModel).also {
             it.onClickListener = object: ImagePickerAdapter.OnClickListener {
@@ -105,24 +129,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
         val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
-        recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
-
-        val decorator = object: RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(
-                outRect: Rect,
-                view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State
-            ) {
-                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
-                outRect.left = space
-                outRect.right = space
-                outRect.top = space
-                outRect.bottom = space
-            }
-        }
-        recyclerView.addItemDecoration(decorator)
 
         if (editComplete) {
             // 選択状態をクリアします
@@ -173,15 +180,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(this, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            JobUtil.openManual(this, job!!)
         }
     }
 
@@ -234,7 +233,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

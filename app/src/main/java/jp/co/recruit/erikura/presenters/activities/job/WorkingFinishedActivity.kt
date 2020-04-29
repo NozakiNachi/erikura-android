@@ -77,7 +77,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         if (job.entry?.limitAt ?: Date() > Date()) {
             val intent = Intent(this, ReportImagePickerActivity::class.java)
             intent.putExtra("job", job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }else {
             val errorMessages =
                 mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
@@ -92,7 +92,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
         Intent(this, OwnJobsActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 
@@ -100,7 +100,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 
