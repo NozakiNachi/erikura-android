@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
@@ -16,7 +15,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
@@ -98,19 +96,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             }
         }
 
-        val carouselLayoutManager = object: LinearLayoutManager(this) {
-//            override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
-//                val self = this
-//                val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
-//                    val MILLISECONDS_PER_INCH = 5f
-//                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
-//                        return MILLISECONDS_PER_INCH / displayMetrics.densityDpi
-//                    }
-//                }
-//                speedUpSmoothScroller.targetPosition = position;
-//                startSmoothScroll(speedUpSmoothScroller)
-//            }
-        }
+        val carouselLayoutManager = LinearLayoutManager(this)
         carouselLayoutManager.orientation = RecyclerView.HORIZONTAL
 
         carouselView.setHasFixedSize(false)
