@@ -487,7 +487,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             Intent(this, OwnJobsActivity::class.java).let { intent ->
 //                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                intent.putExtra("fromReportCompleted", true)
+                intent.putExtra(OwnJobsActivity.EXTRA_FROM_REPORT_COMPLETED_KEY, true)
                 startActivity(intent)
             }
         }
