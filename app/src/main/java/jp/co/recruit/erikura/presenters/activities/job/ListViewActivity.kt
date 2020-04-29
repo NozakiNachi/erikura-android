@@ -49,6 +49,8 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
     fun fetchJobs(query: JobQuery) {
         Api(this).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
+            Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
+
             val activeJobs = mutableListOf<Job>()
             val futureJobs = mutableListOf<Job>()
             val pastJobs = mutableListOf<Job>()
