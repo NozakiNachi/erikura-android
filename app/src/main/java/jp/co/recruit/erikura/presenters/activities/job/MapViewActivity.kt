@@ -40,6 +40,7 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
+import kotlin.math.abs
 
 class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
@@ -98,40 +99,17 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
 
         val carouselLayoutManager = object: LinearLayoutManager(this) {
-            override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
-                val self = this
-                val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
-                    var scrolling = false
-                    override fun updateActionForInterimTarget(action: Action?) {
-                        Log.v("ERIKURA", "POSITION: $scrolling, $targetPosition, $position")
-                        if (scrolling) {
-                            scrolling = false
-                            action?.jumpTo(targetPosition)
-                            stop()
-                        }
-                        else {
-                            scrolling = true
-                            super.updateActionForInterimTarget(action)
-                        }
-                    }
-
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-                        return super.calculateSpeedPerPixel(displayMetrics) / 4
-                    }
-
-                    override fun onStart() {
-                        super.onStart()
-                        Log.v("ERIKURA", "POSITION: START $targetPosition")
-                    }
-
-                    override fun onStop() {
-                        super.onStop()
-                        Log.v("ERIKURA", "POSITION: END:$targetPosition, ${self.findFirstCompletelyVisibleItemPosition()}")
-                    }
-                }
-                speedUpSmoothScroller.targetPosition = position;
-                startSmoothScroll(speedUpSmoothScroller)
-            }
+//            override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
+//                val self = this
+//                val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
+//                    val MILLISECONDS_PER_INCH = 5f
+//                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics): Float {
+//                        return MILLISECONDS_PER_INCH / displayMetrics.densityDpi
+//                    }
+//                }
+//                speedUpSmoothScroller.targetPosition = position;
+//                startSmoothScroll(speedUpSmoothScroller)
+//            }
         }
         carouselLayoutManager.orientation = RecyclerView.HORIZONTAL
 
@@ -157,7 +135,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-                Log.v("ERIKURA", "Position: ${position}, length: ${adapter.data.size}")
+                Log.v("ERIKURA", "Position: ${position}, length: ${adapter.data.size}, FV=${layoutManager.findFirstVisibleItemPosition()}, LV=${layoutManager.findLastVisibleItemPosition()}, LC=${layoutManager.findLastCompletelyVisibleItemPosition()}")
                 if (position >= 0 && adapter.data.size > 0) {
                     val job = adapter.data[position]
                     Log.v("VISIBLE JOB: ", job.toString())
@@ -271,7 +249,22 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             }
 
             var layoutManager = carouselView.layoutManager as LinearLayoutManager
-            layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+
+            val current = layoutManager.findFirstCompletelyVisibleItemPosition()
+            if (current != index) {
+                if (current < index) {
+                    if (abs(index - current) > 10) {
+                        layoutManager.scrollToPosition(index - 10)
+                    }
+                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                }
+                else {
+                    if (abs(index - current) > 10) {
+                        layoutManager.scrollToPosition(index + 10)
+                    }
+                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                }
+            }
 
             true
         }
@@ -341,7 +334,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
-            Log.d("JOBS: ", jobs.toString())
+            Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
             if (jobs.isNotEmpty()) {
                 val summarizedJobs = JobUtils.summarizeJobsByLocation(jobs)
                 val nearestJob = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
