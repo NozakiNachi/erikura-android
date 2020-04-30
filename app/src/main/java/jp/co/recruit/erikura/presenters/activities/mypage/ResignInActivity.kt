@@ -24,6 +24,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
     var fromChangeUserInformationFragment: Boolean = false
     var fromAccountSettingFragment: Boolean = false
+    var isCameThroughLogin: Boolean = false
 
     private val viewModel: ResignInViewModel by lazy {
         ViewModelProvider(this).get(ResignInViewModel::class.java)
@@ -44,6 +45,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
         fromAccountSettingFragment = intent.getBooleanExtra("fromAccountSetting", false)
         fromChangeUserInformationFragment = intent.getBooleanExtra("fromChangeUserInformation", false)
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
     }
 
     override fun onClickResignIn(view: View) {
@@ -54,6 +56,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             // 画面遷移
             if(fromChangeUserInformationFragment) {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }else if(fromAccountSettingFragment){
                 val intent = Intent(this, AccountSettingActivity::class.java)

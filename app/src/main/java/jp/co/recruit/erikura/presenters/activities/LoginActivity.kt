@@ -82,7 +82,6 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                         //SMS未認証の場合、認証画面へ遷移します。
                         val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
                         intent.putExtra("requestCode",2)
-                        intent.putExtra("enableAutoLogin", viewModel.enableAutoLogin.value ?: false)
                         startActivityForResult(intent, 2)
                     }
                 }

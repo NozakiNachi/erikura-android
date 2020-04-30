@@ -36,6 +36,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     var user: User = User()
     var requestCode: Int = 0
+    var isCameThroughLogin: Boolean = false
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -58,6 +59,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             Api(this).displayErrorAlert(errorMessages.asList())
         }
         requestCode = intent.getIntExtra("requestCode", 0)
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
 
         val binding: ActivityChangeUserInformationBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
@@ -87,6 +89,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("fromChangeUserInformation", true)
+                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 }
             }
@@ -215,13 +218,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                     val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
                     intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)
-                    if (requestCode == 2) {
-                        intent.putExtra("isCameThroughLogin", true)
-                        startActivityForResult(intent, 3)
-                    } else {
-                        intent.putExtra("requestCode", 3)
-                        startActivityForResult(intent, 3)
-                    }
+                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                    intent.putExtra("requestCode", 3)
+                    startActivityForResult(intent, 3)
                 }
                 else {
                     // 会員情報変更Apiの呼び出し
