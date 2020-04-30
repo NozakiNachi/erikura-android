@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.ToggleButton
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -26,6 +27,7 @@ import jp.co.recruit.erikura.databinding.ActivityPaymentInformationBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInfoMonthlyCellBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInformationListCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.ErikuraCarouselAdapter
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -163,6 +165,8 @@ class MonthlyPaymentViewModel(val monthlyPayment: MonthlyPaymentInformation): Vi
 class MonthlyPaymentViewHolder(val binding: FragmentPaymentInfoMonthlyCellBinding) : RecyclerView.ViewHolder(binding.root)
 
 class MonthlyPaymentAdapter(val activity: FragmentActivity, var monthlyPayments: List<MonthlyPaymentInformation>): RecyclerView.Adapter<MonthlyPaymentViewHolder>() {
+    var onClickListener: ErikuraCarouselAdapter.OnClickListener? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MonthlyPaymentViewHolder {
         val binding: FragmentPaymentInfoMonthlyCellBinding = DataBindingUtil.inflate(
             LayoutInflater.from(parent.context),
@@ -182,12 +186,18 @@ class MonthlyPaymentAdapter(val activity: FragmentActivity, var monthlyPayments:
         val adapter = PaymentListAdapater(activity, monthlyPayment.jobs)
         binding.paymentInfoMonthlyCellList.adapter = adapter
 
-        // FIXME: handlers
-        // FIXME: クリック時のアコーディオン処理はどうするか
+        binding.root.setOnClickListener {
+            val toggle: ToggleButton = binding.root.findViewById(R.id.payment_info_monthly_cell_toggle)
+            toggle.isChecked = !toggle.isChecked
+        }
     }
 
     override fun getItemCount(): Int {
         return monthlyPayments.count()
+    }
+
+    interface OnClickListener {
+        fun onClick(job: Job)
     }
 }
 
