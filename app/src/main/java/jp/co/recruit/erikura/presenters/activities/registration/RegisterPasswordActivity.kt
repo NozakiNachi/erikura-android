@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -56,6 +57,9 @@ class RegisterPasswordActivity : BaseActivity(),
         // ワーカ仮登録の確認
         Api(this).registerConfirm(confirmationToken ?:"", onError = {
             Log.v("DEBUG", "ユーザ仮登録確認失敗")
+            // 仮登録に失敗しているので、セッション情報をクリアします
+            Api.userSession = null
+            UserSession.clear()
             // スタート画面へ遷移する
             val intent = Intent(this, StartActivity::class.java)
             if(it != null) {
