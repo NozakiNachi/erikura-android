@@ -5,7 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -59,7 +62,7 @@ class RegisterPasswordActivity : BaseActivity(),
                 val array = it.toTypedArray()
                 intent.putExtra("errorMessages", array)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
             finish()
         }) {
             Log.v("DEBUG", "仮登録確認： userId=${it}")
@@ -74,12 +77,32 @@ class RegisterPasswordActivity : BaseActivity(),
         Tracking.view(name = "/user/register/password", title = "本登録画面（パスワード）")
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.register_password_constraintLayout)
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickNext(view: View) {
         Log.v("PASSWORD", viewModel.password.value ?: "")
         user.password = viewModel.password.value
         val intent: Intent = Intent(this@RegisterPasswordActivity, RegisterNameActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
+    }
+
+    override fun backToDefaultActivity() {
+        // 会員登録中なので、スタート画面に遷移させます
+        Intent(this, StartActivity::class.java)?.let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(it)
+        }
     }
 }
 
@@ -97,13 +120,16 @@ class RegisterPasswordViewModel: ViewModel() {
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
 
+        val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
+        val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
+
         if (valid && password.value?.isBlank() ?:true) {
             valid = false
             error.message.value = null
         }else if(valid && !(pattern.matcher(password.value).find())) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-        }else if(valid && (!(alPattern.matcher(password.value).find()) || !(numPattern.matcher(password.value).find()))) {
+        }else if(valid && !(hasAlphabet(password.value ?: "") && hasNumeric(password.value ?: ""))) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
         } else {

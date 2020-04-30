@@ -5,7 +5,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -46,13 +49,25 @@ class RegisterEmailActivity : BaseActivity(),
         Tracking.view(name = "/user/register/pre", title = "仮登録画面")
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.register_email_constraintLayout)
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickSendEmail(view: View) {
         Log.v("EMAIL", viewModel.email.value ?: "")
         // 仮登録APIの実行
         Api(this).registerEmail(viewModel.email.value ?:"") {
             Log.v("DEBUG", "仮登録メール送信： userId=${it}")
             val intent: Intent = Intent(this@RegisterEmailActivity, RegisterEmailFinishedActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 
@@ -62,7 +77,7 @@ class RegisterEmailActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -71,11 +86,13 @@ class RegisterEmailActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 
 class RegisterEmailViewModel: ViewModel() {
+    private val emailPattern = """\A[\w._%+-|]+@[\w0-9.-]+\.[A-Za-z]{2,}\z""".toRegex()
+
     val email: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
@@ -89,10 +106,9 @@ class RegisterEmailViewModel: ViewModel() {
         if (valid && email.value?.isBlank() ?: true) {
             valid = false
             error.message.value = null
-        }else if (valid && !(android.util.Patterns.EMAIL_ADDRESS.matcher(email.value ?:"").matches())) {
+        }else if (valid && !(emailPattern.matches(email.value ?: ""))) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.email_format_error)
-
         } else {
             valid = true
             error.message.value = null

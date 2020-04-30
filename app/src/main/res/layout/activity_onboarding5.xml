@@ -1,79 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presenters.activities.tutorial.Onboarding5Activity"
-    >
+    tools:context=".presenters.activities.tutorial.Onboarding5Activity">
 
     <data>
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.activities.tutorial.Onboarding5Handlers" />
     </data>
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/background_onboarding_gradation"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <Button
-            style="@style/onboardingSkip"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:layout_marginTop="20dp"
-            android:layout_marginRight="20dp"
-            android:onClick="@{handlers::onClickSkip}" />
-
-        <ImageView
-            android:layout_width="221dp"
-            android:layout_height="62dp"
-            android:layout_marginTop="5dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/step_title_2x"/>
-
-
-        <TextView
-            android:layout_width="310dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center_horizontal"
-
-            android:drawableLeft="@drawable/step5_num"
-            android:drawablePadding="10dp"
-            android:text="@string/onboarding_5_explain"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:textSize="22dp"
-            android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
-            />
-
-        <ImageView
-            android:layout_width="318dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_gravity="center_horizontal"
-            android:src="@drawable/step5"
-            android:adjustViewBounds="true"/>
-
-        <ImageView
-            android:layout_width="100dp"
-            android:layout_height="8dp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:src="@drawable/tutorial_marker_05_2x"/>
-
-        <Button
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:layout_marginTop="20dp"
-            style="@style/secondaryButton"
-            android:text="進む"
-            android:onClick="@{handlers::onClickNext}"
-            />
-    </LinearLayout>
+            android:layout_height="match_parent"
+            android:background="@drawable/background_onboarding_gradation"
+            android:orientation="vertical">
+
+            <Button
+                style="@style/onboardingSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:onClick="@{handlers::onClickSkip}" />
+
+            <ImageView
+                android:layout_width="221dp"
+                android:layout_height="62dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/step_title_2x" />
+
+
+            <TextView
+                android:layout_width="310dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+
+                android:drawableLeft="@drawable/step5_num"
+                android:drawablePadding="10dp"
+                android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
+                android:text="@string/onboarding_5_explain"
+                android:textColor="@color/white"
+                android:textSize="22dp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:layout_width="318dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/step5" />
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="8dp"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:src="@drawable/tutorial_marker_05_2x" />
+
+            <Button
+                style="@style/secondaryButton"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginBottom="154dp"
+                android:onClick="@{handlers::onClickNext}"
+                android:text="@string/start" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>
 

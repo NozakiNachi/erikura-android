@@ -7,10 +7,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -23,12 +21,13 @@ import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityFavoritePlacesBinding
 import jp.co.recruit.erikura.databinding.FragmentFavoritePlaceItemBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
+import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 
-class FavoritePlacesActivity : BaseActivity(), FavoritePlaceEventHandlers{
+class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), FavoritePlaceEventHandlers{
     private lateinit var favoritePlaceAdapter: FavoritePlaceAdapter
     private var placeList: List<Place> = listOf()
 
@@ -39,11 +38,6 @@ class FavoritePlacesActivity : BaseActivity(), FavoritePlaceEventHandlers{
         val binding: ActivityFavoritePlacesBinding = DataBindingUtil.setContentView(this, R.layout.activity_favorite_places)
         binding.lifecycleOwner = this
         binding.handlers = this
-
-        // 下部のタブの選択肢を仕事を探すに変更
-        val nav: BottomNavigationView = findViewById(R.id.favorite_view_navigation)
-        nav.selectedItemId = R.id.tab_menu_mypage
-
 
         favoritePlaceAdapter = FavoritePlaceAdapter(this, listOf()).also {
             it.onClickListener = object : FavoritePlaceAdapter.OnClickListener {
@@ -69,34 +63,27 @@ class FavoritePlacesActivity : BaseActivity(), FavoritePlaceEventHandlers{
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        mypageCurrentActivity = this.javaClass
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        Intent(this, MypageActivity::class.java).let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(it)
+        }
+    }
+
     private fun onClickItem(position: Int) {
         // 場所詳細画面へ遷移
         val intent= Intent(this, PlaceDetailActivity::class.java)
         intent.putExtra("workingPlace", placeList[position])
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                Intent(this, MapViewActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_applied_jobs -> {
-                Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
-            R.id.tab_menu_mypage -> {
-                // 何も行いません
-            }
-        }
-        return true
+        startActivity(intent)
     }
 }
 
@@ -164,6 +151,5 @@ class FavoritePlaceAdapter(
     }
 }
 
-interface FavoritePlaceEventHandlers {
-    fun onNavigationItemSelected(item: MenuItem): Boolean
+interface FavoritePlaceEventHandlers: TabEventHandlers {
 }

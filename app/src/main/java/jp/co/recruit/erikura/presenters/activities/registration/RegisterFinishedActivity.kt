@@ -36,7 +36,7 @@ class RegisterFinishedActivity : BaseActivity(),
         // 地図画面へ遷移します
         // FIXME: チュートリアルの表示
         val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

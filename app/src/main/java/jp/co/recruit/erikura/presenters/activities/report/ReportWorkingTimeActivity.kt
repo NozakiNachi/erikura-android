@@ -6,12 +6,15 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.webkit.MimeTypeMap
 import android.widget.AdapterView
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -21,6 +24,11 @@ import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityReportWorkingTimeBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers {
     private val viewModel by lazy {
@@ -69,15 +77,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
 
     override fun onClickManual(view: View) {
         if(job.manualUrl != null){
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(this, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            JobUtil.openManual(this, job!!)
         }
     }
 
@@ -94,7 +94,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
             }else {
                 val intent= Intent(this, ReportOtherFormActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

@@ -9,20 +9,29 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 
 class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragmentEventHandlers {
@@ -44,18 +53,8 @@ class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragme
 
     override fun onClickManualImage(view: View) {
         if(job?.manualUrl != null){
-            // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_job_manual", params= bundleOf())
-            Tracking.viewJobDetails(name= "/jobs/manual", title= "マニュアル表示", jobId= job?.id ?: 0)
-
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(activity!!, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(activity, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+            activity?.let { activity ->
+                JobUtil.openManual(activity, job!!)
             }
         }
     }

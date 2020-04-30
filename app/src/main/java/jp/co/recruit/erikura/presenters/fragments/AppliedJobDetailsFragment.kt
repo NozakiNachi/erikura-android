@@ -2,9 +2,11 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Dialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -12,18 +14,22 @@ import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.text.style.TypefaceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -48,8 +54,8 @@ class AppliedJobDetailsFragment(
         ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
     }
 
-    private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+    private var allowPedometerDialog: Dialog? = null
 
     private var inStartJob: Boolean = false
 
@@ -93,28 +99,7 @@ class AppliedJobDetailsFragment(
             "jobDetailsView"
         )
         transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView, "mapView")
-        transaction.commit()
-
-        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
-            if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
-                BaseActivity.currentActivity?.let { activity ->
-                    val dialog = AlertDialog.Builder(activity)
-                        .setView(R.layout.dialog_allow_activity_recognition)
-                        .create()
-                    dialog.show()
-
-                    val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnClickListener {
-                        val uriString = "package:" + ErikuraApplication.instance.packageName
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
-                        startActivity(intent)
-                    }
-                }
-            }
-            else {
-                ErikuraApplication.pedometerManager.requestPermission(this)
-            }
-        }
+        transaction.commitAllowingStateLoss()
     }
 
     override fun onStart() {
@@ -127,6 +112,8 @@ class AppliedJobDetailsFragment(
     override fun onResume() {
         super.onResume()
         ErikuraApplication.pedometerManager.start()
+        allowPedometerDialog?.dismiss()
+        allowPedometerDialog = null
     }
 
     override fun onPause() {
@@ -182,6 +169,18 @@ class AppliedJobDetailsFragment(
                         .create()
                     dialog.show()
 
+                    val label1: TextView = dialog.findViewById(R.id.allow_activity_label1)
+                    val sb = SpannableStringBuilder("・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。")
+                    val becomeBold: (String) -> Unit = { keyword ->
+                        val start = sb.toString().indexOf(keyword)
+                        sb.setSpan(StyleSpan(R.style.label_w6), start, start + keyword.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                    }
+                    becomeBold("「権限」")
+                    becomeBold("「身体活動」")
+                    becomeBold("「許可」")
+
+                    label1.text = sb
+
                     val button: Button = dialog.findViewById(R.id.update_button)
                     button.setOnClickListener {
                         openSettings = true
@@ -189,8 +188,11 @@ class AppliedJobDetailsFragment(
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
                         startActivity(intent)
                     }
+
+                    allowPedometerDialog = dialog
                     // ダイアログが消えた場合の対応
                     dialog.setOnDismissListener {
+                        allowPedometerDialog = null
                         if (!openSettings) {
                             startJob()
                         }
@@ -212,8 +214,14 @@ class AppliedJobDetailsFragment(
             Tracking.logEvent(event = "push_start_job", params = bundleOf())
             Tracking.trackJobDetails(name = "push_start_job", jobId = job.id)
 
+            val latLng: LatLng? = if (locationManager.checkPermission(this)) {
+                locationManager.latLng
+            } else {
+                null
+            }
+
             Api(activity).startJob(
-                job, locationManager.latLng ?: locationManager.latLngOrDefault,
+                job, latLng,
                 steps = ErikuraApplication.pedometerManager.readStepCount(),
                 distance = null, floorAsc = null, floorDesc = null
             ) {

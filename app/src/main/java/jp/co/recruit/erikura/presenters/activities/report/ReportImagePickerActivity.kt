@@ -14,7 +14,9 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ImageView
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -22,6 +24,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -38,7 +41,13 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
@@ -63,6 +72,26 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        // RecyclerView の初期化を行います
+        val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
+        recyclerView.setHasFixedSize(true)
+
+        val decorator = object: RecyclerView.ItemDecoration() {
+            override fun getItemOffsets(
+                outRect: Rect,
+                view: View,
+                parent: RecyclerView,
+                state: RecyclerView.State
+            ) {
+                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
+                outRect.left = space
+                outRect.right = space
+                outRect.top = space
+                outRect.bottom = space
+            }
+        }
+        recyclerView.addItemDecoration(decorator)
     }
 
     override fun onStart() {
@@ -91,10 +120,6 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     private fun displayImagePicker() {
         adapter = ImagePickerAdapter(this, job, viewModel).also {
             it.onClickListener = object: ImagePickerAdapter.OnClickListener {
@@ -104,24 +129,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
         val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
-        recyclerView.setHasFixedSize(true)
         recyclerView.adapter = adapter
-
-        val decorator = object: RecyclerView.ItemDecoration() {
-            override fun getItemOffsets(
-                outRect: Rect,
-                view: View,
-                parent: RecyclerView,
-                state: RecyclerView.State
-            ) {
-                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
-                outRect.left = space
-                outRect.right = space
-                outRect.top = space
-                outRect.bottom = space
-            }
-        }
-        recyclerView.addItemDecoration(decorator)
 
         if (editComplete) {
             // 選択状態をクリアします
@@ -134,6 +142,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                     viewModel.imageMap.put(item.id, item)
                 }
             }
+            viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
             editComplete = false
         }
     }
@@ -171,15 +180,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(this, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            JobUtil.openManual(this, job!!)
         }
     }
 
@@ -191,10 +192,28 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             val cr = getContentResolver().openInputStream(v.contentUri?: Uri.EMPTY)
             val exifInterface = ExifInterface(cr)
             val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-            val takenAt = SimpleDateFormat("yyyy:MM:dd HH:mm").parse(takenAtString)
+            val takenAt = takenAtString?.let {
+                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
+            } ?: v.dateTaken?.let {
+                Date(v.dateTaken)
+            } ?: v.dateAdded?.let {
+                Date(v.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
+            }
+            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
             summary.photoTakedAt = takenAt
-            summary.latitude = locationManager.latLng?.latitude
-            summary.longitude = locationManager.latLng?.longitude
+            summary.latitude = latitude?.let { lat ->
+                latitudeRef?.let { ref ->
+                    MediaItem.exifLatitudeToDegrees(ref, lat)
+                }
+            }
+            summary.longitude = longitude?.let { lon ->
+                longitudeRef?.let { ref ->
+                    MediaItem.exifLongitudeToDegrees(ref, lon)
+                }
+            }
             outputSummaryList.add(summary)
         }
 
@@ -214,7 +233,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 
@@ -228,14 +247,6 @@ class ImagePickerCellViewModel: ViewModel() {
 
     fun loadData(job: Job, item: MediaItem, viewModel: ReportImagePickerViewModel) {
         checked.value = viewModel.imageMap.containsKey(item.id)
-//        job.report?.activeOutputSummaries?.let {
-//            it.forEach {
-//                val uri = it.photoAsset?.contentUri
-//                if (item.contentUri == uri) {
-//                    checked.value = true
-//                }
-//            }
-//        }
     }
 }
 
@@ -253,7 +264,9 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                 MediaStore.Files.FileColumns._ID,
                 MediaStore.MediaColumns.DISPLAY_NAME,
                 MediaStore.MediaColumns.MIME_TYPE,
-                MediaStore.MediaColumns.SIZE
+                MediaStore.MediaColumns.SIZE,
+                MediaStore.Files.FileColumns.DATE_ADDED,
+                MediaStore.MediaColumns.DATE_TAKEN
             ),
             MediaStore.MediaColumns.SIZE + ">0",
             arrayOf<String>(),

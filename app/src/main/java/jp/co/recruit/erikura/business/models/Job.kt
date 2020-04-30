@@ -49,27 +49,33 @@ data class Job(
     var jobKind: JobKind? = null,
     var entryId: Int? = 0,
     var entry: Entry? = null,
-    var reportId: Int? = 0,
     var report: Report? = null,
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf(),
     var targetGender: Gender? = null,
     var banned: Boolean = false
 ): Parcelable {
+    val reportId: Int? get() = report?.id
 
-    // isReportCreatable
-    // isReportEditable
-    // getSummaryTitles
-
-    val isActive: Boolean get() = !(isFuture || isPastOrInactive)
+    val isActive: Boolean get() {
+        return !(isFuture || isPastOrInactive)
+    }
     /** 期限切れ、もしくは応募済みかを判定します */
-    val isPastOrInactive: Boolean get() = (isPast || isEntried)
+    val isPastOrInactive: Boolean get() {
+        return (isPast || isEntried)
+    }
     /** 募集期間が過ぎたタスクか? */
-    val isPast: Boolean get() = (workingFinishAt?.let { Date() > it } ?: false)
+    val isPast: Boolean get() {
+        return (workingFinishAt?.let { Date() > it } ?: false)
+    }
     /** 募集期間前のタスクか? */
-    val isFuture: Boolean get() = (workingStartAt?.let { Date() < it } ?: false)
+    val isFuture: Boolean get() {
+        return (workingStartAt?.let { Date() < it } ?: false)
+    }
     /** 作業期間切れのタスクか? */
-    val isExpired: Boolean get() = (this.limitAt?.let { Date() > it } ?: false)
+    val isExpired: Boolean get() {
+        return (this.limitAt?.let { Date() > it } ?: false)
+    }
     /** 応募済みの場合の作業リミット時間 */
     val limitAt: Date? get() = entry?.limitAt
     /** 自身が応募済みか */
@@ -77,7 +83,7 @@ data class Job(
     /** 応募済みか */
     val isEntried: Boolean get() = (entry != null)
     /** 作業報告済みか */
-    val isReported: Boolean get() = (report != null)
+    val isReported: Boolean get() = (reportId != null)
     /** 作業終了済みか */
     val isFinished: Boolean get() = (entry?.isFinished ?: false)
     /** 作業開始済みか */

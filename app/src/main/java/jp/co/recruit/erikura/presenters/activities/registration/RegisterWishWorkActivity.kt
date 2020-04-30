@@ -61,6 +61,19 @@ class RegisterWishWorkActivity : BaseActivity(),
         if(viewModel.interestedCar.value ?: false){ list.add("car") }
         user.wishWorks = list
         Log.v("WISHWORK", list.toString())
+//        // ユーザ登録Apiの呼び出し
+//        Api(this).initialUpdateUser(user) {
+//            Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
+//            // 登録完了画面へ遷移
+//            val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
+//            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+//            startActivity(intent)
+//
+//            // 登録完了のトラッキングの送出
+//            Tracking.logEvent(event= "signup", params= bundleOf(Pair("user_id", it.userId)))
+//            Tracking.identify(user= user, status= "login")
+//            Tracking.logCompleteRegistrationEvent()
+//        }
 
         //登録処理を行う前にSMS認証を行う
         val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
@@ -68,6 +81,7 @@ class RegisterWishWorkActivity : BaseActivity(),
         intent.putExtra("phoneNumber",user.phoneNumber)
         intent.putExtra("requestCode",1)
         startActivityForResult(intent,1)
+
     }
 
     override fun onClickTermsOfService(view: View) {
@@ -76,7 +90,7 @@ class RegisterWishWorkActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -85,7 +99,7 @@ class RegisterWishWorkActivity : BaseActivity(),
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -95,11 +109,9 @@ class RegisterWishWorkActivity : BaseActivity(),
             Api(this).initialUpdateUser(user) {
                 Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
                 // 登録完了画面へ遷移
-                val intent: Intent =
-                    Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
+                val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                finish()
+                startActivity(intent)
 
                 // 登録完了のトラッキングの送出
                 Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))

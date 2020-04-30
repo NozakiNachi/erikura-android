@@ -1,9 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
@@ -18,9 +16,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.bitmap_recycle.IntegerArrayAdapter
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import io.reactivex.android.schedulers.AndroidSchedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -30,14 +27,12 @@ import jp.co.recruit.erikura.business.models.PeriodType
 import jp.co.recruit.erikura.business.models.SortType
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityListViewBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
-import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
+import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.util.LocationManager
-import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 
-class ListViewActivity : BaseActivity(), ListViewHandlers {
+class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListViewHandlers {
     companion object {
         val REQUEST_SEARCH_CONDITIONS = 1
     }
@@ -53,50 +48,56 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     }
 
     fun fetchJobs(query: JobQuery) {
-        Api(this).searchJobs(query) { jobs ->
-            if (jobs.isNotEmpty()) {
-                viewModel.jobs = jobs
+        Api(this).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
+            Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
+
+            val activeJobs = mutableListOf<Job>()
+            val futureJobs = mutableListOf<Job>()
+            val pastJobs = mutableListOf<Job>()
+            jobs.forEach { job ->
+                when {
+                    job.isActive -> activeJobs.add(job)
+                    job.isFuture -> futureJobs.add(job)
+                    job.isPastOrInactive -> pastJobs.add(job)
+                }
+            }
+
+            AndroidSchedulers.mainThread().scheduleDirect {
+                viewModel.activeJobs = activeJobs
+                viewModel.futureJobs = futureJobs
+                viewModel.pastJobs = pastJobs
 
                 val position = LatLng(query.latitude!!, query.longitude!!)
 
                 activeJobsAdapter.jobs = viewModel.activeJobs
                 activeJobsAdapter.currentPosition = position
                 activeJobsAdapter.notifyDataSetChanged()
+                viewModel.activeListVisible.value = if (viewModel.activeJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
                 futureJobsAdapter.jobs = viewModel.futureJobs
                 futureJobsAdapter.currentPosition = position
                 futureJobsAdapter.notifyDataSetChanged()
+                viewModel.futureListVisible.value = if (viewModel.futureJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
                 pastJobsAdapter.jobs = viewModel.pastJobs
                 pastJobsAdapter.currentPosition = position
                 pastJobsAdapter.notifyDataSetChanged()
+                viewModel.pastListVisible.value = if (viewModel.pastJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
-                // ページ参照のトラッキングの送出
+                if (jobs.isNotEmpty()) {
+                    viewModel.notFoundVisibility.value = View.GONE
+                }
+                else {
+                    viewModel.notFoundVisibility.value = View.VISIBLE
+                }
 
+                val jobId = jobs.map { it.id }
+                Tracking.logEvent(event= "view_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
+                // 仕事表示のトラッキングの送出
+                Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+                Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
             }
-            else {
-                viewModel.jobs = listOf()
-                val position = LatLng(query.latitude!!, query.longitude!!)
-
-                activeJobsAdapter.jobs = listOf()
-                activeJobsAdapter.currentPosition = position
-                activeJobsAdapter.notifyDataSetChanged()
-
-                futureJobsAdapter.jobs = listOf()
-                futureJobsAdapter.currentPosition = position
-                futureJobsAdapter.notifyDataSetChanged()
-
-                pastJobsAdapter.jobs = listOf()
-                pastJobsAdapter.currentPosition = position
-                pastJobsAdapter.notifyDataSetChanged()
-            }
-
-            val jobId = jobs.map { it.id }
-            Tracking.logEvent(event= "view_job_list", params= bundleOf())
-            Tracking.viewJobs(name= "/jobs/list", title= "仕事一覧画面（リスト）", jobId= jobId)
-            // 仕事表示のトラッキングの送出
-            Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
-            Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（リスト）", jobId= jobId)
         }
     }
 
@@ -110,10 +111,6 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         intent.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
             viewModel.apply(query)
         }
-
-        // 下部のタブの選択肢を仕事を探すに変更
-        val nav: BottomNavigationView = findViewById(R.id.list_view_navigation)
-        nav.selectedItemId = R.id.tab_menu_search_jobs
 
         activeJobsAdapter = JobListAdapter(this, listOf(), null).also {
             it.onClickListner =  object: JobListAdapter.OnClickListener {
@@ -161,10 +158,16 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
 
         if (viewModel.keyword.value.isNullOrBlank()) {
             // 現在地からの検索の場合
-            locationManager.latLng?.let {
+            locationManager.latLng?.also {
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
+            } ?: run {
+                if (!locationManager.checkPermission(this)) {
+                    firstFetchRequested = true
+                    val query = viewModel.query(LocationManager.defaultLatLng)
+                    fetchJobs(query)
+                }
             }
         }
         else {
@@ -175,18 +178,21 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
                 fetchJobs(query)
             }
         }
-
-        Log.d("SORT TYPES", viewModel.sortLabels.toString())
     }
 
     override fun onPause() {
         super.onPause()
         locationManager.stop()
         locationManager.clearLocationUpdateCallback()
+
+        searchJobQuery = viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng)
     }
 
     override fun onResume() {
         super.onResume()
+        // 仕事を探すタブの画面を保存します
+        searchJobCurrentActivity = this.javaClass
+
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && !viewModel.keyword.value.isNullOrBlank()) {
                 firstFetchRequested = true
@@ -221,17 +227,7 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when(requestCode) {
-            ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    locationManager.start(this)
-                }
-                else {
-                    MessageUtils.displayLocationAlert(this)
-                }
-            }
-        }
+        locationManager.onRequestPermissionResult(this, requestCode, permissions, grantResults)
     }
 
     override fun onClickSearch(view: View) {
@@ -241,19 +237,11 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
         intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
-        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 
     override fun onClickMap(view: View) {
-        // 表示変更のトラッキングの送出
-        Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
-        Tracking.track(name= "push_toggle_dispaly")
-
-        val intent = Intent(this, MapViewActivity::class.java)
-        intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        // リストビューは破棄しておきます
-        finish()
+        navigateToMapView()
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -277,7 +265,7 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     fun onJobSelected(job: Job) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     fun onQueryChanged() {
@@ -298,35 +286,35 @@ class ListViewActivity : BaseActivity(), ListViewHandlers {
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.v("MENU ITEM SELECTED: ", item.toString())
-        when(item.itemId) {
-            R.id.tab_menu_search_jobs -> {
-                // 何も行いません
-            }
-            R.id.tab_menu_applied_jobs -> {
-                Intent(this, OwnJobsActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-                finish()
-            }
-            R.id.tab_menu_mypage -> {
-                Intent(this, MypageActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(
-                        intent,
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
-                    )
-                }
-            }
+        // 仕事を探すがタップされている場合は、地図画面に遷移させます
+        if (item.itemId == R.id.tab_menu_search_jobs) {
+            Log.v(ErikuraApplication.LOG_TAG, "Navigation Item Selected: ${item.toString()}")
+
+            navigateToMapView()
+            return true
         }
-        return true
+
+        // それ以外はデフォルトの動作を行います
+        return super.onNavigationItemSelected(item)
+    }
+
+    private fun navigateToMapView() {
+        // 表示変更のトラッキングの送出
+        Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
+        Tracking.track(name= "push_toggle_dispaly")
+
+        Intent(this, MapViewActivity::class.java).let {
+            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
+            startActivity(it)
+        }
     }
 }
 
 class ListViewViewModel : BaseJobQueryViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
 
+    /*
     var jobs: List<Job> = listOf()
         set(value) {
             field = value
@@ -345,6 +333,7 @@ class ListViewViewModel : BaseJobQueryViewModel() {
             }
 
         }
+         */
     var activeJobs: List<Job> = listOf()
     var futureJobs: List<Job> = listOf()
     var pastJobs: List<Job> = listOf()
@@ -380,7 +369,7 @@ class ListViewViewModel : BaseJobQueryViewModel() {
     }
 }
 
-interface ListViewHandlers {
+interface ListViewHandlers: TabEventHandlers {
     fun onClickSearch(view: View)
     fun onClickSearchBar(view: View)
     fun onToggleActiveOnly(view: View)
@@ -388,6 +377,4 @@ interface ListViewHandlers {
     fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
 
     fun onScrollChange(v: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int)
-
-    fun onNavigationItemSelected(item: MenuItem): Boolean
 }

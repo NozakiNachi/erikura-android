@@ -5,15 +5,22 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.webkit.MimeTypeMap
 import android.widget.AdapterView
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -26,6 +33,11 @@ import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -83,6 +95,18 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val layout = findViewById<FrameLayout>(R.id.report_form_layout)
+            layout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(layout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickNext(view: View) {
         job.report?.let {
             val summaries = it.outputSummaries
@@ -112,12 +136,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                 val intent= Intent(this, ReportFormActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", nextIndex)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             } else {
                 // 写真が残っていない場合
                 val intent= Intent(this, ReportWorkingTimeActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }
@@ -144,15 +168,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(this, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            JobUtil.openManual(this, job!!)
         }
     }
 

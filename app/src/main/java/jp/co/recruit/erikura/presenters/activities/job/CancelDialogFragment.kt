@@ -9,7 +9,9 @@ import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -22,6 +24,7 @@ import jp.co.recruit.erikura.business.models.CancelReason
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogCancelBinding
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import java.util.*
 
 class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialogFragmentEventHandlers {
@@ -40,6 +43,13 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
         binding.viewModel = viewModel
         binding.handlers = this
 
+        binding.root.setOnTouchListener { view, event ->
+            if (view != null) {
+                val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            return@setOnTouchListener false
+        }
 
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
@@ -61,21 +71,44 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
         val reasonCode: Int = if (viewModel.reasonSelected == viewModel.reasonsItems.value?.lastIndex) {0}else {viewModel.reasonSelected}
         val comment: String = if(reasonCode == 0) {viewModel.reasonText.value?:""} else {""}
         job?.let {
-            if (job.entry?.limitAt?: Date() > Date()) {
+            if (isCancellable()) {
                 Api(activity!!).cancel(job, reasonCode, comment) {
                     // ページ参照のトラッキングの送出
                     Tracking.logEvent(event= "view_job_cacel_finish", params= bundleOf())
                     Tracking.viewJobDetails(name= "/entries/cancelled/${job?.id ?:0}", title= "キャンセル完了画面", jobId= job?.id ?: 0)
 
-                    val intent= Intent(activity, JobDetailsActivity::class.java)
-                    intent.putExtra("job", job)
-                    startActivity(intent)
+                    // 応募キャンセルに合わせて作業報告も削除されるので、削除済みのフラグを立てます
+                    job?.report?.deleted = true
+
+                    // キャンセル後は応募した仕事一覧に戻る
+                    Intent(activity, OwnJobsActivity::class.java).let { intent ->
+                        intent.putExtra(OwnJobsActivity.EXTRA_FROM_CANCEL_JOB, true)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                    }
                 }
             }else {
                 val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
                 Api(activity!!).displayErrorAlert(errorMessages)
             }
         }
+    }
+
+    /**
+     * キャンセル処理を行えるか
+     */
+    private fun isCancellable(): Boolean {
+        val expired = job?.entry?.isExpired() ?: false
+        val rejected = job?.report?.isRejected ?: false
+
+        // 作業期間内であればキャンセル可能
+        if (!expired) { return true }
+        // 作業期間を過ぎていても、作業報告がリジェクト状態であればキャンセル可能
+        if (rejected) { return true }
+        // 作業期間を過ぎていて、リジェクトされていない場合はキャンセル不可
+        //   => 作業報告済みの場合はクライアントで確認されるのを待っているか、承認済みのため
+        //   => 未報告の場合はバッチ等で削除される?
+        return false
     }
 }
 
@@ -106,7 +139,21 @@ class CancelDialogFragmentViewModel: ViewModel() {
     }
 
     private fun isValid(): Boolean {
-        return !(reasonVisibility.value == View.VISIBLE && reasonText.value.isNullOrBlank())
+        var valid = true
+
+        if (reasonVisibility.value == View.VISIBLE) {
+            // その他理由の入力項目が表示されているのでバリデーションを行います
+
+            // 必須チェック
+            if (valid && reasonText.value.isNullOrBlank()) {
+                valid = false
+            }
+            // 文字数チェック
+            if (valid && (reasonText.value?.length ?: 0) > 50) {
+                valid = false
+            }
+        }
+        return valid
     }
 }
 

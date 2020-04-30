@@ -75,7 +75,7 @@ class FinishedJobDetailsFragment(
             "jobDetailsView"
         )
         transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView, "mapView")
-        transaction.commit()
+        transaction.commitAllowingStateLoss()
     }
 
     override fun onStart() {
@@ -120,7 +120,7 @@ class FinishedJobDetailsFragment(
             if (job.entry?.limitAt?: Date() > Date()) {
                 val intent = Intent(activity, ReportImagePickerActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                startActivity(intent)
             }else {
                 val errorMessages =
                     mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))

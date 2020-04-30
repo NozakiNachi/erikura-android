@@ -16,7 +16,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_above="@id/favorite_view_navigation"
+            android:layout_above="@id/tab_navigation"
             >
 
             <androidx.core.widget.NestedScrollView
@@ -62,7 +62,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <jp.co.recruit.erikura.presenters.fragments.ErikuraBottomNavigationView
-            android:id="@+id/favorite_view_navigation"
+            android:id="@+id/tab_navigation"
             android:layout_width="match_parent"
             android:layout_height="90dp"
             android:layout_alignParentBottom="true"

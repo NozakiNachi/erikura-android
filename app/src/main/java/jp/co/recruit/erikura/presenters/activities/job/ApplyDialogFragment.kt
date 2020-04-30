@@ -17,7 +17,9 @@ import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -38,6 +40,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
     private val viewModel: ApplyDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(ApplyDialogFragmentViewModel::class.java)
     }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogApplyBinding>(
             LayoutInflater.from(activity),
@@ -50,6 +53,13 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
         binding.viewModel = viewModel
         binding.handlers = this
 
+        binding.root.setOnTouchListener { view, event ->
+            if (view != null) {
+                val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            return@setOnTouchListener false
+        }
 
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
@@ -69,7 +79,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
             action = Intent.ACTION_VIEW
             data = Uri.parse(termsOfServiceURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickPrivacyPolicy(view: View) {
@@ -78,7 +88,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
             action = Intent.ACTION_VIEW
             data = Uri.parse(privacyPolicyURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickEntryButton(view: View) {
@@ -93,7 +103,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                         intent.putExtra("errorMessages", array)
                     }
                     intent.putExtra("job", job)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                    startActivity(intent)
                 }) {
                     // 応募のトラッキングの送出
                     Tracking.logEvent(event= "job_entry", params= bundleOf())
@@ -102,12 +112,12 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
 
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                    startActivity(intent)
                 }
             }
         }else {
             val intent= Intent(activity, LoginRequiredActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+            startActivity(intent)
         }
     }
 
@@ -180,11 +190,21 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     }
 
     private fun isValid(): Boolean {
-        if (entryQuestionVisibility.value == View.VISIBLE && entryQuestionAnswer.value.isNullOrBlank()) {
-            return false
-        }else {
-            return true
+        var valid = true
+
+        // 応募時の質問がある場合のみバリデーションを行います
+        if (entryQuestionVisibility.value == View.VISIBLE) {
+            // 必須チェック
+            if (valid && entryQuestionAnswer.value.isNullOrBlank()) {
+                valid = false
+            }
+            // 長さチェック
+            if (valid && (entryQuestionAnswer.value?.length ?: 0) > 2000) {
+                valid = false
+            }
         }
+
+        return valid
     }
 }
 

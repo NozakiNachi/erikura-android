@@ -17,6 +17,7 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/register_address_constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:descendantFocusability="beforeDescendants"
@@ -83,7 +84,7 @@
                     android:hint="@string/register_postal_code_hint"
                     android:inputType="number"
                     android:text="@={viewModel.postalCode}"
-                    android:onFocusChanged="@{handlers::onFocusChanged}"/>
+                    />
 
                 <TextView
                     style="@style/errorField"

@@ -4,7 +4,10 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -48,6 +51,18 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.resign_in_constraintLayout)
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickResignIn(view: View) {
         Api(this).resignIn(viewModel.email.value ?: "", viewModel.password.value ?: "") {
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
@@ -57,10 +72,10 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             if(fromChangeUserInformationFragment) {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }else if(fromAccountSettingFragment){
                 val intent = Intent(this, AccountSettingActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

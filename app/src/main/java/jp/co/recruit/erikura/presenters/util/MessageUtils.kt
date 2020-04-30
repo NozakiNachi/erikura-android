@@ -1,13 +1,7 @@
 package jp.co.recruit.erikura.presenters.util
 
 import android.app.AlertDialog
-import android.content.Context
-import android.graphics.Typeface
-import android.util.TypedValue
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity

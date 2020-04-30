@@ -13,14 +13,19 @@ import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.target.ImageViewTarget
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
+import java.io.File
 import java.text.SimpleDateFormat
 
 class ErikuraCarouselViewHolder(private val activity: Activity, val binding: FragmentCarouselItemBinding): RecyclerView.ViewHolder(binding.root) {
+    var currentPosition: Int = -1
+
     var timeLimit: TextView = itemView.findViewById(
         R.id.carousel_cell_timelimit
     )
@@ -42,6 +47,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
     )
 
     fun setup(context: Context, job: Job) {
+        val position = this.currentPosition
         val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(context, job)
         timeLimit.text = timeLimitText
         timeLimit.setTextColor(timeLimitColor)
@@ -57,13 +63,17 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
 
         val imageView: ImageView = itemView.findViewById(R.id.carousel_cell_image)
-        if (thumbnailUrl.isNullOrBlank()) {
-            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
-        }else {
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchImage(activity, thumbnailUrl, imageView)
-        }
+        imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
 
+        if (!thumbnailUrl.isNullOrBlank()) {
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
+                // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
+                if (position == this.currentPosition) {
+                    Glide.with(activity).load(File(asset.path)).into(imageView)
+                }
+            }
+        }
     }
 }
 
@@ -72,18 +82,30 @@ class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, Lis
     val hasOtherJobs: Boolean get() = jobsCountAt > 1
     val jobsCountText: String get() = String.format("ほか%d件の仕事", jobsCountAt - 1)
     val jobsCountTextVisibility: Int get() = if(hasOtherJobs) { View.VISIBLE } else { View.GONE }
+    val disabled: Boolean get() = job.isFuture || job.isPastOrInactive
     val bodyBackgroundDrawable: Drawable
         get() {
             return if (hasOtherJobs) {
-                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+                if(disabled) {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi_disabled, null)
+                }
+                else {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_multi, null)
+                }
             }
             else {
-                ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+                if(disabled) {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body_disabled, null)
+
+                }
+                else {
+                    ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
+                }
             }
         }
 }
 
-class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
+class ErikuraCarouselAdapter(val activity: FragmentActivity, val carousel: RecyclerView, var data: List<Job>, var jobsByLocation: Map<LatLng, List<Job>>): RecyclerView.Adapter<ErikuraCarouselViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErikuraCarouselViewHolder {
@@ -105,17 +127,22 @@ class ErikuraCarouselAdapter(val activity: FragmentActivity, var data: List<Job>
         val job = data[position]
         val viewModel = ErikuraCarouselViewModel(job, jobsByLocation)
 
+        holder.currentPosition = position
         holder.binding.viewModel = viewModel
         holder.binding.lifecycleOwner = activity
-
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
+
+        holder.binding.executePendingBindings()
 
         holder.binding.root.setOnClickListener {
             onClickListener?.apply {
                 onClick(job)
             }
         }
+
+        holder.binding.root.forceLayout()
+        carousel.forceLayout()
     }
 
     override fun getItemCount(): Int {

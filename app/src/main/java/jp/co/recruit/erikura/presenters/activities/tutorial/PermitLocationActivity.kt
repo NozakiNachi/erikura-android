@@ -36,6 +36,8 @@ class PermitLocationActivity : AppCompatActivity(), PermitLocationHandlers {
 
     override fun onClickPermitLocation(view: View) {
         if (!locationManager.checkPermission(this)) {
+
+
             locationManager.requestPermission(this)
         }
         else {
@@ -50,32 +52,24 @@ class PermitLocationActivity : AppCompatActivity(), PermitLocationHandlers {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when(requestCode) {
-            ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID -> {
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    locationManager.start(this)
+        locationManager.onRequestPermissionResult(this, requestCode, permissions, grantResults,
+            onPermissionNotGranted = {
+                startNextActivity()
+            },
+            onPermissionGranted = {
+                // 位置情報許諾のトラッキングの送出
+                Tracking.logEvent(event= "accpet_geo_setting", params= bundleOf())
+                Tracking.acceptGeoSetting()
 
-                    // 位置情報許諾のトラッキングの送出
-                    Tracking.logEvent(event= "accpet_geo_setting", params= bundleOf())
-                    Tracking.acceptGeoSetting()
-
-                    AndroidSchedulers.mainThread().scheduleDirect {
-                        startNextActivity()
-                    }
+                AndroidSchedulers.mainThread().scheduleDirect {
+                    startNextActivity()
                 }
-                else {
-                    MessageUtils.displayLocationAlert(this)
-//                    AndroidSchedulers.mainThread().scheduleDirect {
-//                        startNextActivity()
-//                    }
-                }
-            }
-        }
+            })
     }
 
     private fun startNextActivity() {
         Intent(this, Onboarding0Activity::class.java).let { intent ->
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 }

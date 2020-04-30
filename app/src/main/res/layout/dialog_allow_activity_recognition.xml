@@ -17,17 +17,46 @@
         />
 
     <TextView
+        android:id="@+id/allow_activity_label1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
-        android:text="設定より「エリクラ」の運動データの\n利用を許可してください。"
+        android:text="・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。"
         style="@style/label_w2"
         android:textSize="14dp"
         android:textColor="@color/black"
-        android:gravity="center_horizontal"
+        android:gravity="left"
         />
+    <TextView
+        android:id="@+id/allow_activity_label2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="・下記ボタンより設定画面を開くことができます。"
+        style="@style/label_w2"
+        android:textSize="14dp"
+        android:textColor="@color/black"
+        android:gravity="left"
+        />
+
+    <TextView
+        android:id="@+id/allow_activity_label3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="（端末により「身体活動」は「運動データ」などの表記の場合があります。適宜お読み替えください。）"
+        style="@style/label_w2"
+        android:textSize="12dp"
+        android:textColor="@color/black"
+        android:gravity="left"
+        />
+
     <Button
         android:id="@+id/update_button"
         android:layout_width="match_parent"

@@ -25,6 +25,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
         <!-- チュートリアル -->
         <activity android:name=".presenters.activities.tutorial.PermitLocationActivity"
             android:screenOrientation="portrait"/>
@@ -58,7 +67,6 @@
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher"
-            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
             >
             <intent-filter>

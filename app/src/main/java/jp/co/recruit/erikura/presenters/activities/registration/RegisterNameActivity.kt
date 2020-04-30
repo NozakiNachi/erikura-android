@@ -4,7 +4,10 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -49,6 +52,18 @@ class RegisterNameActivity : BaseActivity(),
         Tracking.view(name= "/user/register/name", title= "本登録画面（氏名）")
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.register_name_constraintLayout)
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickNext(view: View) {
         Log.v("LastName", viewModel.lastName.value ?: "")
         user.lastName = viewModel.lastName.value
@@ -56,7 +71,7 @@ class RegisterNameActivity : BaseActivity(),
         user.firstName = viewModel.firstName.value
         val intent: Intent = Intent(this@RegisterNameActivity, RegisterBirthdayActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

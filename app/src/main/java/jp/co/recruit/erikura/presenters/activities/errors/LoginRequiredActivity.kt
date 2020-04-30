@@ -13,12 +13,16 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.ActivityLoginRequiredBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.LoginActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
 class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
     private val viewModel: LoginRequiredViewModel by lazy {
         ViewModelProvider(this).get(LoginRequiredViewModel::class.java)
     }
+
+    var fromMypage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +31,8 @@ class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        fromMypage = intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
     }
 
     override fun onStart() {
@@ -38,14 +44,27 @@ class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
 
     override fun onClickRegisterButton(view: View) {
         val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickLoginButton(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
-    // FIXME: 戻るボタンが押下された場合の振る舞いを修正する
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (fromMypage) {
+            val intent = Intent(this, MypageActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
+        }
+        else {
+            val intent = Intent(this, MapViewActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+    }
 }
 
 class LoginRequiredViewModel: ViewModel() {

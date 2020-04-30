@@ -10,9 +10,12 @@ import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.InverseBindingAdapter
@@ -79,8 +82,20 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
         adapter.addAll(getHistoryItems().map { SearchHistoryItem.Item(it.keyword) })
 
         Api(this).jobKinds { jobKinds ->
-            viewModel.jobKinds.value = jobKinds
+            viewModel.jobKinds.value = jobKinds.filter { it.refine ?: false }
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val layout = findViewById<ConstraintLayout>(R.id.search_job_layout)
+            layout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(layout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     fun getHistoryItems(limit: Int = 3): List<SearchHistory> {
@@ -365,14 +380,14 @@ class MinMaxPickerDialogFragment<T>(
 
         builder
             .setView(binding.root)
-            .setPositiveButton("OK") { dialog: DialogInterface, which: Int ->
+            .setPositiveButton(getString(R.string.button_ok)) { dialog: DialogInterface, which: Int ->
                 val min: PickerItem<T> = viewModel.minItem as PickerItem<T>
                 val max: PickerItem<T> = viewModel.maxItem as PickerItem<T>
 
                 Log.v("MIN-MAX:", "min: ${min.toString()}, max: ${max.toString()}")
                 onComplete(min.value, max.value)
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton(getString(R.string.button_cancel), null)
         return builder.create()
     }
 }

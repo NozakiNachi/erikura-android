@@ -7,6 +7,9 @@
 
     <string name="common_buttons_close">閉じる</string>
 
+    <string name="button_ok">決定</string>
+    <string name="button_cancel">キャンセル</string>
+
     <!-- スタート画面 -->
     <string name="start_startWithoutLogin"><a href="">スキップして近くの仕事を探す</a></string>
 
@@ -128,6 +131,9 @@
     <string name="cancel_caption">この仕事をキャンセルしますか？</string>
     <string name="cancel_note">キャンセル理由が今後のお仕事に影響することはありません</string>
 
+    <!-- 仕事キャンセルモーダル -->
+    <string name="canceledDialog_caption">仕事をキャンセルしました。</string>
+
     <!-- 作業開始モーダル -->
     <string name="startDialog_caption">作業を開始しました！</string>
 
@@ -227,7 +233,7 @@
     <!-- 会員情報入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
     <string name="password_count_error">6文字以上の半角英数で入力してください。</string>
-    <string name="password_pattern_error">英字、数字をそれぞれ1文字上入力してください。</string>
+    <string name="password_pattern_error">英字、数字をそれぞれ1文字以上入力してください。</string>
     <string name="last_name_count_error">姓は30文字以内で入力してください。</string>
     <string name="first_name_count_error">名は30文字以内で入力してください。</string>
     <string name="postal_code_pattern_error">郵便番号はハイフンを含めずに入力してください。</string>
@@ -292,6 +298,7 @@
     <string name="car">車で通勤する仕事</string>
     <string name="register">会員登録</string>
     <string name="go">進む</string>
+    <string name="start">使ってみる</string>
     <string name="showManual">マニュアルを表示</string>
     <string name="openMap">　地図アプリで開く</string>
     <string name="entry">この仕事に応募</string>

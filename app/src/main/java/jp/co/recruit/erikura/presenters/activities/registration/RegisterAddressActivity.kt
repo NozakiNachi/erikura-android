@@ -1,12 +1,13 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.Spinner
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -30,6 +31,7 @@ class RegisterAddressActivity : BaseActivity(),
     }
 
     var user: User = User()
+    var previousPostalCode: String? = null
     val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,12 +46,23 @@ class RegisterAddressActivity : BaseActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
 
-        val prefectureSpinner = findViewById<Spinner>(R.id.registerAddress_prefecture)
-        prefectureSpinner.isFocusable = true
-        prefectureSpinner.isFocusableInTouchMode = true
         viewModel.postalCodeError.message.value = null
         viewModel.cityError.message.value = null
         viewModel.streetError.message.value = null
+
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
+
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -57,6 +70,18 @@ class RegisterAddressActivity : BaseActivity(),
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_register_address", params= bundleOf())
         Tracking.view(name= "/user/register/address", title= "本登録画面（住所）")
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.register_address_constraintLayout)
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     override fun onClickNext(view: View) {
@@ -71,21 +96,7 @@ class RegisterAddressActivity : BaseActivity(),
 
         val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-
-    }
-
-    override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        if(!hasFocus && viewModel.postalCode.value?.length ?: 0 == 7) {
-            Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                viewModel.city.value = city
-                viewModel.street.value = street
-
-                val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                streetEditText.requestFocus()
-            }
-        }
+        startActivity(intent)
     }
 
     private fun getPrefectureId(prefecture: String): Int {
@@ -124,7 +135,7 @@ class RegisterAddressViewModel: ViewModel() {
         return valid
     }
 
-    private fun isValidPostalCode(): Boolean {
+    fun isValidPostalCode(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
@@ -140,7 +151,6 @@ class RegisterAddressViewModel: ViewModel() {
         } else {
             valid = true
             postalCodeError.message.value = null
-
         }
 
         return valid
@@ -188,5 +198,4 @@ class RegisterAddressViewModel: ViewModel() {
 
 interface RegisterAddressEventHandlers {
     fun onClickNext(view: View)
-    fun onFocusChanged(view: View, hasFocus: Boolean)
 }

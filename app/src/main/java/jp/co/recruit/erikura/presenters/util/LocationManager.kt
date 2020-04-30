@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.CommonStatusCodes
@@ -59,6 +60,12 @@ class LocationManager {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    fun checkPermission(fragment: Fragment): Boolean {
+        return fragment.activity?.let {
+            checkPermission(it)
+        } ?: false
+    }
+
     fun requestPermission(activity: FragmentActivity) {
         if (!checkPermission(activity)) {
             ActivityCompat.requestPermissions(
@@ -67,6 +74,33 @@ class LocationManager {
                 ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID
             )
         }
+    }
+
+    fun onRequestPermissionResult(activity: FragmentActivity,
+                                  requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  onPermissionNotGranted: (() -> Unit)? = null,
+                                  onPermissionGranted: (() -> Unit)? = null) {
+        // ACCESS_FINE_LOCATION_PERMISSION 以外の場合にはスキップします
+        if (requestCode != ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID)
+            return
+
+        if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            start(activity)
+            onPermissionGranted?.invoke()
+        }
+        else {
+            // 次回以降表示しないにしている場合は警告モーダルを表示します
+            if (!activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                val dialog = MessageUtils.displayLocationAlert(activity)
+                dialog.setOnDismissListener {
+                    onPermissionNotGranted?.invoke()
+                }
+            }
+            else {
+                onPermissionNotGranted?.invoke()
+            }
+        }
+
     }
 
     fun start(activity: FragmentActivity) {

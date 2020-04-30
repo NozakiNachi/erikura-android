@@ -5,7 +5,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -51,6 +55,18 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         Tracking.view(name= "/user/login", title= "ログイン画面")
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val layout = findViewById<LinearLayout>(R.id.login_layout)
+            layout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(layout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickLogin(view: View) {
         Log.v("EMAIL", viewModel.email.value ?: "")
         Log.v("PASS", viewModel.password.value ?: "")
@@ -69,12 +85,12 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                         // 地図画面へ遷移します
                         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                             val intent = Intent(this, MapViewActivity::class.java)
-                            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                            startActivity(intent)
                         }
                         else {
                             // 位置情報の許諾、オンボーディングを表示します
                             Intent(this, PermitLocationActivity::class.java).let { intent ->
-                                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                                startActivity(intent)
                             }
                         }
                     }
@@ -95,7 +111,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(reminderURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickUnreachLink(view: View) {
@@ -104,7 +120,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(unreachURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

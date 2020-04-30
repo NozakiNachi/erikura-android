@@ -14,6 +14,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/change_user_information_constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:descendantFocusability="beforeDescendants"
@@ -279,7 +280,6 @@
                     android:inputType="number"
                     android:layout_marginTop="10dp"
                     android:text="@={viewModel.postalCode}"
-                    android:onFocusChanged="@{handlers::onFocusChanged}"
                     />
                 <TextView
                     android:layout_width="match_parent"

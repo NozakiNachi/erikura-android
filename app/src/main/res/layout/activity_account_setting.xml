@@ -14,6 +14,7 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/change_account_setting_constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:descendantFocusability="beforeDescendants"
@@ -251,6 +252,7 @@
                                 android:layout_marginRight="10dp"
                                 android:text="普通"
                                 android:orientation="horizontal"
+
                                 android:onClick="@{handlers::onOrdinaryButton}" />
                             <RadioButton
                                 android:id="@+id/current_button"

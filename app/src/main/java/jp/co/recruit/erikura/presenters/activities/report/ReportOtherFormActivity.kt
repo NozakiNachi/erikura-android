@@ -6,9 +6,15 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.webkit.MimeTypeMap
+import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -16,6 +22,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.realm.Realm
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -29,6 +36,11 @@ import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 
 class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
@@ -79,17 +91,21 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         }
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val layout = findViewById<FrameLayout>(R.id.report_other_form_layout)
+            layout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(layout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
     override fun onClickManual(view: View) {
         if(job?.manualUrl != null){
-            val manualUrl = job.manualUrl
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(this, manualUrl!!, Asset.AssetType.Pdf) { asset ->
-                val intent = Intent(this, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(asset.url)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
+            JobUtil.openManual(this, job!!)
         }
     }
 
@@ -170,30 +186,24 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         if (resultCode == Activity.RESULT_OK) {
             val uri = data?.data
             uri?.let {
-                val cursor = this.contentResolver.query(
-                    uri,
+                val id = DocumentsContract.getDocumentId(uri)
+                val cursor = contentResolver.query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     arrayOf(
                         MediaStore.Files.FileColumns._ID,
                         MediaStore.MediaColumns.DISPLAY_NAME,
                         MediaStore.MediaColumns.MIME_TYPE,
                         MediaStore.MediaColumns.SIZE,
+                        MediaStore.Files.FileColumns.DATE_ADDED,
                         MediaStore.MediaColumns.DATE_TAKEN
                     ),
-                    MediaStore.MediaColumns.SIZE + ">0",
-                    arrayOf<String>(),
-                    "datetaken DESC"
+                    "_id=?", arrayOf(id.split(":")[1]), null
                 )
-
                 cursor?.moveToFirst()
                 cursor?.let {
                     // val item = MediaItem.from(cursor)
                     // MEMO: cursorを渡すとIDの値が0になるので手動で値を入れています
-                    val uriString = uri.toString()
-                    val arr = uriString.split("%3A")
-                    val id = arr.last().toLong()
-                    val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
-                    val size = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns.SIZE))
-                    val item = MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri)
+                    val item = MediaItem.from(cursor)
                     viewModel.addPhotoButtonVisibility.value = View.GONE
                     viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                     val imageView: ImageView = findViewById(R.id.report_other_image)
@@ -231,7 +241,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             }else {
                 val intent= Intent(this, ReportEvaluationActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
 
