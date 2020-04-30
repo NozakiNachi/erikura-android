@@ -96,8 +96,12 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
 
         mediaPlayer.setSurface(surface)
         mediaPlayer.setDataSource(this, Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie), mapOf())
-        videoInitialized = true
-        resumeVideo()
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener { mp ->
+            videoInitialized = true
+            mp.seekTo(pausedPosition)
+            mp.start()
+        }
     }
 
     override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
@@ -165,18 +169,15 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
 
     private fun pauseVideo() {
         if (mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
             pausedPosition = mediaPlayer.currentPosition
-            mediaPlayer.stop()
         }
     }
 
     private fun resumeVideo() {
         if (videoInitialized) {
-            mediaPlayer.prepareAsync()
-            mediaPlayer.setOnPreparedListener { mp ->
-                mp.seekTo(pausedPosition)
-                mp.start()
-            }
+            mediaPlayer.seekTo(pausedPosition)
+            mediaPlayer.start()
         }
     }
 }
