@@ -32,7 +32,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
     var user: User = User()
     var phoneNumber: String? = null
-    var requestCode: Int = 0
+    var requestCode: Int? = null
     var confirmationToken: String? = null
     var isCameThroughLogin: Boolean = false
 
@@ -107,12 +107,12 @@ class RegisterSmsVerifyActivity : BaseActivity(),
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
             val intent = Intent(this, RegisterPhoneActivity::class.java)
             intent.putExtra("user", user)
-            intent.putExtra("requestCode", requestCode)
+            intent.putExtra("requestCode", requestCode!!)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
         } else if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
             intent.putExtra("user", user)
-            intent.putExtra("requestCode", requestCode)
+            intent.putExtra("requestCode", requestCode!!)
             //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
             intent.putExtra("isCameThroughLogin", true)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())

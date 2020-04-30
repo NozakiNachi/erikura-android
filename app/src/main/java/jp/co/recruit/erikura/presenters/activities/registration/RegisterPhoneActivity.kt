@@ -31,7 +31,7 @@ class RegisterPhoneActivity : BaseActivity(),
     }
 
     var user: User = User()
-    var requestCode: Int = 0
+    var requestCode: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)

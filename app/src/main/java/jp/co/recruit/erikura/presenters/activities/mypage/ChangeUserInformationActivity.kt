@@ -36,8 +36,9 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
-    var requestCode: Int? = 0
+    var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
+    var checkPhoneNumber: String? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -209,7 +210,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         user.city = viewModel.city.value
         user.street = viewModel.street.value
         // 電話番号
-        val checkPhoneNumber = user.phoneNumber
         user.phoneNumber = viewModel.phone.value
         // 職業
         user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
@@ -234,7 +234,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
         if (checkPhoneNumber != null) {
-            Api(this).smsVerifyCheck(checkPhoneNumber) { result ->
+            Api(this).smsVerifyCheck(checkPhoneNumber!!) { result ->
                 if (!result || checkPhoneNumber != viewModel.phone.value) {
                     val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
                     intent.putExtra("phoneNumber", user.phoneNumber)
@@ -312,7 +312,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 viewModel.female.value = true
             }
         }
+        checkPhoneNumber = user.phoneNumber
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {

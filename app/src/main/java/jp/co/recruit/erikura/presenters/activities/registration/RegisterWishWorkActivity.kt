@@ -13,6 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
@@ -79,8 +80,8 @@ class RegisterWishWorkActivity : BaseActivity(),
         val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
         intent.putExtra("user", user)
         intent.putExtra("phoneNumber",user.phoneNumber)
-        intent.putExtra("requestCode",1)
-        startActivityForResult(intent,1)
+        intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
+        startActivityForResult(intent,ErikuraApplication.REQUEST_SIGN_UP_CODE)
 
     }
 
@@ -104,7 +105,7 @@ class RegisterWishWorkActivity : BaseActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
             user = data!!.getParcelableExtra("user")
             Api(this).initialUpdateUser(user) {
                 Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
