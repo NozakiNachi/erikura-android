@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -39,6 +40,17 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
+        val binding: ActivityRegisterSmsVerifyBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
+        var logoutButton =  findViewById<TextView>(R.id.logout_button)
+        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
+            logoutButton.setVisibility(View.VISIBLE)
+        } else {
+            logoutButton.setVisibility(View.GONE)
+        }
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        binding.handlers = this
 
         // ユーザ情報を受け取る
         requestCode = intent.getIntExtra("requestCode", 0)
@@ -58,11 +70,6 @@ class RegisterSmsVerifyActivity : BaseActivity(),
         // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
         Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
             phoneNumber?.let { viewModel.setCaption(it) }
-            val binding: ActivityRegisterSmsVerifyBinding =
-                DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
-            binding.lifecycleOwner = this
-            binding.viewModel = viewModel
-            binding.handlers = this
             viewModel.error.message.value = null
         }
     }
@@ -159,6 +166,28 @@ class RegisterSmsVerifyActivity : BaseActivity(),
             startActivity(intent)
         }
     }
+
+    override fun onClickLogout(view: View) {
+        Api(this).logout() { deletedSession ->
+            // ログアウトのトラッキングの送出
+            Tracking.logEvent(event= "logout", params= bundleOf())
+            deletedSession?.let {
+                it.user?.let { user ->
+                    Tracking.identify(user= user, status= "logout")
+                }
+            }
+
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event= "view_logout", params= bundleOf())
+            Tracking.view(name= "/mypage/logout", title= "ログアウト完了画面")
+
+            // スタート画面に戻る
+            val intent = Intent(this, StartActivity::class.java)
+            // 戻るボタンの無効化
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+    }
 }
 
 class RegisterSmsVerifyViewModel : ViewModel() {
@@ -169,7 +198,6 @@ class RegisterSmsVerifyViewModel : ViewModel() {
     val isAuthenticateButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(passCode) { result.value = isValid() }
     }
-
 
     private fun isValid(): Boolean {
         var valid = true
@@ -206,4 +234,5 @@ interface RegisterSmsVerifyEventHandlers {
     fun onClickAuthenticate(view: View)
     fun onClickPassCodeResend(view: View)
     fun onClickRegisterPhone(view: View)
+    fun onClickLogout(view: View)
 }

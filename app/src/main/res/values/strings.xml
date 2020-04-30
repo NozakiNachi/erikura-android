@@ -67,6 +67,7 @@
     <string name="registerSmsVerify_title">SMS認証</string>
     <string name="registerSmsVerify_passcode_resend">パスコードを再送する</string>
     <string name="registerSmsVerify_register_phone">電話番号を編集する</string>
+    <string name="registerSmsVerify_notice">※戻るを押下した場合、ログアウトします</string>
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
