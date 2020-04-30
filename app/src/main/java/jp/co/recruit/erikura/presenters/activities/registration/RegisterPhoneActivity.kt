@@ -78,13 +78,13 @@ class RegisterPhoneActivity : BaseActivity(),
         user.phoneNumber = viewModel.phone.value
 
         //新規登録のSMS認証経由で来た場合SMS認証画面へ遷移する
-        if (requestCode == 1) {
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
             //登録処理を行う前にSMS認証を行う
             val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
             intent.putExtra("user", user)
             intent.putExtra("phoneNumber", user.phoneNumber)
-            intent.putExtra("requestCode",1)
-            startActivityForResult(intent,1)
+            intent.putExtra("requestCode",ErikuraApplication.REQUEST_SIGN_UP_CODE)
+            startActivityForResult(intent,ErikuraApplication.REQUEST_SIGN_UP_CODE)
         } else {
             val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
             intent.putExtra("user", user)
@@ -94,7 +94,7 @@ class RegisterPhoneActivity : BaseActivity(),
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1 && resultCode == RESULT_OK) {
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
             user = data!!.getParcelableExtra("user")
             Api(this).initialUpdateUser(user) {
                 Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")

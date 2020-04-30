@@ -42,7 +42,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
         // ユーザ情報を受け取る
         requestCode = intent.getIntExtra("requestCode", 0)
-        if (requestCode == 1 || requestCode == 3) {
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
         } else {
@@ -104,12 +104,12 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
     override fun onClickRegisterPhone(view: View) {
         //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
-        if (requestCode == 1) {
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
             val intent = Intent(this, RegisterPhoneActivity::class.java)
             intent.putExtra("user", user)
             intent.putExtra("requestCode", requestCode)
             startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        } else if (requestCode == 2) {
+        } else if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)
             intent.putExtra("user", user)
             intent.putExtra("requestCode", requestCode)
@@ -130,7 +130,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
 
     override fun onBackPressed() {
         //ログイン、自動ログインから遷移してきた場合、戻るボタンを制御します。
-        if (requestCode == 2) {
+        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
             Logout()
         } else {
             //　その他からの遷移は通常遷移

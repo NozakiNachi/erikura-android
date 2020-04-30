@@ -36,7 +36,7 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
-    var requestCode: Int = 0
+    var requestCode: Int? = 0
     var isCameThroughLogin: Boolean = false
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
@@ -240,8 +240,8 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                     intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                    intent.putExtra("requestCode", 3)
-                    startActivityForResult(intent, 3)
+                    intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                    startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
                 }
                 else {
                     // 会員情報変更Apiの呼び出し
@@ -315,7 +315,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 3 && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
+        if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
             user = data!!.getParcelableExtra("user")
             // 会員情報変更Apiの呼び出し
             Api(this).updateUser(user) {
@@ -324,7 +324,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
             }
-        } else if(requestCode == 3 && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
+        } else if(requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
             //地図画面へ遷移
             val it = Api.userSession
             Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")

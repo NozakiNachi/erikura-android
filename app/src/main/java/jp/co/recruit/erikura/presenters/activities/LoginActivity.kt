@@ -97,8 +97,8 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                     else {
                         //SMS未認証の場合、認証画面へ遷移します。
                         val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
-                        intent.putExtra("requestCode",2)
-                        startActivityForResult(intent, 2)
+                        intent.putExtra("requestCode",ErikuraApplication.REQUEST_LOGIN_CODE)
+                        startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
                     }
                 }
             }
@@ -125,7 +125,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 2 && resultCode == RESULT_OK) {
+        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 val intent = Intent(this, MapViewActivity::class.java)
