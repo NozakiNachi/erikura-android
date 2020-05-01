@@ -41,18 +41,14 @@ class SmsVerifyActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
         val binding: ActivitySmsVerifyBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_sms_verify)
-        var logoutButton =  findViewById<TextView>(R.id.logout_button)
-        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
-            logoutButton.setVisibility(View.VISIBLE)
-        } else {
-            logoutButton.setVisibility(View.GONE)
-        }
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
 
         // ユーザ情報を受け取る
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
+        viewModel.requestCode.value = requestCode
+
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
@@ -66,7 +62,7 @@ class SmsVerifyActivity : BaseActivity(),
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
 
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
-        // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
+        // trueしか返ってこないので送信結果の判定は入れていない
         Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
             phoneNumber?.let { viewModel.setCaption(it) }
             viewModel.error.message.value = null
@@ -186,12 +182,24 @@ class SmsVerifyActivity : BaseActivity(),
 }
 
 class SmsVerifyViewModel : ViewModel() {
+    val requestCode = MutableLiveData<Int>()
+
     val passCode: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
     var caption: MutableLiveData<String> = MutableLiveData()
 
     val isAuthenticateButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(passCode) { result.value = isValid() }
+    }
+
+    val logoutButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(requestCode) {
+            result.value = when (requestCode.value) {
+                ErikuraApplication.REQUEST_LOGIN_CODE -> View.VISIBLE
+                else -> View.GONE
+            }
+        }
+
     }
 
     private fun isValid(): Boolean {
