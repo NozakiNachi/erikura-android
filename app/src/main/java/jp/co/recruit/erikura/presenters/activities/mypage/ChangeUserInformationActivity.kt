@@ -232,9 +232,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         user.wishWorks = wishWorks
 
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
-        if (checkPhoneNumber != null) {
-            Api(this).smsVerifyCheck(checkPhoneNumber!!) { result ->
-                if (!result || checkPhoneNumber != viewModel.phone.value) {
+        if (user.phoneNumber != null) {
+            Api(this).smsVerifyCheck(user?.phoneNumber?: "") { result ->
+                if (result) {
                     val intent = Intent(this, SmsVerifyActivity::class.java)
                     intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)

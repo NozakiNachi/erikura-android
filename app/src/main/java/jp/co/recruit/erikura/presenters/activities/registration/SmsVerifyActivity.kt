@@ -82,7 +82,7 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onClickAuthenticate(view: View) {
         Log.v("DEBUG", "SMS認証： phoneNumber=${phoneNumber}")
-        // TODO 現段階ではresultはtrueしか返ってこないので認証結果の判定は入れていない
+        //trueしか返ってこないので認証結果の判定は入れていない
         Api(this).smsVerify(
             confirmationToken ?: "",
             phoneNumber ?: "",
@@ -102,7 +102,7 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onClickPassCodeResend(view: View) {
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
-        // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
+        // trueしか返ってこないので送信結果の判定は入れていない
         Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
             phoneNumber?.let { viewModel.setCaption(it) }
         }
