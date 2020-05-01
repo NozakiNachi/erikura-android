@@ -39,7 +39,7 @@ class RegisterPhoneActivity : BaseActivity(),
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
-        requestCode = intent.getIntExtra("requestCode",0)
+        requestCode = intent.getIntExtra("requestCode",ErikuraApplication.REQUEST_DEFAULT_CODE)
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")

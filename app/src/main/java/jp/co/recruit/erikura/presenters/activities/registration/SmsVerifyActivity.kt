@@ -52,7 +52,7 @@ class SmsVerifyActivity : BaseActivity(),
         binding.handlers = this
 
         // ユーザ情報を受け取る
-        requestCode = intent.getIntExtra("requestCode", 0)
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")

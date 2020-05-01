@@ -69,6 +69,7 @@ class ErikuraApplication : Application() {
         const val REQUEST_EXTERNAL_STORAGE_PERMISSION_ID = 0x0003
 
         // SMS認証の遷移元の定数
+        const val REQUEST_DEFAULT_CODE = 0
         const val REQUEST_SIGN_UP_CODE = 1
         const val REQUEST_LOGIN_CODE = 2
         const val REQUEST_CHANGE_USER_INFORMATION = 3

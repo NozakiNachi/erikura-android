@@ -59,7 +59,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         if(errorMessages != null){
             Api(this).displayErrorAlert(errorMessages.asList())
         }
-        requestCode = intent.getIntExtra("requestCode", 0)
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
 
         val binding: ActivityChangeUserInformationBinding =
