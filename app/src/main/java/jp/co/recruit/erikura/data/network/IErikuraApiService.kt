@@ -20,6 +20,9 @@ interface IErikuraApiService {
     @POST("users/confirm")
     fun registerConfirm(@Body request: ConfirmationTokenRequest): ApiObservable<IdResponse>
 
+    @GET("users/sms_verify_check")
+    fun smsVerifyCheck(@Query("phone_number") phoneNumber: String):  ApiObservable<ResultResponse>
+
     @POST("users/send_sms")
     fun sendSms(@Body request: SendSmsRequest): ApiObservable<ResultResponse>
 
@@ -28,9 +31,6 @@ interface IErikuraApiService {
 
     @GET("users")
     fun user(): ApiObservable<User>
-
-    @GET("users/sms_verify_check")
-    fun smsVerifyCheck(@Query("phone_number") phoneNumber: String):  ApiObservable<ResultResponse>
 
     @PATCH("users/initial_update")
     fun initialUpdateUser(@Body request: User): ApiObservable<InitialUpdateResponse>
