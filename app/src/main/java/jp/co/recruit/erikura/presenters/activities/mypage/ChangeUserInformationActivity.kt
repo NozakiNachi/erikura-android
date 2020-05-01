@@ -316,17 +316,17 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        // 会員情報変更Apiの呼び出し
+        user = data!!.getParcelableExtra("user")
+        Api(this).updateUser(user) {}
         if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
-            user = data!!.getParcelableExtra("user")
-            // 会員情報変更Apiの呼び出し
-            Api(this).updateUser(user) {
-                val intent = Intent(this, ConfigurationActivity::class.java)
-                intent.putExtra("onClickChangeUserInformationFragment", true)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-            }
+            //会員情報変更のみの場合、設定画面へ遷移
+            val intent = Intent(this, ConfigurationActivity::class.java)
+            intent.putExtra("onClickChangeUserInformationFragment", true)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         } else if(requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
-            //地図画面へ遷移
+            //ログイン経由で会員情報変更の場合のみ地図画面へ遷移
             val it = Api.userSession
             Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
             // 地図画面へ遷移します
