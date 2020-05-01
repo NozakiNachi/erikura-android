@@ -105,6 +105,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                 finish()
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.putExtra("requestCode", requestCode)
                     intent.putExtra("fromChangeUserInformation", true)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                     startActivity(intent)
