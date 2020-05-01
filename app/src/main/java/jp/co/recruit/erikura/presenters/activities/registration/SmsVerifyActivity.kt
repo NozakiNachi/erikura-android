@@ -16,19 +16,18 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.ActivityRegisterSmsVerifyBinding
+import jp.co.recruit.erikura.databinding.ActivitySmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
 
-class RegisterSmsVerifyActivity : BaseActivity(),
-    RegisterSmsVerifyEventHandlers {
-    private val viewModel: RegisterSmsVerifyViewModel by lazy {
-        ViewModelProvider(this).get(RegisterSmsVerifyViewModel::class.java)
+class SmsVerifyActivity : BaseActivity(),
+    SmsVerifyEventHandlers {
+    private val viewModel: SmsVerifyViewModel by lazy {
+        ViewModelProvider(this).get(SmsVerifyViewModel::class.java)
     }
 
     var user: User = User()
@@ -40,8 +39,8 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
-        val binding: ActivityRegisterSmsVerifyBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_register_sms_verify)
+        val binding: ActivitySmsVerifyBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_sms_verify)
         var logoutButton =  findViewById<TextView>(R.id.logout_button)
         if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
             logoutButton.setVisibility(View.VISIBLE)
@@ -190,7 +189,7 @@ class RegisterSmsVerifyActivity : BaseActivity(),
     }
 }
 
-class RegisterSmsVerifyViewModel : ViewModel() {
+class SmsVerifyViewModel : ViewModel() {
     val passCode: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
     var caption: MutableLiveData<String> = MutableLiveData()
@@ -230,7 +229,7 @@ class RegisterSmsVerifyViewModel : ViewModel() {
     }
 }
 
-interface RegisterSmsVerifyEventHandlers {
+interface SmsVerifyEventHandlers {
     fun onClickAuthenticate(view: View)
     fun onClickPassCodeResend(view: View)
     fun onClickRegisterPhone(view: View)

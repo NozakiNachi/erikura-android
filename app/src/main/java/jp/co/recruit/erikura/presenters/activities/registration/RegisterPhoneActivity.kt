@@ -80,7 +80,7 @@ class RegisterPhoneActivity : BaseActivity(),
         //新規登録のSMS認証経由で来た場合SMS認証画面へ遷移する
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
             //登録処理を行う前にSMS認証を行う
-            val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+            val intent: Intent = Intent(this, SmsVerifyActivity::class.java)
             intent.putExtra("user", user)
             intent.putExtra("phoneNumber", user.phoneNumber)
             intent.putExtra("requestCode",ErikuraApplication.REQUEST_SIGN_UP_CODE)

@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -21,7 +20,6 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
 
 class RegisterWishWorkActivity : BaseActivity(),
@@ -77,7 +75,7 @@ class RegisterWishWorkActivity : BaseActivity(),
 //        }
 
         //登録処理を行う前にSMS認証を行う
-        val intent: Intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+        val intent: Intent = Intent(this, SmsVerifyActivity::class.java)
         intent.putExtra("user", user)
         intent.putExtra("phoneNumber",user.phoneNumber)
         intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)

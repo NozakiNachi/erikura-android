@@ -9,9 +9,7 @@ import android.view.Surface
 import android.view.TextureView
 import android.util.Log
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.VideoView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.ErikuraApplication
@@ -21,7 +19,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyActivity
+import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import jp.co.recruit.erikura.services.NotificationData
 import kotlinx.android.synthetic.main.activity_start.*
@@ -74,7 +72,7 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
                         finish()
                     } else {
                         //SMS未認証の場合、認証画面へ遷移します。
-                        val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                        val intent = Intent(this, SmsVerifyActivity::class.java)
                         intent.putExtra("requestCode",ErikuraApplication.REQUEST_LOGIN_CODE)
                         startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
                     }

@@ -9,7 +9,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -20,14 +19,11 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityLoginBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterPhoneActivity
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyActivity
+import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
-import kotlinx.android.synthetic.main.activity_start.*
 
 class LoginActivity : BaseActivity(), LoginEventHandlers {
     private val viewModel: LoginViewModel by lazy {
@@ -96,7 +92,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                     }
                     else {
                         //SMS未認証の場合、認証画面へ遷移します。
-                        val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                        val intent = Intent(this, SmsVerifyActivity::class.java)
                         intent.putExtra("requestCode",ErikuraApplication.REQUEST_LOGIN_CODE)
                         startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
                     }

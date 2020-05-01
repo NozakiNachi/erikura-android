@@ -3,16 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presenters.activities.registration.RegisterSmsVerifyActivity"
+    tools:context=".presenters.activities.registration.SmsVerifyActivity"
     >
 
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyViewModel"/>
+            type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyViewModel"/>
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyEventHandlers" />
     </data>
 
     <androidx.core.widget.NestedScrollView

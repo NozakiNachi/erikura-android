@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -27,7 +26,7 @@ import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import jp.co.recruit.erikura.presenters.activities.registration.RegisterSmsVerifyActivity
+import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.text.SimpleDateFormat
 import java.util.*
@@ -236,7 +235,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         if (checkPhoneNumber != null) {
             Api(this).smsVerifyCheck(checkPhoneNumber!!) { result ->
                 if (!result || checkPhoneNumber != viewModel.phone.value) {
-                    val intent = Intent(this, RegisterSmsVerifyActivity::class.java)
+                    val intent = Intent(this, SmsVerifyActivity::class.java)
                     intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
