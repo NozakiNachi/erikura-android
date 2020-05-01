@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "149057405367",
+    "firebase_url": "https://erikura-dev.firebaseio.com",
+    "project_id": "erikura-dev",
+    "storage_bucket": "erikura-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:149057405367:android:c7cdbd77f97fa735646832",
+        "android_client_info": {
+          "package_name": "jp.co.recruit.erikura"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "149057405367-aj7astkapfbdsf13hnp97jcih8mnhsg7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0NoaUHYIxUyQPuMPDICGss-fi-BSPS1Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "149057405367-aj7astkapfbdsf13hnp97jcih8mnhsg7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "149057405367-jeua43t6qlchl1k8n0haqq2iqdt0od6k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "jp.co.recruit.erikura.erikura.dev.iPhone.1"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

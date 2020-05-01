@@ -59,7 +59,7 @@ android {
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"' + properties.getProperty("google.map_api_key") + '"')
             buildConfigField("String", "GEOCODING_API_KEY", '"' + properties.getProperty("google.geocoding_api_key") + '"')
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
-            buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentSandbox"')
+            buildConfigField("String", "ADJUST_ENVIRONMENT", 'com.adjust.sdk.AdjustConfig.ENVIRONMENT_SANDBOX')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
 
             buildConfigField("String", "FACEBOOK_APP_ID", "\"633836627103645\"")
@@ -74,7 +74,7 @@ android {
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
-            buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentSandbox"')
+            buildConfigField("String", "ADJUST_ENVIRONMENT", 'com.adjust.sdk.AdjustConfig.ENVIRONMENT_SANDBOX')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
 
             buildConfigField("String", "FACEBOOK_APP_ID", "\"633836627103645\"")
@@ -91,7 +91,7 @@ android {
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "KARTE_APP_KEY", '"Fnz0u2qNxnY4BmYLtH1LBHOJjUjTgA7Q"')
-            buildConfigField("String", "ADJUST_CLASS", '"ADJEnvironmentProduction"')
+            buildConfigField("String", "ADJUST_ENVIRONMENT", 'com.adjust.sdk.AdjustConfig.ENVIRONMENT_PRODUCTION')
             buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
 
             buildConfigField("String", "FACEBOOK_APP_ID", "\"196990194298653\"")
@@ -140,6 +140,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-fitness:18.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.android.gms:play-services-analytics:17.0.0'
 
     // Firebase
     implementation 'com.google.firebase:firebase-analytics:17.2.3'
@@ -148,9 +149,8 @@ dependencies {
     implementation 'io.karte.android:tracker:1.7.3'
     // Facebook SDK Core only (Analytics)
     implementation 'com.facebook.android:facebook-android-sdk:4.41.0'
-//    implementation 'com.facebook.android:facebook-core:5.+'
-//    // Adjust
-//    implementation 'com.adjust.sdk:adjust-android:4.20.0'
+    // Adjust
+    implementation 'com.adjust.sdk:adjust-android:4.21.1'
 
     // Dagger
     def dagger_version = '2.27'
