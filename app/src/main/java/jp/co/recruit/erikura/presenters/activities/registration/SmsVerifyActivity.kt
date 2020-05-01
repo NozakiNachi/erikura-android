@@ -103,13 +103,13 @@ class SmsVerifyActivity : BaseActivity(),
             ErikuraApplication.REQUEST_SIGN_UP_CODE -> {
                 val intent = Intent(this, RegisterPhoneActivity::class.java)
                 intent.putExtra("user", user)
-                intent.putExtra("requestCode", requestCode!!)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
+                startActivityForResult(intent, ErikuraApplication.REQUEST_SIGN_UP_CODE)
             }
             ErikuraApplication.REQUEST_LOGIN_CODE -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
-                intent.putExtra("requestCode", requestCode!!)
+                intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
                 //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
                 intent.putExtra("isCameThroughLogin", true)
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
@@ -177,6 +177,24 @@ class SmsVerifyActivity : BaseActivity(),
             // 戻るボタンの無効化
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
+            user = data!!.getParcelableExtra("user")
+            data.getStringExtra("phoneNumber")?.let{ newPhoneNumber ->
+                if (newPhoneNumber != phoneNumber) {
+                    phoneNumber = newPhoneNumber
+                    Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
+                    // trueしか返ってこないので送信結果の判定は入れていない
+                    Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
+                        phoneNumber?.let { viewModel.setCaption(it) }
+                        viewModel.error.message.value = null
+                    }
+                }
+            }
         }
     }
 }

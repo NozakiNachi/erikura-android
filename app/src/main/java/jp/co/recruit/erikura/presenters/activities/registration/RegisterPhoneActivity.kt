@@ -79,37 +79,16 @@ class RegisterPhoneActivity : BaseActivity(),
 
         //新規登録のSMS認証経由で来た場合SMS認証画面へ遷移する
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
-            //登録処理を行う前にSMS認証を行う
-            val intent: Intent = Intent(this, SmsVerifyActivity::class.java)
+            val intent: Intent = Intent()
             intent.putExtra("user", user)
             intent.putExtra("phoneNumber", user.phoneNumber)
             intent.putExtra("requestCode",ErikuraApplication.REQUEST_SIGN_UP_CODE)
-            startActivityForResult(intent,ErikuraApplication.REQUEST_SIGN_UP_CODE)
+            setResult(RESULT_OK, intent)
+            finish()
         } else {
             val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
             intent.putExtra("user", user)
             startActivity(intent)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
-            user = data!!.getParcelableExtra("user")
-            Api(this).initialUpdateUser(user) {
-                Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
-                // 登録完了画面へ遷移
-                val intent: Intent =
-                    Intent(this@RegisterPhoneActivity, RegisterFinishedActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                finish()
-
-                // 登録完了のトラッキングの送出
-                Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))
-                Tracking.identify(user = user, status = "login")
-                Tracking.logCompleteRegistrationEvent()
-            }
         }
     }
 }
