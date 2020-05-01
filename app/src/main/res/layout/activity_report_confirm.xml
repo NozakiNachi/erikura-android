@@ -257,7 +257,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="40dp"
                     android:textSize="20dp"
-                    android:text="@string/report_confirm_other_form" />
+                    android:text="@string/report_other_form_caption" />
 
                 <ImageView
                     android:id="@+id/report_confirm_other_image"
