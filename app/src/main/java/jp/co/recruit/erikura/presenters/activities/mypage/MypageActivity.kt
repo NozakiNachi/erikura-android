@@ -52,7 +52,7 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
     }
 
     var mypageItems: List<MypageItem> = listOf(
-        MypageItem(0, "お支払情報", R.drawable.ic_account, true) {
+        MypageItem(0, "お支払い情報", R.drawable.ic_account, true) {
             Intent(this, PaymentInformationActivity::class.java).let {
                 it.putExtra(FROM_MYPAGE_KEY, true)
                 startActivity(it)
