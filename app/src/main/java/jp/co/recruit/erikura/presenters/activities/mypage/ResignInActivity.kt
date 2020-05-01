@@ -13,6 +13,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -27,6 +28,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
     var fromChangeUserInformationFragment: Boolean = false
     var fromAccountSettingFragment: Boolean = false
+    var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
 
     private val viewModel: ResignInViewModel by lazy {
@@ -48,6 +50,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
         fromAccountSettingFragment = intent.getBooleanExtra("fromAccountSetting", false)
         fromChangeUserInformationFragment = intent.getBooleanExtra("fromChangeUserInformation", false)
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
     }
 
@@ -71,6 +74,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             // 画面遷移
             if(fromChangeUserInformationFragment) {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.putExtra("requestCode", requestCode)
                 intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                 startActivity(intent)
             }else if(fromAccountSettingFragment){
