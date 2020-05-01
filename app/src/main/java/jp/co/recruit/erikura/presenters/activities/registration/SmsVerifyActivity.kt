@@ -110,27 +110,30 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onClickRegisterPhone(view: View) {
         //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
-        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
-            val intent = Intent(this, RegisterPhoneActivity::class.java)
-            intent.putExtra("user", user)
-            intent.putExtra("requestCode", requestCode!!)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        } else if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
-            val intent = Intent(this, ChangeUserInformationActivity::class.java)
-            intent.putExtra("user", user)
-            intent.putExtra("requestCode", requestCode!!)
-            //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
-            intent.putExtra("isCameThroughLogin", true)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-        }
-        else {
-            val intent = Intent(this, ChangeUserInformationActivity::class.java)
-            intent.putExtra("user", user)
-            intent.putExtra("requestCode", requestCode)
-            if (isCameThroughLogin) {
-                intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+        when(requestCode) {
+            ErikuraApplication.REQUEST_SIGN_UP_CODE -> {
+                val intent = Intent(this, RegisterPhoneActivity::class.java)
+                intent.putExtra("user", user)
+                intent.putExtra("requestCode", requestCode!!)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            ErikuraApplication.REQUEST_LOGIN_CODE -> {
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.putExtra("user", user)
+                intent.putExtra("requestCode", requestCode!!)
+                //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
+                intent.putExtra("isCameThroughLogin", true)
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
+            else -> {
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.putExtra("user", user)
+                intent.putExtra("requestCode", requestCode)
+                if (isCameThroughLogin) {
+                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                }
+                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            }
         }
     }
 
@@ -144,7 +147,7 @@ class SmsVerifyActivity : BaseActivity(),
         }
     }
 
-    open fun Logout() {
+    fun Logout() {
         Api(this).logout() { deletedSession ->
             // ログアウトのトラッキングの送出
             Tracking.logEvent(event= "logout", params= bundleOf())
