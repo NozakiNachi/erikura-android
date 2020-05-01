@@ -161,22 +161,22 @@ class Api(var context: Context) {
         }
     }
 
-    // TODO 現段階ではresultはtrueしか返ってこないので送信結果の判定は入れていない
     fun sendSms(confirmationToken: String, phoneNumber: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
         executeObservable(
             erikuraApiService.sendSms(SendSmsRequest(confirmationToken = confirmationToken ,phoneNumber = phoneNumber)),
             onError = onError
         ) { body ->
+            //bodyはtrueしか返ってこないので送信結果の判定は入れていない
             onComplete()
         }
     }
 
-    // TODO 現段階ではresultはtrueしか返ってこないので認証結果の判定は入れていない
     fun smsVerify(confirmationToken: String, phoneNumber: String, passcode: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
         executeObservable(
             erikuraApiService.smsVerify(SmsVerifyRequest(confirmationToken = confirmationToken ,phoneNumber = phoneNumber,passcode = passcode )),
             onError = onError
         ) { body ->
+            //bodyはtrueしか返ってこないので送信結果の判定は入れていない
             onComplete()
         }
     }
