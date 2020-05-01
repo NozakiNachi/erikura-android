@@ -14,6 +14,8 @@ apply plugin: 'com.google.gms.google-services'
 
 apply plugin: 'io.fabric'
 
+apply plugin: 'com.akaita.android.easylauncher'
+
 // MEMO: Google Fit API を使うために、OAuth IDの登録を行う
 // 1. 以下のURLに移動し、アプリケーションを登録する
 //    https://console.developers.google.com/flows/enableapi?apiid=fitness
@@ -190,4 +192,20 @@ dependencies {
 
 androidExtensions {
     experimental = true
+}
+
+easylauncher {
+    // "manifest application[android:icon]" is automatically added to the list
+    iconNames "@mipmap/ic_launcher_foreground" // Traditional launcher icon
+    foregroundIconNames "@mipmap/ic_launcher_foreground" // Foreground of adaptive launcher icon
+
+    buildTypes {
+        debug {
+            filters = grayRibbonFilter()
+        }
+        staging {
+            filters = grayRibbonFilter()
+        }
+        release {}
+    }
 }
