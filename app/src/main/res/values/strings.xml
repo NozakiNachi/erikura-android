@@ -157,7 +157,7 @@
     <string name="report_working_time_note">作業にかかった時間を入力してください。</string>
 
     <!-- 作業報告マニュアル外報告画面 -->
-    <string name="report_other_form_caption">マニュアル外報告(任意)</string>
+    <string name="report_other_form_caption">マニュアル外の報告(任意)</string>
     <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
 
     <!-- 作業報告評価画面 -->
