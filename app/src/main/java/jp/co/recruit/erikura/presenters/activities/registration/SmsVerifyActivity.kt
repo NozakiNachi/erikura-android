@@ -73,13 +73,6 @@ class SmsVerifyActivity : BaseActivity(),
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        // ページ参照のトラッキングの送出
-        Tracking.logEvent(event = "view_register_sms_verify", params = bundleOf())
-        Tracking.view(name = "/user/register/sms_verify", title = "SMS認証")
-    }
-
     override fun onClickAuthenticate(view: View) {
         Log.v("DEBUG", "SMS認証： phoneNumber=${phoneNumber}")
         //trueしか返ってこないので認証結果の判定は入れていない
