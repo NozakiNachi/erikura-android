@@ -53,7 +53,6 @@
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
 
     <!-- 電話番号登録画面 -->
-    <string name="registerPhone_caption">電話番号を教えてください。</string>
     <string name="registerCellPhone_caption">携帯電話の番号を教えてください。\n後ほどSMS認証を行います。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
 
