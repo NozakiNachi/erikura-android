@@ -73,6 +73,7 @@ class ErikuraMessagingService : FirebaseMessagingService() {
         val notification = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.erikura_icon_android_logo_1024)
             //.setLargeIcon(resources.getDrawable(R.mipmap.ic_launcher).toBitmap())
+            .setColor(resources.getColor(R.color.orangeYellow, null))
             .setContentTitle(title)
             .setContentText(body)
             .setShowWhen(true)
