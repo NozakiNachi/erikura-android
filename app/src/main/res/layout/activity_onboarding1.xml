@@ -5,13 +5,12 @@
     tools:context=".presenters.activities.tutorial.Onboarding1Activity">
 
     <data>
-
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.tutorial.Onboarding1Handlers" />
+            type="jp.co.recruit.erikura.presenters.activities.tutorial.OnboardingHandlers" />
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.tutorial.Onboarding1ViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.tutorial.OnboardingViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -37,17 +36,15 @@
                 android:layout_width="221dp"
                 android:layout_height="62dp"
                 android:layout_gravity="center_horizontal"
-                app:layout_marginTop="@{viewModel.stepTopMargin}"
+                app:layout_marginTop="@{viewModel.titleTopMargin}"
                 android:src="@drawable/step_title_2x" />
-
 
             <TextView
                 android:id="@+id/onboarding_text"
-                android:layout_width="310dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                app:layout_marginTop="@{viewModel.explainTopMargin}"
-
+                app:layout_marginTop="@{viewModel.textTopMargin}"
                 android:drawableLeft="@drawable/step1_num"
                 android:drawablePadding="10dp"
                 android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
@@ -71,7 +68,7 @@
                 android:layout_width="100dp"
                 android:layout_height="8dp"
                 android:layout_gravity="center_horizontal"
-                app:layout_marginTop="@{viewModel.imageTopMargin}"
+                app:layout_marginTop="@{viewModel.stepTopMargin}"
                 android:gravity="center_horizontal"
                 android:src="@drawable/tutorial_marker_01_2x" />
 
