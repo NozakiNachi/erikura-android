@@ -1,12 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
 import android.view.View
@@ -17,7 +15,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.*
@@ -41,6 +38,7 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
+import kotlin.math.abs
 
 class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
     companion object {
@@ -61,7 +59,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     /** GoogleMap のカメラ位置を移動中かを保持します (true は移動中) */
     private var cameraMoving: Boolean = false
-    private var zoomInitialized: Boolean = false
     private var displaySearchBar: Boolean = true
     private var resetCameraPosition: Boolean = false
 
@@ -90,34 +87,20 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             longitude = LocationManager.defaultLatLng.longitude
         )
 
-        adapter = ErikuraCarouselAdapter(this, listOf(), viewModel.jobsByLocation.value ?: mapOf())
+        carouselView = findViewById(R.id.map_view_carousel)
+
+        adapter = ErikuraCarouselAdapter(this, carouselView, listOf(), viewModel.jobsByLocation.value ?: mapOf())
         adapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 onClickCarouselItem(job)
             }
         }
 
-        val layoutManager = object: LinearLayoutManager(this) {
-            override fun smoothScrollToPosition(recyclerView: RecyclerView?, state: RecyclerView.State?, position: Int) {
-                val speedUpSmoothScroller = object: LinearSmoothScroller(recyclerView?.context) {
-                    override fun calculateSpeedPerPixel(displayMetrics: DisplayMetrics?): Float {
-                        val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
-                        val current = layoutManager.findFirstCompletelyVisibleItemPosition()
-                        val diff = Math.abs(current - position)
-                        val width = displayMetrics?.widthPixels ?: 1
+        val carouselLayoutManager = LinearLayoutManager(this)
+        carouselLayoutManager.orientation = RecyclerView.HORIZONTAL
 
-                        return 1000.0f / (diff * width)
-                    }
-                }
-                speedUpSmoothScroller.setTargetPosition(position);
-                startSmoothScroll(speedUpSmoothScroller)
-            }
-        }
-        layoutManager.orientation = RecyclerView.HORIZONTAL
-
-        carouselView = findViewById(R.id.map_view_carousel)
         carouselView.setHasFixedSize(false)
-        carouselView.layoutManager = layoutManager
+        carouselView.layoutManager = carouselLayoutManager
         carouselView.addItemDecoration(ErikuraCarouselCellDecoration())
         carouselView.adapter = adapter
 
@@ -138,14 +121,16 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
 
-                Log.v("INDEX:", "Position: ${position}, length: ${adapter.data.size}")
+                Log.v("ERIKURA", "Position: ${position}, length: ${adapter.data.size}, FV=${layoutManager.findFirstVisibleItemPosition()}, LV=${layoutManager.findLastVisibleItemPosition()}, LC=${layoutManager.findLastCompletelyVisibleItemPosition()}")
                 if (position >= 0 && adapter.data.size > 0) {
                     val job = adapter.data[position]
                     Log.v("VISIBLE JOB: ", job.toString())
 
                     this@MapViewActivity.runOnUiThread {
                         if (::mMap.isInitialized) {
-                            mMap.animateCamera(CameraUpdateFactory.newLatLng(job.latLng))
+                            val updateRequest = CameraUpdateFactory.newLatLng(job.latLng)
+                            Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(carousel): $updateRequest")
+                            mMap.animateCamera(updateRequest)
                         }
                         viewModel.activeMaker = viewModel.markerMap[job.id]
                     }
@@ -162,7 +147,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             ErikuraApplication.instance.setCoachMarkDisplayed(true)
         }
 
-        tutorialAdapter = ErikuraCarouselAdapter(this, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
+        tutorialAdapter = ErikuraCarouselAdapter(this, map_view_carousel_highlight, listOf(dummyJob), viewModel.jobsByLocation.value ?: mapOf())
         tutorialAdapter.onClickListener = object: ErikuraCarouselAdapter.OnClickListener {
             override fun onClick(job: Job) {
                 coachViewModel.next()
@@ -190,6 +175,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         super.onPause()
         locationManager.stop()
         locationManager.clearLocationUpdateCallback()
+
+        searchJobQuery = viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng)
     }
 
     override fun onResume() {
@@ -205,7 +192,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         locationManager.start(this)
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && ::mMap.isInitialized && viewModel.keyword.value.isNullOrBlank()) {
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(it, defaultZoom))
+                val updateRequest = CameraUpdateFactory.newLatLngZoom(it, defaultZoom)
+                Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(resume): $updateRequest")
+                mMap.moveCamera(updateRequest)
                 firstFetchRequested = true
                 val query = viewModel.query(it)
                 fetchJobs(query)
@@ -235,6 +224,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
         mMap.setOnMarkerClickListener { marker ->
             val index: Int = marker.tag as Int
+            Log.v("ERIKURA", "Marker index: ${index}")
             val jobs = viewModel.jobs.value ?: listOf()
             if (index >= 0) {
                 val job: Job? = jobs[index]
@@ -245,21 +235,34 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             }
 
             var layoutManager = carouselView.layoutManager as LinearLayoutManager
-            layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+
+            val current = layoutManager.findFirstCompletelyVisibleItemPosition()
+            if (current != index) {
+                if (current < index) {
+                    if (abs(index - current) > 10) {
+                        layoutManager.scrollToPosition(index - 10)
+                    }
+                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                }
+                else {
+                    if (abs(index - current) > 10) {
+                        layoutManager.scrollToPosition(index + 10)
+                    }
+                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                }
+            }
 
             true
         }
 
         // ズームの初期設定を行っておきます
-        mMap.moveCamera(CameraUpdateFactory.zoomBy(defaultZoom))
+        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+        Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+        mMap.moveCamera(updateRequest)
 
         if (locationManager.checkPermission(this)) {
             mMap.isMyLocationEnabled = true
             hideGoogleMapMyLocationButton()
-        }
-        else {
-            // デフォルト位置にカメラを移動させます
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(LocationManager.defaultLatLng, defaultZoom))
         }
 
         // 最初のタスク取得
@@ -317,7 +320,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
-            Log.d("JOBS: ", jobs.toString())
+            Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
             if (jobs.isNotEmpty()) {
                 val summarizedJobs = JobUtils.summarizeJobsByLocation(jobs)
                 val nearestJob = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
@@ -346,10 +349,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                     viewModel.activeMaker = nearestMarker
                     // 最も近い案件に地図を移動します
                     resetCameraPosition = true
-                    val updateRequest: CameraUpdate = if (zoomInitialized)
-                        CameraUpdateFactory.newLatLng(nearestJob.latLng)
-                    else
-                        CameraUpdateFactory.newLatLngZoom(nearestJob.latLng, defaultZoom)
+                    val updateRequest: CameraUpdate = CameraUpdateFactory.newLatLng(nearestJob.latLng)
+                    Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(fetchJob): $updateRequest")
                     mMap.animateCamera(updateRequest)
 
                     // カルーセルを最も近い案件に変更します
@@ -420,7 +421,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
     }
 
-    fun onCameraMoveStarted(_reason: Int) {
+    private fun onCameraMoveStarted(_reason: Int) {
         cameraMoving = true
         // 案件取得によるカメラリセット以外の場合
         if (!resetCameraPosition) {
@@ -431,19 +432,18 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
     }
 
-    fun onCameraMoveCanceled() {
+    private fun onCameraMoveCanceled() {
         cameraMoving = false
     }
 
-    fun onCameraIdle() {
+    private fun onCameraIdle() {
         if (cameraMoving) {
-            zoomInitialized = true
             cameraMoving = false
             onCameraMoveFinished()
         }
     }
 
-    fun onCameraMoveFinished() {
+    private fun onCameraMoveFinished() {
         cameraMoving = false
 
         if (resetCameraPosition) {
@@ -476,7 +476,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     override fun onClickSearchBar(view: View) {
         val intent = Intent(this, SearchJobActivity::class.java)
         intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(locationManager.latLngOrDefault))
-        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivityForResult(intent, REQUEST_SEARCH_CONDITIONS)
     }
 
     override fun onToggleActiveOnly(view: View) {
@@ -490,6 +490,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
         // 現在位置をもとに検索し直します
         val position = mMap.cameraPosition
+        viewModel.searchBarVisible.value = View.GONE
         fetchJobs(viewModel.query(position.target))
     }
 
@@ -501,7 +502,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         Intent(this, ListViewActivity::class.java)?.let {
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
-            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(it)
         }
     }
 
@@ -511,7 +512,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         Tracking.logEvent(event= "push_reload_location", params= bundleOf())
         Tracking.track(name= "push_reload_location")
 
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom))
+        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+        Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(currentLocation): $updateRequest")
+        mMap.animateCamera(updateRequest)
     }
 
     // カルーセルクリック時の処理
@@ -527,7 +530,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         else {
             val intent= Intent(this, JobDetailsActivity::class.java)
             intent.putExtra("job", job)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     }
 

@@ -28,7 +28,7 @@
                     android:layout_height="30dp"
                     android:layout_gravity="center_horizontal"
                     android:background="@drawable/red_exclamation"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="20dp"
                     />
                 <TextView
                     android:layout_width="match_parent"
@@ -44,7 +44,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="45dp"
+                    android:layout_marginBottom="20dp"
                     style="@style/label_w2"
                     android:textSize="14dp"
                     android:textColor="@color/black"
@@ -60,16 +60,19 @@
                 android:background="@color/paleGrey"
                 >
                 <ImageView
-                    android:layout_width="300dp"
-                    android:layout_height="300dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="57dp"
+                    android:layout_marginLeft="57dp"
                     android:layout_gravity="center_horizontal"
-                    android:src="@drawable/alert2x"
+                    android:src="@drawable/alert"
+                    android:adjustViewBounds="true"
                     />
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="100dp"
                     style="@style/primaryButton"
                     android:text="位置情報をONにする"

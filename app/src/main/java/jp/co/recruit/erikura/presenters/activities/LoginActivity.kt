@@ -75,12 +75,12 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                  val intent = Intent(this, MapViewActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
             else {
                 // 位置情報の許諾、オンボーディングを表示します
                 Intent(this, PermitLocationActivity::class.java).let { intent ->
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    startActivity(intent)
                 }
             }
         }
@@ -92,7 +92,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(reminderURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickUnreachLink(view: View) {
@@ -101,7 +101,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             action = Intent.ACTION_VIEW
             data = Uri.parse(unreachURLString)
         }
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

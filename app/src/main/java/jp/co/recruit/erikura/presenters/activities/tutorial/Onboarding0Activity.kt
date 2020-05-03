@@ -50,7 +50,7 @@ class Onboarding0Activity : AppCompatActivity(), Onboarding0Handlers {
     fun startNextActivity() {
         timer.cancel()
         Intent(this, Onboarding1Activity::class.java).let { intent ->
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
 
         }
     }

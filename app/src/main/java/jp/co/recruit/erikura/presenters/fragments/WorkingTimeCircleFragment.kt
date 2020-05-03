@@ -51,7 +51,7 @@ class WorkingTimeCircleFragment(private val job: Job?) : Fragment(), WorkingTime
         timer.cancel()
         val intent= Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 
     // 1秒ごとに呼び出される処理

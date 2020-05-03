@@ -241,7 +241,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             }else {
                 val intent= Intent(this, ReportEvaluationActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
 

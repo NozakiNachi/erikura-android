@@ -123,7 +123,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
             }else {
                 val intent= Intent(this, ReportConfirmActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
@@ -23,17 +22,14 @@ import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-
-class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
-
+class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
     var user: User = User()
+    var previousPostalCode: String? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -46,40 +42,37 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
-        super.onCreate(savedInstanceState)
-
+    override fun onCreateImpl(savedInstanceState: Bundle?) {
         val binding: ActivityChangeUserInformationBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
-    }
 
-    override fun onStart() {
-        super.onStart()
+        // 郵便番号が変更された場合に、住所を取り直すように修正します
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                previousPostalCode = viewModel.postalCode.value
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
 
-        // 再認証が必要かどうか確認
-        checkResignIn() { isResignIn ->
-            if (isResignIn) {
-                // ページ参照のトラッキングの送出
-                Tracking.logEvent(event= "view_edit_profile", params= bundleOf())
-                Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
-
-                // 変更するユーザーの現在の登録値を取得
-                Api(this).user() {
-                    user = it
-                    loadData()
-                }
-            } else {
-                finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("fromChangeUserInformation", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
                 }
             }
+        })
+
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_edit_profile", params= bundleOf())
+        Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
+
+        // 変更するユーザーの現在の登録値を取得
+        Api(this).user() {
+            user = it
+            loadData()
         }
     }
 
@@ -93,23 +86,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
-    }
-
-    // 所在地
-    override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
-            if (user.postcode != viewModel.postalCode.value && viewModel.postalCode.value?.length ?: 0 == 7) {
-                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                    user.postcode = viewModel.postalCode.value
-                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                    viewModel.city.value = city
-                    viewModel.street.value = street
-
-                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                    streetEditText.requestFocus()
-                }
-            }
-        })
     }
 
     private fun getPrefectureId(prefecture: String): Int {
@@ -148,6 +124,9 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+
+        dpd.setButton(DatePickerDialog.BUTTON_POSITIVE, getString(R.string.button_ok), dpd);
+        dpd.setButton(DatePickerDialog.BUTTON_NEGATIVE, getString(R.string.button_cancel), dpd);
 
         val dp = dpd.datePicker
         val maxDate: Calendar = Calendar.getInstance()
@@ -224,24 +203,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         }
     }
 
-    // 再認証画面へ遷移
-    private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
-        val nowTime = Date()
-        val reSignTime = userSession?.resignInExpiredAt
-
-        if (userSession?.resignInExpiredAt !== null) {
-            // 過去の再認証から10分以上経っていたら再認証画面へ
-            if (reSignTime!! < nowTime) {
-                onComplete(false)
-            } else {
-                onComplete(true)
-            }
-        } else {
-            // 一度も再認証していなければ、再認証画面へ
-            onComplete(false)
-        }
-    }
-
     // データの読み込み
     private fun loadData() {
         viewModel.email.value = user.email
@@ -250,14 +211,14 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         viewModel.dateOfBirth.value = user.parsedDateOfBirth?.let {
             SimpleDateFormat("yyyy/MM/dd").format(it)
         }
-//        viewModel.gender.value = user.gender?.value
+
+        previousPostalCode = user.postcode
         viewModel.postalCode.value = user.postcode
         viewModel.city.value = user.city
         viewModel.street.value = user.street
         viewModel.phone.value = user.phoneNumber
         viewModel.wishWalk.value = user.wishWorks.size
 
-        // FIXME: 数回に1回初期値がプルダウンに表示されない不具合あり。
         // 都道府県のプルダウン初期表示
         val id = getPrefectureId(user.prefecture ?: "")
         viewModel.prefectureId.value = id
@@ -400,7 +361,7 @@ class ChangeUserInformationViewModel : ViewModel() {
         return valid
     }
 
-    private fun isValidPostalCode(): Boolean {
+    fun isValidPostalCode(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
@@ -542,7 +503,6 @@ class ChangeUserInformationViewModel : ViewModel() {
 }
 
 interface ChangeUserInformationEventHandlers {
-    fun onFocusChanged(view: View, hasFocus: Boolean)
     fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
     fun onClickMale(view: View)

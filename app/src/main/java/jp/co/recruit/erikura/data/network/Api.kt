@@ -78,6 +78,23 @@ class Api(var context: Context) {
             userSession = session
             onComplete(session)
 
+            Tracking.fcmToken?.let { token ->
+                pushEndpoint(token) {
+                    Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${userSession?.userId ?: ""}")
+                }
+            }
+            /*
+                Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
+
+                }
+
+                if let fcmToken = Tracking.fcmToken {
+                    self.push_endpoint(deviceToken: nil, fcmToken: fcmToken) { result in
+                            print("push_endpoint: \(result)")
+                    }
+                }
+             */
+
             this.user { user ->
                 // ログインのトラッキングの送出
                 Tracking.logEvent(event= "login", params= bundleOf())
@@ -106,7 +123,14 @@ class Api(var context: Context) {
     fun resignIn(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
         executeObservable(
             erikuraApiService.login(LoginRequest(email = email, password = password)),
-            onError =  onError
+            onError = { errorMessages ->
+                if (errorMessages?.first() == "メールアドレスまたはパスワードが無効です。") {
+                    displayErrorAlert(listOf("パスワードが誤っています。", "もう一度入力してください。"))
+                }
+                else {
+                    displayErrorAlert(errorMessages)
+                }
+            }
         ) { body ->
             val calendar = Calendar.getInstance()
             calendar.time = Date()
@@ -665,19 +689,34 @@ class Api(var context: Context) {
                         AndroidSchedulers.mainThread().scheduleDirect {
                             when(response.code()) {
                                 401 -> {
+                                    // セッション情報があればクリアしておきます
+                                    userSession?.let {
+                                        userSession = null
+                                        UserSession.clear()
+                                    }
+
                                     var fromMypage = false
-                                    (context as? FragmentActivity)?.let { activity ->
+                                    (context as? FragmentActivity)?.also { activity ->
                                         // マイページから遷移してきたかのフラグを取得します
                                         fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
                                         // 元画面は表示できないはずなので閉じておきます
                                         activity.finish()
+
+                                        // ログイン必須画面に遷移させます
+                                        Intent(context, LoginRequiredActivity::class.java).let {
+                                            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                            it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                            context.startActivity(it)
+                                        }
+                                    } ?: run {
+                                       // ログイン必須画面に遷移させます
+                                        Intent(context, LoginRequiredActivity::class.java).let {
+                                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                            it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                            context.startActivity(it)
+                                        }
                                     }
-                                    // ログイン必須画面に遷移させます
-                                    Intent(context, LoginRequiredActivity::class.java).let {
-                                        it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                        it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
-                                        context.startActivity(it)
-                                    }
+
                                 }
                                 500 -> {
                                     Log.v("ERROR RESPONSE", response.errorBody().toString())

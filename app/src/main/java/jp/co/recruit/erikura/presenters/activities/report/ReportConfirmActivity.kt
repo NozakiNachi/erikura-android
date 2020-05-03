@@ -487,8 +487,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             Intent(this, OwnJobsActivity::class.java).let { intent ->
 //                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                intent.putExtra("fromReportCompleted", true)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                intent.putExtra(OwnJobsActivity.EXTRA_FROM_REPORT_COMPLETED_KEY, true)
+                startActivity(intent)
             }
         }
     }
@@ -610,7 +610,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         val intent = Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 }
 

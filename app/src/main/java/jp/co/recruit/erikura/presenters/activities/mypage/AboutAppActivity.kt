@@ -42,7 +42,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(termsOfServiceURLString)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(1, "プライバシーポリシー"
         ) {
@@ -51,7 +51,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(2, "推奨環境") {
             // FIXME: 正しいURLか確認
@@ -61,7 +61,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MenuItem(3, "ライセンス") {
             val intent = Intent(this, OssLicensesMenuActivity::class.java)

@@ -35,6 +35,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.util.WebViewResizeHeightJavascriptInterface
 import kotlinx.android.synthetic.main.activity_mypage.*
 import java.util.*
 
@@ -51,30 +52,30 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
     }
 
     var mypageItems: List<MypageItem> = listOf(
-        MypageItem(0, "お支払情報", R.drawable.ic_account, true) {
+        MypageItem(0, "お支払い情報", R.drawable.ic_account, true) {
             Intent(this, PaymentInformationActivity::class.java).let {
                 it.putExtra(FROM_MYPAGE_KEY, true)
-                startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(it)
             }
         },
         MypageItem(1, "お気に入り", R.drawable.icon_star_18, true) {
             val intent = Intent(this, FavoritePlacesActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra(FROM_MYPAGE_KEY, true)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         },
         MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
             Intent(this, OwnJobsActivity::class.java).let { intent ->
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra(FROM_MYPAGE_KEY, true)
-                intent.putExtra("fromMypageJobCommentGoodButton", true)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                intent.putExtra(OwnJobsActivity.EXTRA_FROM_MYPAGE_JOB_COMMENT_GOOD_BUTTON, true)
+                startActivity(intent)
             }
         },
         MypageItem(3, "設定", R.drawable.ic_preferences, true) {
             val intent = Intent(this, ConfigurationActivity::class.java)
             intent.putExtra(FROM_MYPAGE_KEY, true)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
     )
 
@@ -87,10 +88,10 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
         binding.viewModel = viewModel
         binding.handlers = this
 
-        informationListAdapter =
-            InformationAdapter(this)
-
         informationListView = findViewById(R.id.mypage_information_list)
+
+        informationListAdapter = InformationAdapter(this, informationListView)
+
         informationListView.adapter = informationListAdapter
         informationListView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
 
@@ -213,7 +214,7 @@ class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Ad
     override fun getItemCount() = mypageItems.size
 }
 
-class InformationAdapter(val activity: FragmentActivity) : RecyclerView.Adapter<InformationCellHolder>() {
+class InformationAdapter(val activity: FragmentActivity, val recyclerView: RecyclerView) : RecyclerView.Adapter<InformationCellHolder>() {
     var informations: List<Information> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InformationCellHolder {
@@ -237,15 +238,31 @@ class InformationAdapter(val activity: FragmentActivity) : RecyclerView.Adapter<
 
         // WebView にコンテンツを設定します
         val webView = holder.binding.informationCellWebview
+
+//        // javascript を有効にします
+//        webView.settings.javaScriptEnabled = true
+//        // JavascriptInterface を追加します
+//        webView.addJavascriptInterface(WebViewResizeHeightJavascriptInterface { height ->
+//            Log.v(ErikuraApplication.LOG_TAG, "Resize Height: ${height}")
+//        }, "resizeHeightHandler")
+
         webView.webViewClient = object: WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-
-                val dp = activity.resources.displayMetrics
-                webView.layoutParams.let { lp ->
-                    lp.height = (webView.contentHeight * dp.scaledDensity).toInt()
-                    webView.layoutParams = lp
-                }
+                Log.v("ERIKURA", "WebView Height: ${view?.contentHeight}")
+//
+//                // call resizeHeight
+//                view?.loadUrl("javascript:AndroidFunction.resizeHeight(document.body.scrollHeight)")
+//
+//                val dp = activity.resources.displayMetrics
+//                webView.layoutParams.let { lp ->
+//                    lp.height = (webView.contentHeight * dp.scaledDensity).toInt()
+//                    webView.layoutParams = lp
+//                }
+//
+//                holder.binding.root.forceLayout()
+//                recyclerView.forceLayout()
+//                activity.window.decorView.forceLayout()
             }
         }
         val encodedHtml = Base64.encodeToString(information.content.toByteArray(), Base64.NO_PADDING)

@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -32,6 +31,7 @@ class RegisterAddressActivity : BaseActivity(),
     }
 
     var user: User = User()
+    var previousPostalCode: String? = null
     val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,6 +49,20 @@ class RegisterAddressActivity : BaseActivity(),
         viewModel.postalCodeError.message.value = null
         viewModel.cityError.message.value = null
         viewModel.streetError.message.value = null
+
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
+
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -82,24 +96,7 @@ class RegisterAddressActivity : BaseActivity(),
 
         val intent: Intent = Intent(this@RegisterAddressActivity, RegisterPhoneActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-
-    }
-
-    override fun onFocusChanged(view: View, hasFocus: Boolean) {
-        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
-            if (user.postcode != viewModel.postalCode.value && viewModel.postalCode.value?.length ?: 0 == 7) {
-                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                    user.postcode = viewModel.postalCode.value
-                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                    viewModel.city.value = city
-                    viewModel.street.value = street
-
-                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                    streetEditText.requestFocus()
-                }
-            }
-        })
+        startActivity(intent)
     }
 
     private fun getPrefectureId(prefecture: String): Int {
@@ -138,7 +135,7 @@ class RegisterAddressViewModel: ViewModel() {
         return valid
     }
 
-    private fun isValidPostalCode(): Boolean {
+    fun isValidPostalCode(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
 
@@ -154,7 +151,6 @@ class RegisterAddressViewModel: ViewModel() {
         } else {
             valid = true
             postalCodeError.message.value = null
-
         }
 
         return valid
@@ -202,5 +198,4 @@ class RegisterAddressViewModel: ViewModel() {
 
 interface RegisterAddressEventHandlers {
     fun onClickNext(view: View)
-    fun onFocusChanged(view: View, hasFocus: Boolean)
 }

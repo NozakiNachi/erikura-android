@@ -1,11 +1,15 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
 import android.content.Intent
-import android.content.pm.PackageManager
+import android.graphics.SurfaceTexture
+import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.view.Surface
+import android.view.TextureView
 import android.view.View
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.VideoView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -18,9 +22,15 @@ import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import jp.co.recruit.erikura.services.NotificationData
+import kotlinx.android.synthetic.main.activity_start.*
 
-class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandlers {
-    lateinit var video: VideoView
+/*
+TextureView.SurfaceTextureListener, MediaPlayer.OnVideoSizeChangedListene
+ */
+class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandlers, TextureView.SurfaceTextureListener, MediaPlayer.OnVideoSizeChangedListener {
+    var videoInitialized = false
+    lateinit var mediaPlayer: MediaPlayer
+    var pausedPosition: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -49,17 +59,6 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         binding.lifecycleOwner = this
         binding.handlers = this
 
-        video = findViewById(R.id.v)
-
-        // ビデオの設定
-        video.setVideoURI(Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie))
-        video.start()
-        // ループ再生処理
-        video.setOnCompletionListener {
-            video.seekTo(0)
-            video.start()
-        }
-
         if (Api.isLogin) {
             // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
             Intent(this, MapViewActivity::class.java).let { intent ->
@@ -69,6 +68,53 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
             finish()
             return
         }
+
+        val displayMetrics = resources.displayMetrics
+
+        val displayHeightInDp = displayMetrics.heightPixels / displayMetrics.density
+        val size = ((displayHeightInDp - 380) * displayMetrics.density).toInt()
+
+        val width = 412.0
+        val height = 412.0
+
+        val layoutWidth = Math.min(displayMetrics.widthPixels, size)
+        val layoutHeight = Math.min((height * (displayMetrics.widthPixels / width)).toInt(), size)
+        start_texture.layoutParams = LinearLayout.LayoutParams(layoutWidth, layoutHeight)
+
+        binding.root.forceLayout()
+
+        start_texture.surfaceTextureListener = this
+        mediaPlayer = MediaPlayer()
+        mediaPlayer.setOnCompletionListener {
+            mediaPlayer.seekTo(0)
+            mediaPlayer.start()
+        }
+    }
+
+    override fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture?, width: Int, height: Int) {
+        val surface: Surface = Surface(surfaceTexture)
+
+        mediaPlayer.setSurface(surface)
+        mediaPlayer.setDataSource(this, Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie), mapOf())
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener { mp ->
+            videoInitialized = true
+            mp.seekTo(pausedPosition)
+            mp.start()
+        }
+    }
+
+    override fun onSurfaceTextureSizeChanged(surface: SurfaceTexture?, width: Int, height: Int) {
+    }
+
+    override fun onSurfaceTextureDestroyed(surface: SurfaceTexture?): Boolean {
+        return false
+    }
+
+    override fun onSurfaceTextureUpdated(surface: SurfaceTexture?) {
+    }
+
+    override fun onVideoSizeChanged(mp: MediaPlayer?, width: Int, height: Int) {
     }
 
     override fun onStart() {
@@ -80,36 +126,58 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
 
     override fun onResume() {
         super.onResume()
-        video.resume()
-        video.start()
+        resumeVideo()
     }
 
     override fun onPause() {
         super.onPause()
-        video.stopPlayback()
+        pauseVideo()
     }
 
     override fun onClickRegisterButton(view: View) {
         val intent = Intent(this, RegisterEmailActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickLoginButton(view: View) {
         val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun onClickStartWithoutLogin(view: View) {
         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
             // 地図画面へ遷移
             val intent = Intent(this, MapViewActivity::class.java)
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
         }
         else {
             // 位置情報の許諾、オンボーディングを表示します
             Intent(this, PermitLocationActivity::class.java).let { intent ->
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
+        }
+    }
+
+    override fun onClickVideo(view: View) {
+        if (mediaPlayer.isPlaying) {
+            pauseVideo()
+        }
+        else {
+            resumeVideo()
+        }
+    }
+
+    private fun pauseVideo() {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            pausedPosition = mediaPlayer.currentPosition
+        }
+    }
+
+    private fun resumeVideo() {
+        if (videoInitialized) {
+            mediaPlayer.seekTo(pausedPosition)
+            mediaPlayer.start()
         }
     }
 }
@@ -118,4 +186,5 @@ interface StartEventHandlers {
     fun onClickRegisterButton(view: View)
     fun onClickLoginButton(view: View)
     fun onClickStartWithoutLogin(view: View)
+    fun onClickVideo(view: View)
 }

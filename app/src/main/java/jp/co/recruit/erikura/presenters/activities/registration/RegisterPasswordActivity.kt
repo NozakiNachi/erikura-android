@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -56,13 +57,16 @@ class RegisterPasswordActivity : BaseActivity(),
         // ワーカ仮登録の確認
         Api(this).registerConfirm(confirmationToken ?:"", onError = {
             Log.v("DEBUG", "ユーザ仮登録確認失敗")
+            // 仮登録に失敗しているので、セッション情報をクリアします
+            Api.userSession = null
+            UserSession.clear()
             // スタート画面へ遷移する
             val intent = Intent(this, StartActivity::class.java)
             if(it != null) {
                 val array = it.toTypedArray()
                 intent.putExtra("errorMessages", array)
             }
-            startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(intent)
             finish()
         }) {
             Log.v("DEBUG", "仮登録確認： userId=${it}")
@@ -94,14 +98,14 @@ class RegisterPasswordActivity : BaseActivity(),
         user.password = viewModel.password.value
         val intent: Intent = Intent(this@RegisterPasswordActivity, RegisterNameActivity::class.java)
         intent.putExtra("user", user)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+        startActivity(intent)
     }
 
     override fun backToDefaultActivity() {
         // 会員登録中なので、スタート画面に遷移させます
         Intent(this, StartActivity::class.java)?.let {
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(it, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            startActivity(it)
         }
     }
 }

@@ -136,12 +136,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                 val intent= Intent(this, ReportFormActivity::class.java)
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", nextIndex)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             } else {
                 // 写真が残っていない場合
                 val intent= Intent(this, ReportWorkingTimeActivity::class.java)
                 intent.putExtra("job", job)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivity(intent)
             }
         }
     }

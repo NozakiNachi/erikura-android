@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
@@ -18,6 +19,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
 import com.crashlytics.android.Crashlytics
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsConstants
@@ -208,7 +211,7 @@ object Tracking {
     private val TAG = Tracking::class.java.name
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var appEventsLogger: AppEventsLogger
-    private var fcmToken: String? = null
+    var fcmToken: String? = null
 
     fun initTrackers(application: Application) {
         firebaseAnalytics = FirebaseAnalytics.getInstance(application)
@@ -241,14 +244,21 @@ object Tracking {
         AppEventsLogger.activateApp(application)
         appEventsLogger = AppEventsLogger.newLogger(application)
 
-        // FIXME: adjust の初期化
+        // adjust の初期化
+        val adjustConfig: AdjustConfig = AdjustConfig(application,
+            BuildConfig.ADJUST_KEY,
+            BuildConfig.ADJUST_ENVIRONMENT
+        )
+        Adjust.onCreate(adjustConfig)
+
+        application.registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
     }
 
     fun refreshFcmToken(token: String) {
         this.fcmToken = token
         if (Api.isLogin) {
             Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
-                Log.v("Erikura", "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")
+                Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")
             }
         }
     }
@@ -413,4 +423,28 @@ object Tracking {
     }
 }
 
+class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {
 
+    override fun onActivityResumed(activity: Activity) {
+        Adjust.onResume()
+    }
+
+    override fun onActivityPaused(activity: Activity) {
+        Adjust.onPause()
+    }
+
+    override fun onActivityStarted(activity: Activity) {
+    }
+
+    override fun onActivityDestroyed(activity: Activity) {
+    }
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+    }
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    }
+}

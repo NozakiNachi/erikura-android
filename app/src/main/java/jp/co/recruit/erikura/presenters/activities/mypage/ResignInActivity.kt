@@ -18,6 +18,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResignInBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.lang.IllegalArgumentException
 import java.util.*
 
 class ResignInActivity : BaseActivity(), ResignInHandlers {
@@ -25,8 +26,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     var user: User = User()
     val date: Date = Date()
 
-    var fromChangeUserInformationFragment: Boolean = false
-    var fromAccountSettingFragment: Boolean = false
+    var fromActivity: Int = 0
 
     private val viewModel: ResignInViewModel by lazy {
         ViewModelProvider(this).get(ResignInViewModel::class.java)
@@ -45,8 +45,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             viewModel.email.value = user.email
         }
 
-        fromAccountSettingFragment = intent.getBooleanExtra("fromAccountSetting", false)
-        fromChangeUserInformationFragment = intent.getBooleanExtra("fromChangeUserInformation", false)
+        fromActivity = intent.getIntExtra("fromActivity", 0)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -67,12 +66,18 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             finish()
 
             // 画面遷移
-            if(fromChangeUserInformationFragment) {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }else if(fromAccountSettingFragment){
-                val intent = Intent(this, AccountSettingActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+            when (fromActivity) {
+                BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
+                    val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                    startActivity(intent)
+                }
+                BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS -> {
+                    val intent = Intent(this, AccountSettingActivity::class.java)
+                    startActivity(intent)
+                }
+                else -> {
+                    throw IllegalArgumentException("unknown fromActivity")
+                }
             }
         }
     }

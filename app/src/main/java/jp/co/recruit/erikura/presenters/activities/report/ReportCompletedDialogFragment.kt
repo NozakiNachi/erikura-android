@@ -58,7 +58,7 @@ class ReportCompletedDialogFragment: DialogFragment(), ReportCompletedEventHandl
 
     override fun onClickBankRegistration(view: View) {
         val intent = Intent(activity, AccountSettingActivity::class.java)
-        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+        startActivity(intent)
     }
 }
 

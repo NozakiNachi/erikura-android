@@ -7,6 +7,9 @@
 
     <string name="common_buttons_close">閉じる</string>
 
+    <string name="button_ok">決定</string>
+    <string name="button_cancel">キャンセル</string>
+
     <!-- スタート画面 -->
     <string name="start_startWithoutLogin"><a href="">スキップして近くの仕事を探す</a></string>
 
@@ -122,6 +125,9 @@
     <string name="cancel_caption">この仕事をキャンセルしますか？</string>
     <string name="cancel_note">キャンセル理由が今後のお仕事に影響することはありません</string>
 
+    <!-- 仕事キャンセルモーダル -->
+    <string name="canceledDialog_caption">仕事をキャンセルしました。</string>
+
     <!-- 作業開始モーダル -->
     <string name="startDialog_caption">作業を開始しました！</string>
 
@@ -151,7 +157,7 @@
     <string name="report_working_time_note">作業にかかった時間を入力してください。</string>
 
     <!-- 作業報告マニュアル外報告画面 -->
-    <string name="report_other_form_caption">マニュアル外報告(任意)</string>
+    <string name="report_other_form_caption">マニュアル外の報告(任意)</string>
     <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
 
     <!-- 作業報告評価画面 -->
@@ -220,7 +226,7 @@
     <!-- 会員情報入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
     <string name="password_count_error">6文字以上の半角英数で入力してください。</string>
-    <string name="password_pattern_error">英字、数字をそれぞれ1文字上入力してください。</string>
+    <string name="password_pattern_error">英字、数字をそれぞれ1文字以上入力してください。</string>
     <string name="last_name_count_error">姓は30文字以内で入力してください。</string>
     <string name="first_name_count_error">名は30文字以内で入力してください。</string>
     <string name="postal_code_pattern_error">郵便番号はハイフンを含めずに入力してください。</string>
@@ -235,12 +241,12 @@
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
     <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>
-    <string name="bank_number_count_error">銀行コードは4文字で入力してください。</string>
+    <string name="bank_number_count_error">銀行コードは4桁で入力してください。</string>
     <string name="bank_number_format_error">銀行コードの形式が正しくありません。</string>
     <string name="branch_official_name_count_error">支店名は100文字以内で入力してください。</string>
-    <string name="branch_official_number_count_error">支店コードは3文字で入力してください。</string>
+    <string name="branch_official_number_count_error">支店コードは3桁で入力してください。</string>
     <string name="branch_official_number_format_error">支店コードの形式が正しくありません。</string>
-    <string name="account_number_count_error">口座番号は7文字で入力してください。</string>
+    <string name="account_number_count_error">口座番号は7桁で入力してください。</string>
     <string name="account_number_format_error">口座番号の形式が正しくありません。</string>
     <string name="account_holder_count_error">名義人名(メイ)は20文字以内で入力してください。</string>
     <string name="account_holder_format_error">名義人名(メイ)は全角カナで入力してください。</string>

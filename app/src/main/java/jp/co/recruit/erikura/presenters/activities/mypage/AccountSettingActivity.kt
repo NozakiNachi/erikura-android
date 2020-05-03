@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -25,12 +24,12 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityAccountSettingBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import kotlinx.android.synthetic.main.activity_account_setting.*
 import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.regex.Pattern
 
-
-class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
+class AccountSettingActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS), AccountSettingEventHandlers {
     val api = Api(this)
     var payment: Payment = Payment()
 
@@ -38,10 +37,7 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
         ViewModelProvider(this).get(AccountSettingViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account_setting)
+    override fun onCreateImpl(savedInstanceState: Bundle?) {
 
         val binding: ActivityAccountSettingBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_account_setting)
@@ -52,7 +48,6 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
         setupBankNameAdapter()
         setupBranchNameAdapter()
 
-        // FIXME: isCheckedでないとRadioButtonを制御できない。
         api.payment() {
             payment = it
 
@@ -66,31 +61,15 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
                 binding.savingsButton.isChecked = true
             }
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_edit_bank", params= bundleOf())
+        Tracking.view(name= "/mypage/bank/edit", title= "口座情報変更画面")
 
-        // 再認証が必要かどうか確認
-        checkResignIn() { isResignIn ->
-            if (isResignIn) {
-                // ページ参照のトラッキングの送出
-                Tracking.logEvent(event= "view_edit_bank", params= bundleOf())
-                Tracking.view(name= "/mypage/bank/edit", title= "口座情報変更画面")
-
-                // 変更するユーザーの現在の登録値を取得
-                Api(this).payment() {
-                    payment = it
-                    loadData()
-                }
-            } else {
-                finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("fromAccountSetting", true)
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                }
-            }
+        // 変更するユーザーの現在の登録値を取得
+        Api(this).payment() {
+            payment = it
+            loadData()
         }
     }
 
@@ -219,15 +198,42 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
 
     // 口座種別
     override fun onOrdinaryButton(view: View) {
-        payment.accountType = "ordinary_account"
+        if (payment.accountType == "ordinary_account") {
+            (view as? RadioButton)?.isChecked = false
+            this.table.clearCheck()
+            viewModel.accountType.value = null
+            payment.accountType = null
+        }
+        else {
+            viewModel.accountType.value = "ordinary_account"
+            payment.accountType = "ordinary_account"
+        }
     }
 
     override fun onCurrentButton(view: View) {
-        payment.accountType = "current_account"
+        if (payment.accountType == "current_account") {
+            (view as? RadioButton)?.isChecked = false
+            this.table.clearCheck()
+            viewModel.accountType.value = null
+            payment.accountType = null
+        }
+        else {
+            viewModel.accountType.value = "current_account"
+            payment.accountType = "current_account"
+        }
     }
 
     override fun onSavingsButton(view: View) {
-        payment.accountType = "savings"
+        if (payment.accountType == "savings") {
+            (view as? RadioButton)?.isChecked = false
+            this.table.clearCheck()
+            viewModel.accountType.value = null
+            payment.accountType = null
+        }
+        else {
+            viewModel.accountType.value = "savings"
+            payment.accountType = "savings"
+        }
     }
 
     override fun onClickSetting(view: View) {
@@ -252,24 +258,6 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
-        }
-    }
-
-    // 再認証画面へ遷移
-    private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
-        val nowTime = Date()
-        val reSignTime = userSession?.resignInExpiredAt
-
-        if (userSession?.resignInExpiredAt !== null) {
-            // 過去の再認証から10分以上経っていたら再認証画面へ
-            if (reSignTime!! < nowTime) {
-                onComplete(false)
-            } else {
-                onComplete(true)
-            }
-        } else {
-            // 一度も再認証していなければ、再認証画面へ
-            onComplete(false)
         }
     }
 
@@ -352,14 +340,13 @@ class AccountSettingViewModel: ViewModel() {
         valid = isValidBranchOfficeName() && valid
         valid = isValidBranchOfficeNumber() && valid
         valid = isValidAccountNumber() && valid
+        valid = isValidAccountType() && valid
         valid = isValidAccountHolderFamily() && valid
         valid = isValidAccountHolder() && valid
 
         return valid
     }
 
-
-    // FIXME: 足りないバリデーションルールがないか確認
     private fun isValidBankName(): Boolean {
         var valid = true
 
@@ -397,7 +384,6 @@ class AccountSettingViewModel: ViewModel() {
         return valid
     }
 
-
     private fun isValidBranchOfficeName(): Boolean {
         var valid = true
 
@@ -413,7 +399,6 @@ class AccountSettingViewModel: ViewModel() {
         }
         return valid
     }
-
 
     private fun isValidBranchOfficeNumber(): Boolean {
         var valid = true
@@ -451,6 +436,14 @@ class AccountSettingViewModel: ViewModel() {
         } else {
             valid = true
             accountNumberError.message.value = null
+        }
+        return valid
+    }
+
+    private fun isValidAccountType(): Boolean {
+        var valid = true
+        if (valid && accountType.value.isNullOrBlank()) {
+            valid = false
         }
         return valid
     }
