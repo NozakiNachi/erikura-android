@@ -20,15 +20,26 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
         var mypageCurrentActivity: Class<*> = MypageActivity::class.java
     }
 
+    protected var onTabButtonInitialization: Boolean = false
+
     override fun onStart() {
         super.onStart()
 
         // 下部のタブの選択肢を変更します
-        val nav: BottomNavigationView = findViewById(R.id.tab_navigation)
-        nav.selectedItemId = currentTabId
+        try {
+            onTabButtonInitialization = true
+            val nav: BottomNavigationView = findViewById(R.id.tab_navigation)
+            nav.selectedItemId = currentTabId
+        }
+        finally {
+            onTabButtonInitialization = false
+        }
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        // onStart で来た場合には、選択処理はスキップさせます
+        if (onTabButtonInitialization) { return false }
+
         Log.v(ErikuraApplication.LOG_TAG, "Navigation Item Selected: ${item.toString()}")
 
         // 現在のタブの場合には何も行いません
