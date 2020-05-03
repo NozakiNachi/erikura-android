@@ -1,18 +1,20 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.SurfaceTexture
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.util.DisplayMetrics
 import android.view.Surface
 import android.view.TextureView
 import android.view.View
-import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.VideoView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -28,6 +30,10 @@ import kotlinx.android.synthetic.main.activity_start.*
 TextureView.SurfaceTextureListener, MediaPlayer.OnVideoSizeChangedListene
  */
 class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandlers, TextureView.SurfaceTextureListener, MediaPlayer.OnVideoSizeChangedListener {
+    private val viewModel: StartViewModel by lazy {
+        ViewModelProvider(this).get(StartViewModel::class.java)
+    }
+
     var videoInitialized = false
     lateinit var mediaPlayer: MediaPlayer
     var pausedPosition: Int = 0
@@ -58,6 +64,7 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         val binding: ActivityStartBinding = DataBindingUtil.setContentView(this, R.layout.activity_start)
         binding.lifecycleOwner = this
         binding.handlers = this
+        binding.viewModel = viewModel
 
         if (Api.isLogin) {
             // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
@@ -178,6 +185,43 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         if (videoInitialized) {
             mediaPlayer.seekTo(pausedPosition)
             mediaPlayer.start()
+        }
+    }
+
+    class StartViewModel: ViewModel() {
+        private val resources: Resources get() = ErikuraApplication.instance.resources
+        private val displayMetrics: DisplayMetrics get() = resources.displayMetrics
+        private val margingSettings: Map<String, Int> = decideMarginSettings()
+
+        val logoTopMargin: Int get() = getMargin("logoTopMargin")
+        val logoBottomMargin: Int get() = getMargin("logoBottomMargin")
+
+        private fun getMargin(key: String): Int {
+            return margingSettings[key] ?: 0
+        }
+
+        private fun decideMarginSettings(): Map<String, Int> {
+            val height = displayMetrics.heightPixels / displayMetrics.density
+            return when {
+                height < 592 -> {
+                    mapOf(
+                        "logoTopMargin"     to 30,
+                        "logoBottomMargin"  to 30
+                    )
+                }
+                height < 700 -> {
+                    mapOf(
+                        "logoTopMargin"     to 35,
+                        "logoBottomMargin"  to 35
+                    )
+                }
+                else -> {
+                    mapOf(
+                        "logoTopMargin"     to 40,
+                        "logoBottomMargin"  to 40
+                    )
+                }
+            }
         }
     }
 }
