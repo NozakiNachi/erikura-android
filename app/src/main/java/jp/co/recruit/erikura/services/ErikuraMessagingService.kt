@@ -71,7 +71,7 @@ class ErikuraMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.erikura_icon_android_logo_1024)
             //.setLargeIcon(resources.getDrawable(R.mipmap.ic_launcher).toBitmap())
             .setContentTitle(title)
             .setContentText(body)
