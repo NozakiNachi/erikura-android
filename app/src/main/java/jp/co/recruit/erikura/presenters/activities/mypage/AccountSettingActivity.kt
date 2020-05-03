@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils
 import java.util.*
 import java.util.regex.Pattern
 
-class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
+class AccountSettingActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS), AccountSettingEventHandlers {
     val api = Api(this)
     var payment: Payment = Payment()
 
@@ -37,10 +37,7 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
         ViewModelProvider(this).get(AccountSettingViewModel::class.java)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_account_setting)
+    override fun onCreateImpl(savedInstanceState: Bundle?) {
 
         val binding: ActivityAccountSettingBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_account_setting)
@@ -64,31 +61,15 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
                 binding.savingsButton.isChecked = true
             }
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_edit_bank", params= bundleOf())
+        Tracking.view(name= "/mypage/bank/edit", title= "口座情報変更画面")
 
-        // 再認証が必要かどうか確認
-        checkResignIn() { isResignIn ->
-            if (isResignIn) {
-                // ページ参照のトラッキングの送出
-                Tracking.logEvent(event= "view_edit_bank", params= bundleOf())
-                Tracking.view(name= "/mypage/bank/edit", title= "口座情報変更画面")
-
-                // 変更するユーザーの現在の登録値を取得
-                Api(this).payment() {
-                    payment = it
-                    loadData()
-                }
-            } else {
-                finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("fromAccountSetting", true)
-                    startActivity(intent)
-                }
-            }
+        // 変更するユーザーの現在の登録値を取得
+        Api(this).payment() {
+            payment = it
+            loadData()
         }
     }
 
@@ -277,24 +258,6 @@ class AccountSettingActivity : BaseActivity(), AccountSettingEventHandlers {
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             finish()
-        }
-    }
-
-    // 再認証画面へ遷移
-    private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
-        val nowTime = Date()
-        val reSignTime = userSession?.resignInExpiredAt
-
-        if (userSession?.resignInExpiredAt !== null) {
-            // 過去の再認証から10分以上経っていたら再認証画面へ
-            if (reSignTime!! < nowTime) {
-                onComplete(false)
-            } else {
-                onComplete(true)
-            }
-        } else {
-            // 一度も再認証していなければ、再認証画面へ
-            onComplete(false)
         }
     }
 
