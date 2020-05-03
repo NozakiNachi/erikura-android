@@ -5,20 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.presenters.activities.StartActivity
-import java.net.URI
 
 class ErikuraMessagingService : FirebaseMessagingService() {
     companion object {
@@ -47,7 +41,6 @@ class ErikuraMessagingService : FirebaseMessagingService() {
             notificationManager.createNotificationChannel(channel)
         }
     }
-
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
