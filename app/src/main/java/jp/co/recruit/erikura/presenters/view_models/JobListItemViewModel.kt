@@ -1,24 +1,22 @@
 package jp.co.recruit.erikura.presenters.view_models
 
+import JobUtil
 import android.app.Activity
 import android.graphics.Bitmap
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.view.View
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
-import java.text.SimpleDateFormat
+import jp.co.recruit.erikura.business.util.JobUtils
 
 class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType): ViewModel() {
     val assetsManager = ErikuraApplication.assetsManager
-    val resources = activity.resources
-    val dateFormat = SimpleDateFormat("YYYY/MM/dd HH:mm")
 
     val reward: String get() = String.format("%,d円", job.fee)
     val workingTime: String get() = String.format("%d分", job.workingTime)
@@ -29,7 +27,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
         else {
             job.workingFinishAt
         }
-        return String.format("〜%s", dateFormat.format(finishAt))
+        return String.format("〜%s", JobUtils.DateFormats.simple.format(finishAt))
     }
     val tools: String get() = String.format("持ち物: %s", job.tools ?: "")
 

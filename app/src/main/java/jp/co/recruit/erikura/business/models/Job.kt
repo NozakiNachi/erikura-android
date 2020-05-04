@@ -4,7 +4,6 @@ import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 import java.util.*
 
 enum class JobStatus {

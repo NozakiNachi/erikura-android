@@ -1,37 +1,34 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.app.ActivityOptions
 import android.content.Intent
-import android.graphics.Typeface
-import android.graphics.Typeface.BOLD
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import androidx.fragment.app.Fragment
+import android.text.Spanned
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.DynamicDrawableSpan
+import android.text.style.ImageSpan
+import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.text.bold
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentJobDetailsViewBinding
-import java.text.SimpleDateFormat
-import java.util.*
-import android.text.Spanned
-import android.text.method.LinkMovementMethod
-import android.text.style.*
-import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.text.bold
-import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
-
+import java.util.*
 
 class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragmentEventHandlers {
     private val viewModel: JobDetailsViewFragmentViewModel by lazy {
@@ -124,11 +121,10 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
      * 納期表示を設定します
      */
     private fun setupLimit(job: Job) {
-        val format = "yyyy/MM/dd HH:mm"
         if (job.entry != null && (job.entry?.owner ?: false)) {
             // 自身が応募したタスクの場合は、エントリ時刻と、24時間のリミット時刻を表示します
-            val startAt = dateToString(job.entry?.createdAt ?: Date(), format)
-            val finishAt = dateToString(job.entry?.limitAt ?: Date(), format)
+            val startAt = JobUtils.DateFormats.simple.format(job.entry?.createdAt ?: Date())
+            val finishAt = JobUtils.DateFormats.simple.format(job.entry?.limitAt ?: Date())
             limit.value = "${startAt} 〜 ${finishAt}"
             job.entry?.limitAt?.also { limitAt ->
                 if (!job.isReported && limitAt < Date()) {
@@ -137,8 +133,8 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             }
         }
         else {
-            val startAt = dateToString(job.workingStartAt ?: Date(), format)
-            val finishAt = dateToString(job.workingFinishAt ?: Date(), format)
+            val startAt = JobUtils.DateFormats.simple.format(job.workingStartAt ?: Date())
+            val finishAt = JobUtils.DateFormats.simple.format(job.workingFinishAt ?: Date())
             // 自分が応募していないタスクについて募集期間を表示します
             limit.value = "${startAt} 〜 ${finishAt}"
         }
@@ -168,11 +164,6 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             summaryTitlesVisibility.value = View.VISIBLE
             summaryTitles.value = job.summaryTitles.joinToString("、")
         }
-    }
-
-    private fun dateToString(date: Date, format: String): String {
-        val sdf = SimpleDateFormat(format, Locale.JAPAN)
-        return sdf.format(date)
     }
 }
 

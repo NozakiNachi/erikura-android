@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.business.util
 
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.business.models.Job
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Comparator
 import kotlin.collections.HashMap
@@ -10,6 +11,11 @@ import kotlin.collections.HashMap
  * 案件の操作を行うためのユーティリティ
  */
 object JobUtils {
+    object DateFormats {
+        val simple: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd H:mm")
+    }
+
+
     /**
      * 緯度経度が同一の案件をまとめたマップを構築します
      */
