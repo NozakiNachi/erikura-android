@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
@@ -358,12 +359,7 @@ class OperatorCommentItemViewModel(val operatorComment: OperatorComment): ViewMo
 
     init {
         comment.value = operatorComment.body
-        commentCreatedAt.value = dateToString(operatorComment.createdAt, "yyyy/MM/dd HH:mm")
-    }
-
-    private fun dateToString(date: Date, format: String): String {
-        val sdf = SimpleDateFormat(format, Locale.JAPAN)
-        return sdf.format(date)
+        commentCreatedAt.value = JobUtils.DateFormats.simple.format(operatorComment.createdAt)
     }
 }
 

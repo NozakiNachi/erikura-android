@@ -36,6 +36,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
@@ -788,18 +789,13 @@ class ReportSummaryItemViewModel(
                 commentCountVisibility.value = View.VISIBLE
                 evaluationVisible.value = View.VISIBLE
                 operatorComment.value = summary.operatorComments.first().body
-                operatorCommentCreatedAt.value = dateToString(summary.operatorComments.first().createdAt, "yyyy/MM/dd HH:mm")
+                operatorCommentCreatedAt.value = JobUtils.DateFormats.simple.format(summary.operatorComments.first().createdAt)
             }
             if (summary.operatorLikes) {
                 goodCount.value = "1件"
                 goodCountVisibility.value = View.VISIBLE
             }
         }
-    }
-
-    private fun dateToString(date: Date, format: String): String {
-        val sdf = SimpleDateFormat(format, Locale.JAPAN)
-        return sdf.format(date)
     }
 }
 
