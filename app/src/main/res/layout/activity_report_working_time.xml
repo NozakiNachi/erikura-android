@@ -182,7 +182,7 @@
             android:layout_gravity="right"
             android:layout_marginTop="40dp"
             android:layout_marginRight="0dp"
-            android:onClick="@{handlers::onClickNext}" />
+            app:onSafeClick="@{handlers::onClickNext}" />
 
         <!-- マニュアルボタン -->
         <Button
@@ -191,7 +191,7 @@
             android:layout_height="70dp"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="30dp"
-            android:onClick="@{handlers::onClickManual}"
+            app:onSafeClick="@{handlers::onClickManual}"
             android:text="@string/manual"
             android:textSize="14dp" />
     </FrameLayout>

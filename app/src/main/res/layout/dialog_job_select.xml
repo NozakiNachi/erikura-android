@@ -28,7 +28,7 @@
                 android:layout_marginLeft="10dp"
                 android:src="@drawable/cross_3x"
                 android:background="#00000000"
-                android:onClick="@{handler::onClickClose}"
+                app:onSafeClick="@{handler::onClickClose}"
                 />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/job_select_dialog_recycler_view"

@@ -47,6 +47,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import okhttp3.internal.closeQuietly
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -712,7 +713,7 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
             holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false)
             val button =
                 holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
-            button.setOnClickListener {
+            button.setOnSafeClickListener {
                 onClickListener?.apply {
                     onClick(view)
                 }
@@ -836,13 +837,13 @@ class ReportSummaryAdapter(
             jobDetails
         )
         val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
-        editButton.setOnClickListener {
+        editButton.setOnSafeClickListener {
             onClickListener?.apply {
                 onClickEditButton(view, position)
             }
         }
         val removeButton = holder.binding.root.findViewById<Button>(R.id.remove_report_summary_item)
-        removeButton.setOnClickListener {
+        removeButton.setOnSafeClickListener {
             onClickListener?.apply {
                 onClickRemoveButton(view, position)
             }

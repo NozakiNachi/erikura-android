@@ -185,7 +185,7 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="30dp"
                         android:checked="@={viewModel.good}"
-                        android:onClick="@{handlers::onClickGood}"
+                        app:onSafeClick="@{handlers::onClickGood}"
                         android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"
                         style="@style/goodButton"/>
                     <ToggleButton
@@ -193,7 +193,7 @@
                         android:layout_height="120dp"
                         android:layout_gravity="center"
                         android:checked="@={viewModel.bad}"
-                        android:onClick="@{handlers::onClickBad}"
+                        app:onSafeClick="@{handlers::onClickBad}"
                         android:stateListAnimator="@drawable/button_state_list_anim_material_8dp"
                         style="@style/badButton"/>
                 </LinearLayout>
@@ -238,7 +238,7 @@
             android:layout_gravity="right"
             android:layout_marginTop="40dp"
             android:layout_marginRight="0dp"
-            android:onClick="@{handlers::onClickNext}" />
+            app:onSafeClick="@{handlers::onClickNext}" />
 
         <!-- マニュアルボタン -->
         <Button
@@ -247,7 +247,7 @@
             android:layout_height="70dp"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="30dp"
-            android:onClick="@{handlers::onClickManual}"
+            app:onSafeClick="@{handlers::onClickManual}"
             android:text="@string/manual"
             android:textSize="14dp" />
 

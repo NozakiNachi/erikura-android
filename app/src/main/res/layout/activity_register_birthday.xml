@@ -46,7 +46,7 @@
                         android:layout_gravity="right"
                         android:layout_marginTop="60dp"
                         android:layout_marginRight="20dp"
-                        android:onClick="@{handlers::onClickNext}" />
+                        app:onSafeClick="@{handlers::onClickNext}" />
 
                     <TextView
                         style="@style/titleLabel"
@@ -75,7 +75,7 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:focusable="false"
-                    android:onClick="@{handlers::onClickEditView}"
+                    app:onSafeClick="@{handlers::onClickEditView}"
                     android:text="@={viewModel.birthday}" />
 
                 <TextView

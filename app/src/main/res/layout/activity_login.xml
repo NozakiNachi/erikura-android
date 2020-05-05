@@ -96,7 +96,7 @@
                     android:layout_marginTop="30dp"
                     style="@style/primaryButton"
                     android:text="@string/login"
-                    android:onClick="@{handlers::onClickLogin}"
+                    app:onSafeClick="@{handlers::onClickLogin}"
                     android:enabled="@{viewModel.loginButtonEnabled}"
                     />
 
@@ -108,7 +108,7 @@
                     android:textSize="14dp"
                     style="@style/linkText"
                     android:text="@string/login_remindPassword"
-                    android:onClick="@{handlers::onClickReminderLink}"
+                    app:onSafeClick="@{handlers::onClickReminderLink}"
                     />
 
                 <TextView
@@ -120,7 +120,7 @@
                     android:textSize="14dp"
                     style="@style/linkText"
                     android:text="@string/login_mailUnreachable"
-                    android:onClick="@{handlers::onClickUnreachLink}"
+                    app:onSafeClick="@{handlers::onClickUnreachLink}"
                     />
             </LinearLayout>
         </ScrollView>

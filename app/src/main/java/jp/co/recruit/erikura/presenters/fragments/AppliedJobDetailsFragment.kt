@@ -42,6 +42,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.util.*
 
 
@@ -182,7 +183,7 @@ class AppliedJobDetailsFragment(
                     label1.text = sb
 
                     val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnClickListener {
+                    button.setOnSafeClickListener {
                         openSettings = true
                         val uriString = "package:" + ErikuraApplication.instance.packageName
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))

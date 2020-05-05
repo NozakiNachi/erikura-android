@@ -30,6 +30,7 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.ChangeAccountSettingFragment
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationFragment
 import jp.co.recruit.erikura.presenters.activities.job.RegisterAccountSettingFragment
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import kotlinx.android.synthetic.main.activity_configuration.*
 
 
@@ -137,7 +138,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             val viewModel = ConfigurationMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
-            holder.binding.root.setOnClickListener {
+            holder.binding.root.setOnSafeClickListener {
                 listener?.onItemClickListener(menuItems[position])
             }
         }
@@ -178,7 +179,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         val dialog = AlertDialog.Builder(this)
             .setView(binding.root)
             .show()
-        binding.logoutButton.setOnClickListener {
+        binding.logoutButton.setOnSafeClickListener {
             dialog.dismiss()
         }
     }

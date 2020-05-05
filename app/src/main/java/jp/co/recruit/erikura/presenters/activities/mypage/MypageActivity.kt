@@ -36,6 +36,7 @@ import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.WebViewResizeHeightJavascriptInterface
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import kotlinx.android.synthetic.main.activity_mypage.*
 import java.util.*
 
@@ -199,7 +200,7 @@ class MypageAdapter(private val mypageItems: List<MypageItem>) : RecyclerView.Ad
         val viewModel = MypageMenuItemViewModel(MypageListItem)
         holder.binding.viewModel = viewModel
 
-        holder.binding.root.setOnClickListener {
+        holder.binding.root.setOnSafeClickListener {
             listener?.onItemClickListener(mypageItems[position])
         }
     }

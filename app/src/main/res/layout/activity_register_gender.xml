@@ -61,7 +61,7 @@
                         android:layout_marginRight="10dp"
                         style="@style/tertiaryButton"
                         android:text="@string/male"
-                        android:onClick="@{handlers::onClickMale}"/>
+                        app:onSafeClick="@{handlers::onClickMale}"/>
 
                     <Button
                         android:layout_width="match_parent"
@@ -70,7 +70,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/tertiaryButton"
                         android:text="@string/female"
-                        android:onClick="@{handlers::onClickFemale}"/>
+                        app:onSafeClick="@{handlers::onClickFemale}"/>
 
                 </LinearLayout>
 

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.DialogSummaryRemoveBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
 class SummaryRemoveDialogFragment(private val index: Int): DialogFragment() {
     private val viewModel: SummaryRemoveViewModel by lazy {
@@ -35,7 +36,7 @@ class SummaryRemoveDialogFragment(private val index: Int): DialogFragment() {
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
 
-        binding.root.findViewById<Button>(R.id.summary_remove_button).setOnClickListener {
+        binding.root.findViewById<Button>(R.id.summary_remove_button).setOnSafeClickListener {
             onClickListener?.apply {
                 onClickRemoveButton()
             }

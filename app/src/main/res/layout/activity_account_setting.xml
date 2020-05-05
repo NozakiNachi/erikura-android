@@ -253,7 +253,7 @@
                                 android:text="普通"
                                 android:orientation="horizontal"
 
-                                android:onClick="@{handlers::onOrdinaryButton}" />
+                                app:onSafeClick="@{handlers::onOrdinaryButton}" />
                             <RadioButton
                                 android:id="@+id/current_button"
                                 android:layout_width="155dp"
@@ -265,7 +265,7 @@
                                 android:layout_marginRight="20dp"
                                 android:text="当座"
                                 android:orientation="horizontal"
-                                android:onClick="@{handlers::onCurrentButton}" />
+                                app:onSafeClick="@{handlers::onCurrentButton}" />
                         </TableRow>
                         <TableRow
                             android:id="@+id/group2"
@@ -282,7 +282,7 @@
                                 android:layout_marginRight="10dp"
                                 android:text="貯蓄"
                                 android:orientation="horizontal"
-                                android:onClick="@{handlers::onSavingsButton}" />
+                                app:onSafeClick="@{handlers::onSavingsButton}" />
                         </TableRow>
                     </jp.co.recruit.erikura.presenters.activities.TableRadioGroup>
                 </LinearLayout>
@@ -358,7 +358,7 @@
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
-                    android:onClick="@{handlers::onClickSetting}"
+                    app:onSafeClick="@{handlers::onClickSetting}"
                     android:enabled="@{viewModel.isSettingButtonEnabled}"
                     />
                 <LinearLayout

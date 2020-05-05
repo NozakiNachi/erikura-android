@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogJobSelectBinding
 import jp.co.recruit.erikura.databinding.FragmentJobListItemBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
 import java.io.File
 
@@ -123,7 +124,7 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
         holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition = currentPosition, timeLabelType = timeLabelType)
         holder.binding.lifecycleOwner = activity
 
-        holder.binding.root.setOnClickListener {
+        holder.binding.root.setOnSafeClickListener {
             onClickListner?.apply {
                 onClick(jobs[position])
             }

@@ -209,7 +209,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginLeft="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers::onClickSearch}"
+                app:onSafeClick="@{handlers::onClickSearch}"
                 />
             <!-- 募集中のみチェックボックス -->
             <ImageButton
@@ -223,7 +223,7 @@
                 android:layout_marginTop="96dp"
                 android:layout_marginLeft="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers::onToggleActiveOnly}"
+                app:onSafeClick="@{handlers::onToggleActiveOnly}"
                 />
             <!-- 地図ボタン -->
             <ImageButton
@@ -238,7 +238,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginRight="20dp"
                 android:elevation="@dimen/default_elevation"
-                android:onClick="@{handlers::onClickMap}"
+                app:onSafeClick="@{handlers::onClickMap}"
                 />
 
             <!-- 検索バー -->
@@ -254,7 +254,7 @@
                 android:elevation="@dimen/default_elevation"
                 erikura:conditions="@{viewModel.conditions}"
                 android:visibility="@{viewModel.searchBarVisible}"
-                android:onClick="@{handlers::onClickSearchBar}"
+                app:onSafeClick="@{handlers::onClickSearchBar}"
                 />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
