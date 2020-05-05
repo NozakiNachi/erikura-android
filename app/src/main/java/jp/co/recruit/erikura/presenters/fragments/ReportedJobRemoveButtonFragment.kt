@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobRemoveButtonBinding
 import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 import java.util.*
@@ -46,12 +47,17 @@ class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), Repor
 
     override fun onClickReportedJobRemoveButton(view: View) {
         job?.let { job ->
-            if (isExpiredAndRejected()) {
-                val dialog = CancelDialogFragment(job)
-                dialog.show(childFragmentManager, "Cancel")
-            }else {
-                val dialog = ReportedJobRemoveDialogFragment(job)
-                dialog.show(childFragmentManager, "Remove")
+            if (job.isReportEditable) {
+                if (isExpiredAndRejected()) {
+                    val dialog = CancelDialogFragment(job)
+                    dialog.show(childFragmentManager, "Cancel")
+                } else {
+                    val dialog = ReportedJobRemoveDialogFragment(job)
+                    dialog.show(childFragmentManager, "Remove")
+                }
+            }
+            else {
+                Api(activity!!).displayErrorAlert(listOf(getString(R.string.jobDetails_overLimit)))
             }
         }
     }

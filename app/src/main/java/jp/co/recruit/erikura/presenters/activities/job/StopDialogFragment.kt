@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogStopBinding
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import java.util.*
 
 class StopDialogFragment(private val job: Job?, private val steps: Int?) : DialogFragment(), StopDialogFragmentEventHandlers  {
     private val viewModel by lazy {
@@ -56,17 +57,26 @@ class StopDialogFragment(private val job: Job?, private val steps: Int?) : Dialo
                 null
             }
 
-            Api(activity!!).stopJob(job, latLng,
-                steps = ErikuraApplication.pedometerManager.readStepCount(),
-                distance = null, floorAsc = null, floorDesc = null
-            ) {
-                // 作業完了のトラッキングの送出
-                Tracking.logEvent(event= "job_finished", params= bundleOf())
-                Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0)
+            val now = Date()
+            val limitAt = job.entry?.limitAt ?: now
 
-                val intent= Intent(activity, WorkingFinishedActivity::class.java)
-                intent.putExtra("job", job)
-                startActivity(intent)
+            if (limitAt < now) {
+                // 納期を過ぎてしまっている場合
+                Api(activity!!).displayErrorAlert(listOf(getString(R.string.jobDetails_overLimit)))
+            }
+            else {
+                Api(activity!!).stopJob(job, latLng,
+                    steps = ErikuraApplication.pedometerManager.readStepCount(),
+                    distance = null, floorAsc = null, floorDesc = null
+                ) {
+                    // 作業完了のトラッキングの送出
+                    Tracking.logEvent(event= "job_finished", params= bundleOf())
+                    Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0)
+
+                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
+                    intent.putExtra("job", job)
+                    startActivity(intent)
+                }
             }
         }
     }
