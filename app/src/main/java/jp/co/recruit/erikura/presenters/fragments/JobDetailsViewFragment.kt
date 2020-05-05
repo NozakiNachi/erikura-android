@@ -1,6 +1,9 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.content.Intent
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
@@ -28,6 +31,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentJobDetailsViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
+import java.lang.ref.WeakReference
 import java.util.*
 
 class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragmentEventHandlers {
@@ -109,10 +113,13 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             setupSummaryTitles(job)
         }
 
+        val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
+        val width = (16 * displayMetrics.density).toInt()
+        val height = (16 * displayMetrics.density).toInt()
         val str = SpannableString(ErikuraApplication.instance.getString(R.string.openMap))
         val drawable = ContextCompat.getDrawable(ErikuraApplication.instance.applicationContext, R.drawable.link)
-        drawable!!.setBounds(0, 0, 40, 40)
-        val span = ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE)
+        drawable!!.setBounds(0, 0, width, height)
+        val span = IconImageSpan(drawable, DynamicDrawableSpan.ALIGN_CENTER)
         str.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
         openMapButtonText.value = str
     }
@@ -169,4 +176,32 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
 
 interface JobDetailsViewFragmentEventHandlers {
     fun onClickOpenMap(view: View)
+}
+
+class IconImageSpan(drawable: Drawable, verticalAlignment: Int): ImageSpan(drawable, verticalAlignment) {
+    private var drawableRef: WeakReference<Drawable>? = null
+
+    override fun draw(canvas: Canvas,
+                      text: CharSequence?, start: Int, end: Int,
+                      x: Float, top: Int, y: Int, bottom: Int,
+                      paint: Paint) {
+        val drawable = getCachedDrawable()
+        canvas.save()
+
+        val transY: Float = (y - drawable.bounds.bottom + paint.fontMetricsInt.descent).toFloat()
+        canvas.translate(x, transY)
+        drawable.draw(canvas)
+
+        canvas.restore()
+    }
+
+    private fun getCachedDrawable(): Drawable {
+        return drawableRef?.let {
+            it.get()
+        } ?: run {
+            val drawable = getDrawable()
+            drawableRef = WeakReference(drawable)
+            drawable
+        }
+    }
 }
