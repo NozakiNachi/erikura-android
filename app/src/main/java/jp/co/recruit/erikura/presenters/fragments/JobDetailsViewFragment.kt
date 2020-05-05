@@ -113,22 +113,6 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             setupSummaryTitles(job)
         }
 
-        /*
-        val ss = SpannableString("  サンプル")
-        val drawable = ContextCompat.getDrawable(context, imageResourceId)
-        drawable.setBounds(0, 0, 50, 50)
-        val span = ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE)
-        ss.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
-
-        button.text = ss
-        addView(button)
-         */
-
-        // アイコンは 16dp
-        // フォントは 14dp
-        // パディングは5dpぐらいか？
-
-
         val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
         val width = (16 * displayMetrics.density).toInt()
         val height = (16 * displayMetrics.density).toInt()
