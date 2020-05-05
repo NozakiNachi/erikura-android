@@ -14,6 +14,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.FragmentImagePickerCellViewBinding
 import android.widget.Toast
 import android.widget.CompoundButton
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
 
 class ImagePickerCellView : FrameLayout {
@@ -38,7 +39,7 @@ class ImagePickerCellView : FrameLayout {
         // 1. ImageView
         // 2. ToggleButton
 
-        toggleButton.setOnClickListener {
+        toggleButton.setOnSafeClickListener {
             toggleClickListener?.apply {
                 onClick(toggleButton.isChecked)
             }

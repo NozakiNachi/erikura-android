@@ -28,6 +28,7 @@ import jp.co.recruit.erikura.databinding.FragmentPaymentInfoMonthlyCellBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInformationListCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.ErikuraCarouselAdapter
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -186,7 +187,7 @@ class MonthlyPaymentAdapter(val activity: FragmentActivity, var monthlyPayments:
         val adapter = PaymentListAdapater(activity, monthlyPayment.jobs)
         binding.paymentInfoMonthlyCellList.adapter = adapter
 
-        binding.root.setOnClickListener {
+        binding.root.setOnSafeClickListener {
             val toggle: ToggleButton = binding.root.findViewById(R.id.payment_info_monthly_cell_toggle)
             toggle.isChecked = !toggle.isChecked
         }

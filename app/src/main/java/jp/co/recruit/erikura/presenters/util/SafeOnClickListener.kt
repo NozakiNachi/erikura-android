@@ -22,25 +22,25 @@ abstract class SafeOnClickListener(
     abstract fun onSafeClick(v: View?)
 }
 
-fun View.setOnSafeClickListener(listener: View.OnClickListener) {
+fun View.setOnSafeClickListener(listener: View.OnClickListener?) {
     setOnClickListener(object: SafeOnClickListener() {
         override fun onSafeClick(v: View?) {
-            listener.onClick(v)
+            listener?.onClick(v)
         }
     })
 }
 
-fun View.setOnSafeClickListener(onSafeClickHandler: (View?) -> Unit) {
+fun View.setOnSafeClickListener(onSafeClickHandler: ((View?) -> Unit)?) {
     setOnClickListener(object: SafeOnClickListener() {
         override fun onSafeClick(v: View?) {
-            onSafeClickHandler(v)
+            onSafeClickHandler?.invoke(v)
         }
     })
 }
 
 object SafeOnClickBindingAdapter {
     @BindingAdapter("onSafeClick")
-    @JvmStatic fun setOnSafeClick(view: View, listener: View.OnClickListener) {
-        view.setOnSafeClickListener(listener)
+    @JvmStatic fun setOnSafeClick(view: View?, listener: View.OnClickListener?) {
+        view?.setOnSafeClickListener(listener)
     }
 }

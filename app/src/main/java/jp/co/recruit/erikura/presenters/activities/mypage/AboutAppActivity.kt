@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.databinding.ActivityAboutAppBinding
 import jp.co.recruit.erikura.databinding.FragmentAboutAppCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import kotlinx.android.synthetic.main.activity_about_app.*
 
 class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
@@ -122,7 +123,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
                 AboutAppMenuItemViewModel(MenuListItem)
             holder.binding.viewModel = viewModel
 
-            holder.binding.root.setOnClickListener {
+            holder.binding.root.setOnSafeClickListener {
                 listener?.onItemClickListener(menuItems[position])
             }
         }

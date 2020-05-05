@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:bitmap="@{viewModel.bitmap}"
-            android:onClick="@{handler::onClickManualImage}" />
+            app:onSafeClick="@{handler::onClickManualImage}" />
 
     </FrameLayout>
 </layout>

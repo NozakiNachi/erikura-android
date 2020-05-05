@@ -21,7 +21,7 @@
             android:layout_height="70dp"
             style="@style/tertiaryButton"
             android:text="@{viewModel.buttonText}"
-            android:onClick="@{handler::onClickReportedJobEditButton}"
+            app:onSafeClick="@{handler::onClickReportedJobEditButton}"
             />
 
     </FrameLayout>

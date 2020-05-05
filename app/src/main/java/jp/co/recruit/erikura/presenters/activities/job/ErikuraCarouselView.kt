@@ -20,6 +20,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.io.File
 
 class ErikuraCarouselViewHolder(private val activity: Activity, val binding: FragmentCarouselItemBinding): RecyclerView.ViewHolder(binding.root) {
@@ -133,7 +134,7 @@ class ErikuraCarouselAdapter(val activity: FragmentActivity, val carousel: Recyc
 
         holder.binding.executePendingBindings()
 
-        holder.binding.root.setOnClickListener {
+        holder.binding.root.setOnSafeClickListener {
             onClickListener?.apply {
                 onClick(job)
             }

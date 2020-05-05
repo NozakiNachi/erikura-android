@@ -56,7 +56,7 @@
                     android:layout_marginRight="18dp"
                     android:src="@drawable/cross_3x"
                     android:background="#00000000"
-                    android:onClick="@{handlers::onClickClear}"
+                    app:onSafeClick="@{handlers::onClickClear}"
                     android:elevation="@dimen/default_elevation"
                     />
 
@@ -70,7 +70,7 @@
                     style="@style/tertiaryButton"
                     android:text="絞り込み検索"
                     android:visibility="@{viewModel.detailButtonVisibility}"
-                    android:onClick="@{handlers::onClickDetailButton}"
+                    app:onSafeClick="@{handlers::onClickDetailButton}"
                     />
 
                 <LinearLayout
@@ -143,7 +143,7 @@
                             android:gravity="center_vertical"
                             android:paddingLeft="20dp"
                             android:textColor="@color/blackTwo"
-                            android:onClick="@{handlers::onClickRewardSpinner}"
+                            app:onSafeClick="@{handlers::onClickRewardSpinner}"
                             android:text="@{viewModel.rewardLabel}"
                             />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -203,7 +203,7 @@
                             android:gravity="center_vertical"
                             android:paddingLeft="20dp"
                             android:textColor="@color/blackTwo"
-                            android:onClick="@{handlers::onClickWorkingTimeSpinner}"
+                            app:onSafeClick="@{handlers::onClickWorkingTimeSpinner}"
                             android:text="@{viewModel.workingTimeLabel}"
                             />
                     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -275,7 +275,7 @@
             style="@style/primaryButton"
             android:text="検索"
             android:enabled="@{viewModel.isSearchButtonEnabled}"
-            android:onClick="@{handlers::onClickSearchButton}"
+            app:onSafeClick="@{handlers::onClickSearchButton}"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -206,7 +206,7 @@
                     android:layout_height="62dp"
                     android:layout_marginTop="10dp"
                     android:focusable="false"
-                    android:onClick="@{handlers::onClickBirthdayEditView}"
+                    app:onSafeClick="@{handlers::onClickBirthdayEditView}"
                     android:text="@={viewModel.dateOfBirth}"
                     />
                 <TextView
@@ -243,7 +243,7 @@
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="4dp"
                             android:paddingLeft="10dp"
-                            android:onClick="@{handlers::onClickMale}"
+                            app:onSafeClick="@{handlers::onClickMale}"
                             android:checked="@={viewModel.male}"
                             android:text="@string/male"/>
                         <RadioButton
@@ -255,7 +255,7 @@
                             android:layout_marginLeft="4dp"
                             android:layout_marginRight="20dp"
                             android:paddingLeft="5dp"
-                            android:onClick="@{handlers::onClickFemale}"
+                            app:onSafeClick="@{handlers::onClickFemale}"
                             android:checked="@={viewModel.female}"
                             android:text="@string/female"/>
                     </RadioGroup>
@@ -495,7 +495,7 @@
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
                     android:text="@string/registration"
-                    android:onClick="@{handlers::onClickRegister}"
+                    app:onSafeClick="@{handlers::onClickRegister}"
                     android:enabled="@{viewModel.isChangeButtonEnabled}"
                     />
                 <LinearLayout

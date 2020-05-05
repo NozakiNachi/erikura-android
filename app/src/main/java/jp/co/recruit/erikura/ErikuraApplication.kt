@@ -43,6 +43,7 @@ import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivit
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.PedometerManager
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
@@ -185,7 +186,7 @@ class ErikuraApplication : Application() {
                     dialog.show()
 
                     val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnClickListener {
+                    button.setOnSafeClickListener {
                         val playURL = "http://play.google.com/store/apps/details?id=${packageName}"
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playURL))
                         activity.startActivity(intent)
@@ -281,7 +282,7 @@ object Tracking {
 
     fun identify(user: User, status: String) {
         try {
-            val birthday = SimpleDateFormat("yyyy/MM/dd").parse(user.dateOfBirth)
+            val birthday = user.parsedDateOfBirth
             val now = Date()
             val gender = when (user.gender) {
                 Gender.MALE -> "m"

@@ -72,7 +72,7 @@
                     android:layout_marginRight="40dp"
                     style="@style/primaryButton"
                     android:text="口座情報登録"
-                    android:onClick="@{handlers::onClickAccountSetting}"
+                    app:onSafeClick="@{handlers::onClickAccountSetting}"
                     />
             </LinearLayout>
 

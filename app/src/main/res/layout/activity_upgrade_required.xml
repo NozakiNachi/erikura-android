@@ -36,7 +36,7 @@
                 android:layout_marginRight="20dp"
                 style="@style/primaryButton"
                 android:text="@string/upgrade_required_button"
-                android:onClick="@{handlers::onClickUpate}"
+                app:onSafeClick="@{handlers::onClickUpate}"
                 />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
