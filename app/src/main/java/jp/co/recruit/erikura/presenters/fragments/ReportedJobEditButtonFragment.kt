@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobEditButtonBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportConfirmActivity
 import java.util.*
@@ -48,7 +49,10 @@ class ReportedJobEditButtonFragment(private val job: Job?) : Fragment(), Reporte
             val intent = Intent(activity,ReportConfirmActivity::class.java)
             intent.putExtra("job",job)
             startActivity(intent)
-         }
+        }
+        else {
+            Api(activity!!).displayErrorAlert(listOf(getString(R.string.jobDetails_overLimit)))
+        }
     }
 }
 
