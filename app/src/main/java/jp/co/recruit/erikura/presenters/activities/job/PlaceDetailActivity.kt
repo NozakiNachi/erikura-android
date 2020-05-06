@@ -84,7 +84,7 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
         Api(this).place(place.id) { place ->
             viewModel.setupThumbnail(this, place)
             // お気に入りボタンの状態取得処理
-            UserSession.retrieve()?.let {
+            if (Api.isLogin) {
                 Api(this).placeFavoriteShow(place.id) {
                     viewModel.favorited.value = it
                 }

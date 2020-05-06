@@ -12,15 +12,30 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobRemoveButtonBinding
 import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 import java.util.*
 
 
-class ReportedJobRemoveButtonFragment(private val job: Job?) : Fragment(), ReportedJobRemoveButtonFragmentEventHandlers {
+class ReportedJobRemoveButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ReportedJobRemoveButtonFragmentEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobRemoveButtonViewModel::class.java)
+    }
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+
+        job?.let { job ->
+            if (isExpiredAndRejected()) {
+                // 納期切れ、かつ差し戻し案件の場合は、「応募と報告をキャンセルする」ボタンを表示します
+                viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.cancel_report_entry)
+            }else {
+                // それ以外は作業報告の削除ボタンを表示します
+                viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.remove_report)
+            }
+        }
     }
 
     override fun onCreateView(

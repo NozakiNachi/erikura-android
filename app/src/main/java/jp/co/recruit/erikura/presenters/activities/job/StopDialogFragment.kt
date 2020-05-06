@@ -4,31 +4,29 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogStopBinding
-import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
 
-class StopDialogFragment(private val job: Job?, private val steps: Int?) : DialogFragment(), StopDialogFragmentEventHandlers  {
+class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFragmentEventHandlers  {
     private val viewModel by lazy {
         ViewModelProvider(this).get(StopDialogFragmentViewModel::class.java)
     }
 
-    private val fitApiManager: GoogleFitApiManager = ErikuraApplication.fitApiManager
     private val locationManager: LocationManager = ErikuraApplication.locationManager
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

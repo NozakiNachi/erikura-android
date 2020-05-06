@@ -5,13 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
 
-
-class ManualButtonFragment(val job: Job?) : Fragment(), ManualButtonFragmentEventHandlers {
-
+class ManualButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ManualButtonFragmentEventHandlers {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

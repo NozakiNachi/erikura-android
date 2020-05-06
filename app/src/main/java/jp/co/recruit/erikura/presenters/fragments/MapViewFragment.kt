@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,20 +14,27 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentMapViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.util.LocationManager
 
-class MapViewFragment(private val activity: AppCompatActivity, val job: Job?) : Fragment(), OnMapReadyCallback {
+class MapViewFragment(private val activity: AppCompatActivity, job: Job?, user: User?) : BaseJobDetailFragment(job, user), OnMapReadyCallback {
     private val viewModel: MapViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(MapViewFragmentViewModel::class.java)
     }
 
     private lateinit var mMap: GoogleMap
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        // マーカーの再設定
+        setupMarker()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,28 +60,38 @@ class MapViewFragment(private val activity: AppCompatActivity, val job: Job?) : 
         mMap.uiSettings.setZoomGesturesEnabled(false)
         mMap.uiSettings.setTiltGesturesEnabled(false)
         mMap.uiSettings.setRotateGesturesEnabled(false)
-        mMap.moveCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(job?.latitude?: 0.0, job?.longitude?: 0.0),
-                MapViewActivity.defaultZoom)
-            )
-        try {
-            val styleOptions = MapStyleOptions.loadRawResourceStyle(ErikuraApplication.instance.applicationContext, R.raw.style)
-            mMap.setMapStyle(styleOptions)
-        }
-        catch (e: Resources.NotFoundException) {
-            Log.e("ERROR", e.message, e)
-        }
-
-        if (job != null) {
-            val erikuraMarker = ErikuraMarkerView.build(activity, mMap, job, false) {  }
-            erikuraMarker.active = true
-            viewModel.marker.value = erikuraMarker
-        }
 
         // マーカーがタップされても何も実行しないようにします
         mMap.setOnMarkerClickListener { marker ->
             true
+        }
+
+        setupMarker()
+    }
+
+    private fun setupMarker() {
+        if (::mMap.isInitialized) {
+            mMap.clear()
+            viewModel.marker.value = null
+
+            mMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    job?.latLng ?: LocationManager.defaultLatLng,
+                    MapViewActivity.defaultZoom)
+            )
+            try {
+                val styleOptions = MapStyleOptions.loadRawResourceStyle(ErikuraApplication.instance.applicationContext, R.raw.style)
+                mMap.setMapStyle(styleOptions)
+            }
+            catch (e: Resources.NotFoundException) {
+                Log.e("ERROR", e.message, e)
+            }
+
+            job?.let { job ->
+                val erikuraMarker = ErikuraMarkerView.build(activity, mMap, job, false) {  }
+                erikuraMarker.active = true
+                viewModel.marker.value = erikuraMarker
+            }
         }
     }
 }

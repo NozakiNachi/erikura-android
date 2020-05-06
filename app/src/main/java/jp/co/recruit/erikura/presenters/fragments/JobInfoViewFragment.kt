@@ -9,13 +9,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentJobInfoViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 
-
-class JobInfoViewFragment(val job: Job?) : Fragment(), JobInfoViewFragmentEventHandlers {
+class JobInfoViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), JobInfoViewFragmentEventHandlers {
     private val viewModel: JobInfoViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobInfoViewFragmentViewModel::class.java)
+    }
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        viewModel.setup(job)
     }
 
     override fun onCreateView(

@@ -21,22 +21,28 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentJobDetailsViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 import java.lang.ref.WeakReference
 import java.util.*
 
-class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragmentEventHandlers {
+class JobDetailsViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), JobDetailsViewFragmentEventHandlers {
     private val viewModel: JobDetailsViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobDetailsViewFragmentViewModel::class.java)
+    }
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        viewModel.setup(job)
+        setupPlaceLabel()
     }
 
     override fun onCreateView(
@@ -45,18 +51,27 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
     ): View? {
         val binding = FragmentJobDetailsViewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(job)
         binding.viewModel = viewModel
         binding.handlers = this
+        viewModel.setup(job)
         return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        setupPlaceLabel()
+    }
+
+    override fun onClickOpenMap(view: View) {
+        val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${job?.latitude?:0},${job?.longitude?:0}")
+        startActivity(Intent(Intent.ACTION_VIEW, uri))
+    }
+
+    private fun setupPlaceLabel() {
         var tv = activity!!.findViewById<TextView>(R.id.jobDetailsView_placeLink)
 
         var place = SpannableStringBuilder()
-        if(job != null) {
+        job?.let { job ->
             if ( (job.place?.hasEntries?: false) || (job.place?.workingPlaceShort.isNullOrBlank()) ) {
                 place.append(job.place?.workingPlace)
                 if(!(job.place?.workingBuilding.isNullOrBlank())) {
@@ -84,12 +99,6 @@ class JobDetailsViewFragment(val job: Job?) : Fragment(), JobDetailsViewFragment
         tv.text = place
         tv.movementMethod = LinkMovementMethod.getInstance()
     }
-
-    override fun onClickOpenMap(view: View) {
-        val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${job?.latitude?:0},${job?.longitude?:0}")
-        startActivity(Intent(Intent.ACTION_VIEW, uri))
-    }
-
 }
 
 class JobDetailsViewFragmentViewModel: ViewModel() {
