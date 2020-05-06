@@ -92,7 +92,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
     }
 
     override fun onClickEntryButton(view: View) {
-        if (UserSession.retrieve() != null) {
+        if (Api.isLogin) {
             if (job != null) {
                 Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "", onError = {
                     Log.v("DEBUG", "応募失敗")
@@ -115,7 +115,8 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                     startActivity(intent)
                 }
             }
-        }else {
+        }
+        else {
             val intent= Intent(activity, LoginRequiredActivity::class.java)
             startActivity(intent)
         }

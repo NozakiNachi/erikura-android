@@ -1,42 +1,32 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import JobUtil
 import android.app.Activity
-import android.app.ActivityOptions
-import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.ImageView
-import androidx.core.content.FileProvider
-import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.util.JobUtils
-import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.Asset
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
-import okhttp3.internal.closeQuietly
-import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
-
-class ManualImageFragment(private val job: Job?) : Fragment(), ManualImageFragmentEventHandlers {
+class ManualImageFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ManualImageFragmentEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ManualImageFragmentViewModel::class.java)
+    }
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        activity?.let {
+            viewModel.setup(it, view!!)
+        }
     }
 
     override fun onCreateView(

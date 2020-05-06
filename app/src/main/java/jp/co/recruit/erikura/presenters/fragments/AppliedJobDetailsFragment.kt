@@ -48,9 +48,9 @@ import java.util.*
 
 class AppliedJobDetailsFragment(
     private val activity: AppCompatActivity,
-    val job: Job?,
-    val user: User
-) : Fragment(), AppliedJobDetailsFragmentEventHandlers {
+    job: Job?,
+    user: User?
+) : BaseJobDetailFragment(job, user), AppliedJobDetailsFragmentEventHandlers {
     private val viewModel: AppliedJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
     }
@@ -59,6 +59,29 @@ class AppliedJobDetailsFragment(
     private var allowPedometerDialog: Dialog? = null
 
     private var inStartJob: Boolean = false
+
+    private var jobInfoView: JobInfoViewFragment? = null
+    private var manualImage: ManualImageFragment? = null
+    private var cancelButton: CancelButtonFragment? = null
+    private var manualButton: ManualButtonFragment? = null
+    private var thumbnailImage: ThumbnailImageFragment? = null
+    private var jobDetailsView: JobDetailsViewFragment? = null
+    private var mapView: MapViewFragment? = null
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        jobInfoView?.refresh(job, user)
+        manualImage?.refresh(job, user)
+        cancelButton?.refresh(job, user)
+        manualButton?.refresh(job, user)
+        thumbnailImage?.refresh(job, user)
+        jobDetailsView?.refresh(job, user)
+        mapView?.refresh(job, user)
+
+        activity?.let {
+            viewModel.setup(it, job, user)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,28 +101,20 @@ class AppliedJobDetailsFragment(
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        val jobInfoView = JobInfoViewFragment(job)
-        val manualImage = ManualImageFragment(job)
-        val cancelButton = CancelButtonFragment(job)
-        val manualButton = ManualButtonFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(job)
-        val jobDetailsView = JobDetailsViewFragment(job)
-        val mapView = MapViewFragment(activity, job)
-        transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage, "manualImage")
-        transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton, "cancelButton")
-        transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton, "manualButton")
-        transaction.add(
-            R.id.appliedJobDetails_thumbnailImageFragment,
-            thumbnailImage,
-            "thumbnailImage"
-        )
-        transaction.add(
-            R.id.appliedJobDetails_jobDetailsViewFragment,
-            jobDetailsView,
-            "jobDetailsView"
-        )
-        transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView, "mapView")
+        jobInfoView = JobInfoViewFragment(job, user)
+        manualImage = ManualImageFragment(job, user)
+        cancelButton = CancelButtonFragment(job, user)
+        manualButton = ManualButtonFragment(job, user)
+        thumbnailImage = ThumbnailImageFragment(job, user)
+        jobDetailsView = JobDetailsViewFragment(job, user)
+        mapView = MapViewFragment(activity, job, user)
+        transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
+        transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
+        transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton!!, "cancelButton")
+        transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
+        transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage!!,"thumbnailImage")
+        transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView!!,"jobDetailsView")
+        transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.commitAllowingStateLoss()
     }
 
@@ -279,7 +294,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
-    fun setup(activity: Activity, job: Job?, user: User) {
+    fun setup(activity: Activity, job: Job?, user: User?) {
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
@@ -302,7 +317,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
             }
 
             // お気に入り状態の取得
-            UserSession.retrieve()?.let {
+            if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
                 }

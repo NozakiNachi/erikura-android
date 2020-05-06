@@ -18,14 +18,39 @@ import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
+import androidx.lifecycle.MediatorLiveData
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.models.UserSession
 
-
-class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job: Job?, val user: User) : Fragment() {
+class NormalJobDetailsFragment(private val activity: AppCompatActivity, job: Job?, user: User?) : BaseJobDetailFragment(job, user) {
     private val viewModel: NormalJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(NormalJobDetailsFragmentViewModel::class.java)
+    }
+    private var timeLabel: TimeLabelFragment? = null
+    private var jobInfoView: JobInfoViewFragment? = null
+    private var thumbnailImage: ThumbnailImageFragment? = null
+    private var manualButton: ManualButtonFragment? = null
+    private var applyFlowLink: ApplyFlowLinkFragment? = null
+    private var jobDetailsView: JobDetailsViewFragment? = null
+    private var mapView: MapViewFragment? = null
+    private var applyFlowView: ApplyFlowViewFragment? = null
+    private var applyButton: ApplyButtonFragment? = null
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        activity?.let { activity ->
+            viewModel.setup(activity, job, user)
+            timeLabel?.refresh(job, user)
+            jobInfoView?.refresh(job, user)
+            thumbnailImage?.refresh(job, user)
+            manualButton?.refresh(job, user)
+            applyFlowLink?.refresh(job, user)
+            jobDetailsView?.refresh(job, user)
+            mapView?.refresh(job, user)
+            applyFlowView?.refresh(job, user)
+            applyButton?.refresh(job, user)
+        }
     }
 
     override fun onCreateView(
@@ -35,8 +60,9 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         container?.removeAllViews()
         val binding = FragmentNormalJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(activity, job, user)
         binding.viewModel = viewModel
+
+        viewModel.setup(activity, job, user)
         return binding.root
     }
 
@@ -44,24 +70,24 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        val timeLabel = TimeLabelFragment(job, user)
-        val jobInfoView = JobInfoViewFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(job)
-        val manualButton = ManualButtonFragment(job)
-        val applyFlowLink = ApplyFlowLinkFragment(job)
-        val jobDetailsView = JobDetailsViewFragment(job)
-        val mapView = MapViewFragment(activity, job)
-        val applyFlowView = ApplyFlowViewFragment(job)
-        val applyButton = ApplyButtonFragment(job, user)
-        transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel, "timeLabel")
-        transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage, "thumbnailImage")
-        transaction.add(R.id.jobDetails_manualButtonFragment, manualButton, "manualButton")
-        transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink, "applyFlowLink")
-        transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView, "jobDetailsView")
-        transaction.add(R.id.jobDetails_mapViewFragment, mapView, "mapView")
-        transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView, "applyFlowView")
-        transaction.add(R.id.jobDetails_applyButtonFragment, applyButton, "applyButton")
+        timeLabel = TimeLabelFragment(job, user)
+        jobInfoView = JobInfoViewFragment(job, user)
+        thumbnailImage = ThumbnailImageFragment(job, user)
+        manualButton = ManualButtonFragment(job, user)
+        applyFlowLink = ApplyFlowLinkFragment(job, user)
+        jobDetailsView = JobDetailsViewFragment(job, user)
+        mapView = MapViewFragment(activity, job, user)
+        applyFlowView = ApplyFlowViewFragment(job, user)
+        applyButton = ApplyButtonFragment(job, user)
+        transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
+        transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
+        transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
+        transaction.add(R.id.jobDetails_manualButtonFragment, manualButton!!, "manualButton")
+        transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
+        transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
+        transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
+        transaction.add(R.id.jobDetails_applyButtonFragment, applyButton!!, "applyButton")
         transaction.commitAllowingStateLoss()
     }
 
@@ -74,11 +100,25 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, val job:
 }
 
 class NormalJobDetailsFragmentViewModel: ViewModel() {
-    val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
-    val warningCaption: MutableLiveData<String> = MutableLiveData()
-    val warningCaptionVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val job = MutableLiveData<Job>()
+    val user = MutableLiveData<User>()
 
-    fun setup(activity: Activity, job: Job?, user: User) {
+    val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
+    val warningCaption = MediatorLiveData<String>().also { result ->
+        result.addSource(job) { result.value = decideWarningCaption() }
+        result.addSource(user) { result.value = decideWarningCaption() }
+    }
+    val warningCaptionVisibility = MediatorLiveData<Int>().also { result ->
+        result.value = View.GONE
+        result.addSource(warningCaption) {
+            result.value = if (it.isNullOrBlank()) { View.GONE } else { View.VISIBLE }
+        }
+    }
+
+    fun setup(activity: Activity, job: Job?, user: User?) {
+        this.job.value = job
+        this.user.value = user
+
         if (job != null){
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
@@ -99,24 +139,12 @@ class NormalJobDetailsFragmentViewModel: ViewModel() {
                     }
                 }
             }
+        }
+    }
 
-            if (job.isFuture || job.isPast) {
-                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
-                warningCaptionVisibility.value = View.VISIBLE
-            }else if (job.isEntried || (UserSession.retrieve() != null && job.targetGender != null && job.targetGender != user.gender) || job.banned) {
-                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
-                warningCaptionVisibility.value = View.VISIBLE
-            }else if (!job.reEntryPermitted) {
-                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_cantEntry)
-                warningCaptionVisibility.value = View.VISIBLE
-            }else if (UserSession.retrieve() != null && user.holdingJobs >= user.maxJobs) {
-                warningCaption.value = ErikuraApplication.instance.getString(R.string.jobDetails_maxEntry, user.maxJobs)
-                warningCaptionVisibility.value = View.VISIBLE
-            }else {
-                warningCaption.value = ""
-                warningCaptionVisibility.value = View.GONE
-            }
-
+    private fun decideWarningCaption(): String? {
+        return job.value?.let { job ->
+            job.notApplicableReason(user.value)
         }
     }
 }

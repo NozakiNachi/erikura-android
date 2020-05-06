@@ -1,18 +1,17 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentApplyFlowLinkBinding
 import jp.co.recruit.erikura.presenters.activities.job.ApplyFlowDialogFragment
 
-class ApplyFlowLinkFragment(val job: Job?) : Fragment(), ApplyFlowLinkFragmentEventHandlers {
-
+class ApplyFlowLinkFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ApplyFlowLinkFragmentEventHandlers {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -30,9 +29,7 @@ class ApplyFlowLinkFragment(val job: Job?) : Fragment(), ApplyFlowLinkFragmentEv
 
         val dialog = ApplyFlowDialogFragment()
         dialog.show(childFragmentManager, "ApplyFlow")
-
     }
-
 }
 
 interface ApplyFlowLinkFragmentEventHandlers {
