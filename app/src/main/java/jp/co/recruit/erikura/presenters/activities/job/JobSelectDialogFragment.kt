@@ -1,6 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.ActivityOptions
+import JobUtil
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
-import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -130,17 +129,17 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
             }
         }
 
-        val image: ImageView = holder.binding.root.findViewById(R.id.job_list_item_image)
+        val imageView: ImageView = holder.binding.root.findViewById(R.id.job_list_item_image)
         // ダウンロード
         val job = jobs[position]
         val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
-        image.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+        imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
         if (!thumbnailUrl.isNullOrBlank()) {
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
                 // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
                 if (position == holder.currentPosition) {
-                    Glide.with(activity).load(File(asset.path)).into(image)
+                    Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
                 }
             }
         }
