@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".presenters.activities.registration.SmsVerifyActivity"
-    >
+    tools:context=".presenters.activities.registration.SmsVerifyActivity">
 
     <data>
+
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyViewModel"/>
+            type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyViewModel" />
+
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyEventHandlers" />
@@ -24,87 +24,106 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginLeft="29dp"
-                android:layout_marginRight="20dp"
-                style="@style/tertiaryButton"
-                android:text="@string/logout"
-                android:onClick="@{handlers::onClickLogout}"
-                android:visibility="@{viewModel.logoutButtonVisibility}"
-                />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/logout"
+                    style="@style/smsLogout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="29dp"
+                    android:layout_marginTop="20dp"
+                    android:onClick="@{handlers::onClickLogout}"
+                    android:visibility="@{viewModel.logoutButtonVisibility}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/skip"
+                    app:layout_constraintHorizontal_chainStyle="spread_inside"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/skip"
+                    style="@style/smsSkip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:onClick="@{handlers::onClickSkip}"
+                    android:visibility="@{viewModel.logoutButtonVisibility}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/logout"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="80dp"
                 android:layout_marginRight="29dp"
-                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:text="@string/registerSmsVerify_title"
                 android:textColor="@color/black"
-                android:textSize="22dp"
-                android:fontFamily="@font/hirakakupron_w2_alphanum_01"/>
+                android:textSize="22dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
                 android:layout_marginTop="28dp"
                 android:layout_marginRight="29dp"
-                android:layout_marginLeft="20dp"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:text="@={viewModel.caption}"
                 android:textColor="@color/black"
-                android:textSize="18dp"
-                android:fontFamily="@font/hirakakupron_w2_alphanum_01"/>
+                android:textSize="18dp" />
 
             <TextView
+                style="@style/fieldLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                style="@style/fieldLabel"
                 android:layout_marginTop="40dp"
                 android:text="@string/passcode" />
 
             <EditText
+                style="@style/passwordField"
                 android:layout_width="match_parent"
                 android:layout_height="62dp"
-                style="@style/passwordField"
                 android:layout_marginTop="10dp"
-                android:text="@={viewModel.passCode}"
                 android:hint="@string/register_passcode_hint"
-                />
+                android:text="@={viewModel.passCode}" />
 
             <Button
+                style="@style/primaryButton"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="40dp"
-                style="@style/primaryButton"
-                android:text="@string/authenticate"
                 android:enabled="@{viewModel.isAuthenticateButtonEnabled()}"
-                android:onClick="@{handlers::onClickAuthenticate}" />
+                android:onClick="@{handlers::onClickAuthenticate}"
+                android:text="@string/authenticate" />
 
             <TextView
+                style="@style/linkText"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="20dp"
-                android:textSize="14dp"
-                style="@style/linkText"
-                android:text="@string/registerSmsVerify_passcode_resend"
                 android:onClick="@{handlers::onClickPassCodeResend}"
-                android:layout_gravity="center_horizontal"
-                />
+                android:text="@string/registerSmsVerify_passcode_resend"
+                android:textSize="14dp" />
 
             <TextView
+                style="@style/linkText"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_marginBottom="308dp"
-                android:textSize="14dp"
-                style="@style/linkText"
-                android:text="@string/registerSmsVerify_register_phone"
-                android:onClick="@{handlers::onClickRegisterPhone}"
                 android:layout_gravity="center_horizontal"
-                />
+                android:layout_marginBottom="308dp"
+                android:onClick="@{handlers::onClickRegisterPhone}"
+                android:text="@string/registerSmsVerify_register_phone"
+                android:textSize="14dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

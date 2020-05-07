@@ -16,12 +16,14 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivitySmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import java.util.*
 import java.util.regex.Pattern
 
 class SmsVerifyActivity : BaseActivity(),
@@ -59,7 +61,7 @@ class SmsVerifyActivity : BaseActivity(),
             }
         }
         confirmationToken = user.confirmationToken
-        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
 
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // trueしか返ってこないので送信結果の判定は入れていない
@@ -81,7 +83,7 @@ class SmsVerifyActivity : BaseActivity(),
             val intent: Intent = Intent()
             intent.putExtra("user", user)
             intent.putExtra("requestCode", requestCode)
-            if (isCameThroughLogin){
+            if (isCameThroughLogin) {
                 intent.putExtra("isCameThroughLogin", isCameThroughLogin)
             }
             setResult(RESULT_OK, intent)
@@ -99,7 +101,7 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onClickRegisterPhone(view: View) {
         //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
-        when(requestCode) {
+        when (requestCode) {
             ErikuraApplication.REQUEST_SIGN_UP_CODE -> {
                 val intent = Intent(this, RegisterPhoneActivity::class.java)
                 intent.putExtra("user", user)
@@ -139,16 +141,16 @@ class SmsVerifyActivity : BaseActivity(),
     fun Logout() {
         Api(this).logout() { deletedSession ->
             // ログアウトのトラッキングの送出
-            Tracking.logEvent(event= "logout", params= bundleOf())
+            Tracking.logEvent(event = "logout", params = bundleOf())
             deletedSession?.let {
                 it.user?.let { user ->
-                    Tracking.identify(user= user, status= "logout")
+                    Tracking.identify(user = user, status = "logout")
                 }
             }
 
             // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_logout", params= bundleOf())
-            Tracking.view(name= "/mypage/logout", title= "ログアウト完了画面")
+            Tracking.logEvent(event = "view_logout", params = bundleOf())
+            Tracking.view(name = "/mypage/logout", title = "ログアウト完了画面")
 
             // スタート画面に戻る
             val intent = Intent(this, StartActivity::class.java)
@@ -161,16 +163,16 @@ class SmsVerifyActivity : BaseActivity(),
     override fun onClickLogout(view: View) {
         Api(this).logout() { deletedSession ->
             // ログアウトのトラッキングの送出
-            Tracking.logEvent(event= "logout", params= bundleOf())
+            Tracking.logEvent(event = "logout", params = bundleOf())
             deletedSession?.let {
                 it.user?.let { user ->
-                    Tracking.identify(user= user, status= "logout")
+                    Tracking.identify(user = user, status = "logout")
                 }
             }
 
             // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_logout", params= bundleOf())
-            Tracking.view(name= "/mypage/logout", title= "ログアウト完了画面")
+            Tracking.logEvent(event = "view_logout", params = bundleOf())
+            Tracking.view(name = "/mypage/logout", title = "ログアウト完了画面")
 
             // スタート画面に戻る
             val intent = Intent(this, StartActivity::class.java)
@@ -180,11 +182,29 @@ class SmsVerifyActivity : BaseActivity(),
         }
     }
 
+    override fun onClickSkip(view: View) {
+        //UserSessionにスキップを押下した時刻を永続化
+        val calendar = Calendar.getInstance()
+        calendar.time = Date()
+        Api.userSession?.let {
+            UserSession(userId = it.userId, token = it.token, smsSkipDate = calendar.time)
+        }
+        //SMS認証せずに遷移します。
+        val intent: Intent = Intent()
+        intent.putExtra("user", user)
+        intent.putExtra("requestCode", requestCode)
+        if (isCameThroughLogin) {
+            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+        }
+        setResult(RESULT_OK, intent)
+        finish()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
             user = data!!.getParcelableExtra("user")
-            data.getStringExtra("phoneNumber")?.let{ newPhoneNumber ->
+            data.getStringExtra("phoneNumber")?.let { newPhoneNumber ->
                 if (newPhoneNumber != phoneNumber) {
                     phoneNumber = newPhoneNumber
                     Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
@@ -256,4 +276,5 @@ interface SmsVerifyEventHandlers {
     fun onClickPassCodeResend(view: View)
     fun onClickRegisterPhone(view: View)
     fun onClickLogout(view: View)
+    fun onClickSkip(view: View)
 }
