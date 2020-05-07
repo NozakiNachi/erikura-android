@@ -28,8 +28,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     val date: Date = Date()
 
     var fromActivity: Int = 0
-    var fromChangeUserInformationFragment: Boolean = false
-    var fromAccountSettingFragment: Boolean = false
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
 
@@ -49,7 +47,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         Api(this).user() { user->
             viewModel.email.value = user.email
         }
-
         fromActivity = intent.getIntExtra("fromActivity", 0)
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)

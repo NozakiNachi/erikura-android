@@ -34,9 +34,9 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
+    var checkPhoneNumber: String? = null
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
-    var checkPhoneNumber: String? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -48,6 +48,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     // 職業のリスト
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
+
+    override fun onCreate(savedInstanceState: Bundle?){
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
+        super.onCreate(savedInstanceState)
+    }
 
     override fun onCreateImpl(savedInstanceState: Bundle?) {
         val binding: ActivityChangeUserInformationBinding =
@@ -90,18 +96,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             user = it
             loadData()
         }
-        /* FIXME スーパークラスに移す
-                    } else {
-                finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("requestCode", requestCode)
-                    intent.putExtra("fromChangeUserInformation", true)
-                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                    startActivity(intent)
-                }
-            }
-         */
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -225,7 +219,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
         if (user.phoneNumber != null) {
             Api(this).smsVerifyCheck(user?.phoneNumber?: "") { result ->
-                if (result) {
+                if (!result) {
                     val intent = Intent(this, SmsVerifyActivity::class.java)
                     intent.putExtra("phoneNumber", user.phoneNumber)
                     intent.putExtra("user", user)
@@ -315,6 +309,16 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     finish()
                 }
             }
+        }
+    }
+
+    override fun startResignInActivity() {
+        Intent(this, ResignInActivity::class.java).let { intent ->
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("fromActivity", fromActivity)
+            intent.putExtra("requestCode", requestCode)
+            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+            startActivity(intent)
         }
     }
 }
