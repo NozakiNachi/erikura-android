@@ -193,8 +193,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
         user.city = viewModel.city.value
         user.street = viewModel.street.value
-        // 電話番号
-        user.phoneNumber = viewModel.phone.value
         // 職業
         user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
         // やりたいこと
@@ -216,6 +214,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
         user.wishWorks = wishWorks
 
+        //電話番号以外のユーザー情報を変更します。
+        Api(this).updateUser(user) {}
+
+        // 電話番号
+        user.phoneNumber = viewModel.phone.value
+
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
         if (user.phoneNumber != null) {
             Api(this).smsVerifyCheck(user?.phoneNumber?: "") { result ->
@@ -228,7 +232,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
                 }
                 else {
-                    // 会員情報変更Apiの呼び出し
+                    // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
                     Api(this).updateUser(user) {
                         val intent = Intent(this, ConfigurationActivity::class.java)
                         intent.putExtra("onClickChangeUserInformationFragment", true)
