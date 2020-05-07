@@ -183,12 +183,6 @@ class SmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickSkip(view: View) {
-        //UserSessionにスキップを押下した時刻を永続化
-        val calendar = Calendar.getInstance()
-        calendar.time = Date()
-        Api.userSession?.let {
-            UserSession(userId = it.userId, token = it.token, smsSkipDate = calendar.time)
-        }
         //SMS認証せずに遷移します。
         val intent: Intent = Intent()
         intent.putExtra("user", user)

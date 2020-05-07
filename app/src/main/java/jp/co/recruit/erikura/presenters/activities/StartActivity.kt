@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -69,20 +70,21 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         binding.viewModel = viewModel
 
         if (Api.isLogin) {
-            Api(this).user(){user ->
+            Api(this).user() { user ->
                 Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
-                Api(this).smsVerifyCheck(user?.phoneNumber ?:"") {result ->
+                Api(this).smsVerifyCheck(user?.phoneNumber ?: "") { result ->
                     if (result) {
                         // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
                         Intent(this, MapViewActivity::class.java).let { intent ->
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
                         }
                         finish()
                     } else {
                         //SMS未認証の場合、認証画面へ遷移します。
                         val intent = Intent(this, SmsVerifyActivity::class.java)
-                        intent.putExtra("requestCode",ErikuraApplication.REQUEST_LOGIN_CODE)
+                        intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
                         startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
                     }
                 }
