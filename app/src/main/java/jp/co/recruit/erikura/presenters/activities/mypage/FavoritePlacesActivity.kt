@@ -26,6 +26,7 @@ import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
 class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), FavoritePlaceEventHandlers{
     private lateinit var favoritePlaceAdapter: FavoritePlaceAdapter
@@ -127,7 +128,7 @@ class FavoritePlaceAdapter(
     override fun onBindViewHolder(holder: FavoritePlaceViewHolder, position: Int) {
         holder.binding.lifecycleOwner = activity
         holder.binding.viewModel = FavoritePlaceItemViewModel(activity, places[position])
-        holder.binding.root.setOnClickListener {
+        holder.binding.root.setOnSafeClickListener {
             onClickListener?.apply {
                 onClick(position)
             }

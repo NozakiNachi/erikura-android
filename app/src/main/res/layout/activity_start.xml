@@ -9,6 +9,9 @@
         <variable
             name="handlers"
             type="jp.co.recruit.erikura.presenters.activities.StartEventHandlers" />
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.StartActivity.StartViewModel" />
     </data>
 
     <ScrollView
@@ -27,13 +30,13 @@
                 android:layout_width="187dp"
                 android:layout_height="77dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="40dp"
+                app:layout_marginTop="@{viewModel.logoTopMargin}"
                 app:srcCompat="@drawable/splash" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="50dp"
+                app:layout_marginTop="@{viewModel.logoBottomMargin}"
                 android:orientation="vertical"
                 android:gravity="center_horizontal"
                 android:background="#ffa300">
@@ -42,7 +45,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:onClick="@{handlers::onClickVideo}"
+                    app:onSafeClick="@{handlers::onClickVideo}"
                     />
             </LinearLayout>
 
@@ -59,23 +62,23 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="10dp"
                     android:text="@string/registerFree"
-                    android:onClick="@{handlers::onClickRegisterButton}"/>
+                    app:onSafeClick="@{handlers::onClickRegisterButton}"/>
 
                 <Button
                     android:id="@+id/loginButton"
                     style="@style/secondaryButton"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="10dp"
                     android:text="@string/login"
-                    android:onClick="@{handlers::onClickLoginButton}"/>
+                    app:onSafeClick="@{handlers::onClickLoginButton}"/>
 
                 <TextView
                     android:id="@+id/textView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="60dp"
                     android:layout_gravity="center"
                     android:gravity="center"
@@ -83,8 +86,7 @@
                     android:text="@string/start_startWithoutLogin"
                     style="@style/linkText"
                     android:textStyle="bold"
-                    android:onClick="@{handlers::onClickStartWithoutLogin}"/>
-
+                    app:onSafeClick="@{handlers::onClickStartWithoutLogin}"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

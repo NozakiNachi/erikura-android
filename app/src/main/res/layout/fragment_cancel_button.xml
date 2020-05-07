@@ -16,6 +16,6 @@
             android:layout_height="44dp"
             style="@style/tertiaryButton"
             android:text="@string/cancel"
-            android:onClick="@{handlers::onClickCancel}"/>
+            app:onSafeClick="@{handlers::onClickCancel}"/>
     </FrameLayout>
 </layout>

@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -9,7 +8,6 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,29 +24,45 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
-import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
+import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
-import java.text.SimpleDateFormat
-import java.util.*
-
 
 class ReportedJobDetailsFragment(
     private val activity: AppCompatActivity,
-    val job: Job?,
-    val user: User
-) : Fragment(), ReportedJobDetailsFragmentEventHandlers {
+    job: Job?,
+    user: User?
+) : BaseJobDetailFragment(job, user), ReportedJobDetailsFragmentEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobDetailsFragmentViewModel::class.java)
     }
 
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
     private lateinit var additionalOperatorCommentsAdapter: OperatorCommentAdapter
-    var fromConfirm = false
-    var pictureIndex = 0
-    var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+    private var timeLabel: TimeLabelFragment? = null
+    private var jobInfoView: JobInfoViewFragment? = null
+    private var thumbnailImage: ThumbnailImageFragment? = null
+    private var reportedJobEditButton: ReportedJobEditButtonFragment? = null
+    private var reportedJobRemoveButton: ReportedJobRemoveButtonFragment? = null
+    private var jobDetailsView: JobDetailsViewFragment? = null
 
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+
+        timeLabel?.refresh(job, user)
+        jobInfoView?.refresh(job, user)
+        thumbnailImage?.refresh(job, user)
+        reportedJobEditButton?.refresh(job, user)
+        reportedJobRemoveButton?.refresh(job, user)
+        jobDetailsView?.refresh(job, user)
+
+        activity?.let { activity ->
+            // FIXME: 初期化
+            viewModel
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,37 +92,41 @@ class ReportedJobDetailsFragment(
         additionalCommentView.adapter = additionalOperatorCommentsAdapter
 
         val transaction = childFragmentManager.beginTransaction()
-        val timeLabel = TimeLabelFragment(job, user)
-        val jobInfoView = JobInfoViewFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(job)
-//        val reportedJobStatus = ReportedJobStatusFragment(activity, job?.report)
-        val reportedJobEditButton = ReportedJobEditButtonFragment(job)
-        val reportedJobRemoveButton = ReportedJobRemoveButtonFragment(job)
-        val jobDetailsView = JobDetailsViewFragment(job)
+        timeLabel = TimeLabelFragment(job, user)
+        jobInfoView = JobInfoViewFragment(job, user)
+        thumbnailImage = ThumbnailImageFragment(job, user)
+        reportedJobEditButton = ReportedJobEditButtonFragment(job, user)
+        reportedJobRemoveButton = ReportedJobRemoveButtonFragment(job, user)
+        jobDetailsView = JobDetailsViewFragment(job, user)
 
-        transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel, "timeLabel")
-        transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(
-            R.id.reportedJobDetails_thumbnailImageFragment,
-            thumbnailImage,
-            "thumbnailImage"
-        )
-//        transaction.add(R.id.reportedJobDetails_reportedJobStatus, reportedJobStatus, "reportedJobStatus")
-        transaction.add(R.id.reportedJobEditButton, reportedJobEditButton, "reportedJobEditButton")
-        transaction.add(
-            R.id.reportedJobRemoveButton,
-            reportedJobRemoveButton,
-            "reportedJobRemoveButton"
-        )
-        transaction.add(
-            R.id.reportedJobDetails_jobDetailsViewFragment,
-            jobDetailsView,
-            "jobDetailsView"
-        )
+        transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
+        transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
+        transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
+        transaction.add(R.id.reportedJobEditButton, reportedJobEditButton!!, "reportedJobEditButton")
+        transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton!!, "reportedJobRemoveButton")
+        transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.commitAllowingStateLoss()
 
+        fetchReport()
+    }
+
+    override fun onClickFavorite(view: View) {
+        if (viewModel.favorited.value ?: false) {
+            // お気に入り登録処理
+            Api(activity).placeFavorite(job?.place?.id ?: 0) {
+                viewModel.favorited.value = true
+            }
+        } else {
+            // お気に入り削除処理
+            Api(activity).placeFavoriteDelete(job?.place?.id ?: 0) {
+                viewModel.favorited.value = false
+            }
+        }
+    }
+
+    private fun fetchReport() {
         // reportの再取得
-        job?.let {
+        job?.let { job ->
             // 削除済みの場合はリロードせずに、そのまま利用する
             if (job?.report?.deleted ?: true) {
                 setup()
@@ -127,24 +145,10 @@ class ReportedJobDetailsFragment(
         }
     }
 
-    override fun onClickFavorite(view: View) {
-        if (viewModel.favorited.value ?: false) {
-            // お気に入り登録処理
-            Api(activity).placeFavorite(job?.place?.id ?: 0) {
-                viewModel.favorited.value = true
-            }
-        } else {
-            // お気に入り削除処理
-            Api(activity).placeFavoriteDelete(job?.place?.id ?: 0) {
-                viewModel.favorited.value = false
-            }
-        }
-    }
-
     private fun setup() {
         if (job != null) {
             // ダウンロード
-            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+            val thumbnailUrl = if (!job?.thumbnailUrl.isNullOrBlank()) {job?.thumbnailUrl} else {job?.jobKind?.noImageIconUrl?.toString()}
             if (thumbnailUrl.isNullOrBlank()) {
                 val drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null)
                 val bitmapReduced = Bitmap.createScaledBitmap( drawable.toBitmap(), 15, 15, true)
@@ -164,13 +168,13 @@ class ReportedJobDetailsFragment(
             }
 
             // お気に入り状態の取得
-            UserSession.retrieve()?.let {
-                Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
+            if (Api.isLogin) {
+                Api(activity).placeFavoriteShow(job?.place?.id ?: 0) {
                     viewModel.favorited.value = it
                 }
             }
 
-            job.report?.let {
+            job?.report?.let {
                 // 作業報告ステータスの取得
                 var str = SpannableStringBuilder()
                 when (it.status) {
@@ -358,12 +362,7 @@ class OperatorCommentItemViewModel(val operatorComment: OperatorComment): ViewMo
 
     init {
         comment.value = operatorComment.body
-        commentCreatedAt.value = dateToString(operatorComment.createdAt, "yyyy/MM/dd HH:mm")
-    }
-
-    private fun dateToString(date: Date, format: String): String {
-        val sdf = SimpleDateFormat(format, Locale.JAPAN)
-        return sdf.format(date)
+        commentCreatedAt.value = JobUtils.DateFormats.simple.format(operatorComment.createdAt)
     }
 }
 

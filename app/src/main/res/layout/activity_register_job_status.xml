@@ -61,7 +61,7 @@
                         android:layout_marginRight="10dp"
                         style="@style/tertiaryButton"
                         android:text="@string/unemployed"
-                        android:onClick="@{handlers::onClickUnemployed}"/>
+                        app:onSafeClick="@{handlers::onClickUnemployed}"/>
                     <Button
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
@@ -69,7 +69,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/tertiaryButton"
                         android:text="@string/homemaker"
-                        android:onClick="@{handlers::onClickHomemaker}"/>
+                        app:onSafeClick="@{handlers::onClickHomemaker}"/>
 
                 </LinearLayout>
 
@@ -85,7 +85,7 @@
                         android:layout_marginRight="10dp"
                         style="@style/tertiaryButton"
                         android:text="@string/freelancer"
-                        android:onClick="@{handlers::onClickFreelancer}"/>
+                        app:onSafeClick="@{handlers::onClickFreelancer}"/>
 
                     <Button
                         android:layout_width="match_parent"
@@ -94,7 +94,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/tertiaryButton"
                         android:text="@string/student"
-                        android:onClick="@{handlers::onClickStudent}"/>
+                        app:onSafeClick="@{handlers::onClickStudent}"/>
 
                 </LinearLayout>
 
@@ -110,7 +110,7 @@
                         android:layout_marginRight="10dp"
                         style="@style/tertiaryButton"
                         android:text="@string/partTime"
-                        android:onClick="@{handlers::onClickPartTime}"/>
+                        app:onSafeClick="@{handlers::onClickPartTime}"/>
 
                     <Button
                         android:layout_width="match_parent"
@@ -119,7 +119,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/tertiaryButton"
                         android:text="@string/employee"
-                        android:onClick="@{handlers::onClickEmployee}"/>
+                        app:onSafeClick="@{handlers::onClickEmployee}"/>
 
                 </LinearLayout>
 
@@ -135,7 +135,7 @@
                         android:layout_marginRight="10dp"
                         style="@style/tertiaryButton"
                         android:text="@string/selfEmployed"
-                        android:onClick="@{handlers::onClickSelfEmployed}"/>
+                        app:onSafeClick="@{handlers::onClickSelfEmployed}"/>
 
                     <Button
                         android:layout_width="match_parent"
@@ -144,7 +144,7 @@
                         android:layout_marginLeft="0dp"
                         style="@style/tertiaryButton"
                         android:text="@string/otherJob"
-                        android:onClick="@{handlers::onClickOtherJob}"/>
+                        app:onSafeClick="@{handlers::onClickOtherJob}"/>
 
                 </LinearLayout>
 

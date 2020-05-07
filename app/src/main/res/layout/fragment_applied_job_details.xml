@@ -159,7 +159,7 @@
                         android:layout_weight="20"
                         style="@style/primaryButton"
                         android:text="@string/startJob"
-                        android:onClick="@{handlers::onClickStart}"
+                        app:onSafeClick="@{handlers::onClickStart}"
                         android:visibility="@{viewModel.startButtonVisibility}"/>
                     <ToggleButton
                         android:layout_width="70dp"
@@ -170,7 +170,7 @@
                         android:layout_weight="1"
                         style="@style/favoriteButton"
                         android:checked="@={viewModel.favorited}"
-                        android:onClick="@{handlers::onClickFavorite}" />
+                        app:onSafeClick="@{handlers::onClickFavorite}" />
                 </LinearLayout>
 
             </FrameLayout>

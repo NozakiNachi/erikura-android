@@ -5,20 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.core.graphics.drawable.toBitmap
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.presenters.activities.StartActivity
-import java.net.URI
 
 class ErikuraMessagingService : FirebaseMessagingService() {
     companion object {
@@ -48,7 +42,6 @@ class ErikuraMessagingService : FirebaseMessagingService() {
         }
     }
 
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
@@ -71,8 +64,9 @@ class ErikuraMessagingService : FirebaseMessagingService() {
 
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notification = NotificationCompat.Builder(this, channelId)
-            .setSmallIcon(R.mipmap.ic_launcher)
+            .setSmallIcon(R.drawable.erikura_icon_android_logo_1024)
             //.setLargeIcon(resources.getDrawable(R.mipmap.ic_launcher).toBitmap())
+            .setColor(resources.getColor(R.color.orangeYellow, null))
             .setContentTitle(title)
             .setContentText(body)
             .setShowWhen(true)

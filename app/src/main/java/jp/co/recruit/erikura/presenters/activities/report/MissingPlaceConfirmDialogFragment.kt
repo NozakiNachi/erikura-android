@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.DialogMissingPlaceConfirmBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
 
 class MissingPlaceConfirmDialogFragment(private val missingPlaces: List<String>): DialogFragment()  {
@@ -38,7 +39,7 @@ class MissingPlaceConfirmDialogFragment(private val missingPlaces: List<String>)
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
 
-        binding.root.findViewById<Button>(R.id.missing_place_confirm_complete_button).setOnClickListener {
+        binding.root.findViewById<Button>(R.id.missing_place_confirm_complete_button).setOnSafeClickListener {
             onClickListener?.apply {
                 onClickComplete()
             }

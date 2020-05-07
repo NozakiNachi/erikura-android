@@ -1,22 +1,17 @@
 package jp.co.recruit.erikura.presenters.activities.tutorial
 
-import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import io.reactivex.android.schedulers.AndroidSchedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
-import jp.co.recruit.erikura.databinding.ActivityOnboarding1Binding
 import jp.co.recruit.erikura.databinding.ActivityOnboarding5Binding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
-import java.util.*
 
-class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
+class Onboarding5Activity : BaseOnboardingActivity(), OnboardingHandlers {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +19,7 @@ class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
             DataBindingUtil.setContentView(this, R.layout.activity_onboarding5)
         binding.lifecycleOwner = this
         binding.handlers = this
+        binding.viewModel = viewModel
     }
 
     override fun onStart() {
@@ -33,24 +29,11 @@ class Onboarding5Activity : AppCompatActivity(), Onboarding5Handlers {
         Tracking.view(name= "/intro/description_5", title= "オンボーディング画面（ステップ5）")
     }
 
-    override fun onClickNext(view: View) {
-        startNextActivity()
-    }
-
-    override fun onClickSkip(view: View) {
-        startNextActivity()
-    }
-
-    private fun startNextActivity() {
+    override fun startNextActivity() {
         ErikuraApplication.instance.setOnboardingDisplayed(true)
         Intent(this, MapViewActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
     }
-}
-
-interface Onboarding5Handlers {
-    fun onClickNext(view: View)
-    fun onClickSkip(view: View)
 }

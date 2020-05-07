@@ -5,8 +5,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,18 +12,19 @@ import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.CancelReason
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogCancelBinding
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
-import java.util.*
 
 class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialogFragmentEventHandlers {
     private val viewModel: CancelDialogFragmentViewModel by lazy {
@@ -57,39 +56,49 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
     }
 
     override fun onReasonSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        viewModel.reasonsItems.value?.let {
-            viewModel.reasonSelected = position
-            if (position == viewModel.reasonsItems.value?.lastIndex) {
+        viewModel.reasonSelected = position
+
+        viewModel.reasonsItems.value?.let { items ->
+            val item = items[position]
+            if (item is CancelReasonItem.Other) {
                 viewModel.reasonVisibility.value = View.VISIBLE
-            }else {
+            }
+            else {
                 viewModel.reasonVisibility.value = View.GONE
             }
         }
     }
 
     override fun onClickCancel(view: View) {
-        val reasonCode: Int = if (viewModel.reasonSelected == viewModel.reasonsItems.value?.lastIndex) {0}else {viewModel.reasonSelected}
-        val comment: String = if(reasonCode == 0) {viewModel.reasonText.value?:""} else {""}
-        job?.let {
-            if (isCancellable()) {
-                Api(activity!!).cancel(job, reasonCode, comment) {
-                    // ページ参照のトラッキングの送出
-                    Tracking.logEvent(event= "view_job_cacel_finish", params= bundleOf())
-                    Tracking.viewJobDetails(name= "/entries/cancelled/${job?.id ?:0}", title= "キャンセル完了画面", jobId= job?.id ?: 0)
+        viewModel.selectedItem?.let { item ->
+            val reasonCode: Int = item.value?.id ?: 0
+            val comment: String? = if (item is CancelReasonItem.Other) {
+                viewModel.reasonText.value
+            }
+            else {
+                null
+            }
+            job?.let {
+                if (isCancellable()) {
+                    Api(activity!!).cancel(job, reasonCode, comment) {
+                        // ページ参照のトラッキングの送出
+                        Tracking.logEvent(event= "view_job_cacel_finish", params= bundleOf())
+                        Tracking.viewJobDetails(name= "/entries/cancelled/${job?.id ?:0}", title= "キャンセル完了画面", jobId= job?.id ?: 0)
 
-                    // 応募キャンセルに合わせて作業報告も削除されるので、削除済みのフラグを立てます
-                    job?.report?.deleted = true
+                        // 応募キャンセルに合わせて作業報告も削除されるので、削除済みのフラグを立てます
+                        job?.report?.deleted = true
 
-                    // キャンセル後は応募した仕事一覧に戻る
-                    Intent(activity, OwnJobsActivity::class.java).let { intent ->
-                        intent.putExtra(OwnJobsActivity.EXTRA_FROM_CANCEL_JOB, true)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
+                        // キャンセル後は応募した仕事一覧に戻る
+                        Intent(activity, OwnJobsActivity::class.java).let { intent ->
+                            intent.putExtra(OwnJobsActivity.EXTRA_FROM_CANCEL_JOB, true)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                        }
                     }
+                }else {
+                    val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
+                    Api(activity!!).displayErrorAlert(errorMessages)
                 }
-            }else {
-                val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-                Api(activity!!).displayErrorAlert(errorMessages)
             }
         }
     }
@@ -124,6 +133,12 @@ class CancelDialogFragmentViewModel: ViewModel() {
             it.forEach { reason -> items.add(CancelReasonItem.Item(reason)) }
             items.add(CancelReasonItem.Other)
             result.value = items
+        }
+    }
+
+    val selectedItem: CancelReasonItem? get() {
+        return reasonsItems.value?.let { items ->
+            return items[reasonSelected]
         }
     }
 

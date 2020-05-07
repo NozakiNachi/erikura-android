@@ -37,6 +37,7 @@ import jp.co.recruit.erikura.data.storage.SearchHistory
 import jp.co.recruit.erikura.databinding.ActivitySearchJobBinding
 import jp.co.recruit.erikura.databinding.FragmentMinMaxPickerBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import java.util.*
 
@@ -61,7 +62,7 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
         val adapter = SearchHistoryAdapter(this, mutableListOf(SearchHistoryItem.CurrentLocation))
         textField.setAdapter(adapter)
 
-        textField.setOnClickListener {
+        textField.setOnSafeClickListener {
             // すでに表示されている場合のチェックは不要？
             if (!textField.isPopupShowing()) {
                 textField.showDropDown()

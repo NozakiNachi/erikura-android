@@ -246,7 +246,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
-                    android:onClick="@{handlers::onClickEditWorkingTime}"
+                    app:onSafeClick="@{handlers::onClickEditWorkingTime}"
                     android:text="@string/edit_working_time" />
 
 
@@ -319,7 +319,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
-                    android:onClick="@{handlers::onClickEditOtherForm}"
+                    app:onSafeClick="@{handlers::onClickEditOtherForm}"
                     android:text="@string/edit_other_form" />
 
                 <!-- 案件の評価 -->
@@ -391,7 +391,7 @@
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="110dp"
-                    android:onClick="@{handlers::onClickEditEvaluation}"
+                    app:onSafeClick="@{handlers::onClickEditEvaluation}"
                     android:text="@string/edit_evaluation" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
@@ -405,7 +405,7 @@
             android:layout_marginTop="40dp"
             android:layout_marginRight="0dp"
             android:text="@string/complete"
-            android:onClick="@{handlers::onClickComplete}"
+            app:onSafeClick="@{handlers::onClickComplete}"
             android:enabled="@{viewModel.isCompleteButtonEnabled()}"/>
 
         <!-- マニュアルボタン -->
@@ -415,7 +415,7 @@
             android:layout_height="70dp"
             android:layout_gravity="bottom|right"
             android:layout_marginBottom="30dp"
-            android:onClick="@{handlers::onClickManual}"
+            app:onSafeClick="@{handlers::onClickManual}"
             android:text="@string/manual"
             android:textSize="14dp" />
     </FrameLayout>

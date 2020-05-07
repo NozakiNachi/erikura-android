@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
@@ -18,6 +19,8 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
+import com.adjust.sdk.Adjust
+import com.adjust.sdk.AdjustConfig
 import com.crashlytics.android.Crashlytics
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsConstants
@@ -40,6 +43,7 @@ import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivit
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.PedometerManager
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
@@ -188,7 +192,7 @@ class ErikuraApplication : Application() {
                     dialog.show()
 
                     val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnClickListener {
+                    button.setOnSafeClickListener {
                         val playURL = "http://play.google.com/store/apps/details?id=${packageName}"
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playURL))
                         activity.startActivity(intent)
@@ -247,7 +251,14 @@ object Tracking {
         AppEventsLogger.activateApp(application)
         appEventsLogger = AppEventsLogger.newLogger(application)
 
-        // FIXME: adjust の初期化
+        // adjust の初期化
+        val adjustConfig: AdjustConfig = AdjustConfig(application,
+            BuildConfig.ADJUST_KEY,
+            BuildConfig.ADJUST_ENVIRONMENT
+        )
+        Adjust.onCreate(adjustConfig)
+
+        application.registerActivityLifecycleCallbacks(AdjustLifecycleCallbacks())
     }
 
     fun refreshFcmToken(token: String) {
@@ -277,7 +288,7 @@ object Tracking {
 
     fun identify(user: User, status: String) {
         try {
-            val birthday = SimpleDateFormat("yyyy/MM/dd").parse(user.dateOfBirth)
+            val birthday = user.parsedDateOfBirth
             val now = Date()
             val gender = when (user.gender) {
                 Gender.MALE -> "m"
@@ -419,4 +430,28 @@ object Tracking {
     }
 }
 
+class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {
 
+    override fun onActivityResumed(activity: Activity) {
+        Adjust.onResume()
+    }
+
+    override fun onActivityPaused(activity: Activity) {
+        Adjust.onPause()
+    }
+
+    override fun onActivityStarted(activity: Activity) {
+    }
+
+    override fun onActivityDestroyed(activity: Activity) {
+    }
+
+    override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {
+    }
+
+    override fun onActivityStopped(activity: Activity) {
+    }
+
+    override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
+    }
+}

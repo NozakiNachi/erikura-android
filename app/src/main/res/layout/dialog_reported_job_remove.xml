@@ -36,7 +36,7 @@
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
                 android:text="@string/remove_report"
-                android:onClick="@{handlers::onClickRemoveButton}"
+                app:onSafeClick="@{handlers::onClickRemoveButton}"
                 />
 
         </LinearLayout>

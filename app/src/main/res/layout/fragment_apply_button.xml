@@ -29,7 +29,7 @@
                 style="@style/primaryButton"
                 android:text="@string/entry"
                 android:visibility="@{viewModel.applyButtonVisibility}"
-                android:onClick="@{handlers::onClickApply}" />
+                app:onSafeClick="@{handlers::onClickApply}" />
             <ToggleButton
                 android:layout_width="70dp"
                 android:layout_height="68dp"
@@ -39,7 +39,7 @@
                 android:layout_weight="1"
                 style="@style/favoriteButton"
                 android:checked="@={viewModel.favorited}"
-                android:onClick="@{handlers::onClickFavorite}" />
+                app:onSafeClick="@{handlers::onClickFavorite}" />
         </LinearLayout>
 
     </FrameLayout>

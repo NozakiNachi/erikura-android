@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResignInBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.lang.IllegalArgumentException
 import java.util.*
 
 class ResignInActivity : BaseActivity(), ResignInHandlers {
@@ -26,6 +27,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     var user: User = User()
     val date: Date = Date()
 
+    var fromActivity: Int = 0
     var fromChangeUserInformationFragment: Boolean = false
     var fromAccountSettingFragment: Boolean = false
     var requestCode: Int? = null
@@ -48,8 +50,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             viewModel.email.value = user.email
         }
 
-        fromAccountSettingFragment = intent.getBooleanExtra("fromAccountSetting", false)
-        fromChangeUserInformationFragment = intent.getBooleanExtra("fromChangeUserInformation", false)
+        fromActivity = intent.getIntExtra("fromActivity", 0)
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
     }
@@ -72,14 +73,20 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             finish()
 
             // 画面遷移
-            if(fromChangeUserInformationFragment) {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                intent.putExtra("requestCode", requestCode)
-                intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                startActivity(intent)
-            }else if(fromAccountSettingFragment){
-                val intent = Intent(this, AccountSettingActivity::class.java)
-                startActivity(intent)
+            when (fromActivity) {
+                BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
+                    val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                    intent.putExtra("requestCode", requestCode)
+                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                    startActivity(intent)
+                }
+                BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS -> {
+                    val intent = Intent(this, AccountSettingActivity::class.java)
+                    startActivity(intent)
+                }
+                else -> {
+                    throw IllegalArgumentException("unknown fromActivity")
+                }
             }
         }
     }

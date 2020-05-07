@@ -1,9 +1,8 @@
 package jp.co.recruit.erikura.presenters.activities.tutorial
 
-import android.app.ActivityOptions
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,7 +12,7 @@ import jp.co.recruit.erikura.databinding.ActivityOnboarding0Binding
 import java.util.*
 
 class Onboarding0Activity : AppCompatActivity(), Onboarding0Handlers {
-    val timer: Timer = Timer()
+    lateinit var timer: Timer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +32,7 @@ class Onboarding0Activity : AppCompatActivity(), Onboarding0Handlers {
     override fun onResume() {
         super.onResume()
 
+        timer = Timer()
         timer.schedule(object: TimerTask() {
             override fun run() {
                 AndroidSchedulers.mainThread().scheduleDirect {
@@ -51,11 +51,9 @@ class Onboarding0Activity : AppCompatActivity(), Onboarding0Handlers {
         timer.cancel()
         Intent(this, Onboarding1Activity::class.java).let { intent ->
             startActivity(intent)
-
         }
     }
 }
 
 interface Onboarding0Handlers {
-
 }

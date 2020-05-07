@@ -22,7 +22,6 @@ import jp.co.recruit.erikura.business.models.Gender
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -32,7 +31,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEventHandlers {
+class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
     var requestCode: Int? = null
@@ -50,9 +49,12 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        setTheme(R.style.AppTheme)
-        super.onCreate(savedInstanceState)
+    override fun onCreateImpl(savedInstanceState: Bundle?) {
+        val binding: ActivityChangeUserInformationBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
+        binding.lifecycleOwner = this
+        binding.handlers = this
+        binding.viewModel = viewModel
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
@@ -62,11 +64,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
 
-        val binding: ActivityChangeUserInformationBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
-        binding.lifecycleOwner = this
-        binding.handlers = this
-        binding.viewModel = viewModel
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -84,24 +81,17 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
             }
         })
 
-    }
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_edit_profile", params= bundleOf())
+        Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
 
-    override fun onStart() {
-        super.onStart()
-
-        // 再認証が必要かどうか確認
-        checkResignIn() { isResignIn ->
-            if (isResignIn) {
-                // ページ参照のトラッキングの送出
-                Tracking.logEvent(event= "view_edit_profile", params= bundleOf())
-                Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
-
-                // 変更するユーザーの現在の登録値を取得
-                Api(this).user() {
-                    user = it
-                    loadData()
-                }
-            } else {
+        // 変更するユーザーの現在の登録値を取得
+        Api(this).user() {
+            user = it
+            loadData()
+        }
+        /* FIXME スーパークラスに移す
+                    } else {
                 finish()
                 Intent(this, ResignInActivity::class.java).let { intent ->
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -111,7 +101,7 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                     startActivity(intent)
                 }
             }
-        }
+         */
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -253,24 +243,6 @@ class ChangeUserInformationActivity : BaseActivity(), ChangeUserInformationEvent
                     }
                 }
             }
-        }
-    }
-
-    // 再認証画面へ遷移
-    private fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
-        val nowTime = Date()
-        val reSignTime = userSession?.resignInExpiredAt
-
-        if (userSession?.resignInExpiredAt !== null) {
-            // 過去の再認証から10分以上経っていたら再認証画面へ
-            if (reSignTime!! < nowTime) {
-                onComplete(false)
-            } else {
-                onComplete(true)
-            }
-        } else {
-            // 一度も再認証していなければ、再認証画面へ
-            onComplete(false)
         }
     }
 

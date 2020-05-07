@@ -5,10 +5,12 @@
     tools:context=".presenters.activities.tutorial.Onboarding1Activity">
 
     <data>
-
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.tutorial.Onboarding1Handlers" />
+            type="jp.co.recruit.erikura.presenters.activities.tutorial.OnboardingHandlers" />
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.tutorial.OnboardingViewModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -26,24 +28,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:layout_marginTop="20dp"
-                android:layout_marginRight="20dp"
-                android:onClick="@{handlers::onClickSkip}" />
+                app:layout_marginTop="@{viewModel.skipTopMargin}"
+                android:layout_marginRight="10dp"
+                app:onSafeClick="@{handlers::onClickSkip}" />
 
             <ImageView
                 android:layout_width="221dp"
                 android:layout_height="62dp"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
+                app:layout_marginTop="@{viewModel.titleTopMargin}"
                 android:src="@drawable/step_title_2x" />
 
-
             <TextView
-                android:layout_width="310dp"
+                android:id="@+id/onboarding_text"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-
+                app:layout_marginTop="@{viewModel.textTopMargin}"
                 android:drawableLeft="@drawable/step1_num"
                 android:drawablePadding="10dp"
                 android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
@@ -53,11 +54,13 @@
                 android:textStyle="bold" />
 
             <ImageView
-                android:layout_width="318dp"
+                android:id="@+id/onboarding_image"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
+                app:layout_marginTop="@{viewModel.imageTopMargin}"
+                android:layout_marginRight="48dp"
+                android:layout_marginLeft="48dp"
                 android:adjustViewBounds="true"
                 android:src="@drawable/step1_2x" />
 
@@ -65,6 +68,7 @@
                 android:layout_width="100dp"
                 android:layout_height="8dp"
                 android:layout_gravity="center_horizontal"
+                app:layout_marginTop="@{viewModel.stepTopMargin}"
                 android:gravity="center_horizontal"
                 android:src="@drawable/tutorial_marker_01_2x" />
 
@@ -72,9 +76,9 @@
                 style="@style/secondaryButton"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginTop="40dp"
+                app:layout_marginTop="@{viewModel.nextTopMargin}"
                 android:layout_marginBottom="154dp"
-                android:onClick="@{handlers::onClickNext}"
+                app:onSafeClick="@{handlers::onClickNext}"
                 android:text="@string/go" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

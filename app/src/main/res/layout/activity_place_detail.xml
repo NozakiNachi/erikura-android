@@ -62,7 +62,7 @@
                             android:text="@{viewModel.openMapButtonText}"
                             android:textAllCaps="false"
                             style="@style/openMapButton"
-                            android:onClick="@{handlers::onClickOpenMap}" />
+                            app:onSafeClick="@{handlers::onClickOpenMap}" />
 
                         <!-- 建物画像 -->
                         <ImageView
@@ -106,7 +106,7 @@
                     android:layout_height="match_parent"
                     style="@style/favoriteButton"
                     android:checked="@={viewModel.favorited}"
-                    android:onClick="@{handlers::onClickFavorite}" />
+                    app:onSafeClick="@{handlers::onClickFavorite}" />
             </LinearLayout>
         </FrameLayout>
 

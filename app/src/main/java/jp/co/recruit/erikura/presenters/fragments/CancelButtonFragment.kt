@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentCancelButtonBinding
 import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 
-class CancelButtonFragment(private val job: Job?) : Fragment(), CancelButtonFragmentEventHandler {
-
+class CancelButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), CancelButtonFragmentEventHandler {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -25,7 +25,6 @@ class CancelButtonFragment(private val job: Job?) : Fragment(), CancelButtonFrag
         val dialog = CancelDialogFragment(job)
         dialog.show(childFragmentManager, "Cancel")
     }
-
 }
 
 interface CancelButtonFragmentEventHandler {
