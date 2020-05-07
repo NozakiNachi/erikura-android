@@ -76,24 +76,14 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
-            onComplete(session)
 
             Tracking.fcmToken?.let { token ->
                 pushEndpoint(token) {
                     Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${userSession?.userId ?: ""}")
                 }
             }
-            /*
-                Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
-
-                }
-
-                if let fcmToken = Tracking.fcmToken {
-                    self.push_endpoint(deviceToken: nil, fcmToken: fcmToken) { result in
-                            print("push_endpoint: \(result)")
-                    }
-                }
-             */
+            Tracking.identify(body.userId)
+            onComplete(session)
 
             this.user { user ->
                 // ログインのトラッキングの送出
@@ -242,6 +232,7 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
+            Tracking.identify(body.userId)
             onComplete(session)
         }
     }
