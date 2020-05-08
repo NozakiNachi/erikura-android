@@ -23,7 +23,6 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
@@ -34,7 +33,7 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
-    var checkPhoneNumber: String? = null
+    var newPhoneNumber: String? = null
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
 
@@ -218,29 +217,36 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Api(this).updateUser(user) {}
 
         // 電話番号はSMS認証後に保存のため別で保持します。
-        checkPhoneNumber = viewModel.phone.value
+        newPhoneNumber = viewModel.phone.value
 
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
-        if (checkPhoneNumber != null) {
-            Api(this).smsVerifyCheck(checkPhoneNumber?: "") { result ->
-                if (!result) {
-                    val intent = Intent(this, SmsVerifyActivity::class.java)
-                    intent.putExtra("phoneNumber", checkPhoneNumber)
-                    intent.putExtra("user", user)
-                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                    intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
-                    startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
-                }
-                else {
-                    // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
-                    user.phoneNumber = checkPhoneNumber
-                    Api(this).updateUser(user) {
-                        val intent = Intent(this, ConfigurationActivity::class.java)
-                        intent.putExtra("onClickChangeUserInformationFragment", true)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        startActivity(intent)
+        if (newPhoneNumber != null) {
+            if (user.phoneNumber != newPhoneNumber) {
+                Api(this).smsVerifyCheck(newPhoneNumber?: "") { result ->
+                    if (!result) {
+                        val intent = Intent(this, SmsVerifyActivity::class.java)
+                        intent.putExtra("phoneNumber", newPhoneNumber)
+                        intent.putExtra("user", user)
+                        intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                        intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                        startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                    }
+                    else {
+                        // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
+                        user.phoneNumber = newPhoneNumber
+                        Api(this).updateUser(user) {
+                            val intent = Intent(this, ConfigurationActivity::class.java)
+                            intent.putExtra("onClickChangeUserInformationFragment", true)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
                     }
                 }
+            } else {
+                val intent = Intent(this, ConfigurationActivity::class.java)
+                intent.putExtra("onClickChangeUserInformationFragment", true)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
             }
         }
     }
@@ -283,7 +289,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.female.value = true
             }
         }
-        checkPhoneNumber = user.phoneNumber
+        newPhoneNumber = user.phoneNumber
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
