@@ -51,17 +51,16 @@ class ReportedJobDetailsFragment(
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
 
-        if (isAdded) {
-            timeLabel?.refresh(job, user)
-            jobInfoView?.refresh(job, user)
-            thumbnailImage?.refresh(job, user)
-            reportedJobEditButton?.refresh(job, user)
-            reportedJobRemoveButton?.refresh(job, user)
-            jobDetailsView?.refresh(job, user)
+        timeLabel?.refresh(job, user)
+        jobInfoView?.refresh(job, user)
+        thumbnailImage?.refresh(job, user)
+        reportedJobEditButton?.refresh(job, user)
+        reportedJobRemoveButton?.refresh(job, user)
+        jobDetailsView?.refresh(job, user)
 
-            activity?.let { activity ->
-                fetchReport()
-            }
+        activity?.let { activity ->
+            // FIXME: 初期化
+            viewModel
         }
     }
 

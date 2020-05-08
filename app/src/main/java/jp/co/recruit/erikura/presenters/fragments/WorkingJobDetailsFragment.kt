@@ -55,17 +55,15 @@ class WorkingJobDetailsFragment(
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
-        if (isAdded) {
-            jobInfoView?.refresh(job, user)
-            manualImage?.refresh(job, user)
-            manualButton?.refresh(job, user)
-            thumbnailImage?.refresh(job, user)
-            jobDetailsView?.refresh(job, user)
-            mapView?.refresh(job, user)
+        jobInfoView?.refresh(job, user)
+        manualImage?.refresh(job, user)
+        manualButton?.refresh(job, user)
+        thumbnailImage?.refresh(job, user)
+        jobDetailsView?.refresh(job, user)
+        mapView?.refresh(job, user)
 
-            activity?.let {
-                viewModel.setup(it, job, user)
-            }
+        activity?.let {
+            viewModel.setup(it, job, user)
         }
     }
 

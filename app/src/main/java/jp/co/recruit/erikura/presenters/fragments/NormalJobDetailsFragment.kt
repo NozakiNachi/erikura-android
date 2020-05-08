@@ -39,19 +39,17 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, job: Job
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
-        if (isAdded) {
-            activity?.let { activity ->
-                viewModel.setup(activity, job, user)
-                timeLabel?.refresh(job, user)
-                jobInfoView?.refresh(job, user)
-                thumbnailImage?.refresh(job, user)
-                manualButton?.refresh(job, user)
-                applyFlowLink?.refresh(job, user)
-                jobDetailsView?.refresh(job, user)
-                mapView?.refresh(job, user)
-                applyFlowView?.refresh(job, user)
-                applyButton?.refresh(job, user)
-            }
+        activity?.let { activity ->
+            viewModel.setup(activity, job, user)
+            timeLabel?.refresh(job, user)
+            jobInfoView?.refresh(job, user)
+            thumbnailImage?.refresh(job, user)
+            manualButton?.refresh(job, user)
+            applyFlowLink?.refresh(job, user)
+            jobDetailsView?.refresh(job, user)
+            mapView?.refresh(job, user)
+            applyFlowView?.refresh(job, user)
+            applyButton?.refresh(job, user)
         }
     }
 
