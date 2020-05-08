@@ -104,6 +104,7 @@ class RegisterPhoneViewModel: ViewModel() {
     private fun isValid(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
+        val pattern2 = Pattern.compile("^(070|080|090)")
 
         if (valid && phone.value?.isBlank() ?:true) {
             valid = false
@@ -111,7 +112,10 @@ class RegisterPhoneViewModel: ViewModel() {
         }else if(valid && !(pattern.matcher(phone.value).find())) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-        }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
+        }else if(valid && !(pattern2.matcher(phone.value).find())) {
+            valid = false
+            error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
+        }else if(valid && !(phone.value?.length ?: 0 == 11)) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
         } else {
