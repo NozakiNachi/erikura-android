@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.widget.Button
 import androidx.core.app.ActivityCompat
@@ -102,6 +103,18 @@ class ErikuraApplication : Application() {
             }
         }
 
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder()
+            .detectDiskReads()
+            .detectDiskWrites()
+            .detectNetwork()
+            .penaltyLog()
+            .build())
+        StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
+            .detectLeakedSqlLiteObjects()
+            .detectLeakedClosableObjects()
+            .penaltyLog()
+//            .penaltyDeath()
+            .build())
     }
 
     // ギャラリーへのアクセス許可関連

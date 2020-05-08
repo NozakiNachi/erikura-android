@@ -32,7 +32,8 @@
                 android:layout_above="@id/tab_navigation">
 
                 <!-- 地図画面のフレーム -->
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <jp.co.recruit.erikura.presenters.activities.job.TouchableWrapper
+                    android:id="@+id/map_touchable_wrapper"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <fragment
@@ -42,7 +43,7 @@
                         android:layout_height="match_parent"
                         tools:context=".presenters.activities.job.MapViewActivity" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </jp.co.recruit.erikura.presenters.activities.job.TouchableWrapper>
 
                 <!-- 検索エリアのフレーム -->
                 <androidx.constraintlayout.widget.ConstraintLayout
