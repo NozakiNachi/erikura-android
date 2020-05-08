@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
@@ -14,6 +13,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.fragments.*
 
 class JobDetailsActivity : BaseActivity() {
+    var renderedJobId: Int? = null
     var renderedJobStatus: JobStatus? = null
     var job: Job = Job()
     var user: User? = null
@@ -119,9 +119,14 @@ class JobDetailsActivity : BaseActivity() {
                 val transaction = supportFragmentManager.beginTransaction()
                 transaction.remove(it)
                 transaction.commitAllowingStateLoss()
+                renderedJobId = null
+                renderedJobStatus = null
             }
         }
-        else if (job.status != renderedJobStatus) {
+        else if (job.id == renderedJobId && job.status == renderedJobStatus) {
+            fragment?.refresh(job, user)
+        }
+        else {
             val transaction = supportFragmentManager.beginTransaction()
             // fragmentの作成
             // jobのステータスで挿しこむフラグメントを変更します
@@ -148,10 +153,8 @@ class JobDetailsActivity : BaseActivity() {
             // fragmentの更新
             transaction.replace(R.id.job_details, fragment!!)
             transaction.commitAllowingStateLoss()
+            renderedJobId = job.id
             renderedJobStatus = job.status
-        }
-        else {
-            fragment?.refresh(job, user)
         }
     }
 
