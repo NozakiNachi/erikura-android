@@ -428,6 +428,32 @@ object Tracking {
             Log.e("ERIKURA", "Facebook LogEvent Failed", e)
         }
     }
+
+    fun smsVerify(name: String, user: User, phoneNumber: String) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user.id),
+                Pair("phone_number", phoneNumber)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
+
+    fun skipSmsVerify(name: String, user: User) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user.id),
+                Pair("phone_number", user.phoneNumber)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
 }
 
 class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {

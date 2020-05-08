@@ -71,6 +71,13 @@ class SmsVerifyActivity : BaseActivity(),
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        //SMS認証画面表示のトラッキングの送出
+        Tracking.logEvent(event= "view_sms_verify", params= bundleOf())
+        Tracking.view(name= "/user/view_sms_verify", title= "SMS認証画面")
+    }
+
     override fun onClickAuthenticate(view: View) {
         Log.v("DEBUG", "SMS認証： phoneNumber=${phoneNumber}")
         //trueしか返ってこないので認証結果の判定は入れていない
@@ -193,6 +200,9 @@ class SmsVerifyActivity : BaseActivity(),
         }
         setResult(RESULT_OK, intent)
         finish()
+        // SMS認証スキップのトラッキングの送出
+        Tracking.logEvent(event = "skip_sms_verify", params = bundleOf())
+        Tracking.skipSmsVerify(name = "skip_sms_verify", user = user)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
