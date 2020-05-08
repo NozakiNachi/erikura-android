@@ -83,6 +83,7 @@ class SmsVerifyActivity : BaseActivity(),
             val intent: Intent = Intent()
             intent.putExtra("user", user)
             intent.putExtra("requestCode", requestCode)
+            intent.putExtra("phoneNumber", phoneNumber)
             if (isCameThroughLogin) {
                 intent.putExtra("isCameThroughLogin", isCameThroughLogin)
             }

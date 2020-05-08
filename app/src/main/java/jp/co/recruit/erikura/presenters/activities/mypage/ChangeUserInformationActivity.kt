@@ -217,15 +217,15 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         //電話番号以外のユーザー情報を変更します。
         Api(this).updateUser(user) {}
 
-        // 電話番号
-        user.phoneNumber = viewModel.phone.value
+        // 電話番号はSMS認証後に保存のため別で保持します。
+        checkPhoneNumber = viewModel.phone.value
 
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
-        if (user.phoneNumber != null) {
-            Api(this).smsVerifyCheck(user?.phoneNumber?: "") { result ->
+        if (checkPhoneNumber != null) {
+            Api(this).smsVerifyCheck(checkPhoneNumber?: "") { result ->
                 if (!result) {
                     val intent = Intent(this, SmsVerifyActivity::class.java)
-                    intent.putExtra("phoneNumber", user.phoneNumber)
+                    intent.putExtra("phoneNumber", checkPhoneNumber)
                     intent.putExtra("user", user)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                     intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
@@ -233,6 +233,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 }
                 else {
                     // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
+                    user.phoneNumber = checkPhoneNumber
                     Api(this).updateUser(user) {
                         val intent = Intent(this, ConfigurationActivity::class.java)
                         intent.putExtra("onClickChangeUserInformationFragment", true)
@@ -289,6 +290,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         super.onActivityResult(requestCode, resultCode, data)
         // 会員情報変更Apiの呼び出し
         user = data!!.getParcelableExtra("user")
+        user.phoneNumber = data!!.getStringExtra("phoneNumber")
         Api(this).updateUser(user) {}
         if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
             //会員情報変更のみの場合、設定画面へ遷移
