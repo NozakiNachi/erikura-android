@@ -12,6 +12,9 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.i18n.phonenumbers.NumberParseException
+import com.google.i18n.phonenumbers.PhoneNumberUtil
+import com.google.i18n.phonenumbers.Phonenumber
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -269,10 +272,17 @@ class SmsVerifyViewModel : ViewModel() {
     }
 
     fun setCaption(phoneNumber: String) {
-        caption.value = String.format(
-            "ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。",
-            phoneNumber
-        )
+        var phoneUtil = PhoneNumberUtil.getInstance()
+        try {
+            var pn = phoneUtil.parse(phoneNumber, "JP")
+            var formatPhoneNumber = phoneUtil.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL)
+            caption.value = String.format(
+                "ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。",
+                formatPhoneNumber
+            )
+        } catch (e: NumberParseException) {
+            Log.e("ERROR", e.message, e)
+        }
     }
 }
 
