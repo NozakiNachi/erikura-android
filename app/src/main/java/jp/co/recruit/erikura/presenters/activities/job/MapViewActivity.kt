@@ -205,6 +205,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        mMap.isIndoorEnabled = false
+
         // 地図上のアイコンをグレーにするためにスタイル設定を行います
         try {
             val styleOptions = MapStyleOptions.loadRawResourceStyle(this, R.raw.style)

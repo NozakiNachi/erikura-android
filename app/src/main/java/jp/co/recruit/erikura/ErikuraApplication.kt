@@ -40,14 +40,12 @@ import jp.co.recruit.erikura.di.DaggerErikuraComponent
 import jp.co.recruit.erikura.di.ErikuraComponent
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.errors.UpgradeRequiredActivity
-import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.PedometerManager
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
-import java.text.SimpleDateFormat
 import java.util.*
 
 class ErikuraApplication : Application() {
@@ -63,7 +61,6 @@ class ErikuraApplication : Application() {
         val assetsManager: AssetsManager get() = instance.erikuraComponent.assetsManager()
         val locationManager: LocationManager get() = instance.erikuraComponent.locationManger()
         val pedometerManager: PedometerManager get() = instance.erikuraComponent.pedometerManager()
-        val fitApiManager: GoogleFitApiManager get() = instance.erikuraComponent.googleFitApiManager()
 
         val realm: Realm get() = RealmManager.realm
 
@@ -101,7 +98,6 @@ class ErikuraApplication : Application() {
                 Log.v("VERSION", ToStringBuilder.reflectionToString(requiredVersion))
             }
         }
-
     }
 
     // ギャラリーへのアクセス許可関連
@@ -136,7 +132,6 @@ class ErikuraApplication : Application() {
             uploadMonitor.wait(15000)
         }
     }
-
 
     private val onboardingDisplayedKey = "OnboardingDisplayed"
     private val coachMarkDisplayedKey = "CoachMarkDisplayed"
