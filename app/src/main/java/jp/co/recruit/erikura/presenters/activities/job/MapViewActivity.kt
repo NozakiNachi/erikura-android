@@ -176,6 +176,10 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         map_touchable_wrapper?.onTouch = { e ->
             gestureDetector?.onTouchEvent(e)
         }
+//        map_view_controls.setOnTouchListener { _view, event ->
+//            gestureDetector?.onTouchEvent(event)
+//            false
+//        }
 
         // 各種ボタンの表示・非表示の切り替えを行います
         viewModel.reSearchButtonVisible.value = View.GONE           // 初期表示ではこの地点で再検索ボタンを非表示とする
@@ -568,78 +572,60 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         val tapPoint = Point(e?.x?.toInt() ?: 0, e?.y?.toInt() ?: 0)
         val displayMetrics = resources.displayMetrics
         val hitMarkers = mutableListOf<ErikuraMarkerView>()
-        viewModel.markerMap.forEach { jobId, marker ->
-            val point = mMap.projection.toScreenLocation(marker.marker.position)
-            val topLeft = Point(
-                (point.x - (100 / 2 * displayMetrics.density)).toInt(),
-                (point.y - 47 * displayMetrics.density).toInt())
-            val bottomRight = Point(
-                (point.x + (100 / 2 * displayMetrics.density)).toInt(),
-                (point.y).toInt())
+        val visibleBounds = mMap.projection.visibleRegion.latLngBounds
 
-            val rect = Rect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
-            if (rect.contains(tapPoint)) {
-                hitMarkers.add(marker)
-                Log.v(ErikuraApplication.LOG_TAG, "tapPoint: (${tapPoint.x}, ${tapPoint.y}), point: (${point.x}, ${point.y}) => (${topLeft.x}, ${topLeft.y})-(${bottomRight.x}-${bottomRight.y})")
-            }
-            hitMarkers.sortedByDescending { it.marker.zIndex }?.let { sortedHitMarkers ->
-                if (sortedHitMarkers.isNotEmpty()) {
-                    sortedHitMarkers.first()?.let { erikuraMarker ->
-                        val index: Int = erikuraMarker.marker.tag as Int
-                        Log.v("ERIKURA", "Marker index: ${index}")
-                        val jobs = viewModel.jobs.value ?: listOf()
-                        if (index >= 0) {
-                            val job: Job? = jobs[index]
-                            viewModel.activeMaker = viewModel.markerMap[job?.id]
+        viewModel.markerMap.forEach { _jobId, erikuraMarker ->
+//            if (visibleBounds.contains(erikuraMarker.marker.position)) {
+                val point = mMap.projection.toScreenLocation(erikuraMarker.marker.position)
+                val topLeft = Point(
+                    (point.x - (100 / 2 * displayMetrics.density)).toInt(),
+                    (point.y - 47 * displayMetrics.density).toInt())
+                val bottomRight = Point(
+                    (point.x + (100 / 2 * displayMetrics.density)).toInt(),
+                    (point.y).toInt())
+
+                val rect = Rect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
+                if (rect.contains(tapPoint)) {
+                    hitMarkers.add(erikuraMarker)
+                    Log.v(ErikuraApplication.LOG_TAG, "tapPoint: (${tapPoint.x}, ${tapPoint.y}), point: (${point.x}, ${point.y}) => (${topLeft.x}, ${topLeft.y})-(${bottomRight.x}-${bottomRight.y})")
+                }
+//            }
+        }
+
+        hitMarkers.sortedByDescending { it.marker.zIndex }?.let { sortedHitMarkers ->
+            if (sortedHitMarkers.isNotEmpty()) {
+                sortedHitMarkers.first()?.let { erikuraMarker ->
+                    val index: Int = erikuraMarker.marker.tag as Int
+                    Log.v("ERIKURA", "Marker index: ${index}")
+                    val jobs = viewModel.jobs.value ?: listOf()
+                    if (index >= 0) {
+                        val job: Job? = jobs[index]
+                        viewModel.activeMaker = viewModel.markerMap[job?.id]
+                    }
+                    else {
+                        viewModel.activeMaker = null
+                    }
+
+                    var layoutManager = carouselView.layoutManager as LinearLayoutManager
+
+                    val current = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    if (current != index) {
+                        if (current < index) {
+                            if (abs(index - current) > 10) {
+                                layoutManager.scrollToPosition(index - 10)
+                            }
+                            layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
                         }
                         else {
-                            viewModel.activeMaker = null
-                        }
-
-                        var layoutManager = carouselView.layoutManager as LinearLayoutManager
-
-                        val current = layoutManager.findFirstCompletelyVisibleItemPosition()
-                        if (current != index) {
-                            if (current < index) {
-                                if (abs(index - current) > 10) {
-                                    layoutManager.scrollToPosition(index - 10)
-                                }
-                                layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                            if (abs(index - current) > 10) {
+                                layoutManager.scrollToPosition(index + 10)
                             }
-                            else {
-                                if (abs(index - current) > 10) {
-                                    layoutManager.scrollToPosition(index + 10)
-                                }
-                                layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
-                            }
+                            layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
                         }
                     }
                 }
             }
         }
-    }
-
-    private fun Set<LatLng>.findClosestNearByLatLng(latLng: LatLng): LatLng? {
-        val screenNortheast = mMap.projection.visibleRegion.latLngBounds.northeast
-        val screenSouthwest = mMap.projection.visibleRegion.latLngBounds.southwest
-        val screenDistance = screenNortheast.distanceBetween(screenSouthwest)
-
-        val closestLatLng = this.minBy { latLng.distanceBetween(it) }
-        return closestLatLng?.let { closestLatLng ->
-            if (latLng.distanceBetween(closestLatLng) < screenDistance / 40) { // 最小解像度？
-                closestLatLng
-            }
-            else {
-                null
-            }
-        }
-    }
-
-    private fun LatLng.distanceBetween(latLng: LatLng): Double {
-        if (this == latLng) { return 0.0 }
-
-        val distance = SphericalUtil.computeDistanceBetween(this, latLng)
-        return Math.abs(distance)
     }
 }
 

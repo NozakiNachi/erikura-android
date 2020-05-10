@@ -47,6 +47,7 @@
 
                 <!-- 検索エリアのフレーム -->
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/map_view_controls"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
