@@ -578,7 +578,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 //            if (visibleBounds.contains(erikuraMarker.marker.position)) {
                 val point = mMap.projection.toScreenLocation(erikuraMarker.marker.position)
                 val topLeft = Point(
-                    (point.x - (100 / 2 * displayMetrics.density)).toInt(),
+                    (point.x - (110 / 2 * displayMetrics.density)).toInt(),
                     (point.y - 47 * displayMetrics.density).toInt())
                 val bottomRight = Point(
                     (point.x + (100 / 2 * displayMetrics.density)).toInt(),
