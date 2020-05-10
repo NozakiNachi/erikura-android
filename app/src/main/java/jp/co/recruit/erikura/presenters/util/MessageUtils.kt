@@ -1,12 +1,17 @@
 package jp.co.recruit.erikura.presenters.util
 
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.view.LayoutInflater
+import android.widget.Button
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.DialogLocationAlertBinding
@@ -59,6 +64,13 @@ object MessageUtils {
         }.create()
 
         dialog.show()
+
+        val button: Button = dialog.findViewById(R.id.update_button)
+        button.setOnSafeClickListener {
+            val uriString = "package:" + ErikuraApplication.instance.packageName
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+            context.startActivity(intent)
+        }
 
         return dialog
     }
