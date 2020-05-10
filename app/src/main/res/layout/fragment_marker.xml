@@ -12,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         >
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/marker_body"
             android:layout_width="100dp"
             android:layout_height="32dp"
@@ -23,26 +23,36 @@
             android:padding="1dp"
             >
             <ImageView
+                android:id="@+id/marker_icon"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
                 android:padding="0dp"
                 android:scaleType="fitCenter"
                 app:bitmap="@{viewModel.icon}" />
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/marker_fee"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/marker_icon"
                 android:text="@{viewModel.fee}"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="0dp"
                 android:layout_marginTop="8dp"
-                android:layout_marginRight="10dp"
+                android:layout_marginRight="0dp"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:textSize="16dp"
                 android:textColor="@{viewModel.color}"
                 android:firstBaselineToTopHeight="0dp"
                 android:lastBaselineToBottomHeight="0dp"
                 android:includeFontPadding="false"
+                android:gravity="center_horizontal"
                 />
-        </LinearLayout>
+        </RelativeLayout>
         <ImageView
             android:id="@+id/marker_triangle"
             android:layout_width="8dp"
