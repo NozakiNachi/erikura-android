@@ -63,9 +63,11 @@
     <string name="registerWishWork_caption">どんなお仕事がやってみたいか教えてください。（複数回答可）</string>
 
     <!-- SMS認証画面 -->
-    <string name="registerSmsVerify_title">携帯電話番号認証</string>
-    <string name="registerSmsVerify_passcode_resend">パスコードを再送する</string>
-    <string name="registerSmsVerify_register_phone">電話番号を編集する</string>
+    <string name="smsVerify_title">携帯電話番号認証</string>
+    <string name="smsVerify_passcode_resend">パスコードを再送する</string>
+    <string name="smsVerify_register_phone">電話番号を編集する</string>
+    <string name="smsVerify_caption">エリクラを安全にご利用いただくために携帯電話番号認証をお願いしております。</string>
+    <string name="smsVerify_not_mobilePhone_format">ご登録の電話番号が携帯電話番号ではないようです。”電話番号を編集する”リンクからご登録の電話番号を携帯電話番号（070、080、090から始まる番号）に変更してください。</string>
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
@@ -347,7 +349,7 @@
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
     <string name="register_phone_hint">例）08046015529</string>
-    <string name="register_passcode_hint">例）1234</string>
+    <string name="register_passcode_hint">例）12345678</string>
     <string name="cancel_reason_hint">例）急用が入り仕事が完了できなくなった</string>
     <string name="other_hint">その他(自由記入)</string>
     <string name="summary_hint">例）エレベータ</string>

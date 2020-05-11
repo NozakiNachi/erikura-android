@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -14,19 +13,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivitySmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
-import java.util.*
 import java.util.regex.Pattern
 
 class SmsVerifyActivity : BaseActivity(),
@@ -40,6 +36,7 @@ class SmsVerifyActivity : BaseActivity(),
     var requestCode: Int? = null
     var confirmationToken: String? = null
     var isCameThroughLogin: Boolean = false
+    val pattern = Pattern.compile("^(070|080|090)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -65,6 +62,9 @@ class SmsVerifyActivity : BaseActivity(),
         }
         confirmationToken = user.confirmationToken
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
+
+        //携帯番号形式化チェック
+        viewModel.isMobilePhoneNumber.value = pattern.matcher(phoneNumber ?:"").find()
 
         Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
         // trueしか返ってこないので送信結果の判定は入れていない
@@ -229,16 +229,37 @@ class SmsVerifyActivity : BaseActivity(),
 
 class SmsVerifyViewModel : ViewModel() {
     val requestCode = MutableLiveData<Int>()
+    val isMobilePhoneNumber = MutableLiveData<Boolean>()
 
     val passCode: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
     var caption: MutableLiveData<String> = MutableLiveData()
 
+    val sendSmsVerifyVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
+        result.addSource(isMobilePhoneNumber) {
+            if (isMobilePhoneNumber.value == true ) {
+                result.value =View.VISIBLE
+            } else {
+                result.value = View.GONE
+            }
+        }
+    }
+
+    val notSendSmsVerifyVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
+        result.addSource(isMobilePhoneNumber) {
+            if (isMobilePhoneNumber.value == true ) {
+                result.value =View.GONE
+            } else {
+               result.value = View.VISIBLE
+            }
+        }
+    }
+
     val isAuthenticateButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(passCode) { result.value = isValid() }
     }
 
-    val logoutButtonVisibility = MediatorLiveData<Int>().also { result ->
+    val logoutButtonVisible = MediatorLiveData<Int>().also { result ->
         result.addSource(requestCode) {
             result.value = when (requestCode.value) {
                 ErikuraApplication.REQUEST_LOGIN_CODE -> View.VISIBLE
