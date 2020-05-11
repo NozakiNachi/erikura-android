@@ -142,36 +142,14 @@ class SmsVerifyActivity : BaseActivity(),
     override fun onBackPressed() {
         //ログイン、自動ログインから遷移してきた場合、戻るボタンを制御します。
         if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
-            logout()
+            Logout()
         } else {
             //　その他からの遷移は通常遷移
             super.onBackPressed()
         }
     }
 
-    fun logout() {
-        Api(this).logout() { deletedSession ->
-            // ログアウトのトラッキングの送出
-            Tracking.logEvent(event = "logout", params = bundleOf())
-            deletedSession?.let {
-                it.user?.let { user ->
-                    Tracking.identify(user = user, status = "logout")
-                }
-            }
-
-            // ページ参照のトラッキングの送出
-            Tracking.logEvent(event = "view_logout", params = bundleOf())
-            Tracking.view(name = "/mypage/logout", title = "ログアウト完了画面")
-
-            // スタート画面に戻る
-            val intent = Intent(this, StartActivity::class.java)
-            // 戻るボタンの無効化
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
-        }
-    }
-
-    override fun onClickLogout(view: View) {
+    fun Logout() {
         Api(this).logout() { deletedSession ->
             // ログアウトのトラッキングの送出
             Tracking.logEvent(event = "logout", params = bundleOf())
@@ -311,6 +289,5 @@ interface SmsVerifyEventHandlers {
     fun onClickAuthenticate(view: View)
     fun onClickPassCodeResend(view: View)
     fun onClickRegisterPhone(view: View)
-    fun onClickLogout(view: View)
     fun onClickSkip(view: View)
 }
