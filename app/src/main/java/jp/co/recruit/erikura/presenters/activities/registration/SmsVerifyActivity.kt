@@ -142,7 +142,7 @@ class SmsVerifyActivity : BaseActivity(),
     override fun onBackPressed() {
         //ログイン、自動ログインから遷移してきた場合、戻るボタンを制御します。
         if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
-            skip()
+            logout()
         } else {
             //　その他からの遷移は通常遷移
             super.onBackPressed()
@@ -191,21 +191,6 @@ class SmsVerifyActivity : BaseActivity(),
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
-    }
-
-    fun skip() {
-        //SMS認証せずに遷移します。
-        val intent: Intent = Intent()
-        intent.putExtra("user", user)
-        intent.putExtra("requestCode", requestCode)
-        if (isCameThroughLogin) {
-            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-        }
-        setResult(RESULT_OK, intent)
-        finish()
-        // SMS認証スキップのトラッキングの送出
-        Tracking.logEvent(event = "skip_sms_verify", params = bundleOf())
-        Tracking.skipSmsVerify(name = "skip_sms_verify", user = user)
     }
 
     override fun onClickSkip(view: View) {
