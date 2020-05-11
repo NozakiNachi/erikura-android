@@ -53,7 +53,7 @@
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
 
     <!-- 電話番号登録画面 -->
-    <string name="registerCellPhone_caption">携帯電話の番号を教えてください。\n後ほどSMS認証を行います。</string>
+    <string name="registerCellPhone_caption">携帯電話の番号を教えてください。\n後ほど携帯電話番号認証を行います。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
 
     <!-- 職業登録画面 -->
@@ -63,7 +63,7 @@
     <string name="registerWishWork_caption">どんなお仕事がやってみたいか教えてください。（複数回答可）</string>
 
     <!-- SMS認証画面 -->
-    <string name="registerSmsVerify_title">SMS認証</string>
+    <string name="registerSmsVerify_title">携帯電話番号認証</string>
     <string name="registerSmsVerify_passcode_resend">パスコードを再送する</string>
     <string name="registerSmsVerify_register_phone">電話番号を編集する</string>
 
