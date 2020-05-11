@@ -99,14 +99,6 @@ class WorkingJobDetailsFragment(
         transaction.add(R.id.workingJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.commitAllowingStateLoss()
-
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                timerHandler.post(Runnable {
-                    updateTimer()
-                })
-            }
-        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onStart() {
@@ -119,11 +111,22 @@ class WorkingJobDetailsFragment(
     override fun onResume() {
         super.onResume()
         ErikuraApplication.pedometerManager.start()
+
+        timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimer()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onStop() {
         super.onStop()
         ErikuraApplication.pedometerManager.stop()
+
+        timer.cancel()
     }
 
     override fun onClickFavorite(view: View) {
@@ -215,8 +218,6 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
                     favorited.value = it
                 }
             }
-
-            timeCount.value = "0分0秒"
         }
     }
 }

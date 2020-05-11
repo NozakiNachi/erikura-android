@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -57,6 +58,9 @@ class AppliedJobDetailsFragment(
 
     private val locationManager: LocationManager = ErikuraApplication.locationManager
     private var allowPedometerDialog: Dialog? = null
+
+    private var timer: Timer = Timer()
+    private var timerHandler: Handler = Handler()
 
     private var inStartJob: Boolean = false
 
@@ -132,11 +136,21 @@ class AppliedJobDetailsFragment(
         ErikuraApplication.pedometerManager.start()
         allowPedometerDialog?.dismiss()
         allowPedometerDialog = null
+
+        timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimeLimit()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onPause() {
         super.onPause()
         ErikuraApplication.pedometerManager.stop()
+        timer.cancel()
     }
 
     override fun onRequestPermissionsResult(
