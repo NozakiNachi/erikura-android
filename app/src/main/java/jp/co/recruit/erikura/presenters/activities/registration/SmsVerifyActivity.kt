@@ -277,7 +277,7 @@ class SmsVerifyViewModel : ViewModel() {
             var pn = phoneUtil.parse(phoneNumber, "JP")
             var formatPhoneNumber = phoneUtil.format(pn, PhoneNumberUtil.PhoneNumberFormat.NATIONAL)
             caption.value = String.format(
-                "ご登録の電話番号%sにパスコード記載のSMSメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。",
+                "ご登録の電話番号%sにパスコード記載のショートメッセージをお送りしました。ご確認いただき、10分以内に下記にご入力ください。",
                 formatPhoneNumber
             )
         } catch (e: NumberParseException) {
