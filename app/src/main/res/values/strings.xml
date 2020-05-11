@@ -246,7 +246,7 @@
     <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
     <string name="password_verificationPassword_match_error">パスワードと同じものを入力してください。</string>
     <string name="passcode_pattern_error">パスコードは数字で入力してください。</string>
-    <string name="passcode_count_error">パスコードは4桁で入力してください。</string>
+    <string name="passcode_count_error">パスコードは8桁で入力してください。</string>
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
     <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>

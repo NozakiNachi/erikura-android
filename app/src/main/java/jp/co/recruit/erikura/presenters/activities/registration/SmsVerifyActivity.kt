@@ -259,7 +259,7 @@ class SmsVerifyViewModel : ViewModel() {
             valid = false
             error.message.value =
                 ErikuraApplication.instance.getString(R.string.passcode_pattern_error)
-        } else if (valid && !(passCode.value?.length ?: 0 == 4)) {
+        } else if (valid && !(passCode.value?.length ?: 0 == 8)) {
             valid = false
             error.message.value =
                 ErikuraApplication.instance.getString(R.string.passcode_count_error)
