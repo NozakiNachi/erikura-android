@@ -124,6 +124,16 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     animateCamera()
+
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val position = layoutManager.findFirstVisibleItemPosition()
+                    if (position != (adapter.itemCount - 1)) {
+                        // 末尾の要素
+                        adapter.notifyItemRangeChanged(position, 2)
+                    }
+                    else {
+                        adapter.notifyItemChanged(position)
+                    }
                 }
             }
 

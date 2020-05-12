@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -128,21 +129,28 @@ class ErikuraCarouselAdapter(val activity: FragmentActivity, val carousel: Recyc
         val viewModel = ErikuraCarouselViewModel(job, jobsByLocation)
 
         holder.currentPosition = position
-        holder.binding.viewModel = viewModel
         holder.binding.lifecycleOwner = activity
+        holder.binding.viewModel = viewModel
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
 
         holder.binding.executePendingBindings()
 
-        holder.binding.root.setOnSafeClickListener {
+        val view = holder.binding.root
+        view.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+        Log.v(ErikuraApplication.LOG_TAG, "Resizing: otherJobs=${viewModel.hasOtherJobs}, height=${view.measuredHeight}")
+
+        view.setOnSafeClickListener {
             onClickListener?.apply {
                 onClick(job)
             }
         }
-
-        holder.binding.root.forceLayout()
-        carousel.forceLayout()
+        view.requestLayout()
+        carousel.requestLayout()
     }
 
     override fun getItemCount(): Int {
