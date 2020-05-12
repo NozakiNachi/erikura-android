@@ -608,7 +608,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     }
 
     private fun removeAllContents() {
-        job.report = null
         val intent = Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
