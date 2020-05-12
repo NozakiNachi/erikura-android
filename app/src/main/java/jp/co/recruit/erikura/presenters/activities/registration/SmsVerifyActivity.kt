@@ -66,7 +66,7 @@ class SmsVerifyActivity : BaseActivity(),
         //携帯番号形式化チェック
         viewModel.isMobilePhoneNumber.value = pattern.matcher(phoneNumber ?:"").find()
 
-        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
+        Log.v("DEBUG", "SMS認証メール送信")
         // trueしか返ってこないので送信結果の判定は入れていない
         Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
             phoneNumber?.let { viewModel.setCaption(it) }
@@ -82,7 +82,7 @@ class SmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickAuthenticate(view: View) {
-        Log.v("DEBUG", "SMS認証： phoneNumber=${phoneNumber}")
+        Log.v("DEBUG", "SMS認証")
         //trueしか返ってこないので認証結果の判定は入れていない
         Api(this).smsVerify(
             confirmationToken ?: "",
@@ -103,7 +103,7 @@ class SmsVerifyActivity : BaseActivity(),
     }
 
     override fun onClickPassCodeResend(view: View) {
-        Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
+        Log.v("DEBUG", "SMS認証メール送信")
         // trueしか返ってこないので送信結果の判定は入れていない
         Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
             phoneNumber?.let { viewModel.setCaption(it) }
@@ -193,7 +193,7 @@ class SmsVerifyActivity : BaseActivity(),
             data.getStringExtra("phoneNumber")?.let { newPhoneNumber ->
                 if (newPhoneNumber != phoneNumber) {
                     phoneNumber = newPhoneNumber
-                    Log.v("DEBUG", "SMS認証メール送信： phoneNumber=${phoneNumber}")
+                    Log.v("INFO", "SMS認証メール送信")
                     // trueしか返ってこないので送信結果の判定は入れていない
                     Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
                         phoneNumber?.let { viewModel.setCaption(it) }

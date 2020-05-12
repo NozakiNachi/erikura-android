@@ -74,7 +74,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             }
             Log.v("DEBUG", "SMS認証チェック： userId=${userSession.userId}")
             Api(this).user(){user ->
-                Log.v("DEBUG", "SMS認証チェック電話番号： phoneNumber=${user?.phoneNumber}")
+                Log.v("INFO", "SMS認証チェック")
                 Api(this).smsVerifyCheck(user?.phoneNumber ?:"") { result->
                     if (result) {
                         //SMS認証済みの場合
