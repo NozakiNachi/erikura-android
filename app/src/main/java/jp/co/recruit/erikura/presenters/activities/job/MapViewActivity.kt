@@ -176,10 +176,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         map_touchable_wrapper?.onTouch = { e ->
             gestureDetector?.onTouchEvent(e)
         }
-//        map_view_controls.setOnTouchListener { _view, event ->
-//            gestureDetector?.onTouchEvent(event)
-//            false
-//        }
 
         // 各種ボタンの表示・非表示の切り替えを行います
         viewModel.reSearchButtonVisible.value = View.GONE           // 初期表示ではこの地点で再検索ボタンを非表示とする
@@ -215,7 +211,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(resume): $updateRequest")
                 mMap.moveCamera(updateRequest)
                 firstFetchRequested = true
-                val query = viewModel.query(it)
+                val query = viewModel.query(viewModel.latLng.value ?: it)
                 fetchJobs(query)
             }
         }
@@ -247,38 +243,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         mMap.setOnMarkerClickListener {
             true
         }
-//        mMap.setOnMarkerClickListener { marker ->
-//            val index: Int = marker.tag as Int
-//            Log.v("ERIKURA", "Marker index: ${index}")
-//            val jobs = viewModel.jobs.value ?: listOf()
-//            if (index >= 0) {
-//                val job: Job? = jobs[index]
-//                viewModel.activeMaker = viewModel.markerMap[job?.id]
-//            }
-//            else {
-//                viewModel.activeMaker = null
-//            }
-//
-//            var layoutManager = carouselView.layoutManager as LinearLayoutManager
-//
-//            val current = layoutManager.findFirstCompletelyVisibleItemPosition()
-//            if (current != index) {
-//                if (current < index) {
-//                    if (abs(index - current) > 10) {
-//                        layoutManager.scrollToPosition(index - 10)
-//                    }
-//                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
-//                }
-//                else {
-//                    if (abs(index - current) > 10) {
-//                        layoutManager.scrollToPosition(index + 10)
-//                    }
-//                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
-//                }
-//            }
-//
-//            true
-//        }
 
         // ズームの初期設定を行っておきます
         val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
@@ -294,7 +258,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         if (!firstFetchRequested) {
             if (viewModel.keyword.value.isNullOrBlank()) {
                 // 検索キーワードが指定されていないので、現在値より検索します
-                locationManager.latLng?.also {
+                (viewModel.latLng.value ?: locationManager.latLng)?.also {
                     // 位置情報が取得可能なので、位置情報を返却します
                     firstFetchRequested = true
                     val query = viewModel.query(it)
@@ -491,7 +455,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         val position = mMap.cameraPosition
         // 募集中/すべてのフラグ以外は検索条件をクリアします
         viewModel.clearWithoutPeriod()
-        viewModel.clearWithoutPeriod()
         fetchJobs(viewModel.query(position.target))
     }
 
@@ -525,7 +488,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
         Tracking.track(name= "push_toggle_dispaly")
 
-        Intent(this, ListViewActivity::class.java)?.let {
+        Intent(this, ListViewActivity::class.java).let {
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
             startActivity(it)

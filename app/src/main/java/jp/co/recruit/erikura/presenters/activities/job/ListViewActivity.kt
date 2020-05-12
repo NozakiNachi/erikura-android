@@ -184,15 +184,15 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
         if (viewModel.keyword.value.isNullOrBlank()) {
             // 現在地からの検索の場合
-            locationManager.latLng?.also {
+            (viewModel.latLng.value ?: locationManager.latLng)?.also {
                 firstFetchRequested = true
-                val query = viewModel.query(it)
-                fetchJobs(query)
+                // viewModel の更新のみを行います => 実際の検索は onItemSelected から呼ばれます
+                viewModel.query(it)
             } ?: run {
                 if (!locationManager.checkPermission(this)) {
                     firstFetchRequested = true
-                    val query = viewModel.query(LocationManager.defaultLatLng)
-                    fetchJobs(query)
+                    // viewModel の更新のみを行います => 実際の検索は onItemSelected から呼ばれます
+                    viewModel.query(LocationManager.defaultLatLng)
                 }
             }
         }
@@ -200,8 +200,8 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             // キーワードをもとにした緯度経度からの検索
             viewModel.latLng.value?.let {
                 firstFetchRequested = true
-                val query = viewModel.query(it)
-                fetchJobs(query)
+                // viewModel の更新のみを行います => 実際の検索は onItemSelected から呼ばれます
+                viewModel.query(it)
             }
         }
     }
@@ -222,7 +222,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && !viewModel.keyword.value.isNullOrBlank()) {
                 firstFetchRequested = true
-                val query = viewModel.query(it)
+                val query = viewModel.query(viewModel.latLng.value ?: it)
                 fetchJobs(query)
             }
         }
@@ -294,9 +294,9 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         startActivity(intent)
     }
 
-    fun onQueryChanged() {
+    private fun onQueryChanged() {
         // viewModel 側に実装を移すべきか検討すること
-        val latLng = viewModel.keyword.value?.let { viewModel.latLng.value } ?: locationManager.latLngOrDefault
+        val latLng = viewModel.latLng.value ?: locationManager.latLngOrDefault
         val query = viewModel.query(latLng)
         fetchJobs(query)
     }
