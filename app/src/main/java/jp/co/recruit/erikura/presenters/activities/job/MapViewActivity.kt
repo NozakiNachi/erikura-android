@@ -514,10 +514,14 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 viewModel.periodType.value = PeriodType.ALL
             }
         }
-        // 現在位置をもとに検索し直します
-        val position = mMap.cameraPosition
+
         viewModel.searchBarVisible.value = View.GONE
-        fetchJobs(viewModel.query(position.target))
+
+        // 検索キーワードがない場合は現在位置をもとに検索し直します
+        val position = mMap.cameraPosition
+        val latLng = viewModel.keyword.value?.let { viewModel.latLng.value } ?: position.target
+        val query = viewModel.query(latLng)
+        fetchJobs(query)
     }
 
     override fun onClickList(view: View) {
