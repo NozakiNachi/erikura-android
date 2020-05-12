@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.util.Log
 import android.view.MenuItem
@@ -11,7 +10,6 @@ import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.SearchJobActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
-import jp.co.recruit.erikura.presenters.util.LocationManager
 
 open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton: Boolean = false): BaseActivity(finishByBackButton = finishByBackButton), TabEventHandlers {
     companion object {
@@ -26,10 +24,22 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
         super.onStart()
 
         // 下部のタブの選択肢を変更します
+        selectTabItemId(currentTabId)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        // 下部のタブの選択肢を変更します
+        selectTabItemId(currentTabId)
+    }
+
+    protected fun selectTabItemId(menuId: Int) {
+        // 下部のタブの選択肢を変更します
         try {
             onTabButtonInitialization = true
             val nav: BottomNavigationView = findViewById(R.id.tab_navigation)
-            nav.selectedItemId = currentTabId
+            nav.selectedItemId = menuId
         }
         finally {
             onTabButtonInitialization = false
@@ -38,7 +48,7 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // onStart で来た場合には、選択処理はスキップさせます
-        if (onTabButtonInitialization) { return false }
+        if (onTabButtonInitialization) { return true }
 
         Log.v(ErikuraApplication.LOG_TAG, "Navigation Item Selected: ${item.toString()}")
 
