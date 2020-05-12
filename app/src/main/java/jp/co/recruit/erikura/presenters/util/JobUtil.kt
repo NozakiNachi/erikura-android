@@ -72,23 +72,16 @@ object JobUtil {
 
                 val sb = SpannableStringBuilder()
                 sb.append("募集開始まで")
-                if (days > 0) {         // 日数があるので、「d日とh時間」で表示する
+                if (days > 0) {
                     appendStringAsLarge(sb, days.toString())
                     appendStringAsNormal(sb, "日")
-                    if (hours > 0) {
-                        appendStringAsNormal(sb, "と")
-                        appendStringAsLarge(sb, hours.toString())
-                        appendStringAsNormal(sb, "時間")
-                    }
                 }
-                else if (hours > 0) {   // 日数がないので、「h時間とm分」で表示する
+                if (days > 0 && hours > 0) {
+                    appendStringAsNormal(sb, "と")
+                }
+                if (hours > 0) {
                     appendStringAsLarge(sb, hours.toString())
                     appendStringAsNormal(sb, "時間")
-                    if (minutes > 0) {
-                        appendStringAsNormal(sb, "と")
-                        appendStringAsLarge(sb, minutes.toString())
-                        appendStringAsNormal(sb, "分")
-                    }
                 }
                 else {
                     appendStringAsLarge(sb, minutes.toString())
@@ -124,23 +117,16 @@ object JobUtil {
 
                         val sb = SpannableStringBuilder()
                         sb.append("作業終了まで")
-                        if (days > 0) {         // 日数があるので、「d日とh時間」で表示する
+                        if (days > 0) {
                             appendStringAsLarge(sb, days.toString())
                             appendStringAsNormal(sb, "日")
-                            if (hours > 0) {
-                                appendStringAsNormal(sb, "と")
-                                appendStringAsLarge(sb, hours.toString())
-                                appendStringAsNormal(sb, "時間")
-                            }
                         }
-                        else if (hours > 0) {   // 日数がないので、「h時間とm分」で表示する
+                        if (days > 0 && hours > 0) {
+                            appendStringAsNormal(sb, "と")
+                        }
+                        if (hours > 0) {
                             appendStringAsLarge(sb, hours.toString())
                             appendStringAsNormal(sb, "時間")
-                            if (minutes > 0) {
-                                appendStringAsNormal(sb, "と")
-                                appendStringAsLarge(sb, minutes.toString())
-                                appendStringAsNormal(sb, "分")
-                            }
                         }
                         else {
                             appendStringAsLarge(sb, minutes.toString())
