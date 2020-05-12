@@ -61,6 +61,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             if (limitAt < now) {
                 // 納期を過ぎてしまっている場合
                 Api(activity!!).displayErrorAlert(listOf(getString(R.string.jobDetails_overLimit)))
+                dismiss()
             }
             else {
                 Api(activity!!).stopJob(job, latLng,
