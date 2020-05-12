@@ -35,7 +35,7 @@
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
                 android:text="@string/open_settings"
-                android:onClick="@{handlers::onClickOpenSettings}"
+                app:onSafeClick="@{handlers::onClickOpenSettings}"
                 />
 
 

@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.DialogUploadFailedBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
 class UploadFailedDialogFragment: DialogFragment() {
     var onClickListener: OnClickListener? = null
@@ -25,13 +26,13 @@ class UploadFailedDialogFragment: DialogFragment() {
         val builder = AlertDialog.Builder(activity)
         builder.setView(binding.root)
 
-        binding.root.findViewById<Button>(R.id.upload_failed_retry_button).setOnClickListener {
+        binding.root.findViewById<Button>(R.id.upload_failed_retry_button).setOnSafeClickListener {
             onClickListener?.apply {
                 onClickRetryButton()
             }
         }
 
-        binding.root.findViewById<Button>(R.id.upload_failed_remove_button).setOnClickListener {
+        binding.root.findViewById<Button>(R.id.upload_failed_remove_button).setOnSafeClickListener {
             onClickListener?.apply {
                 onClickRemoveButton()
             }

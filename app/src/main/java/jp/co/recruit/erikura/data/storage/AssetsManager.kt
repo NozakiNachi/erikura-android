@@ -36,7 +36,7 @@ class AssetsManager {
 
     private val lock = java.lang.Object()
     private val completionCallbackMap: MutableMap<String, MutableList<CompletionCallback>> = HashMap()
-    val realm: Realm = ErikuraApplication.realm
+    val realm: Realm get() = ErikuraApplication.realm
 
     fun fetchAsset(activity: Activity, url: String, type: Asset.AssetType = Asset.AssetType.Other, onComplete: (asset: Asset) -> Unit) {
         lookupAsset(url)?.also { asset ->

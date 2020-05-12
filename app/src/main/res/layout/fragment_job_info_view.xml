@@ -29,7 +29,7 @@
                 android:textSize="22dp"
                 android:textColor="@color/black"
                 android:text="@{viewModel.title}"
-                android:onClick="@{handler::onClickTitle}"
+                app:onSafeClick="@{handler::onClickTitle}"
                 android:lineSpacingExtra="10dp"
                 android:maxLines="2"
                 android:ellipsize="end"/>

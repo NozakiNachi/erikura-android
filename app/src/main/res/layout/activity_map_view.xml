@@ -3,6 +3,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://app.erikura.net/erikura"
     xmlns:erikura="http://app.erikura.net/erikura"
     android:orientation="vertical">
 
@@ -31,7 +32,8 @@
                 android:layout_above="@id/tab_navigation">
 
                 <!-- 地図画面のフレーム -->
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <jp.co.recruit.erikura.presenters.activities.job.TouchableWrapper
+                    android:id="@+id/map_touchable_wrapper"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <fragment
@@ -41,10 +43,11 @@
                         android:layout_height="match_parent"
                         tools:context=".presenters.activities.job.MapViewActivity" />
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                </jp.co.recruit.erikura.presenters.activities.job.TouchableWrapper>
 
                 <!-- 検索エリアのフレーム -->
                 <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/map_view_controls"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
@@ -61,7 +64,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginLeft="20dp"
                         android:elevation="@dimen/default_elevation"
-                        android:onClick="@{handlers::onClickSearch}"
+                        app:onSafeClick="@{handlers::onClickSearch}"
                         />
 
                     <!-- 募集中のみチェックボックス -->
@@ -76,7 +79,7 @@
                         android:layout_marginTop="96dp"
                         android:layout_marginLeft="20dp"
                         android:elevation="@dimen/default_elevation"
-                        android:onClick="@{handlers::onToggleActiveOnly}"
+                        app:onSafeClick="@{handlers::onToggleActiveOnly}"
                         />
                     <!-- この範囲で再検索ボタン -->
                     <Button
@@ -89,7 +92,7 @@
                         map:layout_constraintRight_toRightOf="parent"
                         android:layout_marginTop="20dp"
                         android:elevation="@dimen/default_elevation"
-                        android:onClick="@{handlers::onClickReSearch}"
+                        app:onSafeClick="@{handlers::onClickReSearch}"
                         android:visibility="@{viewModel.reSearchButtonVisible}"
                         />
                     <!-- リストボタン -->
@@ -105,7 +108,7 @@
                         android:layout_marginTop="20dp"
                         android:layout_marginRight="20dp"
                         android:elevation="@dimen/default_elevation"
-                        android:onClick="@{handlers::onClickList}"
+                        app:onSafeClick="@{handlers::onClickList}"
                         />
                     <!-- 現在地ボタン -->
                     <ImageButton
@@ -120,7 +123,7 @@
                         android:layout_marginTop="96dp"
                         android:layout_marginRight="20dp"
                         android:elevation="@dimen/default_elevation"
-                        android:onClick="@{handlers::onClickCurrentLocation}"
+                        app:onSafeClick="@{handlers::onClickCurrentLocation}"
                         android:visibility="@{viewModel.currentLocationButtonVisible}"
                         />
 
@@ -138,7 +141,7 @@
                         android:elevation="@dimen/default_elevation"
                         erikura:conditions="@{viewModel.conditions}"
                         android:visibility="@{viewModel.searchBarVisible}"
-                        android:onClick="@{handlers::onClickSearchBar}"
+                        app:onSafeClick="@{handlers::onClickSearchBar}"
                         />
 
                     <androidx.recyclerview.widget.RecyclerView
@@ -175,7 +178,7 @@
             android:layout_height="match_parent"
             android:background="#80000000"
             android:visibility="@{coachViewModel.coachVisibility}"
-            android:onClick="@{coachViewModel::tap}"
+            app:onSafeClick="@{coachViewModel::tap}"
             >
             <!-- 検索条件ボタン -->
             <ImageButton
@@ -192,7 +195,7 @@
                 android:layout_marginLeft="20dp"
                 android:elevation="@dimen/default_elevation"
                 android:visibility="@{coachViewModel.step1Visibility}"
-                android:onClick="@{coachViewModel::tap}"
+                app:onSafeClick="@{coachViewModel::tap}"
                 />
 
             <LinearLayout
@@ -203,7 +206,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:visibility="@{coachViewModel.step1Visibility}"
-                android:onClick="@{coachViewModel::tap}"
+                app:onSafeClick="@{coachViewModel::tap}"
                 >
                 <View
                     android:layout_width="14dp"
@@ -278,7 +281,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:visibility="@{coachViewModel.step0Visibility}"
-                android:onClick="@{coachViewModel::tap}"
+                app:onSafeClick="@{coachViewModel::tap}"
                 >
                 <RelativeLayout
                     android:layout_width="match_parent"

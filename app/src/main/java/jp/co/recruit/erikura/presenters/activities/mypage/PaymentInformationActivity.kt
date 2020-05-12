@@ -28,6 +28,7 @@ import jp.co.recruit.erikura.databinding.FragmentPaymentInfoMonthlyCellBinding
 import jp.co.recruit.erikura.databinding.FragmentPaymentInformationListCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.ErikuraCarouselAdapter
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,23 +93,21 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
             monthlyPaymentAdapter.notifyDataSetChanged()
 
             if(jobs.size == 0){
-                binding.payment.setVisibility(View.VISIBLE)
-                binding.paymentLine.setVisibility(View.GONE)
-//                binding.paymentLineTwo.setVisibility(View.GONE)
-                binding.paymentExplain.setVisibility(View.GONE)
+                viewModel.noPaymentsVisibility.value = View.VISIBLE
+                viewModel.paymentsVisibility.value = View.GONE
             }else{
-                binding.payment.setVisibility(View.GONE)
-                binding.paymentLine.setVisibility(View.VISIBLE)
-//                binding.paymentLineTwo.setVisibility(View.VISIBLE)
-                binding.paymentExplain.setVisibility(View.VISIBLE)
+                viewModel.noPaymentsVisibility.value = View.GONE
+                viewModel.paymentsVisibility.value = View.VISIBLE
             }
         }
 
         // 口座情報が登録済みであれば、口座情報登録ボタンは表示しない。
         Api(this).payment() {
             if(it.bankName !== null) {
-                binding.notPaymentDateButton.setVisibility(View.GONE)
-                binding.notPaymentDateExplain.setVisibility(View.GONE)
+                viewModel.registerAccountVisibility.value = View.GONE
+            }
+            else {
+                viewModel.registerAccountVisibility.value = View.VISIBLE
             }
         }
     }
@@ -121,6 +120,12 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
 }
 
 class PaymentInformationViewModel: ViewModel() {
+    // 口座登録がない場合の表記を表示するか
+    val registerAccountVisibility = MutableLiveData<Int>(View.GONE)
+    // 支払いがない場合のメッセージの表示
+    val noPaymentsVisibility = MutableLiveData<Int>(View.GONE)
+    // お支払い情報の表示
+    val paymentsVisibility = MutableLiveData<Int>(View.GONE)
     val currentYear = Calendar.getInstance().get(Calendar.YEAR)
     val targetYear: MutableLiveData<Int> = MutableLiveData()
     val targetYears: MutableLiveData<List<Int>> = MutableLiveData()
@@ -186,7 +191,7 @@ class MonthlyPaymentAdapter(val activity: FragmentActivity, var monthlyPayments:
         val adapter = PaymentListAdapater(activity, monthlyPayment.jobs)
         binding.paymentInfoMonthlyCellList.adapter = adapter
 
-        binding.root.setOnClickListener {
+        binding.root.setOnSafeClickListener {
             val toggle: ToggleButton = binding.root.findViewById(R.id.payment_info_monthly_cell_toggle)
             toggle.isChecked = !toggle.isChecked
         }

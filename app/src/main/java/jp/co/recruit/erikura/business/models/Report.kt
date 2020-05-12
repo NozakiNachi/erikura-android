@@ -13,7 +13,6 @@ import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
-
 enum class ReportStatus {
     Unconfirmed,
     Accepted,

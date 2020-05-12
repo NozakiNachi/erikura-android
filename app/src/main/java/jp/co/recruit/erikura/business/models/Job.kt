@@ -2,9 +2,10 @@ package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
+import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import kotlinx.android.parcel.Parcelize
-import kotlinx.android.parcel.RawValue
 import java.util.*
 
 enum class JobStatus {
@@ -22,6 +23,9 @@ enum class JobStatus {
     Past,
     /** 募集前 */
     Future,
+
+    /** み初期化 */
+    Uninitialized,
 }
 
 @Parcelize
@@ -55,6 +59,7 @@ data class Job(
     var targetGender: Gender? = null,
     var banned: Boolean = false
 ): Parcelable {
+    var uninitialized: Boolean = false
     val reportId: Int? get() = report?.id
 
     val isActive: Boolean get() {
@@ -99,6 +104,8 @@ data class Job(
 
     /** 案件の状態を取得します */
     val status: JobStatus get() {
+        if (uninitialized) { return JobStatus.Uninitialized }
+
         if (isEntried && isOwner) {
             if (isReported) {
                 return JobStatus.Reported
@@ -137,4 +144,51 @@ data class Job(
     }
 
     val latLng: LatLng get() = LatLng(latitude?: LocationManager.defaultLatLng.latitude, longitude?: LocationManager.defaultLatLng.longitude)
+
+    /**
+     * 案件の募集している性別と一致しているかを判定します
+     */
+    fun isGenderMatched(user: User?): Boolean {
+        // 最小の性別が指定されていない場合
+        return targetGender?.let { targetGender ->
+            user?.let { user ->
+                targetGender == user.gender
+            } ?: true
+        } ?: true
+    }
+
+    /**
+     * 応募可能可を判定します
+     */
+    fun isApplicable(user: User?): Boolean {
+        return notApplicableReason(user).isNullOrBlank()
+    }
+
+    /**
+     * 応募不可の理由を取得します
+     */
+    fun notApplicableReason(user: User?): String? {
+        return when {
+            // 未来、もしくは過去案件の場合
+            (isFuture || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
+            // すでに応募済みの場合
+            (isEntried) -> ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
+            // Ban された案件の場合
+            (banned) -> ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
+            // 対象の性別ではない場合
+            (!isGenderMatched(user)) -> ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
+            // 再応募不可の場合
+            (!reEntryPermitted) -> ErikuraApplication.instance.getString(R.string.jobDetails_cantEntry)
+            // 応募可能件数を超えている場合
+            (user?.let { it.holdingJobs >= it.maxJobs } ?: false) -> ErikuraApplication.instance.getString(R.string.jobDetails_maxEntry, user?.maxJobs ?: 0)
+            else -> null
+        }
+
+    }
+    /*
+    private fun decideWarningCaption(): String? {
+        return job.value?.let { job ->
+        }
+    }
+     */
 }

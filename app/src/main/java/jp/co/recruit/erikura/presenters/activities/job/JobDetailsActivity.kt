@@ -1,26 +1,23 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.fragments.*
 
-
 class JobDetailsActivity : BaseActivity() {
-
+    var renderedJobId: Int? = null
+    var renderedJobStatus: JobStatus? = null
     var job: Job = Job()
-    var user: User = User()
-    var fragment = Fragment()
+    var user: User? = null
+    var fragment: BaseJobDetailFragment? = null
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
 
@@ -79,6 +76,7 @@ class JobDetailsActivity : BaseActivity() {
 
     override fun onStart() {
         super.onStart()
+        supportFragmentManager.executePendingTransactions()
 
         val errorMessages = intent.getStringArrayExtra("errorMessages")
         if (errorMessages != null) {
@@ -102,7 +100,7 @@ class JobDetailsActivity : BaseActivity() {
         Api(this).reloadJob(job) {
             it.toString()
             job = it
-            if (UserSession.retrieve() != null) {
+            if (Api.isLogin) {
                 Api(this).user {
                     user = it
                     refreshContents()
@@ -116,38 +114,54 @@ class JobDetailsActivity : BaseActivity() {
     private fun refreshContents() {
         if (isDestroyed) { return }
 
-        val transaction = supportFragmentManager.beginTransaction()
-        // fragmentの作成
-        // jobのステータスで挿しこむフラグメントを変更します
-        when (job.status) {
-            JobStatus.Normal -> {
-                fragment = NormalJobDetailsFragment(this, job, user)
-            }
-            JobStatus.Applied -> {
-                fragment = AppliedJobDetailsFragment(this, job, user)
-            }
-            JobStatus.Working -> {
-                fragment = WorkingJobDetailsFragment(this, job, user)
-            }
-            JobStatus.Finished -> {
-                fragment = FinishedJobDetailsFragment(this, job, user)
-            }
-            JobStatus.Reported -> {
-                fragment = ReportedJobDetailsFragment(this, job, user)
-            }
-            else -> {
-                fragment = NormalJobDetailsFragment(this, job, user)
+        if (job.status == JobStatus.Uninitialized) {
+            fragment?.let {
+                val transaction = supportFragmentManager.beginTransaction()
+                transaction.remove(it)
+                transaction.commitAllowingStateLoss()
+                renderedJobId = null
+                renderedJobStatus = null
             }
         }
-        // fragmentの更新
-        transaction.replace(R.id.job_details, fragment)
-        transaction.commitAllowingStateLoss()
+        else if (job.id == renderedJobId && job.status == renderedJobStatus) {
+            fragment?.refresh(job, user)
+        }
+        else {
+            val transaction = supportFragmentManager.beginTransaction()
+            // fragmentの作成
+            // jobのステータスで挿しこむフラグメントを変更します
+            when (job.status) {
+                JobStatus.Normal -> {
+                    fragment = NormalJobDetailsFragment(this, job, user)
+                }
+                JobStatus.Applied -> {
+                    fragment = AppliedJobDetailsFragment(this, job, user)
+                }
+                JobStatus.Working -> {
+                    fragment = WorkingJobDetailsFragment(this, job, user)
+                }
+                JobStatus.Finished -> {
+                    fragment = FinishedJobDetailsFragment(this, job, user)
+                }
+                JobStatus.Reported -> {
+                    fragment = ReportedJobDetailsFragment(this, job, user)
+                }
+                else -> {
+                    fragment = NormalJobDetailsFragment(this, job, user)
+                }
+            }
+            // fragmentの更新
+            transaction.replace(R.id.job_details, fragment!!)
+            transaction.commitAllowingStateLoss()
+            renderedJobId = job.id
+            renderedJobStatus = job.status
+        }
     }
-
 
     private fun handleIntent(intent: Intent) {
         val appLinkData: Uri? = intent.data
         val jobId = appLinkData!!.lastPathSegment!!.toInt()
-        job.id = jobId
+        job = Job(id= jobId)
+        job.uninitialized = true
     }
 }

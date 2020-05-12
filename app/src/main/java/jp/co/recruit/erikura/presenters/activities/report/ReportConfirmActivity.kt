@@ -36,6 +36,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
@@ -46,6 +47,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import okhttp3.internal.closeQuietly
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -606,7 +608,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     }
 
     private fun removeAllContents() {
-        job.report = null
         val intent = Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -711,7 +712,7 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
             holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false)
             val button =
                 holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
-            button.setOnClickListener {
+            button.setOnSafeClickListener {
                 onClickListener?.apply {
                     onClick(view)
                 }
@@ -788,18 +789,13 @@ class ReportSummaryItemViewModel(
                 commentCountVisibility.value = View.VISIBLE
                 evaluationVisible.value = View.VISIBLE
                 operatorComment.value = summary.operatorComments.first().body
-                operatorCommentCreatedAt.value = dateToString(summary.operatorComments.first().createdAt, "yyyy/MM/dd HH:mm")
+                operatorCommentCreatedAt.value = JobUtils.DateFormats.simple.format(summary.operatorComments.first().createdAt)
             }
             if (summary.operatorLikes) {
                 goodCount.value = "1件"
                 goodCountVisibility.value = View.VISIBLE
             }
         }
-    }
-
-    private fun dateToString(date: Date, format: String): String {
-        val sdf = SimpleDateFormat(format, Locale.JAPAN)
-        return sdf.format(date)
     }
 }
 
@@ -840,13 +836,13 @@ class ReportSummaryAdapter(
             jobDetails
         )
         val editButton = holder.binding.root.findViewById<Button>(R.id.edit_report_summary_item)
-        editButton.setOnClickListener {
+        editButton.setOnSafeClickListener {
             onClickListener?.apply {
                 onClickEditButton(view, position)
             }
         }
         val removeButton = holder.binding.root.findViewById<Button>(R.id.remove_report_summary_item)
-        removeButton.setOnClickListener {
+        removeButton.setOnSafeClickListener {
             onClickListener?.apply {
                 onClickRemoveButton(view, position)
             }

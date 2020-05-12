@@ -39,7 +39,7 @@
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
                 android:text="@string/bank_registration"
-                android:onClick="@{handlers::onClickBankRegistration}"
+                app:onSafeClick="@{handlers::onClickBankRegistration}"
                 android:visibility="@{viewModel.buttonVisibility}"
                 />
 

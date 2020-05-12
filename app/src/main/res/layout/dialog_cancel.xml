@@ -115,7 +115,7 @@
                 android:layout_marginTop="40dp"
                 style="@style/tertiaryButton"
                 android:text="@string/cancel"
-                android:onClick="@{handlers::onClickCancel}"
+                app:onSafeClick="@{handlers::onClickCancel}"
                 android:enabled="@{viewModel.isEnabledCancelButton()}"/>
 
         </LinearLayout>

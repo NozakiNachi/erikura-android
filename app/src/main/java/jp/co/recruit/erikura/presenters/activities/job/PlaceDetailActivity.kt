@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -10,7 +9,6 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.DynamicDrawableSpan
-import android.text.style.ImageSpan
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -21,10 +19,10 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Place
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.fragments.IconImageSpan
 import jp.co.recruit.erikura.presenters.fragments.JobsListFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingPlaceViewFragment
 
@@ -84,7 +82,7 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
         Api(this).place(place.id) { place ->
             viewModel.setupThumbnail(this, place)
             // お気に入りボタンの状態取得処理
-            UserSession.retrieve()?.let {
+            if (Api.isLogin) {
                 Api(this).placeFavoriteShow(place.id) {
                     viewModel.favorited.value = it
                 }
@@ -114,10 +112,13 @@ class PlaceDetailViewModel: ViewModel() {
 
 
     fun setupMapButton() {
+        val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
+        val width = (16 * displayMetrics.density).toInt()
+        val height = (16 * displayMetrics.density).toInt()
         val str = SpannableString(ErikuraApplication.instance.getString(R.string.openMap))
         val drawable = ContextCompat.getDrawable(ErikuraApplication.instance.applicationContext, R.drawable.link)
-        drawable!!.setBounds(0, 0, 40, 40)
-        val span = ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE)
+        drawable!!.setBounds(0, 0, width, height)
+        val span = IconImageSpan(drawable, DynamicDrawableSpan.ALIGN_CENTER)
         str.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
         openMapButtonText.value = str
     }

@@ -76,7 +76,7 @@
                     android:layout_marginBottom="100dp"
                     style="@style/primaryButton"
                     android:text="位置情報をONにする"
-                    android:onClick="@{handlers::onClickPermitLocation}"
+                    app:onSafeClick="@{handlers::onClickPermitLocation}"
                     />
             </LinearLayout>
         </LinearLayout>

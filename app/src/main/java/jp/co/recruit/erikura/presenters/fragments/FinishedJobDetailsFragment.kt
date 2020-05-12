@@ -1,18 +1,17 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -21,21 +20,42 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 import java.util.*
 
-
 class FinishedJobDetailsFragment(
     private val activity: AppCompatActivity,
-    val job: Job?,
-    val user: User
-) : Fragment(), FinishedJobDetailsFragmentEventHandlers {
+    job: Job?,
+    user: User?
+) : BaseJobDetailFragment(job, user), FinishedJobDetailsFragmentEventHandlers {
     private val viewModel by lazy {
         ViewModelProvider(this).get(FinishedJobDetailsFragmentViewModel::class.java)
+    }
+    private var jobInfoView: JobInfoViewFragment? = null
+    private var manualImage: ManualImageFragment? = null
+    private var manualButton: ManualButtonFragment? = null
+    private var thumbnailImage: ThumbnailImageFragment? = null
+    private var jobDetailsView: JobDetailsViewFragment? = null
+    private var mapView: MapViewFragment? = null
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+
+        if (isAdded) {
+            jobInfoView?.refresh(job, user)
+            manualImage?.refresh(job, user)
+            manualButton?.refresh(job, user)
+            thumbnailImage?.refresh(job, user)
+            jobDetailsView?.refresh(job, user)
+            mapView?.refresh(job, user)
+
+            activity?.let {
+                viewModel.setup(it, job, user)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -55,26 +75,18 @@ class FinishedJobDetailsFragment(
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        val jobInfoView = JobInfoViewFragment(job)
-        val manualImage = ManualImageFragment(job)
-        val manualButton = ManualButtonFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(job)
-        val jobDetailsView = JobDetailsViewFragment(job)
-        val mapView = MapViewFragment(activity, job)
-        transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage, "manualImage")
-        transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton, "manualButton")
-        transaction.add(
-            R.id.finishedJobDetails_thumbnailImageFragment,
-            thumbnailImage,
-            "thumbnailImage"
-        )
-        transaction.add(
-            R.id.finishedJobDetails_jobDetailsViewFragment,
-            jobDetailsView,
-            "jobDetailsView"
-        )
-        transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView, "mapView")
+        jobInfoView = JobInfoViewFragment(job, user)
+        manualImage = ManualImageFragment(job, user)
+        manualButton = ManualButtonFragment(job, user)
+        thumbnailImage = ThumbnailImageFragment(job, user)
+        jobDetailsView = JobDetailsViewFragment(job, user)
+        mapView = MapViewFragment(activity, job, user)
+        transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
+        transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
+        transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
+        transaction.add(R.id.finishedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
+        transaction.add(R.id.finishedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.commitAllowingStateLoss()
     }
 
@@ -100,7 +112,7 @@ class FinishedJobDetailsFragment(
     }
 
     override fun onClickCancelWorking(view: View) {
-        job?.let {
+        job?.let { job ->
             if (job.entry?.limitAt?: Date() > Date()) {
                 Api(activity).abortJob(job) {
                     val intent = Intent(activity, JobDetailsActivity::class.java)
@@ -116,7 +128,7 @@ class FinishedJobDetailsFragment(
     }
 
     override fun onClickReport(view: View) {
-        job?.let {
+        job?.let { job ->
             if (job.entry?.limitAt?: Date() > Date()) {
                 val intent = Intent(activity, ReportImagePickerActivity::class.java)
                 intent.putExtra("job", job)
@@ -136,7 +148,7 @@ class FinishedJobDetailsFragmentViewModel: ViewModel() {
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val reportButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
-    fun setup(activity: Activity, job: Job?, user: User) {
+    fun setup(activity: Activity, job: Job?, user: User?) {
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
@@ -164,7 +176,7 @@ class FinishedJobDetailsFragmentViewModel: ViewModel() {
             }
 
             // お気に入り状態の取得
-            UserSession.retrieve()?.let {
+            if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
                 }

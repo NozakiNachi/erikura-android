@@ -38,6 +38,16 @@ class WorkingTimeCircleFragment(private val job: Job?) : Fragment(), WorkingTime
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         updateTimer()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        timer.cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
                 timerHandler.post(Runnable {

@@ -7,19 +7,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentThumbnailImageBinding
 
-
-class ThumbnailImageFragment(val job: Job?) : Fragment() {
+class ThumbnailImageFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user) {
     private val viewModel: ThumbnailImageFragmentViewModel by lazy {
         ViewModelProvider(this).get(ThumbnailImageFragmentViewModel::class.java)
+    }
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        activity?.let {
+            viewModel.setup(it, view!!, job)
+        }
     }
 
     override fun onCreateView(
@@ -33,7 +39,6 @@ class ThumbnailImageFragment(val job: Job?) : Fragment() {
         viewModel.setup(activity!!, binding.root, job)
         return binding.root
     }
-
 }
 
 class ThumbnailImageFragmentViewModel: ViewModel() {

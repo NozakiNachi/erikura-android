@@ -28,7 +28,7 @@
                 android:textSize="14dp"
                 style="@style/linkText"
                 android:text="@string/jobDetails_applyFlow"
-                android:onClick="@{handler::onClickApplyFlowLink}"
+                app:onSafeClick="@{handler::onClickApplyFlowLink}"
                 />
 
         </LinearLayout>

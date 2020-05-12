@@ -106,7 +106,7 @@
                     android:layout_marginTop="40dp"
                     android:text="再認証する"
                     android:enabled="@{viewModel.isResignInEnabled}"
-                    android:onClick="@{handlers::onClickResignIn}"
+                    app:onSafeClick="@{handlers::onClickResignIn}"
                     />
             </LinearLayout>
         </ScrollView>

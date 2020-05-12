@@ -24,5 +24,14 @@ open class Asset : RealmObject() {
         set(value) {
             assetType = value.name
         }
+
+    fun dup(): Asset {
+        return Asset().also {
+            it.url = url
+            it.path = path
+            it.lastAccessedAt = lastAccessedAt
+            it.assetType = assetType
+        }
+    }
 }
 

@@ -36,9 +36,9 @@ import java.util.*
 
 class WorkingJobDetailsFragment(
     private val activity: AppCompatActivity,
-    val job: Job?,
-    val user: User
-) : Fragment(), WorkingJobDetailsFragmentEventHandlers {
+    job: Job?,
+    user: User?
+) : BaseJobDetailFragment(job, user), WorkingJobDetailsFragmentEventHandlers {
     private val viewModel: WorkingJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(WorkingJobDetailsFragmentViewModel::class.java)
     }
@@ -46,28 +46,25 @@ class WorkingJobDetailsFragment(
     private var timer: Timer = Timer()
     private var timerHandler: Handler = Handler()
 
+    private var jobInfoView: JobInfoViewFragment? = null
+    private var manualImage: ManualImageFragment? = null
+    private var manualButton: ManualButtonFragment? = null
+    private var thumbnailImage: ThumbnailImageFragment? = null
+    private var jobDetailsView: JobDetailsViewFragment? = null
+    private var mapView: MapViewFragment? = null
 
-    var steps = 0
-    lateinit var sensorManager: SensorManager
-    lateinit var stepCountSensor: Sensor
-    private val sensorEventListener: SensorEventListener = object : SensorEventListener {
-        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
-            // Accuracy の変更時
-        }
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        if (isAdded) {
+            jobInfoView?.refresh(job, user)
+            manualImage?.refresh(job, user)
+            manualButton?.refresh(job, user)
+            thumbnailImage?.refresh(job, user)
+            jobDetailsView?.refresh(job, user)
+            mapView?.refresh(job, user)
 
-        override fun onSensorChanged(event: SensorEvent?) {
-            event?.let { event ->
-                val sensor: Sensor = event.sensor
-                val values: FloatArray = event.values
-                val timestamp: Long = event.timestamp
-
-                if (sensor.type == Sensor.TYPE_STEP_COUNTER) {
-                    values.forEach {
-                        Log.v("SENSOR", String.format("VAL: %f", it))
-                        steps = it.toInt()
-                    }
-                }
-
+            activity?.let {
+                viewModel.setup(it, job, user)
             }
         }
     }
@@ -89,35 +86,19 @@ class WorkingJobDetailsFragment(
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        val jobInfoView = JobInfoViewFragment(job)
-        val manualImage = ManualImageFragment(job)
-        val manualButton = ManualButtonFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(job)
-        val jobDetailsView = JobDetailsViewFragment(job)
-        val mapView = MapViewFragment(activity, job)
-        transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage, "manualImage")
-        transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton, "manualButton")
-        transaction.add(
-            R.id.workingJobDetails_thumbnailImageFragment,
-            thumbnailImage,
-            "thumbnailImage"
-        )
-        transaction.add(
-            R.id.workingJobDetails_jobDetailsViewFragment,
-            jobDetailsView,
-            "jobDetailsView"
-        )
-        transaction.add(R.id.workingJobDetails_mapViewFragment, mapView, "mapView")
+        jobInfoView = JobInfoViewFragment(job, user)
+        manualImage = ManualImageFragment(job, user)
+        manualButton = ManualButtonFragment(job, user)
+        thumbnailImage = ThumbnailImageFragment(job, user)
+        jobDetailsView = JobDetailsViewFragment(job, user)
+        mapView = MapViewFragment(activity, job, user)
+        transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
+        transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage!!, "manualImage")
+        transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton!!, "manualButton")
+        transaction.add(R.id.workingJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
+        transaction.add(R.id.workingJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.commitAllowingStateLoss()
-
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                timerHandler.post(Runnable {
-                    updateTimer()
-                })
-            }
-        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onStart() {
@@ -130,11 +111,22 @@ class WorkingJobDetailsFragment(
     override fun onResume() {
         super.onResume()
         ErikuraApplication.pedometerManager.start()
+
+        timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimer()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onStop() {
         super.onStop()
         ErikuraApplication.pedometerManager.stop()
+
+        timer.cancel()
     }
 
     override fun onClickFavorite(view: View) {
@@ -153,7 +145,7 @@ class WorkingJobDetailsFragment(
 
     override fun onClickCancelWorking(view: View) {
         timer.cancel()
-        job?.let {
+        job?.let { job ->
             if (job.entry?.limitAt?: Date() > Date()) {
                 Api(activity).abortJob(job) {
                     val intent = Intent(activity, JobDetailsActivity::class.java)
@@ -169,7 +161,7 @@ class WorkingJobDetailsFragment(
     }
 
     override fun onClickStop(view: View) {
-        val dialog = StopDialogFragment(job, steps)
+        val dialog = StopDialogFragment(job)
         dialog.show(childFragmentManager, "Stop")
 
         timer.cancel()
@@ -179,7 +171,7 @@ class WorkingJobDetailsFragment(
     private fun updateTimer() {
         job?.let {
             var now = Date()
-            var startTime = job.entry?.startedAt ?: job.entry?.createdAt ?: now
+            var startTime = job?.entry?.startedAt ?: job?.entry?.createdAt ?: now
             var time = now.time - startTime.time
             viewModel.timeCount.value =
                 String.format("%d分%02d秒", time / (60 * 1000), (time % (60 * 1000)) / 1000)
@@ -193,7 +185,7 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val stopButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
-    fun setup(activity: Activity, job: Job?, user: User) {
+    fun setup(activity: Activity, job: Job?, user: User?) {
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
@@ -221,13 +213,11 @@ class WorkingJobDetailsFragmentViewModel : ViewModel() {
             }
 
             // お気に入り状態の取得
-            UserSession.retrieve()?.let {
+            if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
                 }
             }
-
-            timeCount.value = "0分0秒"
         }
     }
 }

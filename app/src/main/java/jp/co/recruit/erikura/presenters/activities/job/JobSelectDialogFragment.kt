@@ -1,6 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.ActivityOptions
+import JobUtil
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ImageView
-import androidx.core.graphics.drawable.toBitmap
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentActivity
@@ -18,13 +17,19 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.gms.maps.model.LatLng
+import io.reactivex.Completable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogJobSelectBinding
 import jp.co.recruit.erikura.databinding.FragmentJobListItemBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
 import java.io.File
+import java.util.concurrent.Executors
 
 class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectDialogHandler {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -103,6 +108,9 @@ interface JobSelectDialogHandler {
 class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>, var currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType = JobUtil.TimeLabelType.SEARCH) : RecyclerView.Adapter<JobListHolder>() {
     var onClickListner: OnClickListener? = null
 
+    val threadPool = Executors.newFixedThreadPool(1)
+    val scheduler = Schedulers.from(threadPool)
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): JobListHolder {
         val binding = DataBindingUtil.inflate<FragmentJobListItemBinding>(
             LayoutInflater.from(parent.context),
@@ -118,31 +126,46 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
         return jobs.count()
     }
 
+    override fun getItemId(position: Int): Long {
+        return jobs[position]?.id.toLong()
+    }
+
     override fun onBindViewHolder(holder: JobListHolder, position: Int) {
         holder.currentPosition = position
         holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition = currentPosition, timeLabelType = timeLabelType)
         holder.binding.lifecycleOwner = activity
 
-        holder.binding.root.setOnClickListener {
+        holder.binding.root.setOnSafeClickListener {
             onClickListner?.apply {
                 onClick(jobs[position])
             }
         }
 
-        val image: ImageView = holder.binding.root.findViewById(R.id.job_list_item_image)
-        // ダウンロード
-        val job = jobs[position]
-        val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
-        image.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
-        if (!thumbnailUrl.isNullOrBlank()) {
-            val assetsManager = ErikuraApplication.assetsManager
-            assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
-                // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
-                if (position == holder.currentPosition) {
-                    Glide.with(activity).load(File(asset.path)).into(image)
+        val imageView: ImageView = holder.binding.root.findViewById(R.id.job_list_item_image)
+        Completable.fromAction {
+            // ダウンロード
+            val job = jobs[position]
+            val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
+            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+            if (!thumbnailUrl.isNullOrBlank()) {
+                val assetsManager = ErikuraApplication.assetsManager
+                assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
+                    // Realmオブジェクトから切り離した　Asset を取り出しておきます
+                    val asset = asset.dup()
+                    // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
+                    if (position == holder.currentPosition) {
+                        AndroidSchedulers.mainThread().scheduleDirect{
+                            Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
+                        }
+                    }
                 }
             }
-        }
+        }.subscribeOn(scheduler).subscribeBy(
+            onComplete = {
+                // 何も行いません
+            }, onError = { e ->
+                Log.e(ErikuraApplication.LOG_TAG, "Exception: ${e.message}", e)
+            })
     }
 
     interface OnClickListener {

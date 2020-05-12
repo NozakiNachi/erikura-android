@@ -1,20 +1,17 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import JobUtil
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.webkit.MimeTypeMap
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -22,26 +19,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.realm.Realm
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.Asset
-import jp.co.recruit.erikura.data.storage.PhotoToken
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
-import okhttp3.internal.closeQuietly
-import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-
 
 class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     private val viewModel by lazy {
@@ -147,8 +133,6 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     }
 
     private fun moveToGallery() {
-        // MEMO: アップロード済みの画像と区別するためにURLを空にします
-        job.report?.additionalReportPhotoUrl = null
         val intent = Intent()
         intent.action = Intent.ACTION_OPEN_DOCUMENT
         intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -158,7 +142,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
 
     private fun loadData() {
         job.report?.let {
-            val item = it.additionalPhotoAsset?: MediaItem()
+            val item = it.additionalPhotoAsset ?: MediaItem()
             val comment = it.additionalComment
             if (item.contentUri != null) {
                 viewModel.addPhotoButtonVisibility.value = View.GONE
@@ -225,8 +209,14 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             it.additionalComment = viewModel.comment.value
             if (it.additionalPhotoAsset!!.contentUri != null) {
                 it.additionalReportPhotoWillDelete = false
-                it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
-                    PhotoTokenManager.addToken(job, it.additionalPhotoAsset?.contentUri.toString(), token)
+                if (it.additionalReportPhotoUrl == it.additionalPhotoAsset?.contentUri.toString()) {
+                    // レポートが保持している URL と一致している => 画像が変更されていない
+                }
+                else {
+                    it.additionalReportPhotoUrl = null
+                    it.uploadPhoto(this, job, it.additionalPhotoAsset) { token ->
+                        PhotoTokenManager.addToken(job, it.additionalPhotoAsset?.contentUri.toString(), token)
+                    }
                 }
             }else {
                 it.additionalReportPhotoWillDelete = true

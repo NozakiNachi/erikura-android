@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -42,14 +43,15 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.util.*
 
 
 class AppliedJobDetailsFragment(
     private val activity: AppCompatActivity,
-    val job: Job?,
-    val user: User
-) : Fragment(), AppliedJobDetailsFragmentEventHandlers {
+    job: Job?,
+    user: User?
+) : BaseJobDetailFragment(job, user), AppliedJobDetailsFragmentEventHandlers {
     private val viewModel: AppliedJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
     }
@@ -57,7 +59,35 @@ class AppliedJobDetailsFragment(
     private val locationManager: LocationManager = ErikuraApplication.locationManager
     private var allowPedometerDialog: Dialog? = null
 
+    private var timer: Timer = Timer()
+    private var timerHandler: Handler = Handler()
+
     private var inStartJob: Boolean = false
+
+    private var jobInfoView: JobInfoViewFragment? = null
+    private var manualImage: ManualImageFragment? = null
+    private var cancelButton: CancelButtonFragment? = null
+    private var manualButton: ManualButtonFragment? = null
+    private var thumbnailImage: ThumbnailImageFragment? = null
+    private var jobDetailsView: JobDetailsViewFragment? = null
+    private var mapView: MapViewFragment? = null
+
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        if (isAdded) {
+            jobInfoView?.refresh(job, user)
+            manualImage?.refresh(job, user)
+            cancelButton?.refresh(job, user)
+            manualButton?.refresh(job, user)
+            thumbnailImage?.refresh(job, user)
+            jobDetailsView?.refresh(job, user)
+            mapView?.refresh(job, user)
+
+            activity?.let {
+                viewModel.setup(it, job, user)
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,28 +107,20 @@ class AppliedJobDetailsFragment(
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        val jobInfoView = JobInfoViewFragment(job)
-        val manualImage = ManualImageFragment(job)
-        val cancelButton = CancelButtonFragment(job)
-        val manualButton = ManualButtonFragment(job)
-        val thumbnailImage = ThumbnailImageFragment(job)
-        val jobDetailsView = JobDetailsViewFragment(job)
-        val mapView = MapViewFragment(activity, job)
-        transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView, "jobInfoView")
-        transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage, "manualImage")
-        transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton, "cancelButton")
-        transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton, "manualButton")
-        transaction.add(
-            R.id.appliedJobDetails_thumbnailImageFragment,
-            thumbnailImage,
-            "thumbnailImage"
-        )
-        transaction.add(
-            R.id.appliedJobDetails_jobDetailsViewFragment,
-            jobDetailsView,
-            "jobDetailsView"
-        )
-        transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView, "mapView")
+        jobInfoView = JobInfoViewFragment(job, user)
+        manualImage = ManualImageFragment(job, user)
+        cancelButton = CancelButtonFragment(job, user)
+        manualButton = ManualButtonFragment(job, user)
+        thumbnailImage = ThumbnailImageFragment(job, user)
+        jobDetailsView = JobDetailsViewFragment(job, user)
+        mapView = MapViewFragment(activity, job, user)
+        transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
+        transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
+        transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton!!, "cancelButton")
+        transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
+        transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage!!,"thumbnailImage")
+        transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView!!,"jobDetailsView")
+        transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.commitAllowingStateLoss()
     }
 
@@ -114,11 +136,21 @@ class AppliedJobDetailsFragment(
         ErikuraApplication.pedometerManager.start()
         allowPedometerDialog?.dismiss()
         allowPedometerDialog = null
+
+        timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimeLimit()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onPause() {
         super.onPause()
         ErikuraApplication.pedometerManager.stop()
+        timer.cancel()
     }
 
     override fun onRequestPermissionsResult(
@@ -182,7 +214,7 @@ class AppliedJobDetailsFragment(
                     label1.text = sb
 
                     val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnClickListener {
+                    button.setOnSafeClickListener {
                         openSettings = true
                         val uriString = "package:" + ErikuraApplication.instance.packageName
                         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
@@ -278,7 +310,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
-    fun setup(activity: Activity, job: Job?, user: User) {
+    fun setup(activity: Activity, job: Job?, user: User?) {
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
@@ -301,7 +333,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
             }
 
             // お気に入り状態の取得
-            UserSession.retrieve()?.let {
+            if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
                 }

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,14 +15,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.ImageViewTarget
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.util.JobUtils
+import jp.co.recruit.erikura.data.network.ErikuraApiServiceBuilder
 import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
+import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.io.File
-import java.text.SimpleDateFormat
 
 class ErikuraCarouselViewHolder(private val activity: Activity, val binding: FragmentCarouselItemBinding): RecyclerView.ViewHolder(binding.root) {
     var currentPosition: Int = -1
@@ -55,8 +57,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         title.text = job.title
         reward.text = job.fee.toString() + "円"
         workingTime.text = job.workingTime.toString() + "分"
-        val sd = SimpleDateFormat("YYYY/MM/dd HH:mm")
-        workingFinishAt.text = job.workingFinishAt?.let { "〜" + sd.format(it) } ?: ""
+        workingFinishAt.text = job.workingFinishAt?.let { "〜" + JobUtils.DateFormats.simple.format(it) } ?: ""
         workingPlace.text = job.workingPlace
 
         // ダウンロード
@@ -70,7 +71,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
             assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
                 // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
                 if (position == this.currentPosition) {
-                    Glide.with(activity).load(File(asset.path)).into(imageView)
+                    Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
                 }
             }
         }
@@ -128,21 +129,28 @@ class ErikuraCarouselAdapter(val activity: FragmentActivity, val carousel: Recyc
         val viewModel = ErikuraCarouselViewModel(job, jobsByLocation)
 
         holder.currentPosition = position
-        holder.binding.viewModel = viewModel
         holder.binding.lifecycleOwner = activity
+        holder.binding.viewModel = viewModel
         holder.title.text = job.title
         holder.setup(ErikuraApplication.instance.applicationContext, job)
 
         holder.binding.executePendingBindings()
 
-        holder.binding.root.setOnClickListener {
+        val view = holder.binding.root
+        view.measure(
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+            View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        )
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+        Log.v(ErikuraApplication.LOG_TAG, "Resizing: otherJobs=${viewModel.hasOtherJobs}, height=${view.measuredHeight}")
+
+        view.setOnSafeClickListener {
             onClickListener?.apply {
                 onClick(job)
             }
         }
-
-        holder.binding.root.forceLayout()
-        carousel.forceLayout()
+        view.requestLayout()
+        carousel.requestLayout()
     }
 
     override fun getItemCount(): Int {

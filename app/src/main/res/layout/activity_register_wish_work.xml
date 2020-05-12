@@ -115,7 +115,7 @@
                         android:textSize="14dp"
                         style="@style/linkText"
                         android:text="@string/registerEmail_terms_of_service"
-                        android:onClick="@{handlers::onClickTermsOfService}"
+                        app:onSafeClick="@{handlers::onClickTermsOfService}"
                         />
                     <TextView
                         android:layout_width="wrap_content"
@@ -130,7 +130,7 @@
                         android:textSize="14dp"
                         style="@style/linkText"
                         android:text="@string/registerEmail_privacy_policy"
-                        android:onClick="@{handlers::onClickPrivacyPolicy}"
+                        app:onSafeClick="@{handlers::onClickPrivacyPolicy}"
                         />
                     <TextView
                         android:layout_width="wrap_content"
@@ -150,7 +150,7 @@
                     style="@style/primaryButton"
                     android:text="@string/register"
                     android:enabled="@{viewModel.isRegisterButtonEnabled()}"
-                    android:onClick="@{handlers::onClickRegister}" />
+                    app:onSafeClick="@{handlers::onClickRegister}" />
 
             </LinearLayout>
         </ScrollView>
