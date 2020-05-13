@@ -6,11 +6,13 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.ActivityRegisterFinishedBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
 class RegisterFinishedActivity : BaseActivity(),
     RegisterFinishedEventHandlers {
@@ -34,9 +36,19 @@ class RegisterFinishedActivity : BaseActivity(),
 
     override fun onClickGo(view: View) {
         // 地図画面へ遷移します
-        // FIXME: チュートリアルの表示
-        val intent = Intent(this, MapViewActivity::class.java)
-        startActivity(intent)
+        if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+            // 地図画面へ遷移
+            val intent = Intent(this, MapViewActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+        else {
+            // 位置情報の許諾、オンボーディングを表示します
+            Intent(this, PermitLocationActivity::class.java).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+            }
+        }
     }
 }
 
