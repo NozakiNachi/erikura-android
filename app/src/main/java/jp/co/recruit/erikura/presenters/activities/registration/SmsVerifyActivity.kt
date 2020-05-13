@@ -52,22 +52,24 @@ class SmsVerifyActivity : BaseActivity(),
         // ユーザ情報を受け取る
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         viewModel.requestCode.value = requestCode
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
+        viewModel.isCameThroughLogin.value = isCameThroughLogin
 
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
+            confirmationToken = user.confirmationToken
             beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
             sendSms(pattern, phoneNumber ?:"")
         } else {
             Api(this).user {
                 user = it
                 phoneNumber = user.phoneNumber
+                confirmationToken = user.confirmationToken
                 beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
                 sendSms(pattern, phoneNumber ?:"")
             }
         }
-        confirmationToken = user.confirmationToken
-        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
     }
 
     fun sendSms(pattern: Pattern, phoneNumber: String) {
@@ -226,6 +228,7 @@ class SmsVerifyActivity : BaseActivity(),
 class SmsVerifyViewModel : ViewModel() {
     val requestCode = MutableLiveData<Int>()
     val isMobilePhoneNumber = MutableLiveData<Boolean>()
+    val isCameThroughLogin = MutableLiveData<Boolean>()
 
     val passCode: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
@@ -255,14 +258,16 @@ class SmsVerifyViewModel : ViewModel() {
         result.addSource(passCode) { result.value = isValid() }
     }
 
-    val skipButtonVisible = MediatorLiveData<Int>().also { result ->
-        result.addSource(requestCode) {
-            result.value = when (requestCode.value) {
-                ErikuraApplication.REQUEST_LOGIN_CODE -> View.VISIBLE
-                else -> View.GONE
+    val skipButtonVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
+        result.addSource(isCameThroughLogin) {
+            result.addSource(requestCode) {
+                if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE) {
+                    result.value =View.VISIBLE
+                } else {
+                    result.value =View.GONE
+                }
             }
         }
-
     }
 
     private fun isValid(): Boolean {
