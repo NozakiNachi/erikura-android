@@ -313,7 +313,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // onStart で来た場合には、選択処理はスキップさせます
-        if (onTabButtonInitialization) { return false }
+        if (onTabButtonInitialization) { return true }
 
         // 仕事を探すがタップされている場合は、地図画面に遷移させます
         if (item.itemId == R.id.tab_menu_search_jobs) {
