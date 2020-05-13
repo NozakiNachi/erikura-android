@@ -34,6 +34,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     var user: User = User()
     var previousPostalCode: String? = null
     var newPhoneNumber: String? = null
+    var beforeChangeNewPhoneNumber: String? = null
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
 
@@ -51,6 +52,11 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     override fun onCreate(savedInstanceState: Bundle?){
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
+        beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
+        //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
+        if (beforeChangeNewPhoneNumber != null) {
+            viewModel.phone.value = beforeChangeNewPhoneNumber
+        }
         super.onCreate(savedInstanceState)
     }
 
@@ -68,7 +74,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
-
+        beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -94,6 +100,10 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Api(this).user() {
             user = it
             loadData()
+            //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
+            if (beforeChangeNewPhoneNumber != null) {
+                viewModel.phone.value = beforeChangeNewPhoneNumber
+            }
         }
     }
 
@@ -226,6 +236,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 Api(this).smsVerifyCheck(newPhoneNumber?: "") { result ->
                     if (!result) {
                         val intent = Intent(this, SmsVerifyActivity::class.java)
+                        intent.putExtra("beforeChangeNewPhoneNumber", newPhoneNumber)
                         intent.putExtra("phoneNumber", newPhoneNumber)
                         intent.putExtra("user", user)
                         intent.putExtra("isCameThroughLogin", isCameThroughLogin)

@@ -33,6 +33,7 @@ class SmsVerifyActivity : BaseActivity(),
 
     var user: User = User()
     var phoneNumber: String? = null
+    var beforeChangeNewPhoneNumber: String? = null
     var requestCode: Int? = null
     var confirmationToken: String? = null
     var isCameThroughLogin: Boolean = false
@@ -55,11 +56,13 @@ class SmsVerifyActivity : BaseActivity(),
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
+            beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
             sendSms(pattern, phoneNumber ?:"")
         } else {
             Api(this).user {
                 user = it
                 phoneNumber = user.phoneNumber
+                beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
                 sendSms(pattern, phoneNumber ?:"")
             }
         }
@@ -131,6 +134,9 @@ class SmsVerifyActivity : BaseActivity(),
             ErikuraApplication.REQUEST_LOGIN_CODE -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
+                if (beforeChangeNewPhoneNumber != null) {
+                    intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
+                }
                 intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
                 //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
                 intent.putExtra("isCameThroughLogin", true)
@@ -139,6 +145,9 @@ class SmsVerifyActivity : BaseActivity(),
             else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
+                if (beforeChangeNewPhoneNumber != null) {
+                    intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
+                }
                 intent.putExtra("requestCode", requestCode)
                 if (isCameThroughLogin) {
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
