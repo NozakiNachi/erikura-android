@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.SurfaceTexture
@@ -189,6 +190,29 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
+            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                Intent(this, MapViewActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            } else {
+                // 位置情報の許諾、オンボーディングを表示します
+                Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(
+                        intent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                    )
+                    finish()
+                }
+            }
+        }
+    }
+
     private fun pauseVideo() {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
@@ -236,17 +260,6 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
                         "logoBottomMargin"  to 40
                     )
                 }
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
-            Intent(this, MapViewActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
             }
         }
     }
