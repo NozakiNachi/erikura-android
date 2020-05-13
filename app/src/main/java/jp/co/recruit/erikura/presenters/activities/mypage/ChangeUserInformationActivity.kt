@@ -241,6 +241,8 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                         intent.putExtra("user", user)
                         intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                         intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                        //電話番号以外の会員情報変更したモーダル表示
+                        intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
                         startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
                     }
                     else {
@@ -266,6 +268,8 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                             intent.putExtra("user", user)
                             intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                             intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                            //電話番号以外の会員情報変更したモーダル表示
+                            intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
                             startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
                         }
                         else {
@@ -349,12 +353,15 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 val intent = Intent(this, MapViewActivity::class.java)
+                //電話番号を更新しましたのダイアログ表示
+                intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
                 startActivity(intent)
                 finish()
             }
             else {
                 // 位置情報の許諾、オンボーディングを表示します
                 Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
                     startActivity(intent)
                     finish()
                 }

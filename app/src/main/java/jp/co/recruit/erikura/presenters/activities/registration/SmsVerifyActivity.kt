@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivitySmsVerifyBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
+import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationOtherThanPhoneFragment
 import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
@@ -38,6 +39,7 @@ class SmsVerifyActivity : BaseActivity(),
     var confirmationToken: String? = null
     var isCameThroughLogin: Boolean = false
     var isMobilePhoneNumber: Boolean? = false
+    var isChangeUserInformationOtherThanPhone: Boolean = false
     val pattern = Pattern.compile("^(070|080|090)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +56,7 @@ class SmsVerifyActivity : BaseActivity(),
         viewModel.requestCode.value = requestCode
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
         viewModel.isCameThroughLogin.value = isCameThroughLogin
+        isChangeUserInformationOtherThanPhone = intent.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
 
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
@@ -90,6 +93,11 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
+        if (isChangeUserInformationOtherThanPhone) {
+            val dialog = ChangeUserInformationOtherThanPhoneFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
+            isChangeUserInformationOtherThanPhone = false
+        }
         //SMS認証画面表示のトラッキングの送出
         Tracking.logEvent(event= "view_sms_verify", params= bundleOf())
         Tracking.view(name= "/user/view_sms_verify", title= "SMS認証画面")
