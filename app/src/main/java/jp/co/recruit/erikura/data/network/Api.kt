@@ -739,6 +739,9 @@ class Api(var context: Context) {
                     }
                 },
                 onError = { throwable ->
+                    if (showProgress) {
+                        hideProgressAlert()
+                    }
                     complete.invoke()
                     AndroidSchedulers.mainThread().scheduleDirect {
                         Log.v("ERROR", throwable.message, throwable)
