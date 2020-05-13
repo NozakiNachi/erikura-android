@@ -112,12 +112,12 @@ class RegisterPhoneViewModel: ViewModel() {
         }else if(valid && !(pattern.matcher(phone.value).find())) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-        }else if(valid && !(pattern2.matcher(phone.value).find())) {
-            valid = false
-            error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
         }else if(valid && !(phone.value?.length ?: 0 == 11)) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
+        }else if(valid && !(pattern2.matcher(phone.value).find())) {
+            valid = false
+            error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
         } else {
             valid = true
             error.message.value = null

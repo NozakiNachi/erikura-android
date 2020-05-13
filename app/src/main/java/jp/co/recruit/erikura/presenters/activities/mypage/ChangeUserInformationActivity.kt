@@ -607,14 +607,14 @@ class ChangeUserInformationViewModel : ViewModel() {
             valid = false
             phoneError.message.value =
                 ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-        } else if (valid && !(pattern2.matcher(phone.value).find())) {
-            valid = false
-            phoneError.message.value =
-                ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
         } else if (valid && !(phone.value?.length ?: 0 == 11)) {
             valid = false
             phoneError.message.value =
                 ErikuraApplication.instance.getString(R.string.phone_count_error)
+        } else if (valid && !(pattern2.matcher(phone.value).find())) {
+            valid = false
+            phoneError.message.value =
+                ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
         } else {
             valid = true
             phoneError.message.value = null
