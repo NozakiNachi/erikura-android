@@ -43,7 +43,6 @@
                     android:orientation="vertical">
 
                     <!-- 進行度表示 -->
-                    <!-- FIXME: カスタムViewへの切り出し -->
                     <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="30dp"

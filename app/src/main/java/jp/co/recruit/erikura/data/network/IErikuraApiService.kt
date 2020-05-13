@@ -106,8 +106,6 @@ interface IErikuraApiService {
     @PATCH("reports")
     fun updateReport(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
 
-    // FIXME: download => OKHTTP で直接ダウンロードするのがいいのか
-
     @POST("reports/image_upload")
     fun imageUpload(@Body photo: RequestBody): ApiObservable<PhotoTokenResponse>
 
@@ -144,7 +142,6 @@ interface IErikuraApiService {
     @GET("utils/client_version")
     fun clientVersion(): ApiObservable<RequiredClientVersion>
 
-    // FIXME: erikuraConfig
     @GET("utils/erikura_config")
     fun erikuraConfig(): ApiObservable<ErikuraConfigMap>
 }

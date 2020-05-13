@@ -30,7 +30,7 @@
                 android:layout_alignParentTop="true"
                 android:background="@color/paleGrey"
                 android:orientation="vertical">
-                <!-- FIXME: カスタムViewへの切り出し -->
+
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"

@@ -34,6 +34,7 @@ class PedometerService : Service(), SensorEventListener {
     }
 
     override fun onBind(intent: Intent): IBinder {
+        // ここは実行されません
         TODO("Return the communication channel to the service.")
     }
 
