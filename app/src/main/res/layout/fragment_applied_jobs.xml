@@ -49,7 +49,6 @@
                 android:orientation="vertical"
                 android:padding="20dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
-            <!-- FIXME: 0件の場合の表示 -->
         </LinearLayout>
 
 

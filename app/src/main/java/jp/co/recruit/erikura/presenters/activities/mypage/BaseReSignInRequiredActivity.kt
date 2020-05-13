@@ -42,7 +42,6 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
 
     override fun onResume() {
         super.onResume()
-        // FIXME: 再認証済みで来ているか判定します
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

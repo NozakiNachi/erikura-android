@@ -15,7 +15,6 @@ object JobUtils {
         val simple: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd H:mm")
     }
 
-
     /**
      * 緯度経度が同一の案件をまとめたマップを構築します
      */
@@ -31,7 +30,7 @@ object JobUtils {
                 list.add(job)
             }
         }
-        // FIXME: まとめた後の案件のソートについて検討すること
+        // ソートは同一案件の選択モーダル表示時に行います
         return jobsByLocation
     }
 

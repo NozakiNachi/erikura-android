@@ -182,7 +182,6 @@ class AssetsManager {
     }
 
     fun generateDownloadFile(): File {
-        // FIXME: 一時ディレクトリを作成すること
         return createTempFile()
     }
 }
