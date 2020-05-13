@@ -338,32 +338,38 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         super.onActivityResult(requestCode, resultCode, data)
         // 会員情報変更Apiの呼び出し
         user = data!!.getParcelableExtra("user")
+        var oldPhoneNumber: String? = user.phoneNumber
         user.phoneNumber = data!!.getStringExtra("phoneNumber")
-        Api(this).updateUser(user) {}
-        if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
-            //会員情報変更のみの場合、設定画面へ遷移
-            val intent = Intent(this, ConfigurationActivity::class.java)
-            intent.putExtra("onClickChangeUserInformationFragment", true)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
-        } else if(requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
-            //ログイン経由で会員情報変更の場合のみ地図画面へ遷移
-            val it = Api.userSession
-            Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
-            // 地図画面へ遷移します
-            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                val intent = Intent(this, MapViewActivity::class.java)
-                //電話番号を更新しましたのダイアログ表示
-                intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+        Api(this).updateUser(user) {
+            if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
+                //会員情報変更のみの場合、設定画面へ遷移
+                val intent = Intent(this, ConfigurationActivity::class.java)
+                intent.putExtra("onClickChangeUserInformationFragment", true)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
-                finish()
-            }
-            else {
-                // 位置情報の許諾、オンボーディングを表示します
-                Intent(this, PermitLocationActivity::class.java).let { intent ->
-                    intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+            } else if(requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
+                //ログイン経由で会員情報変更の場合のみ地図画面へ遷移
+                val it = Api.userSession
+                Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
+                // 地図画面へ遷移します
+                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                    val intent = Intent(this, MapViewActivity::class.java)
+                    //電話番号を更新しましたのダイアログ表示
+                    if (user.phoneNumber != oldPhoneNumber) {
+                        intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                    }
                     startActivity(intent)
                     finish()
+                }
+                else {
+                    // 位置情報の許諾、オンボーディングを表示します
+                    Intent(this, PermitLocationActivity::class.java).let { intent ->
+                        if (user.phoneNumber != oldPhoneNumber) {
+                            intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                        }
+                        startActivity(intent)
+                        finish()
+                    }
                 }
             }
         }
