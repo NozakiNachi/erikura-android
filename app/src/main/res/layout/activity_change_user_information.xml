@@ -243,7 +243,7 @@
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="4dp"
                             android:paddingLeft="10dp"
-                            app:onSafeClick="@{handlers::onClickMale}"
+                            android:onClick="@{handlers::onClickMale}"
                             android:checked="@={viewModel.male}"
                             android:text="@string/male"/>
                         <RadioButton
@@ -255,7 +255,7 @@
                             android:layout_marginLeft="4dp"
                             android:layout_marginRight="20dp"
                             android:paddingLeft="5dp"
-                            app:onSafeClick="@{handlers::onClickFemale}"
+                            android:onClick="@{handlers::onClickFemale}"
                             android:checked="@={viewModel.female}"
                             android:text="@string/female"/>
                     </RadioGroup>
