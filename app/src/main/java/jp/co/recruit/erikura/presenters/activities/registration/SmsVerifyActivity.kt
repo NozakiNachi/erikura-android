@@ -36,6 +36,7 @@ class SmsVerifyActivity : BaseActivity(),
     var requestCode: Int? = null
     var confirmationToken: String? = null
     var isCameThroughLogin: Boolean = false
+    var isMobilePhoneNumber: Boolean? = false
     val pattern = Pattern.compile("^(070|080|090)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,23 +55,31 @@ class SmsVerifyActivity : BaseActivity(),
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
             phoneNumber = intent.getStringExtra("phoneNumber")
+            sendSms(pattern, phoneNumber ?:"")
         } else {
             Api(this).user {
                 user = it
                 phoneNumber = user.phoneNumber
+                sendSms(pattern, phoneNumber ?:"")
             }
         }
         confirmationToken = user.confirmationToken
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
+    }
 
+    fun sendSms(pattern: Pattern, phoneNumber: String) {
         //携帯番号形式化チェック
-        viewModel.isMobilePhoneNumber.value = pattern.matcher(phoneNumber ?:"").find()
-
-        Log.v("DEBUG", "SMS認証メール送信")
-        // trueしか返ってこないので送信結果の判定は入れていない
-        Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-            phoneNumber?.let { viewModel.setCaption(it) }
-            viewModel.error.message.value = null
+        isMobilePhoneNumber = pattern.matcher(phoneNumber ?:"").find()
+        if (isMobilePhoneNumber == true) {
+            Log.v("DEBUG", "SMS認証メール送信")
+            // trueしか返ってこないので送信結果の判定は入れていない
+            Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
+                phoneNumber?.let { viewModel.setCaption(it) }
+                viewModel.error.message.value = null
+                viewModel.isMobilePhoneNumber.value = isMobilePhoneNumber
+            }
+        } else {
+            viewModel.isMobilePhoneNumber.value = isMobilePhoneNumber
         }
     }
 

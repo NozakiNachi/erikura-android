@@ -221,6 +221,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
         Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
         if (newPhoneNumber != null) {
+            //電話番号の変更がある場合
             if (user.phoneNumber != newPhoneNumber) {
                 Api(this).smsVerifyCheck(newPhoneNumber?: "") { result ->
                     if (!result) {
@@ -243,10 +244,36 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     }
                 }
             } else {
-                val intent = Intent(this, ConfigurationActivity::class.java)
-                intent.putExtra("onClickChangeUserInformationFragment", true)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
+                //電話番号の変更がない場合
+                if (isCameThroughLogin) {
+                    //ログイン経由でSMS認証画面を表示し、
+                    // 電話番号編集リンクから会員情報変更した場合は現在の番号がSMS未認証の場合でもSMS認証画面へ
+                    Api(this).smsVerifyCheck(user.phoneNumber?: "") { result ->
+                        if (!result) {
+                            val intent = Intent(this, SmsVerifyActivity::class.java)
+                            intent.putExtra("phoneNumber", user.phoneNumber)
+                            intent.putExtra("user", user)
+                            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                            intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                            startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                        }
+                        else {
+                            Api(this).updateUser(user) {
+                                val intent = Intent(this, ConfigurationActivity::class.java)
+                                intent.putExtra("onClickChangeUserInformationFragment", true)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                } else {
+                    //スキップして会員情報変更した場合は現在の番号がSMS未認証の場合でも更新し設定画面へ
+                    val intent = Intent(this, ConfigurationActivity::class.java)
+                    intent.putExtra("onClickChangeUserInformationFragment", true)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+
+                }
             }
         }
     }
