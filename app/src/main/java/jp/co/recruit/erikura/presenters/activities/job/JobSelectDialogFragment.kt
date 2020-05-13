@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import JobUtil
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.graphics.Color
@@ -130,6 +131,7 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
         return jobs[position]?.id.toLong()
     }
 
+    @SuppressLint("CheckResult")
     override fun onBindViewHolder(holder: JobListHolder, position: Int) {
         holder.currentPosition = position
         holder.binding.viewModel = JobListItemViewModel(activity, jobs[position], currentPosition = currentPosition, timeLabelType = timeLabelType)
@@ -141,12 +143,17 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
             }
         }
 
+        val requestManager = Glide.with(activity)
         val imageView: ImageView = holder.binding.root.findViewById(R.id.job_list_item_image)
         Completable.fromAction {
             // ダウンロード
             val job = jobs[position]
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
-            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+            AndroidSchedulers.mainThread().scheduleDirect {
+                if (!activity.isDestroyed) {
+                    requestManager.load(R.drawable.ic_noimage).into(imageView)
+                }
+            }
             if (!thumbnailUrl.isNullOrBlank()) {
                 val assetsManager = ErikuraApplication.assetsManager
                 assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
@@ -155,7 +162,9 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
                     // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
                     if (position == holder.currentPosition) {
                         AndroidSchedulers.mainThread().scheduleDirect{
-                            Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
+                            if (!activity.isDestroyed) {
+                                requestManager.load(File(asset.path)).fitCenter().into(imageView)
+                            }
                         }
                     }
                 }
