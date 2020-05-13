@@ -657,6 +657,9 @@ class Api(var context: Context) {
                         // isSuccessfull の判定をしているので、body は常に取得できる想定です
                         val apiResponse: ApiResponse<T> = response.body()!!
                         if (apiResponse.hasError) {
+                            if (showProgress) {
+                                hideProgressAlert()
+                            }
                             AndroidSchedulers.mainThread().scheduleDirect {
                                 processError(apiResponse.errors ?: listOf(defaultErrorMessage), onError)
                             }
@@ -736,6 +739,9 @@ class Api(var context: Context) {
                     }
                 },
                 onError = { throwable ->
+                    if (showProgress) {
+                        hideProgressAlert()
+                    }
                     complete.invoke()
                     AndroidSchedulers.mainThread().scheduleDirect {
                         Log.v("ERROR", throwable.message, throwable)
