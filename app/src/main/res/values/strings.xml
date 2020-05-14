@@ -74,7 +74,7 @@
 
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を更新しました</string>
-    <string name="change_user_information_other_than_phone_success">電話番号以外の会員情報を更新しました。\n※電話番号は携帯電話場番号認証後に更新します。</string>
+    <string name="change_user_information_other_than_phone_success">電話番号以外の会員情報を更新しました。\n※電話番号は携帯電話番号認証後に更新します。</string>
     <string name="change_user_information_only_phone_success">電話番号を更新しました</string>
 
     <!-- 口座情報登録成功モーダル -->
