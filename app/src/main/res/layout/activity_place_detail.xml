@@ -102,11 +102,12 @@
                 android:orientation="vertical">
 
                 <ToggleButton
+                    android:id="@+id/favorite_button"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     style="@style/favoriteButton"
                     android:checked="@={viewModel.favorited}"
-                    app:onSafeClick="@{handlers::onClickFavorite}" />
+                    android:onClick="@{handlers::onClickFavorite}" />
             </LinearLayout>
         </FrameLayout>
 

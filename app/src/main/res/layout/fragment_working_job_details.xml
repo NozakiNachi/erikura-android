@@ -191,6 +191,7 @@
                         android:text="@string/stopJob" />
 
                     <ToggleButton
+                        android:id="@+id/favorite_button"
                         style="@style/favoriteButton"
                         android:layout_width="70dp"
                         android:layout_height="68dp"
@@ -199,7 +200,7 @@
                         android:layout_marginRight="20dp"
                         android:layout_weight="1"
                         android:checked="@={viewModel.favorited}"
-                        app:onSafeClick="@{handlers::onClickFavorite}" />
+                        android:onClick="@{handlers::onClickFavorite}" />
                 </LinearLayout>
 
             </FrameLayout>

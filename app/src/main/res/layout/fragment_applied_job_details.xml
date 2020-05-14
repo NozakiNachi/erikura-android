@@ -162,6 +162,7 @@
                         app:onSafeClick="@{handlers::onClickStart}"
                         android:visibility="@{viewModel.startButtonVisibility}"/>
                     <ToggleButton
+                        android:id="@+id/favorite_button"
                         android:layout_width="70dp"
                         android:layout_height="68dp"
                         android:layout_marginLeft="5dp"
@@ -170,7 +171,7 @@
                         android:layout_weight="1"
                         style="@style/favoriteButton"
                         android:checked="@={viewModel.favorited}"
-                        app:onSafeClick="@{handlers::onClickFavorite}" />
+                        android:onClick="@{handlers::onClickFavorite}" />
                 </LinearLayout>
 
             </FrameLayout>
