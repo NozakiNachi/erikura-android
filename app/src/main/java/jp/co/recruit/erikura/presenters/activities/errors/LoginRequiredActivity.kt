@@ -12,8 +12,10 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.ActivityLoginRequiredBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.LoginActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.job.SearchJobActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 
@@ -60,9 +62,14 @@ class LoginRequiredActivity : BaseActivity(), LoginRequiredHandlers {
             startActivity(intent)
         }
         else {
-            val intent = Intent(this, MapViewActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            // 仕事を探すタブに遷移する
+            Intent(this, BaseTabbedActivity.searchJobCurrentActivity).let { intent ->
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                BaseTabbedActivity.searchJobQuery?.let {
+                    intent.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, it)
+                }
+                startActivity(intent)
+            }
         }
     }
 }
