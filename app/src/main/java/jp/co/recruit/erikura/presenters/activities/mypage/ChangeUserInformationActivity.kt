@@ -337,9 +337,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // 会員情報変更Apiの呼び出し
-        user = data!!.getParcelableExtra("user")
-        var oldPhoneNumber: String? = user.phoneNumber
-        user.phoneNumber = data!!.getStringExtra("phoneNumber")
+        var oldPhoneNumber: String? = null
+        data?.let {
+            user = it.getParcelableExtra("user")
+            oldPhoneNumber = user.phoneNumber
+            user.phoneNumber = it.getStringExtra("phoneNumber")
+        }
         Api(this).updateUser(user) {
             if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
                 //会員情報変更のみの場合、設定画面へ遷移

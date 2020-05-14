@@ -217,8 +217,10 @@ class SmsVerifyActivity : BaseActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
-            user = data!!.getParcelableExtra("user")
-            data.getStringExtra("phoneNumber")?.let { newPhoneNumber ->
+            data?.let{
+                user = it.getParcelableExtra("user")
+            }
+            data?.getStringExtra("phoneNumber")?.let { newPhoneNumber ->
                 if (newPhoneNumber != phoneNumber) {
                     phoneNumber = newPhoneNumber
                     Log.v("INFO", "SMS認証メール送信")
