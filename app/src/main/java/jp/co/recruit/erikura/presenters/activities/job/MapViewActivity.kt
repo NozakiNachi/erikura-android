@@ -176,6 +176,23 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         map_view_carousel_highlight.adapter = tutorialAdapter
         map_view_carousel_highlight.addItemDecoration(ErikuraCarouselCellDecoration())
         LinearSnapHelper().attachToRecyclerView(map_view_carousel_highlight)
+        map_view_carousel_highlight.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val position = layoutManager.findFirstVisibleItemPosition()
+                    if (position != (tutorialAdapter.itemCount - 1)) {
+                        // 末尾の要素
+                        tutorialAdapter.notifyItemRangeChanged(position, 2)
+                    }
+                    else {
+                        tutorialAdapter.notifyItemChanged(position)
+                    }
+                }
+            }
+        })
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
