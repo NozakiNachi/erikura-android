@@ -208,6 +208,23 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickStart(view: View) {
+//        //歩数取得の説明ダイアログ表示対象かの判定
+//        if (!ErikuraApplication.pedometerManager.checkPermission(activity) && ) {
+//            //初回の場合表示
+//            if () {
+//                //表示したダイアログに承認した場合
+//                //歩数計取得のダイアログの表示判定
+//                //作業開始して、数取得の説明ダイアログ表示フラグをtrueのままにする
+//            } else {
+//                //表示したダイアログに拒否した場合
+//                //作業開始せず、数取得の説明ダイアログ表示フラグをtrueのままにする
+//            }
+//        } else {
+//            //初回じゃない場合表示しない
+//            //歩数計取得のダイアログの表示判定
+//        }
+
+        //歩数計取得のダイアログの表示判定
         if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
             inStartJob = true
             if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
