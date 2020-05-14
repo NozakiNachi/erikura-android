@@ -104,13 +104,16 @@ class RegisterWishWorkActivity : BaseActivity(),
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE && resultCode == RESULT_OK) {
-            user = data!!.getParcelableExtra("user")
+            data?.let{
+                user = data.getParcelableExtra("user")
+            }
             Api(this).initialUpdateUser(user) {
                 Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
                 // 登録完了画面へ遷移
-                val intent: Intent = Intent(this@RegisterWishWorkActivity, RegisterFinishedActivity::class.java)
+                val intent: Intent = Intent(this, RegisterFinishedActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
+                finish()
 
                 // 登録完了のトラッキングの送出
                 Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))

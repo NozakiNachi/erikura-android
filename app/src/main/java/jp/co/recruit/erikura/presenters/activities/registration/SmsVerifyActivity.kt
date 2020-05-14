@@ -111,6 +111,9 @@ class SmsVerifyActivity : BaseActivity(),
             phoneNumber ?: "",
             viewModel.passCode.value ?: ""
         ) {
+            Tracking.logEvent(event= "sms_verify", params= bundleOf())
+            Tracking.smsVerify(name = "sms_verify", user = user)
+
             //認証成功後 onActivityResultへ飛ぶ
             val intent: Intent = Intent()
             intent.putExtra("user", user)

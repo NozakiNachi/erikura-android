@@ -429,12 +429,11 @@ object Tracking {
         }
     }
 
-    fun smsVerify(name: String, user: User, phoneNumber: String) {
+    fun smsVerify(name: String, user: User) {
         try {
             Log.v("ERIKURA", "Sending view tracking: ${name})")
             val values = bundleOf(
-                Pair("user_id", user.id),
-                Pair("phone_number", phoneNumber)
+                Pair("user_id", user.id)
             )
             Tracker.getInstance().track(name, values)
         } catch (e: Exception) {
@@ -446,8 +445,7 @@ object Tracking {
         try {
             Log.v("ERIKURA", "Sending view tracking: ${name})")
             val values = bundleOf(
-                Pair("user_id", user.id),
-                Pair("phone_number", user.phoneNumber)
+                Pair("user_id", user.id)
             )
             Tracker.getInstance().track(name, values)
         } catch (e: Exception) {

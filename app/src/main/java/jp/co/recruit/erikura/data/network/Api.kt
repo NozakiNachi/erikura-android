@@ -178,11 +178,6 @@ class Api(var context: Context) {
         ) { body ->
             //bodyはtrueしか返ってこないので送信結果の判定は入れていない
             onComplete()
-            // SMS認証のトラッキングの送出
-            this.user { user ->
-                Tracking.logEvent(event= "sms_verify", params= bundleOf())
-                Tracking.smsVerify(name = "sms_verify", user = user, phoneNumber = phoneNumber)
-            }
         }
     }
 
