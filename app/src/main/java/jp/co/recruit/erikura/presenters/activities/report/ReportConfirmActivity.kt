@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.ContentResolver
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
@@ -159,6 +160,25 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             moveToGallery()
         } else {
             ErikuraApplication.instance.requestStoragePermission(this)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode) {
+            ErikuraApplication.REQUEST_EXTERNAL_STORAGE_PERMISSION_ID -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    moveToGallery()
+                }else {
+                    val dialog = StorageAccessConfirmDialogFragment()
+                    dialog.show(supportFragmentManager, "confirm")
+                }
+            }
         }
     }
 
