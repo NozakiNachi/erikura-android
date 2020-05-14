@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.errors
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -14,7 +13,6 @@ import jp.co.recruit.erikura.databinding.ActivityLoginRequiredBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
 import jp.co.recruit.erikura.presenters.activities.LoginActivity
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.SearchJobActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
