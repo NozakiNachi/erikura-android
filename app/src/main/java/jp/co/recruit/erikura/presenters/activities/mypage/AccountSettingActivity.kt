@@ -441,11 +441,7 @@ class AccountSettingViewModel: ViewModel() {
     }
 
     private fun isValidAccountType(): Boolean {
-        var valid = true
-        if (valid && accountType.value.isNullOrBlank()) {
-            valid = false
-        }
-        return valid
+        return !(accountType.value.isNullOrBlank() || accountType.value.equals("unanswered"))
     }
 
     private fun isValidAccountHolder(): Boolean {
