@@ -138,14 +138,13 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
             }
         } ?: run {
             val locationManager = ErikuraApplication.locationManager
-            locationManager.latLng?.let { latLng ->
-                Log.v("検索", latLng.toString())
+            val latLng = locationManager.latLngOrDefault
+            Log.v("検索", latLng.toString())
 
-                val intent = Intent()
-                intent.putExtra(EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-            }
+            val intent = Intent()
+            intent.putExtra(EXTRA_SEARCH_CONDITIONS, viewModel.query(latLng))
+            setResult(Activity.RESULT_OK, intent)
+            finish()
         }
     }
 
