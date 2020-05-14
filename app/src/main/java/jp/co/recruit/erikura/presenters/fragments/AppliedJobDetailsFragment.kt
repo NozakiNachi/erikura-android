@@ -259,9 +259,11 @@ class AppliedJobDetailsFragment(
 
     private fun startJob() {
         job?.let { job ->
+            val steps = ErikuraApplication.pedometerManager.readStepCount()
+
             // 作業開始のトラッキングの送出
             Tracking.logEvent(event = "push_start_job", params = bundleOf())
-            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id)
+            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
 
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
                 locationManager.latLng
@@ -271,7 +273,7 @@ class AppliedJobDetailsFragment(
 
             Api(activity).startJob(
                 job, latLng,
-                steps = ErikuraApplication.pedometerManager.readStepCount(),
+                steps = steps,
                 distance = null, floorAsc = null, floorDesc = null
             ) {
                 val intent = Intent(activity, JobDetailsActivity::class.java)
