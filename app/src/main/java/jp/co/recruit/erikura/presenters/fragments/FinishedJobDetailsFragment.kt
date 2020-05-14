@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
@@ -98,15 +99,31 @@ class FinishedJobDetailsFragment(
     }
 
     override fun onClickFavorite(view: View) {
-        if (viewModel.favorited.value ?: false) {
-            // お気に入り登録処理
-            Api(activity!!).placeFavorite(job?.place?.id ?: 0) {
-                viewModel.favorited.value = true
+        job?.place?.id?.let { placeId ->
+            // 現在のボタン状態を取得します
+            val favorited = viewModel.favorited.value ?: false
+
+            val favoriteButton: ToggleButton = this.view?.findViewById(R.id.favorite_button)!!
+            // タップが聞かないのように無効化をします
+            favoriteButton.isEnabled = false
+            val api = Api(activity!!)
+            val errorHandler: (List<String>?) -> Unit = { messages ->
+                api.displayErrorAlert(messages)
+                favoriteButton.isEnabled = true
             }
-        } else {
-            // お気に入り削除処理
-            Api(activity!!).placeFavoriteDelete(job?.place?.id ?: 0) {
-                viewModel.favorited.value = false
+            if (favorited) {
+                // ボタンがお気に入り状態なので登録処理
+                api.placeFavorite(placeId, onError = errorHandler) {
+                    viewModel.favorited.value = true
+                    favoriteButton.isEnabled = true
+                }
+            }
+            else {
+                // お気に入り削除処理
+                api.placeFavoriteDelete(placeId, onError = errorHandler) {
+                    viewModel.favorited.value = false
+                    favoriteButton.isEnabled = true
+                }
             }
         }
     }
