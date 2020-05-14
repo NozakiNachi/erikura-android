@@ -344,11 +344,19 @@ object Tracking {
         ))
     }
 
-    fun trackJobDetails(name: String, jobId: Int) {
+    fun trackJobDetails(name: String, jobId: Int, steps: Int? = null) {
         Log.v("ERIKURA", "Sending view tracking: ${name}")
-        Tracker.getInstance().view(name, bundleOf(
-            Pair("job_id", jobId)
-        ))
+        val bundle = if (steps != null) {
+            bundleOf(
+                Pair("job_id", jobId),
+                Pair("steps", steps)
+            )
+        } else {
+            bundleOf(
+                Pair("job_id", jobId)
+            )
+        }
+        Tracker.getInstance().view(name, bundle)
     }
 
     fun currentLocation(name: String, latitude: Double, longitude: Double) {
