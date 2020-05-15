@@ -210,41 +210,29 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickStart(view: View) {
-        displayExplainGetPedometer()
+        //明確に歩数取得することを説明するダイアログに許可したか
         if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
             //許可していない場合ダイアログを表示
             displayExplainGetPedometer()
-            if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
-                //ダイアログ表示後許可していない場合
-                BaseActivity.currentActivity?.let { activity ->
-                    val dialog = AlertDialog.Builder(activity)
-                        .setView(R.layout.dialog_not_accepted_get_pedometer)
-                        .create()
-                    dialog.show()
-                }
-            } else {
-                //ダイアログ表示後許可した場合
-                checkPermissionPedometer()
-            }
         } else {
             //許可してた場合
             checkPermissionPedometer()
         }
-//        //歩数取得の説明ダイアログ表示対象かの判定
-//        if (!ErikuraApplication.pedometerManager.checkPermission(activity) &&) {
-//            //初回の場合表示
-//            if () {
-//                //表示したダイアログに承認した場合
-//                //歩数計取得のダイアログの表示判定
-//                //作業開始して、数取得の説明ダイアログ表示フラグをtrueのままにする
-//            } else {
-//                //表示したダイアログに拒否した場合
-//                //作業開始せず、数取得の説明ダイアログ表示フラグをtrueのままにする
-//            }
-//        } else {
-//            //初回じゃない場合表示しない
-//            //歩数計取得のダイアログの表示判定
-//        }
+    }
+
+    private fun checkAcceptedExplainGetPedometer() {
+        if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+            //ダイアログ表示後許可していない場合
+            BaseActivity.currentActivity?.let { activity ->
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_not_accepted_get_pedometer)
+                    .create()
+                dialog.show()
+            }
+        } else {
+            //ダイアログ表示後許可した場合
+            checkPermissionPedometer()
+        }
     }
 
     private fun checkPermissionPedometer() {
@@ -372,10 +360,12 @@ class AppliedJobDetailsFragment(
                 .setNegativeButton("許可しない") { dialog: DialogInterface?, which: Int ->
                     //許可しない押した場合の処理
                     ErikuraApplication.instance.setAcceptedExplainGetPedometer(false)
+                    checkAcceptedExplainGetPedometer()
                 }
                 .setPositiveButton("OK") { dialog: DialogInterface?, which: Int ->
                     //許可した場合の処理
                     ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
+                    checkAcceptedExplainGetPedometer()
                 }
                 .create()
             dialog.show()
