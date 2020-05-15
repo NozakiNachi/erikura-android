@@ -458,4 +458,8 @@
     <string name="onboarding_4_explain">応募した後は、\n24時間以内に\n現地でお仕事を実行！</string>
     <string name="onboarding_5_explain">終わったら、写真を\n撮って作業報告！\n翌月末に報酬GET！</string>
 
+    <!--歩数計取得の説明ダイアログ-->
+    <string name="pedometer_explain">作業をするには、作業を行っている証明を発注主に報告する目的で、位置情報と歩数を取得しますがよろしいでしょうか？</string>
+    <string name="pedometer_not_accepted">※許可をいただけない場合、作業を開始することができません</string>
+
 </resources>
