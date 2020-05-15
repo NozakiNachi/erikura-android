@@ -136,6 +136,7 @@ class ErikuraApplication : Application() {
 
     private val onboardingDisplayedKey = "OnboardingDisplayed"
     private val coachMarkDisplayedKey = "CoachMarkDisplayed"
+    private val acceptedExplainGetPedometerKey = "AcceptedExplainGetPedometer"
 
     fun isOnboardingDisplayed(): Boolean {
         return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(onboardingDisplayedKey, false)
@@ -156,6 +157,18 @@ class ErikuraApplication : Application() {
         PreferenceManager.getDefaultSharedPreferences(this)
             .edit()
             .putBoolean(coachMarkDisplayedKey, displayed)
+            .apply()
+    }
+
+    //歩数計取得説明ダイアログの許可の有無
+    fun isAcceptedExplainGetPedometer(): Boolean {
+        return PreferenceManager.getDefaultSharedPreferences(this).getBoolean(acceptedExplainGetPedometerKey, false)
+    }
+
+    fun setAcceptedExplainGetPedometer(displayed: Boolean = true) {
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .edit()
+            .putBoolean(acceptedExplainGetPedometerKey, displayed)
             .apply()
     }
 

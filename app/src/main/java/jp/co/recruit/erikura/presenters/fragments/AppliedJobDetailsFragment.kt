@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -28,6 +29,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -208,8 +210,28 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickStart(view: View) {
+        displayExplainGetPedometer()
+        if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+            //許可していない場合ダイアログを表示
+            displayExplainGetPedometer()
+            if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+                //ダイアログ表示後許可していない場合
+                BaseActivity.currentActivity?.let { activity ->
+                    val dialog = AlertDialog.Builder(activity)
+                        .setView(R.layout.dialog_not_accepted_get_pedometer)
+                        .create()
+                    dialog.show()
+                }
+            } else {
+                //ダイアログ表示後許可した場合
+                checkPermissionPedometer()
+            }
+        } else {
+            //許可してた場合
+            checkPermissionPedometer()
+        }
 //        //歩数取得の説明ダイアログ表示対象かの判定
-//        if (!ErikuraApplication.pedometerManager.checkPermission(activity) && ) {
+//        if (!ErikuraApplication.pedometerManager.checkPermission(activity) &&) {
 //            //初回の場合表示
 //            if () {
 //                //表示したダイアログに承認した場合
@@ -223,54 +245,59 @@ class AppliedJobDetailsFragment(
 //            //初回じゃない場合表示しない
 //            //歩数計取得のダイアログの表示判定
 //        }
+    }
 
-        //歩数計取得のダイアログの表示判定
+    private fun checkPermissionPedometer() {
         if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
             inStartJob = true
-            if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
-                var openSettings = false
-                BaseActivity.currentActivity?.let { activity ->
-                    val dialog = AlertDialog.Builder(activity)
-                        .setView(R.layout.dialog_allow_activity_recognition)
-                        .create()
-                    dialog.show()
-
-                    val label1: TextView = dialog.findViewById(R.id.allow_activity_label1)
-                    val sb = SpannableStringBuilder("・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。")
-                    val becomeBold: (String) -> Unit = { keyword ->
-                        val start = sb.toString().indexOf(keyword)
-                        sb.setSpan(StyleSpan(R.style.label_w6), start, start + keyword.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                    }
-                    becomeBold("「権限」")
-                    becomeBold("「身体活動」")
-                    becomeBold("「許可」")
-
-                    label1.text = sb
-
-                    val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnSafeClickListener {
-                        openSettings = true
-                        val uriString = "package:" + ErikuraApplication.instance.packageName
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
-                        startActivity(intent)
-                    }
-
-                    allowPedometerDialog = dialog
-                    // ダイアログが消えた場合の対応
-                    dialog.setOnDismissListener {
-                        allowPedometerDialog = null
-                        if (!openSettings) {
-                            startJob()
-                        }
-                    }
-                }
-            }
-            else {
-                ErikuraApplication.pedometerManager.requestPermission(this)
-            }
+            checkNotAskAgainPedometer()
         }
         else {
             startJob()
+        }
+    }
+
+    private fun checkNotAskAgainPedometer() {
+        if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
+            var openSettings = false
+            BaseActivity.currentActivity?.let { activity ->
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_allow_activity_recognition)
+                    .create()
+                dialog.show()
+
+                val label1: TextView = dialog.findViewById(R.id.allow_activity_label1)
+                val sb = SpannableStringBuilder("・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。")
+                val becomeBold: (String) -> Unit = { keyword ->
+                    val start = sb.toString().indexOf(keyword)
+                    sb.setSpan(StyleSpan(R.style.label_w6), start, start + keyword.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                }
+                becomeBold("「権限」")
+                becomeBold("「身体活動」")
+                becomeBold("「許可」")
+
+                label1.text = sb
+
+                val button: Button = dialog.findViewById(R.id.update_button)
+                button.setOnSafeClickListener {
+                    openSettings = true
+                    val uriString = "package:" + ErikuraApplication.instance.packageName
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+                    startActivity(intent)
+                }
+
+                allowPedometerDialog = dialog
+                // ダイアログが消えた場合の対応
+                dialog.setOnDismissListener {
+                    allowPedometerDialog = null
+                    if (!openSettings) {
+                        startJob()
+                    }
+                }
+            }
+        }
+        else {
+            ErikuraApplication.pedometerManager.requestPermission(this)
         }
     }
 
@@ -335,6 +362,23 @@ class AppliedJobDetailsFragment(
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.GONE
             viewModel.startButtonVisibility.value = View.INVISIBLE
+        }
+    }
+
+    fun displayExplainGetPedometer() {
+        BaseActivity.currentActivity?.let { activity ->
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_explain_get_pedometer)
+                .setNegativeButton("許可しない") { dialog: DialogInterface?, which: Int ->
+                    //許可しない押した場合の処理
+                    ErikuraApplication.instance.setAcceptedExplainGetPedometer(false)
+                }
+                .setPositiveButton("OK") { dialog: DialogInterface?, which: Int ->
+                    //許可した場合の処理
+                    ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
+                }
+                .create()
+            dialog.show()
         }
     }
 }
