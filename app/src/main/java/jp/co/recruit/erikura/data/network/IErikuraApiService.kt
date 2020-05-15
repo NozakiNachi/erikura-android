@@ -77,10 +77,10 @@ interface IErikuraApiService {
     fun cancel(@Body request: CancelRequest): ApiObservable<EntryIdResponse>
 
     @POST("entries/start")
-    fun startJob(@Body request: StartJobRequest): ApiObservable<EntryIdResponse>
+    fun startJob(@Body request: StartJobRequest): ApiObservable<CheckEntryResponse>
 
     @POST("entries/finish")
-    fun stopJob(@Body request: StopJobRequest): ApiObservable<EntryIdResponse>
+    fun stopJob(@Body request: StopJobRequest): ApiObservable<CheckEntryResponse>
 
     @PATCH("entries/abort")
     fun abortJob(@Body request: AbortJobRequest): ApiObservable<EntryIdResponse>
@@ -186,6 +186,12 @@ data class JobsResponse(
 
 data class EntryIdResponse(
     var entryId: Int
+)
+
+data class CheckEntryResponse(
+    var entryId: Int,
+    var checkStatus: Int,
+    var messages: List<String>
 )
 
 data class CancelReasonsResponse(

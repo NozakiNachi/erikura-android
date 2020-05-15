@@ -316,7 +316,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Int, messages: List<String>) -> Unit){
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
@@ -331,7 +331,9 @@ class Api(var context: Context) {
             onError = onError
         ){ body ->
             val id = body.entryId
-            onComplete(id)
+            val check_status = body.checkStatus
+            val messages = body.messages
+            onComplete(id, check_status, messages)
         }
     }
 
@@ -345,7 +347,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Int, messages: List<String>) -> Unit){
         executeObservable(
             erikuraApiService.stopJob(
                 StopJobRequest(
@@ -361,7 +363,9 @@ class Api(var context: Context) {
             onError = onError
         ){ body ->
             val id = body.entryId
-            onComplete(id)
+            val check_status = body.checkStatus
+            val messages = body.messages
+            onComplete(id, check_status, messages)
         }
     }
 

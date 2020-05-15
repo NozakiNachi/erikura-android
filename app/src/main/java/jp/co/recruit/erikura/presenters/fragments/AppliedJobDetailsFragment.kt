@@ -292,11 +292,6 @@ class AppliedJobDetailsFragment(
     private fun startJob() {
         job?.let { job ->
             val steps = ErikuraApplication.pedometerManager.readStepCount()
-
-            // 作業開始のトラッキングの送出
-            Tracking.logEvent(event = "push_start_job", params = bundleOf())
-            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
-
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
                 locationManager.latLng
             } else {
@@ -307,15 +302,45 @@ class AppliedJobDetailsFragment(
                 job, latLng,
                 steps = steps,
                 distance = null, floorAsc = null, floorDesc = null
-            ) {
-                val intent = Intent(activity, JobDetailsActivity::class.java)
-                intent.putExtra("job", job)
-                intent.putExtra("onClickStart", true)
-                startActivity(intent)
+            ) { entry_id, check_status, messages ->
+                //FIXME 下記の分岐をメソッド化するかは要検討
+                when(check_status) {
+                    //判定順は開始不可、警告、開始可能
+                    ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
+
+                    }
+                    ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
+
+                    }
+                    ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
+                        //警告ダイアログを表示し作業開始
+                        val dialog = AlertDialog.Builder(activity)
+                            .setView(R.layout.dialog_not_accepted_get_pedometer)
+                            .create()
+                        dialog.show()
+                        //警告ダイアログの確認ボタンを押下された場合、作業開始
+                        //FIXME 警告ダイアログの確認ボタンの検知した場所で呼び出しを行うかも
+                        startJobPassIntent(job, steps)
+                    }
+                    ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
+                        //作業開始
+                        startJobPassIntent(job, steps)
+                    }
+                }
             }
         }
     }
 
+    private fun startJobPassIntent(job: Job, steps: Int) {
+        // 作業開始のトラッキングの送出
+        Tracking.logEvent(event = "push_start_job", params = bundleOf())
+        Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
+
+        val intent = Intent(activity, JobDetailsActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putExtra("onClickStart", true)
+        startActivity(intent)
+    }
 
     private fun updateTimeLimit() {
         val str = SpannableStringBuilder()

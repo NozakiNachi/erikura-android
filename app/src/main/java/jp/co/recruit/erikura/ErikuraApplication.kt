@@ -69,6 +69,13 @@ class ErikuraApplication : Application() {
         const val REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID = 0x0001
         const val REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID = 0x0002
         const val REQUEST_EXTERNAL_STORAGE_PERMISSION_ID = 0x0003
+
+        // 作業厳格化の定数
+        const val RESPONSE_ABLE_START_OR_END = 1
+        const val RESPONSE_ALERT_ABLE_START_OR_END = 2
+        const val RESPONSE_INPUT_REASON_ABLE_START_OR_END = 3
+        const val RESPONSE_NOT_ABLE_START_OR_END = 4
+
     }
 
     //    var userSession: UserSession? = null

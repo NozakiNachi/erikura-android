@@ -68,17 +68,41 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 Api(activity!!).stopJob(job, latLng,
                     steps = steps,
                     distance = null, floorAsc = null, floorDesc = null
-                ) {
-                    // 作業完了のトラッキングの送出
-                    Tracking.logEvent(event= "job_finished", params= bundleOf())
-                    Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0, steps = steps)
+                ) { entry_id, check_status, messages ->
+                    //FIXME 下記の分岐をメソッド化するかは要検討
+                    when(check_status) {
+                        //判定順は終了不可、警告、終了可能
+                        ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
 
-                    val intent= Intent(activity, WorkingFinishedActivity::class.java)
-                    intent.putExtra("job", job)
-                    startActivity(intent)
+                        }
+                        ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
+
+                        }
+                        ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
+                            //警告ダイアログを表示
+
+                            // 警告ダイアログの確認後、作業終了します
+                            //FIXME 警告ダイアログの確認ボタンの検知した場所で呼び出しを行うかも
+                            stopJobPassIntent(job, steps)
+                        }
+                        ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
+                            //作業終了します
+                            stopJobPassIntent(job, steps)
+                        }
+                    }
                 }
             }
         }
+    }
+
+    private fun stopJobPassIntent(job: Job, steps: Int) {
+        // 作業完了のトラッキングの送出
+        Tracking.logEvent(event= "job_finished", params= bundleOf())
+        Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0, steps = steps)
+
+        val intent= Intent(activity, WorkingFinishedActivity::class.java)
+        intent.putExtra("job", job)
+        startActivity(intent)
     }
 }
 
