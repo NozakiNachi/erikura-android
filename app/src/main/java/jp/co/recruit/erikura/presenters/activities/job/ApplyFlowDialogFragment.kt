@@ -6,15 +6,33 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
+import android.view.View
+import androidx.databinding.DataBindingUtil
+import jp.co.recruit.erikura.databinding.DialogApplyFlowBinding
 
 
-
-class ApplyFlowDialogFragment: DialogFragment() {
+class ApplyFlowDialogFragment: DialogFragment(), ApplyFlowDialogFragmentEventHandlers {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val binding = DataBindingUtil.inflate<DialogApplyFlowBinding>(
+            LayoutInflater.from(activity),
+            R.layout.dialog_apply_flow,
+            null,
+            false
+        )
+        binding.lifecycleOwner = activity
+        binding.handlers = this
+
         val builder = AlertDialog.Builder(activity)
-        val view = LayoutInflater.from(activity).inflate(R.layout.dialog_apply_flow, null)
-        builder.setView(view)
+        builder.setView(binding.root)
         return builder.create()
     }
+
+    override fun onTouch(view: View) {
+        dismiss()
+    }
+}
+
+interface ApplyFlowDialogFragmentEventHandlers {
+    fun onTouch(view: View)
 }
