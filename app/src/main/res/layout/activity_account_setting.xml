@@ -161,7 +161,7 @@
                 <EditText
                     style="@style/textField"
                     android:layout_marginTop="10dp"
-                    android:hint="例)1234567"
+                    android:hint="例)999"
                     android:inputType="number"
                     android:text="@={viewModel.branchOfficeNumber}" />
 
