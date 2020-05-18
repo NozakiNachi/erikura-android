@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Completable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -163,7 +164,15 @@ class JobListAdapter(private val activity: FragmentActivity, var jobs: List<Job>
                     if (position == holder.currentPosition) {
                         AndroidSchedulers.mainThread().scheduleDirect{
                             if (!activity.isDestroyed) {
-                                requestManager.load(File(asset.path)).fitCenter().into(imageView)
+                                requestManager
+                                    .load(File(asset.path))
+                                    .skipMemoryCache(true)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .error(R.drawable.ic_noimage)
+                                    .placeholder(R.drawable.ic_noimage)
+                                    .fallback(R.drawable.ic_noimage)
+                                    .fitCenter()
+                                    .into(imageView)
                             }
                         }
                     }
