@@ -2,10 +2,12 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -69,25 +71,50 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                     steps = steps,
                     distance = null, floorAsc = null, floorDesc = null
                 ) { entry_id, check_status, messages ->
+                    viewModel.messages.value = messages
                     //FIXME 下記の分岐をメソッド化するかは要検討
                     when(check_status) {
                         //判定順は終了不可、警告、終了可能
                         ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
-
+                            //終了不可の場合はダイアログを表示
+                            val dialog = AlertDialog.Builder(activity)
+                                .setView(R.layout.dialog_not_able_end)
+                                .setPositiveButton("確認", null)
+                                .create()
+                            dialog.show()
+                            var confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                            confirmation.setOnClickListener(View.OnClickListener {
+                                fun onClick(view: View) {
+                                    dialog.dismiss()
+                                }
+                            })
                         }
                         ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
-
+                            //警告ダイアログ理由入力
+                            val dialog = AlertDialog.Builder(activity)
+                                .setView(R.layout.dialog_input_reason_able_end)
+                                .create()
+                            dialog.show()
                         }
                         ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
                             //警告ダイアログを表示
-
-                            // 警告ダイアログの確認後、作業終了します
-                            //FIXME 警告ダイアログの確認ボタンの検知した場所で呼び出しを行うかも
-                            stopJobPassIntent(job, steps)
+                            val dialog = AlertDialog.Builder(activity)
+                                .setView(R.layout.dialog_alert_able_end)
+                                .setPositiveButton("確認", null)
+                                .create()
+                            dialog.show()
+                            var confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                            confirmation.setOnClickListener(View.OnClickListener {
+                                fun onClick(view: View) {
+                                    dialog.dismiss()
+                                    // 警告ダイアログの確認後、作業終了します
+                                    stopJobPassIntent(job, steps, messages)
+                                }
+                            })
                         }
                         ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
                             //作業終了します
-                            stopJobPassIntent(job, steps)
+                            stopJobPassIntent(job, steps, messages)
                         }
                     }
                 }
@@ -95,13 +122,19 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
         }
     }
 
-    private fun stopJobPassIntent(job: Job, steps: Int) {
+    override fun onClickConfirmation(view: View) {
+        //FIXME
+        //理由入力を行った場合、バリデーションを行って、再度API実行
+    }
+
+    private fun stopJobPassIntent(job: Job, steps: Int, messages: ArrayList<String>) {
         // 作業完了のトラッキングの送出
         Tracking.logEvent(event= "job_finished", params= bundleOf())
         Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0, steps = steps)
 
         val intent= Intent(activity, WorkingFinishedActivity::class.java)
         intent.putExtra("job", job)
+        intent.putStringArrayListExtra("messages", messages)
         startActivity(intent)
     }
 }
@@ -110,6 +143,8 @@ class StopDialogFragmentViewModel: ViewModel() {
     val caption: MutableLiveData<String> = MutableLiveData()
     val reportPlaces: MutableLiveData<String> = MutableLiveData()
     val reportPlacesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val reason: MutableLiveData<String> = MutableLiveData()
+    var messages: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     fun setup(job: Job?) {
         if (job != null) {
@@ -131,4 +166,5 @@ class StopDialogFragmentViewModel: ViewModel() {
 
 interface StopDialogFragmentEventHandlers {
     fun onClikStop(view: View)
+    fun onClickConfirmation(view: View)
 }

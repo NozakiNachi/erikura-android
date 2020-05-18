@@ -213,9 +213,10 @@ class AppliedJobDetailsFragment(
         }
     }
 
-//    override fun onClickConfirmation(view: View) {
-//        //ダイアログを閉じる
-//    }
+    override fun onClickConfirmation(view: View) {
+        //FIXME
+        //理由入力を行った場合、バリデーションを行って、再度API実行
+    }
 
     private fun checkAcceptedExplainGetPedometer() {
         if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
@@ -318,6 +319,13 @@ class AppliedJobDetailsFragment(
                             }
                         })
                     }
+                    ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
+                        //警告ダイアログ理由入力
+                        val dialog = AlertDialog.Builder(activity)
+                            .setView(R.layout.dialog_input_reason_able_start)
+                            .create()
+                        dialog.show()
+                    }
                     ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
                         //警告ダイアログは開始ログに注入して表示する、作業開始
                         startJobPassIntent(job, steps, messages)
@@ -405,6 +413,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val reason: MutableLiveData<String> = MutableLiveData()
     var messages: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     fun setup(activity: Activity, job: Job?, user: User?) {
@@ -442,5 +451,5 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
 interface AppliedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickStart(view: View)
-//    fun onClickConfirmation(view: View)
+    fun onClickConfirmation(view: View)
 }
