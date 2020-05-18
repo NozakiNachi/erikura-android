@@ -7,16 +7,19 @@ import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogStartBinding
 
 
-class StartDialogFragment(private val job: Job?) : DialogFragment() {
+class StartDialogFragment(private val job: Job?, val listView: ListView?) : DialogFragment() {
     private val viewModel: StartDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(StartDialogFragmentViewModel::class.java)
     }
@@ -32,7 +35,7 @@ class StartDialogFragment(private val job: Job?) : DialogFragment() {
         binding.viewModel = viewModel
 
         val builder = AlertDialog.Builder(activity)
-        builder.setView(binding.root)
+        builder.setView(listView)
         return builder.create()
     }
 }
@@ -41,6 +44,7 @@ class StartDialogFragmentViewModel: ViewModel() {
     val caption: MutableLiveData<String> = MutableLiveData()
     val reportPlaces: MutableLiveData<String> = MutableLiveData()
     val reportPlacesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val messages: MutableLiveData<java.util.ArrayList<String>> = MutableLiveData()
 
     fun setup(job: Job?) {
         if (job != null) {

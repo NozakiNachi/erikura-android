@@ -7,7 +7,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
@@ -17,7 +16,6 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
-import android.text.style.TypefaceSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,11 +23,8 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -39,12 +34,10 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.util.*
@@ -220,6 +213,10 @@ class AppliedJobDetailsFragment(
         }
     }
 
+//    override fun onClickConfirmation(view: View) {
+//        //ダイアログを閉じる
+//    }
+
     private fun checkAcceptedExplainGetPedometer() {
         if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
             //ダイアログ表示後許可していない場合
@@ -303,35 +300,38 @@ class AppliedJobDetailsFragment(
                 steps = steps,
                 distance = null, floorAsc = null, floorDesc = null
             ) { entry_id, check_status, messages ->
+                viewModel.messages.value = messages
                 //FIXME 下記の分岐をメソッド化するかは要検討
                 when(check_status) {
                     //判定順は開始不可、警告、開始可能
                     ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
-
-                    }
-                    ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
-
-                    }
-                    ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
-                        //警告ダイアログを表示し作業開始
+                        //開始不可の場合はダイアログを表示
                         val dialog = AlertDialog.Builder(activity)
-                            .setView(R.layout.dialog_not_accepted_get_pedometer)
+                            .setView(R.layout.dialog_not_able_start)
+                            .setPositiveButton("確認", null)
                             .create()
                         dialog.show()
-                        //警告ダイアログの確認ボタンを押下された場合、作業開始
-                        //FIXME 警告ダイアログの確認ボタンの検知した場所で呼び出しを行うかも
-                        startJobPassIntent(job, steps)
+                        var confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                        confirmation.setOnClickListener(View.OnClickListener {
+                            fun onClick(view: View) {
+                                dialog.dismiss()
+                            }
+                        })
+                    }
+                    ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
+                        //警告ダイアログは開始ログに注入して表示する、作業開始
+                        startJobPassIntent(job, steps, messages)
                     }
                     ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
                         //作業開始
-                        startJobPassIntent(job, steps)
+                        startJobPassIntent(job, steps, messages)
                     }
                 }
             }
         }
     }
 
-    private fun startJobPassIntent(job: Job, steps: Int) {
+    private fun startJobPassIntent(job: Job, steps: Int, messages: ArrayList<String>) {
         // 作業開始のトラッキングの送出
         Tracking.logEvent(event = "push_start_job", params = bundleOf())
         Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
@@ -339,6 +339,7 @@ class AppliedJobDetailsFragment(
         val intent = Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("onClickStart", true)
+        intent.putStringArrayListExtra("messages", messages)
         startActivity(intent)
     }
 
@@ -404,6 +405,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    var messages: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         if (job != null) {
@@ -440,4 +442,5 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
 interface AppliedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickStart(view: View)
+//    fun onClickConfirmation(view: View)
 }

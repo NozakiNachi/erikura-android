@@ -190,6 +190,13 @@
     <string name="report_completed_title">作業報告が完了しました！</string>
     <string name="report_completed_title2">続けて、振込用の口座を登録しましょう！</string>
 
+    <!-- 作業開始終了厳格化ダイアログ-->
+    <string name="job_alert">ご注意ください</string>
+    <string name="job_not_able_start">作業を開始できません</string>
+    <string name="job_not_able_end">作業を終了できません</string>
+    <string name="confirmation">確認</string>
+
+
     <!--　作業報告済み仕事詳細画面-->
     <string name="location">箇所</string>
     <string name="evaluation_from_management">お仕事依頼元からのコメント</string>

@@ -191,7 +191,7 @@ data class EntryIdResponse(
 data class CheckEntryResponse(
     var entryId: Int,
     var checkStatus: Int,
-    var messages: List<String>
+    var messages: ArrayList<String>
 )
 
 data class CancelReasonsResponse(

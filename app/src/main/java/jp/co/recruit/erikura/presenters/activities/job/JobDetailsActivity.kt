@@ -4,6 +4,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
@@ -79,6 +81,7 @@ class JobDetailsActivity : BaseActivity() {
         supportFragmentManager.executePendingTransactions()
 
         val errorMessages = intent.getStringArrayExtra("errorMessages")
+        val messages = intent.getStringArrayListExtra("messages")
         if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
         } else if (fromWorkingJobDetailsFragment) {
@@ -86,7 +89,11 @@ class JobDetailsActivity : BaseActivity() {
             dialog.show(supportFragmentManager, "CancelWorking")
             fromWorkingJobDetailsFragment = false
         } else if (fromAppliedJobDetailsFragment) {
-            val dialog = StartDialogFragment(job)
+            val listView = ListView(this)
+            val adapter: ArrayAdapter<String> = ArrayAdapter(this, R.layout.fragment_message_list_item, R.id.message_list, messages)
+            listView.setAdapter(adapter)
+
+            val dialog = StartDialogFragment(job, listView)
             dialog.show(supportFragmentManager, "Start")
             fromAppliedJobDetailsFragment = false
         }
