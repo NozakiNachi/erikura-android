@@ -25,6 +25,7 @@ import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -312,7 +313,7 @@ class AppliedJobDetailsFragment(
                             .setPositiveButton("確認", null)
                             .create()
                         dialog.show()
-                        var confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                        val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                         confirmation.setOnClickListener(View.OnClickListener {
                             fun onClick(view: View) {
                                 dialog.dismiss()
@@ -417,6 +418,10 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val reason: MutableLiveData<String> = MutableLiveData()
     var messages: MutableLiveData<ArrayList<String>> = MutableLiveData()
 
+    val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(reason) { result.value = isValid() }
+    }
+
     fun setup(activity: Activity, job: Job?, user: User?) {
         if (job != null) {
             // ダウンロード
@@ -446,6 +451,19 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    private fun isValid(): Boolean {
+        var valid = true
+        // 必須チェック
+        if (valid && reason.value.isNullOrBlank()) {
+            valid = false
+        }
+        // 文字数チェック
+        if (valid && (reason.value?.length ?: 0) > 50) {
+            valid = false
+        }
+        return valid
     }
 }
 

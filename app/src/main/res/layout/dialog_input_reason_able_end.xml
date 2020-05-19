@@ -58,7 +58,8 @@
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
                 android:text="@string/confirmation"
-                app:onSafeClick="@{handlers::onClickConfirmation}" />
+                app:onSafeClick="@{handlers::onClickConfirmation}"
+                android:enabled="@{viewModel.isEnabledButton()}"/>
 
         </LinearLayout>
     </ScrollView>
