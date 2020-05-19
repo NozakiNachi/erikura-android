@@ -367,6 +367,7 @@ class AppliedJobDetailsFragment(
                     ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
                     checkAcceptedExplainGetPedometer()
                 }
+                .setCancelable(false)
                 .create()
             dialog.show()
         }
