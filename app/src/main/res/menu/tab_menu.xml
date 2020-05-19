@@ -3,12 +3,12 @@
     <item
         android:id="@+id/tab_menu_applied_jobs"
         android:icon="@drawable/ic_documents_2x"
-        android:title="応募した仕事" />
+        android:title="応募したお仕事" />
 
     <item
         android:id="@+id/tab_menu_search_jobs"
         android:icon="@drawable/ic_seacrh_2x"
-        android:title="仕事を探す" />
+        android:title="お仕事を探す" />
 
     <item
         android:id="@+id/tab_menu_mypage"

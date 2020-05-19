@@ -48,7 +48,7 @@
                     style="@style/label_w2"
                     android:textSize="14dp"
                     android:textColor="@color/black"
-                    android:text="あなたの位置情報を元に、仕事をご紹介します！\n必ずONにしてください。"
+                    android:text="あなたの位置情報を元に、お仕事をご紹介します！\n必ずONにしてください。"
                     android:gravity="center_horizontal"
                     />
 

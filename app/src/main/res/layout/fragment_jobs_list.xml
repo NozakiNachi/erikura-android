@@ -34,7 +34,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:text="募集中の仕事"
+                    android:text="募集中のお仕事"
                     />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -65,7 +65,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:text="募集予定の仕事"
+                    android:text="募集予定のお仕事"
                     />
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -97,7 +97,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-                    android:text="募集終了した仕事"
+                    android:text="募集終了したお仕事"
                     />
 
                 <androidx.recyclerview.widget.RecyclerView
