@@ -9,7 +9,7 @@ object ErikuraConfig {
     const val WORKING_TIME_RANGE_KEY = "working_time_range"
     const val INQUIRY_URL_KEY = "inquiry_url"
     const val FAQ_URL_KEY = "faq_url"
-    const val RECOMMENDED_URL_KEY = "recommented_environment_url"
+    const val RECOMMENDED_URL_KEY = "recommended_environment_url"
 
     var rewardRange: List<Int> = listOf(1,5,10,50,100,500,1000,1500,2000,2500,3000,3500,4000,4500,5000)
     var workingTimeRange: List<Int> = listOf(1,5,10,15,30,45,60,75,90,105,120,180,240,300,360,420,480)
