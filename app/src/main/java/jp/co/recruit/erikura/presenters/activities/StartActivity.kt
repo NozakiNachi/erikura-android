@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.SurfaceTexture
@@ -9,6 +10,7 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.Surface
 import android.view.TextureView
+import android.util.Log
 import android.view.View
 import android.widget.LinearLayout
 import androidx.core.os.bundleOf
@@ -18,10 +20,12 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityStartBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
+import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import jp.co.recruit.erikura.services.NotificationData
 import kotlinx.android.synthetic.main.activity_start.*
@@ -67,13 +71,25 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         binding.viewModel = viewModel
 
         if (Api.isLogin) {
-            // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
-            Intent(this, MapViewActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+            Api(this).user() { user ->
+                Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
+                Api(this).smsVerifyCheck(user?.phoneNumber ?: "") { result ->
+                    if (result) {
+                        // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
+                        Intent(this, MapViewActivity::class.java).let { intent ->
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                        }
+                        finish()
+                    } else {
+                        //SMS未認証の場合、認証画面へ遷移します。
+                        val intent = Intent(this, SmsVerifyActivity::class.java)
+                        intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
+                        startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
+                    }
+                }
             }
-            finish()
-            return
         }
 
         val displayMetrics = resources.displayMetrics
@@ -171,6 +187,29 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         }
         else {
             resumeVideo()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
+            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                Intent(this, MapViewActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            } else {
+                // 位置情報の許諾、オンボーディングを表示します
+                Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(
+                        intent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                    )
+                    finish()
+                }
+            }
         }
     }
 

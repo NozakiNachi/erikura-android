@@ -141,6 +141,36 @@ class Api(var context: Context) {
         }
     }
 
+    fun smsVerifyCheck(phoneNumber: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.smsVerifyCheck(phoneNumber),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
+        }
+    }
+
+    fun sendSms(confirmationToken: String, phoneNumber: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.sendSms(SendSmsRequest(confirmationToken = confirmationToken ,phoneNumber = phoneNumber)),
+            onError = onError
+        ) { body ->
+            //bodyはtrueしか返ってこないので送信結果の判定は入れていない
+            onComplete()
+        }
+    }
+
+    fun smsVerify(confirmationToken: String, phoneNumber: String, passcode: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.smsVerify(SmsVerifyRequest(confirmationToken = confirmationToken ,phoneNumber = phoneNumber,passcode = passcode )),
+            onError = onError
+        ) { body ->
+            //bodyはtrueしか返ってこないので送信結果の判定は入れていない
+            onComplete()
+        }
+    }
+
     fun notificationSetting(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (notificationSetting: NotificationSetting) -> Unit) {
         executeObservable(
             erikuraApiService.notificationSetting(),

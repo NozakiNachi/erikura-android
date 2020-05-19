@@ -13,11 +13,13 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.ActivityPermitLocationBinding
+import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationOnlyPhoneFragment
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 
 class PermitLocationActivity : AppCompatActivity(), PermitLocationHandlers {
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+    var isChangeUserInformationOnlyPhone: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +27,16 @@ class PermitLocationActivity : AppCompatActivity(), PermitLocationHandlers {
             DataBindingUtil.setContentView(this, R.layout.activity_permit_location)
         binding.lifecycleOwner = this
         binding.handlers = this
+        isChangeUserInformationOnlyPhone = intent.getBooleanExtra("onClickChangeUserInformationOnlyPhone", false)
     }
 
     override fun onStart() {
         super.onStart()
+        if (isChangeUserInformationOnlyPhone) {
+            val dialog = ChangeUserInformationOnlyPhoneFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
+            isChangeUserInformationOnlyPhone = false
+        }
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_introduction", params= bundleOf())
         Tracking.view(name= "/intro/enable_settings", title= "アプリ紹介画面（位置情報ON/OFF）")
