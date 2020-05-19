@@ -7,13 +7,10 @@ import androidx.fragment.app.DialogFragment
 import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogStartBinding

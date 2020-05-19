@@ -107,20 +107,21 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
         }
     }
 
-    private fun stopJobPassIntent(job: Job, steps: Int, messages: ArrayList<String>) {
+    private fun stopJobPassIntent(job: Job, steps: Int, message: String) {
         // 作業完了のトラッキングの送出
         Tracking.logEvent(event= "job_finished", params= bundleOf())
         Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0, steps = steps)
 
         val intent= Intent(activity, WorkingFinishedActivity::class.java)
         intent.putExtra("job", job)
-        intent.putStringArrayListExtra("messages", messages)
+        intent.putExtra("message", message)
         startActivity(intent)
     }
 
     //API実行後のstatusによって処理を分岐させます。
     private fun checkStatus(job: Job, steps: Int, check_status: Int, messages: ArrayList<String>) {
-        viewModel.messages.value = messages
+        var message: String = messages?.joinToString("\n")
+        viewModel.message.value = message
         when(check_status) {
             //判定順は終了不可、警告、終了可能
             ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
@@ -156,13 +157,13 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                     fun onClick(view: View) {
                         dialog.dismiss()
                         // 警告ダイアログの確認後、作業終了します
-                        stopJobPassIntent(job, steps, messages)
+                        stopJobPassIntent(job, steps, message)
                     }
                 })
             }
             ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
                 //作業終了します
-                stopJobPassIntent(job, steps, messages)
+                stopJobPassIntent(job, steps, message)
             }
         }
     }
@@ -173,7 +174,7 @@ class StopDialogFragmentViewModel: ViewModel() {
     val reportPlaces: MutableLiveData<String> = MutableLiveData()
     val reportPlacesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val reason: MutableLiveData<String> = MutableLiveData()
-    var messages: MutableLiveData<ArrayList<String>> = MutableLiveData()
+    var message: MutableLiveData<String> = MutableLiveData()
 
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }

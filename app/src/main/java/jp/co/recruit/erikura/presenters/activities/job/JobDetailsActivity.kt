@@ -4,8 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
