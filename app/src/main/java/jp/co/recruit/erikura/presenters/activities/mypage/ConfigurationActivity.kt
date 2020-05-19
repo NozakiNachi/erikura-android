@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
@@ -64,7 +65,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             startActivity(intent)
         },
         MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
-            val frequentlyQuestionsURLString = "https://faq.erikura.net/hc/ja/sections/360003690953-FAQ"
+            val frequentlyQuestionsURLString = ErikuraConfig.frequentlyQuestionsURLString
             val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(frequentlyQuestionsURLString)
@@ -72,7 +73,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             startActivity(intent)
         },
         MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
-            val inquiryURLString = "https://support.erikura.net/"
+            val inquiryURLString = ErikuraConfig.inquiryURLString
             val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(inquiryURLString)
