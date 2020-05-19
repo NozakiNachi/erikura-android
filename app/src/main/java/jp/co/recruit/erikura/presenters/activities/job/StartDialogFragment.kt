@@ -19,7 +19,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogStartBinding
 
 
-class StartDialogFragment(private val job: Job?, val listView: ListView?) : DialogFragment() {
+class StartDialogFragment(private val job: Job?, val message: String?) : DialogFragment() {
     private val viewModel: StartDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(StartDialogFragmentViewModel::class.java)
     }
@@ -31,11 +31,11 @@ class StartDialogFragment(private val job: Job?, val listView: ListView?) : Dial
             false
         )
         binding.lifecycleOwner = activity
-        viewModel.setup(job)
+        viewModel.setup(job, message)
         binding.viewModel = viewModel
 
         val builder = AlertDialog.Builder(activity)
-        builder.setView(listView)
+        builder.setView(binding.root)
         return builder.create()
     }
 }
@@ -44,9 +44,14 @@ class StartDialogFragmentViewModel: ViewModel() {
     val caption: MutableLiveData<String> = MutableLiveData()
     val reportPlaces: MutableLiveData<String> = MutableLiveData()
     val reportPlacesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
-    val messages: MutableLiveData<java.util.ArrayList<String>> = MutableLiveData()
+    val message: MutableLiveData<String> = MutableLiveData()
+    val messageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
-    fun setup(job: Job?) {
+    fun setup(job: Job?, messages: String?) {
+        if(messages != null) {
+            message.value = messages
+            messageVisibility.value = View.VISIBLE
+        }
         if (job != null) {
             if(!job.summaryTitles.isNullOrEmpty()) {
                 caption.value = ErikuraApplication.instance.getString(R.string.applyDialog_caption2Pattern1)

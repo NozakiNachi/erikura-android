@@ -322,7 +322,7 @@ class AppliedJobDetailsFragment(
         }
     }
 
-    private fun startJobPassIntent(job: Job, steps: Int, messages: ArrayList<String>) {
+    private fun startJobPassIntent(job: Job, steps: Int, message: String) {
         // 作業開始のトラッキングの送出
         Tracking.logEvent(event = "push_start_job", params = bundleOf())
         Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
@@ -330,7 +330,7 @@ class AppliedJobDetailsFragment(
         val intent = Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("onClickStart", true)
-        intent.putStringArrayListExtra("messages", messages)
+        intent.putExtra("message", message)
         startActivity(intent)
     }
 
@@ -392,7 +392,8 @@ class AppliedJobDetailsFragment(
 
     //API実行後のstatusによって処理を分岐させます。
     private fun checkStatus(job: Job, steps: Int, check_status: Int, messages: ArrayList<String>) {
-        viewModel.messages.value = messages
+        var message: String = messages?.joinToString("\n")
+        viewModel.message.value = message
         when(check_status) {
             //判定順は開始不可、警告、開始可能
             ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
@@ -418,11 +419,11 @@ class AppliedJobDetailsFragment(
             }
             ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
                 //警告ダイアログは開始ログに注入して表示する、作業開始
-                startJobPassIntent(job, steps, messages)
+                startJobPassIntent(job, steps, message)
             }
             ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
                 //作業開始
-                startJobPassIntent(job, steps, messages)
+                startJobPassIntent(job, steps, message)
             }
         }
     }
@@ -435,7 +436,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val reason: MutableLiveData<String> = MutableLiveData()
-    var messages: MutableLiveData<ArrayList<String>> = MutableLiveData()
+    var message: MutableLiveData<String> = MutableLiveData()
 
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }

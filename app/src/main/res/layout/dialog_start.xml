@@ -27,7 +27,15 @@
                 android:textColor="@color/blackTwo"
                 android:textSize="22dp" />
 
-
+            <TextView
+                style="@style/errorField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{viewModel.message}"
+                android:textColor="@color/black"
+                android:textSize="22dp"
+                android:visibility="@{viewModel.messageVisibility}"/>
 
             <TextView
                 android:layout_width="match_parent"
