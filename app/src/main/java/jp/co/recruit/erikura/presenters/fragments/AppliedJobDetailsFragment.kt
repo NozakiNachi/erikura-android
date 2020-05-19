@@ -215,8 +215,23 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickConfirmation(view: View) {
-        //FIXME
-        //理由入力を行った場合、バリデーションを行って、再度API実行
+        //入力された理由をリクエストをパラメーターに加え、再度実行する
+        job?.let { job ->
+            val steps = ErikuraApplication.pedometerManager.readStepCount()
+            val latLng: LatLng? = if (locationManager.checkPermission(this)) {
+                locationManager.latLng
+            } else {
+                null
+            }
+
+            Api(activity).startJob(
+                job, latLng,
+                steps = steps,
+                distance = null, floorAsc = null, floorDesc = null, comment = viewModel.reason.value
+            ) { entry_id, check_status, messages ->
+                checkStatus(job, steps, check_status, messages)
+            }
+        }
     }
 
     private fun checkAcceptedExplainGetPedometer() {
@@ -300,42 +315,9 @@ class AppliedJobDetailsFragment(
             Api(activity).startJob(
                 job, latLng,
                 steps = steps,
-                distance = null, floorAsc = null, floorDesc = null
+                distance = null, floorAsc = null, floorDesc = null, comment = null
             ) { entry_id, check_status, messages ->
-                viewModel.messages.value = messages
-                //FIXME 下記の分岐をメソッド化するかは要検討
-                when(check_status) {
-                    //判定順は開始不可、警告、開始可能
-                    ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
-                        //開始不可の場合はダイアログを表示
-                        val dialog = AlertDialog.Builder(activity)
-                            .setView(R.layout.dialog_not_able_start)
-                            .setPositiveButton("確認", null)
-                            .create()
-                        dialog.show()
-                        val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                        confirmation.setOnClickListener(View.OnClickListener {
-                            fun onClick(view: View) {
-                                dialog.dismiss()
-                            }
-                        })
-                    }
-                    ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
-                        //警告ダイアログ理由入力
-                        val dialog = AlertDialog.Builder(activity)
-                            .setView(R.layout.dialog_input_reason_able_start)
-                            .create()
-                        dialog.show()
-                    }
-                    ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
-                        //警告ダイアログは開始ログに注入して表示する、作業開始
-                        startJobPassIntent(job, steps, messages)
-                    }
-                    ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
-                        //作業開始
-                        startJobPassIntent(job, steps, messages)
-                    }
-                }
+                checkStatus(job, steps, check_status, messages)
             }
         }
     }
@@ -405,6 +387,43 @@ class AppliedJobDetailsFragment(
                 .setCancelable(false)
                 .create()
             dialog.show()
+        }
+    }
+
+    //API実行後のstatusによって処理を分岐させます。
+    private fun checkStatus(job: Job, steps: Int, check_status: Int, messages: ArrayList<String>) {
+        viewModel.messages.value = messages
+        when(check_status) {
+            //判定順は開始不可、警告、開始可能
+            ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
+                //開始不可の場合はダイアログを表示
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_not_able_start)
+                    .setPositiveButton("確認", null)
+                    .create()
+                dialog.show()
+                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                confirmation.setOnClickListener(View.OnClickListener {
+                    fun onClick(view: View) {
+                        dialog.dismiss()
+                    }
+                })
+            }
+            ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
+                //警告ダイアログ理由入力
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_input_reason_able_start)
+                    .create()
+                dialog.show()
+            }
+            ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
+                //警告ダイアログは開始ログに注入して表示する、作業開始
+                startJobPassIntent(job, steps, messages)
+            }
+            ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
+                //作業開始
+                startJobPassIntent(job, steps, messages)
+            }
         }
     }
 }
