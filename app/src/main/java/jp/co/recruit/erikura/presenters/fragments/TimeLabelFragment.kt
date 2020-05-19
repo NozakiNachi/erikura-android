@@ -34,6 +34,7 @@ class TimeLabelFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, use
         // Inflate the layout for this fragment
         val binding = FragmentTimeLabelBinding.inflate(inflater, container, false)
         viewModel.setup(job, user)
+        binding.lifecycleOwner = activity
         binding.viewModel = viewModel
         return binding.root
     }

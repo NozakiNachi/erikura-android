@@ -55,6 +55,8 @@ class MapViewFragment(private val activity: AppCompatActivity, job: Job?, user: 
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        mMap.isIndoorEnabled = false
         mMap.uiSettings.setScrollGesturesEnabled(false)
         mMap.uiSettings.setZoomControlsEnabled(false)
         mMap.uiSettings.setZoomGesturesEnabled(false)

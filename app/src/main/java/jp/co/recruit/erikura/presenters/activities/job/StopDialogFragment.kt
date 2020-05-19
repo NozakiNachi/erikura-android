@@ -61,15 +61,17 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             if (limitAt < now) {
                 // 納期を過ぎてしまっている場合
                 Api(activity!!).displayErrorAlert(listOf(getString(R.string.jobDetails_overLimit)))
+                dismiss()
             }
             else {
+                val steps = ErikuraApplication.pedometerManager.readStepCount()
                 Api(activity!!).stopJob(job, latLng,
-                    steps = ErikuraApplication.pedometerManager.readStepCount(),
+                    steps = steps,
                     distance = null, floorAsc = null, floorDesc = null
                 ) {
                     // 作業完了のトラッキングの送出
                     Tracking.logEvent(event= "job_finished", params= bundleOf())
-                    Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0)
+                    Tracking.trackJobDetails(name= "job_finished", jobId= job?.id ?: 0, steps = steps)
 
                     val intent= Intent(activity, WorkingFinishedActivity::class.java)
                     intent.putExtra("job", job)

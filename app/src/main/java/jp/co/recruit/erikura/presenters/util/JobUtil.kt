@@ -22,6 +22,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.util.*
+import kotlin.math.min
 
 object JobUtil {
     enum class TimeLabelType {
@@ -67,37 +68,24 @@ object JobUtil {
                 color = ContextCompat.getColor(context, R.color.waterBlue)
                 val now = Date()
                 val workingStartAt = job.workingStartAt ?: now
-                val diff = workingStartAt.time - now.time
-                val diffHours = diff / (60 * 60 * 1000)
-                val diffDays = diffHours / 24
-                val diffRestHours = diffHours % 24
-                val diffRestMinutes = (diff / (60 * 1000)) % 60
+                val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingStartAt)
 
                 val sb = SpannableStringBuilder()
                 sb.append("募集開始まで")
-                if (diffDays > 0) {
-                    val start = sb.length
-                    sb.append(diffDays.toString())
-                    sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    sb.append("日")
+                if (days > 0) {
+                    appendStringAsLarge(sb, days.toString())
+                    appendStringAsNormal(sb, "日")
                 }
-                if (diffDays > 0 && diffRestHours > 0) {
-                    sb.append("と")
+                if (days > 0 && hours > 0) {
+                    appendStringAsNormal(sb, "と")
                 }
-                if (diffRestHours > 0) {
-                    val start = sb.length
-                    sb.append(diffRestHours.toString())
-                    sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-                    sb.append("時間")
+                if (hours > 0) {
+                    appendStringAsLarge(sb, hours.toString())
+                    appendStringAsNormal(sb, "時間")
                 }
-                if (diffDays <= 0 && diffRestHours <= 0) {
-                    val start = sb.length
-                    sb.append(diffRestMinutes.toString())
-                    sb.setSpan(
-                        RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
-                    sb.append("分")
+                else {
+                    appendStringAsLarge(sb, minutes.toString())
+                    appendStringAsNormal(sb, "分")
                 }
                 text = sb
             }
@@ -125,47 +113,24 @@ object JobUtil {
                         color = ContextCompat.getColor(context, R.color.coral)
                         val now = Date()
                         val workingFinishAt = if (job.status == JobStatus.Applied) { job.entry?.limitAt ?: now } else { job.workingFinishAt ?: now }
-                        val diff = workingFinishAt.time - now.time
-                        val diffHours = diff / (60 * 60 * 1000)
-                        val diffDays = diffHours / 24
-                        val diffRestHours = diffHours % 24
-                        val diffRestMinutes = (diff / (60 * 1000)) % 60
+                        val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingFinishAt)
 
                         val sb = SpannableStringBuilder()
                         sb.append("作業終了まで")
-                        if (diffDays > 0) {
-                            val start = sb.length
-                            sb.append(diffDays.toString())
-                            sb.setSpan(
-                                RelativeSizeSpan(16.0f / 12.0f),
-                                start,
-                                sb.length,
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                            sb.append("日")
+                        if (days > 0) {
+                            appendStringAsLarge(sb, days.toString())
+                            appendStringAsNormal(sb, "日")
                         }
-                        if (diffDays > 0 && diffRestHours > 0) {
-                            sb.append("と")
+                        if (days > 0 && hours > 0) {
+                            appendStringAsNormal(sb, "と")
                         }
-                        if (diffRestHours > 0) {
-                            val start = sb.length
-                            sb.append(diffRestHours.toString())
-                            sb.setSpan(
-                                RelativeSizeSpan(16.0f / 12.0f),
-                                start,
-                                sb.length,
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                            sb.append("時間")
+                        if (hours > 0) {
+                            appendStringAsLarge(sb, hours.toString())
+                            appendStringAsNormal(sb, "時間")
                         }
-                        if (diffDays <= 0 && diffRestHours <= 0) {
-                            val start = sb.length
-                            sb.append(diffRestMinutes.toString())
-                            sb.setSpan(
-                                RelativeSizeSpan(16.0f / 12.0f), start, sb.length,
-                                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                            )
-                            sb.append("分")
+                        else {
+                            appendStringAsLarge(sb, minutes.toString())
+                            appendStringAsNormal(sb, "分")
                         }
                         text = sb
                     }
@@ -203,5 +168,40 @@ object JobUtil {
             intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             activity.startActivity(intent)
         }
+    }
+
+    data class DiffPart(
+        val days: Int,
+        val hours: Int,
+        val minutes: Int,
+        val seconds: Int
+    )
+    /**
+     * 時間の差分をとり、日数、時間、分、秒の値を返します
+     */
+    private fun timeDiff(from: Date, to: Date): DiffPart {
+        val diffInMillis = to.time - from.time      // 時刻差分(ミリ秒単位)
+        val diffInSeconds = diffInMillis / 1000     // 時刻差分(秒単位)
+        val diffInMinutes = diffInSeconds / 60      // 時刻差分(分単位)
+        val diffInHours = diffInMinutes / 60        // 時刻差分(時単位)
+        val diffInDays = diffInHours / 24           // 時刻差分(日単位)
+        val secDiff = diffInSeconds % 60            // 差分(秒部分)
+        val minDiff = diffInMinutes % 60            // 差分(分部分)
+        val hourDiff = diffInHours % 24             // 差分(時部分)
+        val dayDiff = diffInDays                    // 差分(日部分)
+
+        return DiffPart(
+            days = dayDiff.toInt(), hours = hourDiff.toInt(),
+            minutes = minDiff.toInt(), seconds = secDiff.toInt())
+    }
+
+    private fun appendStringAsNormal(sb: SpannableStringBuilder, str: String) {
+        sb.append(str)
+    }
+
+    private fun appendStringAsLarge(sb: SpannableStringBuilder, str: String) {
+        val start = sb.length
+        sb.append(str)
+        sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 }

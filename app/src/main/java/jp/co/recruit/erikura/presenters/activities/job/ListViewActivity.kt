@@ -9,12 +9,14 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
+import android.widget.LinearLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -46,9 +48,14 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
     private val viewModel: ListViewViewModel by lazy {
         ViewModelProvider(this).get(ListViewViewModel::class.java)
     }
+    private val api: Api by lazy { Api(this) }
 
     fun fetchJobs(query: JobQuery) {
-        Api(this).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
+        viewModel.activeListVisible.value = View.GONE
+        viewModel.futureListVisible.value = View.GONE
+        viewModel.pastListVisible.value = View.GONE
+
+        api.searchJobs(query) { jobs ->
             Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
 
             val activeJobs = mutableListOf<Job>()
@@ -113,6 +120,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         }
 
         activeJobsAdapter = JobListAdapter(this, listOf(), null).also {
+            it.setHasStableIds(true)
             it.onClickListner =  object: JobListAdapter.OnClickListener {
                 override fun onClick(job: Job) {
                     onJobSelected(job)
@@ -120,6 +128,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             }
         }
         futureJobsAdapter = JobListAdapter(this, listOf(), null).also {
+            it.setHasStableIds(true)
             it.onClickListner =  object: JobListAdapter.OnClickListener {
                 override fun onClick(job: Job) {
                     onJobSelected(job)
@@ -127,6 +136,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             }
         }
         pastJobsAdapter = JobListAdapter(this, listOf(), null).also {
+            it.setHasStableIds(true)
             it.onClickListner =  object: JobListAdapter.OnClickListener {
                 override fun onClick(job: Job) {
                     onJobSelected(job)
@@ -134,19 +144,35 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             }
         }
 
+        val pool = RecyclerView.RecycledViewPool()
         val activeJobList: RecyclerView = findViewById(R.id.list_view_active_job_list)
+        activeJobList.setRecycledViewPool(pool)
+        activeJobList.itemAnimator?.addDuration = 0
+        activeJobList.itemAnimator?.moveDuration = 0
+        activeJobList.itemAnimator?.removeDuration = 0
+        activeJobList.itemAnimator?.changeDuration = 0
         activeJobList.setHasFixedSize(true)
         activeJobList.adapter = activeJobsAdapter
         activeJobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         activeJobList.addItemDecoration(JobListItemDecorator())
 
         val futureJobList: RecyclerView = findViewById(R.id.list_view_future_job_list)
+        futureJobList.setRecycledViewPool(pool)
+        futureJobList.itemAnimator?.addDuration = 0
+        futureJobList.itemAnimator?.moveDuration = 0
+        futureJobList.itemAnimator?.removeDuration = 0
+        futureJobList.itemAnimator?.changeDuration = 0
         futureJobList.setHasFixedSize(true)
         futureJobList.adapter = futureJobsAdapter
         futureJobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         futureJobList.addItemDecoration(JobListItemDecorator())
 
         val pastJobList: RecyclerView = findViewById(R.id.list_view_past_job_list)
+        pastJobList.setRecycledViewPool(pool)
+        pastJobList.itemAnimator?.addDuration = 0
+        pastJobList.itemAnimator?.moveDuration = 0
+        pastJobList.itemAnimator?.removeDuration = 0
+        pastJobList.itemAnimator?.changeDuration = 0
         pastJobList.setHasFixedSize(true)
         pastJobList.adapter = pastJobsAdapter
         pastJobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -158,15 +184,15 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
         if (viewModel.keyword.value.isNullOrBlank()) {
             // 現在地からの検索の場合
-            locationManager.latLng?.also {
+            (viewModel.latLng.value ?: locationManager.latLng)?.also {
                 firstFetchRequested = true
-                val query = viewModel.query(it)
-                fetchJobs(query)
+                // viewModel の更新のみを行います => 実際の検索は onItemSelected から呼ばれます
+                viewModel.query(it)
             } ?: run {
                 if (!locationManager.checkPermission(this)) {
                     firstFetchRequested = true
-                    val query = viewModel.query(LocationManager.defaultLatLng)
-                    fetchJobs(query)
+                    // viewModel の更新のみを行います => 実際の検索は onItemSelected から呼ばれます
+                    viewModel.query(LocationManager.defaultLatLng)
                 }
             }
         }
@@ -174,8 +200,8 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             // キーワードをもとにした緯度経度からの検索
             viewModel.latLng.value?.let {
                 firstFetchRequested = true
-                val query = viewModel.query(it)
-                fetchJobs(query)
+                // viewModel の更新のみを行います => 実際の検索は onItemSelected から呼ばれます
+                viewModel.query(it)
             }
         }
     }
@@ -196,7 +222,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         locationManager.addLocationUpdateCallback {
             if (!firstFetchRequested && !viewModel.keyword.value.isNullOrBlank()) {
                 firstFetchRequested = true
-                val query = viewModel.query(it)
+                val query = viewModel.query(viewModel.latLng.value ?: it)
                 fetchJobs(query)
             }
         }
@@ -268,9 +294,9 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         startActivity(intent)
     }
 
-    fun onQueryChanged() {
+    private fun onQueryChanged() {
         // viewModel 側に実装を移すべきか検討すること
-        val latLng = viewModel.keyword.value?.let { viewModel.latLng.value } ?: locationManager.latLngOrDefault
+        val latLng = viewModel.latLng.value ?: locationManager.latLngOrDefault
         val query = viewModel.query(latLng)
         fetchJobs(query)
     }
@@ -287,7 +313,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         // onStart で来た場合には、選択処理はスキップさせます
-        if (onTabButtonInitialization) { return false }
+        if (onTabButtonInitialization) { return true }
 
         // 仕事を探すがタップされている場合は、地図画面に遷移させます
         if (item.itemId == R.id.tab_menu_search_jobs) {
@@ -316,27 +342,6 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
 class ListViewViewModel : BaseJobQueryViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
-
-    /*
-    var jobs: List<Job> = listOf()
-        set(value) {
-            field = value
-            activeJobs = value.filter { job -> job.isActive }
-            activeListVisible.value = if(activeJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
-            futureJobs = value.filter { job -> job.isFuture }
-            futureListVisible.value = if(futureJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
-            pastJobs = value.filter { job -> job.isPastOrInactive }
-            pastListVisible.value = if(pastJobs.isEmpty())   { View.GONE } else { View.VISIBLE }
-
-            if(value.isEmpty()) {
-                notFoundVisibility.value = View.VISIBLE
-            }
-            else {
-                notFoundVisibility.value = View.GONE
-            }
-
-        }
-         */
     var activeJobs: List<Job> = listOf()
     var futureJobs: List<Job> = listOf()
     var pastJobs: List<Job> = listOf()

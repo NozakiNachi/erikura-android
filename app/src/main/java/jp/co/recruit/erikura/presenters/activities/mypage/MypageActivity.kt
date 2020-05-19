@@ -240,35 +240,14 @@ class InformationAdapter(val activity: FragmentActivity, val recyclerView: Recyc
         // WebView にコンテンツを設定します
         val webView = holder.binding.informationCellWebview
 
-//        // javascript を有効にします
-//        webView.settings.javaScriptEnabled = true
-//        // JavascriptInterface を追加します
-//        webView.addJavascriptInterface(WebViewResizeHeightJavascriptInterface { height ->
-//            Log.v(ErikuraApplication.LOG_TAG, "Resize Height: ${height}")
-//        }, "resizeHeightHandler")
-
         webView.webViewClient = object: WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
                 Log.v("ERIKURA", "WebView Height: ${view?.contentHeight}")
-//
-//                // call resizeHeight
-//                view?.loadUrl("javascript:AndroidFunction.resizeHeight(document.body.scrollHeight)")
-//
-//                val dp = activity.resources.displayMetrics
-//                webView.layoutParams.let { lp ->
-//                    lp.height = (webView.contentHeight * dp.scaledDensity).toInt()
-//                    webView.layoutParams = lp
-//                }
-//
-//                holder.binding.root.forceLayout()
-//                recyclerView.forceLayout()
-//                activity.window.decorView.forceLayout()
             }
         }
         val encodedHtml = Base64.encodeToString(information.content.toByteArray(), Base64.NO_PADDING)
         webView.loadData(encodedHtml, "text/html", "base64")
-        // FIXME: WebView, Layout の高さ調整
     }
 }
 

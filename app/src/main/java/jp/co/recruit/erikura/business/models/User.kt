@@ -26,12 +26,8 @@ data class User(
     var wishWorks: List<String> = listOf(),
     var holdingJobs: Int = 0,
     var maxJobs: Int = 0,
-    // FIXME: 利用箇所の確認
     var confirmationToken: String? = null
 ): Parcelable {
-    // FIXME: 都道府県の文字列定数を定義するのか？
-    // FIXME: double は問題なくパースできるか？
-
     val parsedDateOfBirth: Date? get() {
         try {
             return DateUtils.parseDate(dateOfBirth, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))

@@ -1,13 +1,21 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
+import android.graphics.Point
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
+import android.widget.FrameLayout
+import androidx.core.graphics.contains
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -69,6 +77,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     private var firstFetchRequested: Boolean = false
     var isChangeUserInformationOnlyPhone: Boolean = false
 
+    private var gestureDetector: GestureDetector? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMapViewBinding = DataBindingUtil.setContentView(this, R.layout.activity_map_view)
@@ -117,6 +127,16 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     animateCamera()
+
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val position = layoutManager.findFirstVisibleItemPosition()
+                    if (position != (adapter.itemCount - 1)) {
+                        // 末尾の要素
+                        adapter.notifyItemRangeChanged(position, 2)
+                    }
+                    else {
+                        adapter.notifyItemChanged(position)
+                    }
                 }
             }
 
@@ -159,11 +179,33 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         map_view_carousel_highlight.adapter = tutorialAdapter
         map_view_carousel_highlight.addItemDecoration(ErikuraCarouselCellDecoration())
         LinearSnapHelper().attachToRecyclerView(map_view_carousel_highlight)
+        map_view_carousel_highlight.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                    val position = layoutManager.findFirstVisibleItemPosition()
+                    if (position != (tutorialAdapter.itemCount - 1)) {
+                        // 末尾の要素
+                        tutorialAdapter.notifyItemRangeChanged(position, 2)
+                    }
+                    else {
+                        tutorialAdapter.notifyItemChanged(position)
+                    }
+                }
+            }
+        })
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.jobs_map_view_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        gestureDetector = GestureDetector(this, GoogleMapGestureListener { e -> onMapSingleTap(e) })
+        map_touchable_wrapper?.onTouch = { e ->
+            gestureDetector?.onTouchEvent(e)
+        }
 
         // 各種ボタンの表示・非表示の切り替えを行います
         viewModel.reSearchButtonVisible.value = View.GONE           // 初期表示ではこの地点で再検索ボタンを非表示とする
@@ -208,7 +250,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(resume): $updateRequest")
                 mMap.moveCamera(updateRequest)
                 firstFetchRequested = true
-                val query = viewModel.query(it)
+                val query = viewModel.query(viewModel.latLng.value ?: it)
                 fetchJobs(query)
             }
         }
@@ -216,6 +258,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+
+        mMap.mapType = GoogleMap.MAP_TYPE_NORMAL
+        mMap.isIndoorEnabled = false
 
         // 地図上のアイコンをグレーにするためにスタイル設定を行います
         try {
@@ -234,36 +279,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         mMap.setOnCameraMoveCanceledListener { onCameraMoveCanceled() }
         mMap.setOnCameraIdleListener { onCameraIdle() }
 
-        mMap.setOnMarkerClickListener { marker ->
-            val index: Int = marker.tag as Int
-            Log.v("ERIKURA", "Marker index: ${index}")
-            val jobs = viewModel.jobs.value ?: listOf()
-            if (index >= 0) {
-                val job: Job? = jobs[index]
-                viewModel.activeMaker = viewModel.markerMap[job?.id]
-            }
-            else {
-                viewModel.activeMaker = null
-            }
-
-            var layoutManager = carouselView.layoutManager as LinearLayoutManager
-
-            val current = layoutManager.findFirstCompletelyVisibleItemPosition()
-            if (current != index) {
-                if (current < index) {
-                    if (abs(index - current) > 10) {
-                        layoutManager.scrollToPosition(index - 10)
-                    }
-                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
-                }
-                else {
-                    if (abs(index - current) > 10) {
-                        layoutManager.scrollToPosition(index + 10)
-                    }
-                    layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
-                }
-            }
-
+        mMap.setOnMarkerClickListener {
             true
         }
 
@@ -281,7 +297,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         if (!firstFetchRequested) {
             if (viewModel.keyword.value.isNullOrBlank()) {
                 // 検索キーワードが指定されていないので、現在値より検索します
-                locationManager.latLng?.also {
+                (viewModel.latLng.value ?: locationManager.latLng)?.also {
                     // 位置情報が取得可能なので、位置情報を返却します
                     firstFetchRequested = true
                     val query = viewModel.query(it)
@@ -423,6 +439,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 else if (job.wanted) {
                     marker.zIndex += ErikuraMarkerView.WANTED_ZINDEX_OFFSET
                 }
+
                 // tag として index を保存しておきます
                 marker.tag = i
             }
@@ -477,7 +494,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         val position = mMap.cameraPosition
         // 募集中/すべてのフラグ以外は検索条件をクリアします
         viewModel.clearWithoutPeriod()
-        viewModel.clearWithoutPeriod()
         fetchJobs(viewModel.query(position.target))
     }
 
@@ -500,10 +516,14 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 viewModel.periodType.value = PeriodType.ALL
             }
         }
-        // 現在位置をもとに検索し直します
-        val position = mMap.cameraPosition
+
         viewModel.searchBarVisible.value = View.GONE
-        fetchJobs(viewModel.query(position.target))
+
+        // 検索キーワードがない場合は現在位置をもとに検索し直します
+        val position = mMap.cameraPosition
+        val latLng = viewModel.latLng.value ?: position.target
+        val query = viewModel.query(latLng)
+        fetchJobs(query)
     }
 
     override fun onClickList(view: View) {
@@ -511,7 +531,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         Tracking.logEvent(event= "push_toggle_dispaly", params= bundleOf())
         Tracking.track(name= "push_toggle_dispaly")
 
-        Intent(this, ListViewActivity::class.java)?.let {
+        Intent(this, ListViewActivity::class.java).let {
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             it.putExtra(SearchJobActivity.EXTRA_SEARCH_CONDITIONS, viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng))
             startActivity(it)
@@ -551,6 +571,66 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         mapFragment?.view?.let { mapView ->
             val locationButton: View = mapView.findViewWithTag("GoogleMapMyLocationButton")
             locationButton.visibility = View.GONE
+        }
+    }
+
+    private fun onMapSingleTap(e: MotionEvent?) {
+        val tapPoint = Point(e?.x?.toInt() ?: 0, e?.y?.toInt() ?: 0)
+        val displayMetrics = resources.displayMetrics
+        val hitMarkers = mutableListOf<ErikuraMarkerView>()
+        val visibleBounds = mMap.projection.visibleRegion.latLngBounds
+
+        viewModel.markerMap.forEach { _jobId, erikuraMarker ->
+//            if (visibleBounds.contains(erikuraMarker.marker.position)) {
+                val point = mMap.projection.toScreenLocation(erikuraMarker.marker.position)
+                val topLeft = Point(
+                    (point.x - (100 / 2 * displayMetrics.density)).toInt(),
+                    (point.y - 47 * displayMetrics.density).toInt())
+                val bottomRight = Point(
+                    (point.x + (100 / 2 * displayMetrics.density)).toInt(),
+                    (point.y).toInt())
+
+                val rect = Rect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y)
+                if (rect.contains(tapPoint)) {
+                    hitMarkers.add(erikuraMarker)
+                    Log.v(ErikuraApplication.LOG_TAG, "tapPoint: (${tapPoint.x}, ${tapPoint.y}), point: (${point.x}, ${point.y}) => (${topLeft.x}, ${topLeft.y})-(${bottomRight.x}-${bottomRight.y})")
+                }
+//            }
+        }
+
+        hitMarkers.sortedByDescending { it.marker.zIndex }?.let { sortedHitMarkers ->
+            if (sortedHitMarkers.isNotEmpty()) {
+                sortedHitMarkers.first()?.let { erikuraMarker ->
+                    val index: Int = erikuraMarker.marker.tag as Int
+                    Log.v("ERIKURA", "Marker index: ${index}")
+                    val jobs = viewModel.jobs.value ?: listOf()
+                    if (index >= 0) {
+                        val job: Job? = jobs[index]
+                        viewModel.activeMaker = viewModel.markerMap[job?.id]
+                    }
+                    else {
+                        viewModel.activeMaker = null
+                    }
+
+                    var layoutManager = carouselView.layoutManager as LinearLayoutManager
+
+                    val current = layoutManager.findFirstCompletelyVisibleItemPosition()
+                    if (current != index) {
+                        if (current < index) {
+                            if (abs(index - current) > 10) {
+                                layoutManager.scrollToPosition(index - 10)
+                            }
+                            layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                        }
+                        else {
+                            if (abs(index - current) > 10) {
+                                layoutManager.scrollToPosition(index + 10)
+                            }
+                            layoutManager.smoothScrollToPosition(carouselView, RecyclerView.State(), index)
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -660,5 +740,26 @@ class MapViewCoachViewModel: ViewModel() {
 
     fun tap(view: View) {
         this.next()
+    }
+}
+
+class TouchableWrapper: FrameLayout {
+    constructor(context: Context) : this(context, null)
+    constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    var onTouch: ((event: MotionEvent?) -> Unit)? = null
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        onTouch?.invoke(ev)
+        return super.dispatchTouchEvent(ev)
+    }
+}
+
+class GoogleMapGestureListener(private val onSingleTap: (MotionEvent?) -> Unit): GestureDetector.SimpleOnGestureListener() {
+    override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+        super.onSingleTapConfirmed(e)
+        e?.let { onSingleTap(it) }
+        return true
     }
 }

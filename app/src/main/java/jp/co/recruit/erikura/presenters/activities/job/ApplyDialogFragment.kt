@@ -104,6 +104,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
                     }
                     intent.putExtra("job", job)
                     startActivity(intent)
+                    dismiss()
                 }) {
                     // 応募のトラッキングの送出
                     Tracking.logEvent(event= "job_entry", params= bundleOf())

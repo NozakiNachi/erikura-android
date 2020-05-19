@@ -98,6 +98,7 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
                 }else {
                     val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
                     Api(activity!!).displayErrorAlert(errorMessages)
+                    dismiss()
                 }
             }
         }

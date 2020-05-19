@@ -126,7 +126,6 @@ class ReportedJobsViewModel: ViewModel() {
         }
         months.value = monthsList.reversed()
         targetMonth.value = currentMonth
-        // FIXME: 初期選択情報の更新
     }
 }
 

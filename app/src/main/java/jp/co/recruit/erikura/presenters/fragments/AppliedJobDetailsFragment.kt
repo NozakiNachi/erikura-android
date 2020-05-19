@@ -10,6 +10,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -21,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
@@ -58,6 +60,9 @@ class AppliedJobDetailsFragment(
     private val locationManager: LocationManager = ErikuraApplication.locationManager
     private var allowPedometerDialog: Dialog? = null
 
+    private var timer: Timer = Timer()
+    private var timerHandler: Handler = Handler()
+
     private var inStartJob: Boolean = false
 
     private var jobInfoView: JobInfoViewFragment? = null
@@ -70,16 +75,18 @@ class AppliedJobDetailsFragment(
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
-        jobInfoView?.refresh(job, user)
-        manualImage?.refresh(job, user)
-        cancelButton?.refresh(job, user)
-        manualButton?.refresh(job, user)
-        thumbnailImage?.refresh(job, user)
-        jobDetailsView?.refresh(job, user)
-        mapView?.refresh(job, user)
+        if (isAdded) {
+            jobInfoView?.refresh(job, user)
+            manualImage?.refresh(job, user)
+            cancelButton?.refresh(job, user)
+            manualButton?.refresh(job, user)
+            thumbnailImage?.refresh(job, user)
+            jobDetailsView?.refresh(job, user)
+            mapView?.refresh(job, user)
 
-        activity?.let {
-            viewModel.setup(it, job, user)
+            activity?.let {
+                viewModel.setup(it, job, user)
+            }
         }
     }
 
@@ -130,11 +137,21 @@ class AppliedJobDetailsFragment(
         ErikuraApplication.pedometerManager.start()
         allowPedometerDialog?.dismiss()
         allowPedometerDialog = null
+
+        timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                timerHandler.post(Runnable {
+                    updateTimeLimit()
+                })
+            }
+        }, 1000, 1000) // 実行したい間隔(ミリ秒)
     }
 
     override fun onPause() {
         super.onPause()
         ErikuraApplication.pedometerManager.stop()
+        timer.cancel()
     }
 
     override fun onRequestPermissionsResult(
@@ -161,15 +178,31 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickFavorite(view: View) {
-        if (viewModel.favorited.value ?: false) {
-            // お気に入り登録処理
-            Api(activity!!).placeFavorite(job?.place?.id ?: 0) {
-                viewModel.favorited.value = true
+        job?.place?.id?.let { placeId ->
+            // 現在のボタン状態を取得します
+            val favorited = viewModel.favorited.value ?: false
+
+            val favoriteButton: ToggleButton = this.view?.findViewById(R.id.favorite_button)!!
+            // タップが聞かないのように無効化をします
+            favoriteButton.isEnabled = false
+            val api = Api(activity!!)
+            val errorHandler: (List<String>?) -> Unit = { messages ->
+                api.displayErrorAlert(messages)
+                favoriteButton.isEnabled = true
             }
-        } else {
-            // お気に入り削除処理
-            Api(activity!!).placeFavoriteDelete(job?.place?.id ?: 0) {
-                viewModel.favorited.value = false
+            if (favorited) {
+                // ボタンがお気に入り状態なので登録処理
+                api.placeFavorite(placeId, onError = errorHandler) {
+                    viewModel.favorited.value = true
+                    favoriteButton.isEnabled = true
+                }
+            }
+            else {
+                // お気に入り削除処理
+                api.placeFavoriteDelete(placeId, onError = errorHandler) {
+                    viewModel.favorited.value = false
+                    favoriteButton.isEnabled = true
+                }
             }
         }
     }
@@ -226,9 +259,11 @@ class AppliedJobDetailsFragment(
 
     private fun startJob() {
         job?.let { job ->
+            val steps = ErikuraApplication.pedometerManager.readStepCount()
+
             // 作業開始のトラッキングの送出
             Tracking.logEvent(event = "push_start_job", params = bundleOf())
-            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id)
+            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
 
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
                 locationManager.latLng
@@ -238,7 +273,7 @@ class AppliedJobDetailsFragment(
 
             Api(activity).startJob(
                 job, latLng,
-                steps = ErikuraApplication.pedometerManager.readStepCount(),
+                steps = steps,
                 distance = null, floorAsc = null, floorDesc = null
             ) {
                 val intent = Intent(activity, JobDetailsActivity::class.java)

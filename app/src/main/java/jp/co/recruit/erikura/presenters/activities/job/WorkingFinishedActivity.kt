@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -92,6 +91,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
         Intent(this, OwnJobsActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            intent.putExtra("fromWorkingFinished", true)
             startActivity(intent)
         }
     }

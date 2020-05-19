@@ -35,10 +35,6 @@ class ImagePickerCellView : FrameLayout {
         imageView = binding.root.findViewById(R.id.image_picker_cell_image)
         toggleButton = binding.root.findViewById(R.id.image_picker_cell_check)
 
-        // FIXME: Layout の中身には何が必要か
-        // 1. ImageView
-        // 2. ToggleButton
-
         toggleButton.setOnSafeClickListener {
             toggleClickListener?.apply {
                 onClick(toggleButton.isChecked)

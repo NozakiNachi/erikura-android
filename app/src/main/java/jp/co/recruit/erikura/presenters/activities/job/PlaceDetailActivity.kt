@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -10,9 +9,9 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.DynamicDrawableSpan
-import android.text.style.ImageSpan
 import android.util.Log
 import android.view.View
+import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -21,10 +20,10 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Place
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.fragments.IconImageSpan
 import jp.co.recruit.erikura.presenters.fragments.JobsListFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingPlaceViewFragment
 
@@ -67,15 +66,31 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
     }
 
     override fun onClickFavorite(view: View) {
-        if (viewModel.favorited.value?: false) {
-            // お気に入り登録処理
-            Api(this).placeFavorite(place.id) {
-                viewModel.favorited.value = true
+        place?.id?.let { placeId ->
+            // 現在のボタン状態を取得します
+            val favorited = viewModel.favorited.value ?: false
+
+            val favoriteButton: ToggleButton = findViewById(R.id.favorite_button)!!
+            // タップが聞かないのように無効化をします
+            favoriteButton.isEnabled = false
+            val api = Api(this)
+            val errorHandler: (List<String>?) -> Unit = { messages ->
+                api.displayErrorAlert(messages)
+                favoriteButton.isEnabled = true
             }
-        }else {
-            // お気に入り削除処理
-            Api(this).placeFavoriteDelete(place.id) {
-                viewModel.favorited.value = false
+            if (favorited) {
+                // ボタンがお気に入り状態なので登録処理
+                api.placeFavorite(placeId, onError = errorHandler) {
+                    viewModel.favorited.value = true
+                    favoriteButton.isEnabled = true
+                }
+            }
+            else {
+                // お気に入り削除処理
+                api.placeFavoriteDelete(placeId, onError = errorHandler) {
+                    viewModel.favorited.value = false
+                    favoriteButton.isEnabled = true
+                }
             }
         }
     }
@@ -114,10 +129,13 @@ class PlaceDetailViewModel: ViewModel() {
 
 
     fun setupMapButton() {
+        val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
+        val width = (16 * displayMetrics.density).toInt()
+        val height = (16 * displayMetrics.density).toInt()
         val str = SpannableString(ErikuraApplication.instance.getString(R.string.openMap))
         val drawable = ContextCompat.getDrawable(ErikuraApplication.instance.applicationContext, R.drawable.link)
-        drawable!!.setBounds(0, 0, 40, 40)
-        val span = ImageSpan(drawable, DynamicDrawableSpan.ALIGN_BASELINE)
+        drawable!!.setBounds(0, 0, width, height)
+        val span = IconImageSpan(drawable, DynamicDrawableSpan.ALIGN_CENTER)
         str.setSpan(span, 0, 1, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
         openMapButtonText.value = str
     }

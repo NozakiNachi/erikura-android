@@ -76,24 +76,14 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
-            onComplete(session)
 
             Tracking.fcmToken?.let { token ->
                 pushEndpoint(token) {
                     Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${userSession?.userId ?: ""}")
                 }
             }
-            /*
-                Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
-
-                }
-
-                if let fcmToken = Tracking.fcmToken {
-                    self.push_endpoint(deviceToken: nil, fcmToken: fcmToken) { result in
-                            print("push_endpoint: \(result)")
-                    }
-                }
-             */
+            Tracking.identify(body.userId)
+            onComplete(session)
 
             this.user { user ->
                 // ログインのトラッキングの送出
@@ -272,6 +262,7 @@ class Api(var context: Context) {
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
             userSession = session
+            Tracking.identify(body.userId)
             onComplete(session)
         }
     }
@@ -685,10 +676,6 @@ class Api(var context: Context) {
 
         val complete: () -> Unit = {
             activeObservables.remove(observable)
-            AndroidSchedulers.mainThread().scheduleDirect {
-                if (showProgress)
-                    hideProgressAlert()
-            }
         }
         activeObservables.add(observable)
         observable
@@ -700,6 +687,9 @@ class Api(var context: Context) {
                         // isSuccessfull の判定をしているので、body は常に取得できる想定です
                         val apiResponse: ApiResponse<T> = response.body()!!
                         if (apiResponse.hasError) {
+                            if (showProgress) {
+                                hideProgressAlert()
+                            }
                             AndroidSchedulers.mainThread().scheduleDirect {
                                 processError(apiResponse.errors ?: listOf(defaultErrorMessage), onError)
                             }
@@ -707,16 +697,34 @@ class Api(var context: Context) {
                         else {
                             if (runCompleteOnUIThread) {
                                 AndroidSchedulers.mainThread().scheduleDirect {
-                                    onComplete(apiResponse.body)
+                                    try {
+                                        onComplete(apiResponse.body)
+                                    }
+                                    finally {
+                                        if (showProgress) {
+                                            hideProgressAlert()
+                                        }
+                                    }
                                 }
                             }
                             else {
-                                onComplete(apiResponse.body)
+                                try {
+                                    onComplete(apiResponse.body)
+                                }
+                                finally {
+                                    AndroidSchedulers.mainThread().scheduleDirect {
+                                        if (showProgress)
+                                            hideProgressAlert()
+                                    }
+                                }
                             }
                         }
                     }
                     else {
                         AndroidSchedulers.mainThread().scheduleDirect {
+                            if (showProgress) {
+                                hideProgressAlert()
+                            }
                             when(response.code()) {
                                 401 -> {
                                     // セッション情報があればクリアしておきます
@@ -761,6 +769,9 @@ class Api(var context: Context) {
                     }
                 },
                 onError = { throwable ->
+                    if (showProgress) {
+                        hideProgressAlert()
+                    }
                     complete.invoke()
                     AndroidSchedulers.mainThread().scheduleDirect {
                         Log.v("ERROR", throwable.message, throwable)
@@ -770,7 +781,10 @@ class Api(var context: Context) {
             )
     }
 
-    private fun showProgressAlert() {
+    private var progressCount: Int = 0
+
+    fun showProgressAlert() {
+        progressCount++
         // 同一のAPIインスタンスから呼ばれた場合だけでも、スピナー表示を共通化することを考える
         if (progressAlert == null) {
             progressAlert = AlertDialog.Builder(context).apply {
@@ -786,11 +800,14 @@ class Api(var context: Context) {
         }
     }
 
-    private fun hideProgressAlert() {
-        if (!isDestroyed()) {
-            progressAlert?.dismiss()
+    fun hideProgressAlert() {
+        progressCount--
+        if (progressCount <= 0) {
+            if (!isDestroyed()) {
+                progressAlert?.dismiss()
+            }
+            progressAlert = null
         }
-        progressAlert = null
     }
 
     private fun processError(messages: List<String>, onError: ((messages: List<String>?) -> Unit)?) {

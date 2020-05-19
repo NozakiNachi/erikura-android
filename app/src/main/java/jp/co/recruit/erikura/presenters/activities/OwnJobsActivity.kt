@@ -27,6 +27,7 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
         val EXTRA_FROM_REPORT_COMPLETED_KEY = "fromReportCompleted"
         val EXTRA_FROM_MYPAGE_JOB_COMMENT_GOOD_BUTTON = "fromMypageJobCommentGoodButton"
         val EXTRA_FROM_CANCEL_JOB = "fromCancelJob"
+        val EXTRA_FROM_WORKING_FINISHED = "fromWorkingFinished"
 
         val PAGE_APPLIED_JOBS = 0
         val PAGE_FINISHED_JOBS = 1
@@ -103,6 +104,11 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
             // 仕事をキャンセルした文言を表示します
             val dialog = CanceledDialogFragment()
             dialog.show(supportFragmentManager, "Canceled")
+        }else if(intent.getBooleanExtra(EXTRA_FROM_WORKING_FINISHED, false)) {
+            // 作業完了画面から移動してきた場合
+            intent.putExtra(EXTRA_FROM_WORKING_FINISHED, false)
+            // 未報告の仕事ページを表示します
+            viewPager.setCurrentItem(PAGE_FINISHED_JOBS, true)
         }
 
         fromReportCompleted = intent.getBooleanExtra(EXTRA_FROM_REPORT_COMPLETED_KEY, false)

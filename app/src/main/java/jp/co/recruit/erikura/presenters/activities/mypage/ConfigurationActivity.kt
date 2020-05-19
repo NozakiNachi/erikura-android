@@ -46,7 +46,6 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
     }
 
-    // FIXME: 正しいリンク先の作成
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "会員情報変更", R.drawable.icon_man_15, true) {
             val intent = Intent(this, ChangeUserInformationActivity::class.java)

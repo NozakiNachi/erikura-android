@@ -1,9 +1,11 @@
 package jp.co.recruit.erikura.presenters.view_models
 
+import android.util.Log
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.JobKind
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.business.models.PeriodType
@@ -33,6 +35,7 @@ open class BaseJobQueryViewModel: ViewModel() {
 
     open fun query(latLng: LatLng): JobQuery {
         this.latLng.value = latLng
+        Log.v(ErikuraApplication.LOG_TAG, "QUERY: latLng=${this.latLng.value}")
 
         return JobQuery(
             latitude = latLng.latitude,
