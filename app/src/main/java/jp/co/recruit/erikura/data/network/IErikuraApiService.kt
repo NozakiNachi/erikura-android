@@ -325,6 +325,7 @@ data class FavoritePlacesResponse(
 
 sealed class ErikuraConfigValue {
     data class DoubleList(val values: List<Double>): ErikuraConfigValue()
+    data class StringValue(val value: String?): ErikuraConfigValue()
 }
 
 class ErikuraConfigMap: HashMap<String, ErikuraConfigValue>()
@@ -341,7 +342,10 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
         jsonObject?.entrySet()?.forEach { entry ->
             val deserializerMap: Map<String, (JsonElement?) -> ErikuraConfigValue> = mapOf(
                 Pair(ErikuraConfig.REWARD_RANGE_KEY, { json -> deserializeDoubleList(json, context) }),
-                Pair(ErikuraConfig.WORKING_TIME_RANGE_KEY, { json -> deserializeDoubleList(json, context) })
+                Pair(ErikuraConfig.WORKING_TIME_RANGE_KEY, { json -> deserializeDoubleList(json, context) }),
+                Pair(ErikuraConfig.FAQ_URL_KEY, { json -> deserializeString(json, context) }),
+                Pair(ErikuraConfig.INQUIRY_URL_KEY, { json -> deserializeString(json, context) }),
+                Pair(ErikuraConfig.RECOMMENDED_URL_KEY, { json -> deserializeString(json, context) })
             )
             deserializerMap[entry.key]?.let { deserializer ->
                 result.put(entry.key, deserializer(entry.value))
@@ -355,4 +359,11 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
             context?.deserialize(json, List::class.java) ?: listOf()
         )
     }
+
+    private fun deserializeString(json: JsonElement?, context: JsonDeserializationContext?): ErikuraConfigValue.StringValue {
+        return ErikuraConfigValue.StringValue(
+            context?.deserialize(json, String::class.java)
+        )
+    }
+
 }
