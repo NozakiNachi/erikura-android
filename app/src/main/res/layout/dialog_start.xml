@@ -33,8 +33,8 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@{viewModel.message}"
-                android:textColor="@color/black"
-                android:textSize="22dp"
+                android:textColor="@color/coral"
+                android:lineSpacingExtra="10dp"
                 android:visibility="@{viewModel.messageVisibility}"/>
 
             <TextView

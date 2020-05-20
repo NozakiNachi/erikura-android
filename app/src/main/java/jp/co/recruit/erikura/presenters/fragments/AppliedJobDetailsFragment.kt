@@ -16,6 +16,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,6 +26,7 @@ import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,6 +38,8 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.databinding.DialogInputReasonAbleStartBinding
+import jp.co.recruit.erikura.databinding.DialogNotAbleStartBinding
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
@@ -398,8 +402,12 @@ class AppliedJobDetailsFragment(
             //判定順は開始不可、警告、開始可能
             ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
                 //開始不可の場合はダイアログを表示
+                val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
                 val dialog = AlertDialog.Builder(activity)
-                    .setView(R.layout.dialog_not_able_start)
+                    .setView(binding.root)
                     .setPositiveButton("確認", null)
                     .create()
                 dialog.show()
@@ -412,8 +420,12 @@ class AppliedJobDetailsFragment(
             }
             ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
                 //警告ダイアログ理由入力
+                val binding: DialogInputReasonAbleStartBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
                 val dialog = AlertDialog.Builder(activity)
-                    .setView(R.layout.dialog_input_reason_able_start)
+                    .setView(binding.root)
                     .create()
                 dialog.show()
             }

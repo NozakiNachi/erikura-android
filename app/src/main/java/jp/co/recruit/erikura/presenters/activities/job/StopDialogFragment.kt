@@ -21,6 +21,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.databinding.DialogInputReasonAbleEndBinding
+import jp.co.recruit.erikura.databinding.DialogNotAbleEndBinding
 import jp.co.recruit.erikura.databinding.DialogStopBinding
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
@@ -126,8 +128,12 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             //判定順は終了不可、警告、終了可能
             ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
                 //終了不可の場合はダイアログを表示
+                val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_not_able_end, null, false)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
                 val dialog = AlertDialog.Builder(activity)
-                    .setView(R.layout.dialog_not_able_end)
+                    .setView(binding.root)
                     .setPositiveButton("確認", null)
                     .create()
                 dialog.show()
@@ -140,26 +146,18 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             }
             ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
                 //警告ダイアログ理由入力
+                val binding: DialogInputReasonAbleEndBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_input_reason_able_end, null, false)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
                 val dialog = AlertDialog.Builder(activity)
-                    .setView(R.layout.dialog_input_reason_able_end)
+                    .setView(binding.root)
                     .create()
                 dialog.show()
             }
             ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
-                //警告ダイアログを表示
-                val dialog = AlertDialog.Builder(activity)
-                    .setView(R.layout.dialog_alert_able_end)
-                    .setPositiveButton("確認", null)
-                    .create()
-                dialog.show()
-                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                confirmation.setOnClickListener(View.OnClickListener {
-                    fun onClick(view: View) {
-                        dialog.dismiss()
-                        // 警告ダイアログの確認後、作業終了します
-                        stopJobPassIntent(job, steps, message)
-                    }
-                })
+                //警告ダイアログは終了画面で表示
+                stopJobPassIntent(job, steps, message)
             }
             ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
                 //作業終了します

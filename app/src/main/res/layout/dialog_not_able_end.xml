@@ -26,8 +26,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/job_not_able_end"
-                android:textColor="@color/black"
-                android:textSize="22dp" />
+                android:textColor="@color/black" />
 
             <TextView
                 style="@style/errorField"
@@ -35,9 +34,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
-                android:text="@{viewModel.message}"
-                android:textColor="@color/black"
-                android:textSize="22dp" />
+                android:textColor="@color/coral"
+                android:lineSpacingExtra="10dp"
+                android:text="@{viewModel.message}"/>
 
 <!--            <Button-->
 <!--                android:layout_width="match_parent"-->
