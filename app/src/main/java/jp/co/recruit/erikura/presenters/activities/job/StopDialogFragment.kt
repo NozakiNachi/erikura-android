@@ -72,7 +72,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 val steps = ErikuraApplication.pedometerManager.readStepCount()
                 Api(activity!!).stopJob(job, latLng,
                     steps = steps,
-                    distance = null, floorAsc = null, floorDesc = null, comment = null
+                    distance = null, floorAsc = null, floorDesc = null, reason = null
                 ) { entry_id, check_status, messages ->
                     checkStatus(job, steps, check_status, messages)
                 }
@@ -101,7 +101,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 val steps = ErikuraApplication.pedometerManager.readStepCount()
                 Api(activity!!).stopJob(job, latLng,
                     steps = steps,
-                    distance = null, floorAsc = null, floorDesc = null, comment = viewModel.reason.value
+                    distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
                 ) { entry_id, check_status, messages ->
                     checkStatus(job, steps, check_status, messages)
                 }

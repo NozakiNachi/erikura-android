@@ -252,7 +252,7 @@ data class StartJobRequest(
     var distance: Double?,
     var floorAsc: Int?,
     var floorDesc: Int?,
-    var comment: String?
+    var reason: String?
 )
 
 data class StopJobRequest(
@@ -263,7 +263,7 @@ data class StopJobRequest(
     var distance: Double?,
     var floorAsc: Int?,
     var floorDesc: Int?,
-    var comment: String?
+    var reason: String?
 )
 
 data class AbortJobRequest(

@@ -227,11 +227,13 @@ class AppliedJobDetailsFragment(
             } else {
                 null
             }
+            Log.v("DEBUG","クリック押下後　理由取得＝ ${viewModel.reason.value}")
             Api(activity).startJob(
                 job, latLng,
                 steps = steps,
-                distance = null, floorAsc = null, floorDesc = null, comment = viewModel.reason.value
+                distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
             ) { entry_id, check_status, messages ->
+                Log.v("DEBUG","クリック押下後　check_status＝ ${check_status}")
                 checkStatus(job, steps, check_status, messages)
             }
         }
@@ -318,7 +320,7 @@ class AppliedJobDetailsFragment(
             Api(activity).startJob(
                 job, latLng,
                 steps = steps,
-                distance = null, floorAsc = null, floorDesc = null, comment = null
+                distance = null, floorAsc = null, floorDesc = null, reason = null
             ) { entry_id, check_status, messages ->
                 checkStatus(job, steps, check_status, messages)
             }

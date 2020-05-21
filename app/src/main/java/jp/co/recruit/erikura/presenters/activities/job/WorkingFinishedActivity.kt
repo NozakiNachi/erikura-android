@@ -5,6 +5,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import androidx.core.os.bundleOf
@@ -20,6 +21,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
+import jp.co.recruit.erikura.databinding.DialogAlertAbleEndBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
@@ -66,8 +68,12 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         super.onStart()
         //警告メッセージがある場合ダイアログを表示する
         if (message != null) {
+            val binding: DialogAlertAbleEndBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(this), R.layout.dialog_alert_able_end, null, false)
+            binding.lifecycleOwner = this
+            binding.viewModel = viewModel
             val dialog = AlertDialog.Builder(this)
-                .setView(R.layout.dialog_alert_able_end)
+                .setView(binding.root)
                 .setPositiveButton("確認", null)
                 .create()
             dialog.show()
