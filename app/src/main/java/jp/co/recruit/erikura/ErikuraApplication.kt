@@ -189,7 +189,7 @@ class ErikuraApplication : Application() {
 
                     val button: Button = dialog.findViewById(R.id.update_button)
                     button.setOnSafeClickListener {
-                        val playURL = "http://play.google.com/store/apps/details?id=${packageName}"
+                        val playURL = "https://play.google.com/store/apps/details?id=${packageName}"
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playURL))
                         activity.startActivity(intent)
                     }

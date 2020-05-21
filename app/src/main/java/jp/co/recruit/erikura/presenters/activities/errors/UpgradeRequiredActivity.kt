@@ -28,7 +28,7 @@ class UpgradeRequiredActivity : BaseActivity(), UpgradeRequiredHandlers {
     }
 
     override fun onClickUpate(view: View) {
-        val playURL = "http://play.google.com/store/apps/details?id=${packageName}"
+        val playURL = "https://play.google.com/store/apps/details?id=${packageName}"
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playURL))
         startActivity(intent)
     }
