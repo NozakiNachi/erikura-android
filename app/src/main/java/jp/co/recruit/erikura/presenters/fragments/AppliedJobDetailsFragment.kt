@@ -218,7 +218,7 @@ class AppliedJobDetailsFragment(
         }
     }
 
-    override fun onClickConfirmation(view: View) {
+    private fun onClickConfirmation(view: View) {
         //入力された理由をリクエストをパラメーターに加え、再度実行する
         job?.let { job ->
             val steps = ErikuraApplication.pedometerManager.readStepCount()
@@ -415,9 +415,7 @@ class AppliedJobDetailsFragment(
                 dialog.show()
                 val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                 confirmation.setOnClickListener(View.OnClickListener {
-                    fun onClick(view: View) {
                         dialog.dismiss()
-                    }
                 })
             }
             ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
@@ -431,6 +429,11 @@ class AppliedJobDetailsFragment(
                     .setView(binding.root)
                     .create()
                 dialog.show()
+                val button: Button = dialog.findViewById(R.id.confirmation_button)
+                button.setOnClickListener(View.OnClickListener{
+                        dialog.dismiss()
+                        onClickConfirmation(it)
+                })
             }
             ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
                 //警告ダイアログは開始ログに注入して表示する、作業開始
@@ -505,5 +508,4 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
 interface AppliedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickStart(view: View)
-    fun onClickConfirmation(view: View)
 }

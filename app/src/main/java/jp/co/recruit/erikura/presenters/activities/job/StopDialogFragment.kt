@@ -80,7 +80,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
         }
     }
 
-    override fun onClickConfirmation(view: View) {
+    private fun onClickConfirmation(view: View) {
         //入力された理由をリクエストをパラメーターに加え、再度実行する
         job?.let {
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
@@ -139,9 +139,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 dialog.show()
                 val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
                 confirmation.setOnClickListener(View.OnClickListener {
-                    fun onClick(view: View) {
                         dialog.dismiss()
-                    }
                 })
             }
             ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
@@ -155,6 +153,11 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                     .setView(binding.root)
                     .create()
                 dialog.show()
+                val button: Button = dialog.findViewById(R.id.confirmation_button)
+                button.setOnClickListener(View.OnClickListener{
+                    dialog.dismiss()
+                    onClickConfirmation(it)
+                })
             }
             ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
                 //警告ダイアログは終了画面で表示
@@ -212,5 +215,4 @@ class StopDialogFragmentViewModel: ViewModel() {
 
 interface StopDialogFragmentEventHandlers {
     fun onClikStop(view: View)
-    fun onClickConfirmation(view: View)
 }

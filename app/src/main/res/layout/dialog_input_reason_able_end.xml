@@ -50,6 +50,7 @@
                 />
 
             <Button
+                android:id="@+id/confirmation_button"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
                 android:layout_marginTop="20dp"
@@ -57,7 +58,6 @@
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
                 android:text="@string/confirmation"
-                app:onSafeClick="@{handlers::onClickConfirmation}"
                 android:enabled="@{viewModel.isEnabledButton}"/>
 
         </LinearLayout>
