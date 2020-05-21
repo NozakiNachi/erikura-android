@@ -150,6 +150,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_end, null, false)
                 binding.lifecycleOwner = activity
                 binding.viewModel = viewModel
+                binding.handlers = this
                 val dialog = AlertDialog.Builder(activity)
                     .setView(binding.root)
                     .create()

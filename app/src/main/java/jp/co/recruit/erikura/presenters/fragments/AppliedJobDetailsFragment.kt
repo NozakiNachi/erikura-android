@@ -227,7 +227,6 @@ class AppliedJobDetailsFragment(
             } else {
                 null
             }
-
             Api(activity).startJob(
                 job, latLng,
                 steps = steps,
@@ -406,6 +405,7 @@ class AppliedJobDetailsFragment(
                     LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
                 binding.lifecycleOwner = activity
                 binding.viewModel = viewModel
+                binding.handlers = this
                 val dialog = AlertDialog.Builder(activity)
                     .setView(binding.root)
                     .setPositiveButton("確認", null)
@@ -424,6 +424,7 @@ class AppliedJobDetailsFragment(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
                 binding.lifecycleOwner = activity
                 binding.viewModel = viewModel
+                binding.handlers = this
                 val dialog = AlertDialog.Builder(activity)
                     .setView(binding.root)
                     .create()

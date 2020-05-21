@@ -46,7 +46,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:hint="こちらに記入してください"
-                android:text="@{viewModel.reason}"
+                android:text="@={viewModel.reason}"
                 />
 
             <Button
@@ -58,7 +58,7 @@
                 style="@style/primaryButton"
                 android:text="@string/confirmation"
                 app:onSafeClick="@{handlers::onClickConfirmation}"
-                android:enabled="@{viewModel.isEnabledButton()}"/>
+                android:enabled="@{viewModel.isEnabledButton}"/>
 
         </LinearLayout>
     </ScrollView>
