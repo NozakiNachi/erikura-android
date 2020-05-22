@@ -28,18 +28,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="80dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="29dp"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:text="@string/smsVerify_title"
                 android:textColor="@color/black"
-                android:textSize="22dp" />
+                android:textSize="22dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginRight="29dp"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:text="@string/smsVerify_caption"
@@ -56,7 +56,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginRight="29dp"
                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                     android:text="@={viewModel.caption}"
@@ -67,7 +67,7 @@
                     style="@style/fieldLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="20dp"
                     android:text="@string/passcode" />
 
                 <EditText
@@ -78,6 +78,15 @@
                     android:hint="@string/register_passcode_hint"
                     android:inputType="number"
                     android:text="@={viewModel.passCode}" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.errorVisibile}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.error.message}"
+                    />
 
                 <Button
                     style="@style/primaryButton"
@@ -111,9 +120,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginRight="29dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginBottom="20dp"
                     android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                     android:text="@string/smsVerify_not_mobilePhone_format"
                     android:textAlignment="center"
@@ -137,7 +146,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="308dp"
+                android:layout_marginBottom="80dp"
                 android:onClick="@{handlers::onClickSkip}"
                 android:text="あとで設定する"
                 android:textSize="14dp"
