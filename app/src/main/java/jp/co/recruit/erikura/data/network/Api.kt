@@ -126,6 +126,8 @@ class Api(var context: Context) {
             calendar.time = Date()
             calendar.add(Calendar.SECOND, 10 * 60)
             val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = calendar.time)
+            //再認証に来る場合、SMS認証画面を遷移してきたのでtrue
+            session.smsVerifyCheck = true
             userSession = session
             onComplete(session)
         }
@@ -261,6 +263,8 @@ class Api(var context: Context) {
             onError = onError
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
+            //本登録処理はSMS認証後に行うのでtrue
+            session.smsVerifyCheck = true
             userSession = session
             Tracking.identify(body.userId)
             onComplete(session)

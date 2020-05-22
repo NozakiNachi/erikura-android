@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -66,6 +65,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
     override fun onClickResignIn(view: View) {
         Api(this).resignIn(viewModel.email.value ?: "", viewModel.password.value ?: "") {
+            it.smsVerifyCheck = true
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
             finish()
 
