@@ -74,15 +74,8 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
             binding.viewModel = viewModel
             val dialog = AlertDialog.Builder(this)
                 .setView(binding.root)
-                .setPositiveButton("確認", null)
                 .create()
             dialog.show()
-            val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-            confirmation.setOnClickListener(View.OnClickListener {
-                fun onClick(view: View) {
-                    dialog.dismiss()
-                }
-            })
         }
     }
 
