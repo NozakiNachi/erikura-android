@@ -341,7 +341,10 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         data?.let {
             user = it.getParcelableExtra("user")
             oldPhoneNumber = user.phoneNumber
-            user.phoneNumber = it.getStringExtra("phoneNumber")
+            val getPhoneNumber = it.getStringExtra("phoneNumber")
+            if (getPhoneNumber != null) {
+                user.phoneNumber = getPhoneNumber
+            }
         }
         Api(this).updateUser(user) {
             if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
