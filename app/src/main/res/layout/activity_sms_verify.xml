@@ -39,7 +39,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="20dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginRight="29dp"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:text="@string/smsVerify_caption"
@@ -93,7 +93,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="30dp"
-                    android:layout_marginBottom="40dp"
+                    android:layout_marginBottom="30dp"
                     android:enabled="@{viewModel.isAuthenticateButtonEnabled()}"
                     android:onClick="@{handlers::onClickAuthenticate}"
                     android:text="@string/authenticate" />
@@ -103,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="10dp"
                     android:onClick="@{handlers::onClickPassCodeResend}"
                     android:text="@string/smsVerify_passcode_resend"
                     android:textSize="14dp" />
@@ -136,7 +136,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="10dp"
                 android:onClick="@{handlers::onClickRegisterPhone}"
                 android:text="@string/smsVerify_register_phone"
                 android:textSize="14dp" />
