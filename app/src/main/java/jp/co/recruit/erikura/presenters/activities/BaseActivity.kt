@@ -1,13 +1,15 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 
 abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatActivity() {
     companion object {
@@ -16,6 +18,24 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatA
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (!(this is SmsVerifyActivity)){
+            //ログイン済かつSMS認証必須の場合　SMS認証チェックを行います。
+            if (Api.isLogin && Api.userSession?.smsVerifyCheck == false) {
+                Api.userSession?.smsVerifyCheck = true
+                Api(this).smsVerifyCheck(Api.userSession?.user?.phoneNumber ?:"") { result->
+                    if (result) {
+                        //SMS認証済みの場合
+                    }
+                    else {
+                        //SMS未認証の場合、認証画面へ遷移します。
+                        val intent = Intent(this, SmsVerifyActivity::class.java)
+                        intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
+                        startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
+                    }
+                }
+            }
+
+        }
         Log.v("ERIKURA", "${this.javaClass.name}: onCreate")
     }
 
