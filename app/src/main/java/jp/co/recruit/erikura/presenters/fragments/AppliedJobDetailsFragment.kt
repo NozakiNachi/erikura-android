@@ -20,9 +20,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.TextView
-import android.widget.ToggleButton
+import android.view.inputmethod.InputMethodManager
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
@@ -400,7 +399,7 @@ class AppliedJobDetailsFragment(
         var message: String = messages?.joinToString("\n")
         viewModel.message.value = message
         when(check_status) {
-            //判定順は開始不可、警告、開始可能
+            //判定順は開始不可、警告理由入力、警告、開始可能
             ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
                 //開始不可の場合はダイアログを表示
                 val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
@@ -425,6 +424,13 @@ class AppliedJobDetailsFragment(
                 binding.lifecycleOwner = activity
                 binding.viewModel = viewModel
                 binding.handlers = this
+                binding.root.setOnTouchListener { view, event ->
+                    if (view != null) {
+                        val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    }
+                    return@setOnTouchListener false
+                }
                 val dialog = AlertDialog.Builder(activity)
                     .setView(binding.root)
                     .create()
@@ -434,6 +440,7 @@ class AppliedJobDetailsFragment(
                         dialog.dismiss()
                         onClickConfirmation(it)
                 })
+
             }
             ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
                 //警告ダイアログは開始ログに注入して表示する、作業開始

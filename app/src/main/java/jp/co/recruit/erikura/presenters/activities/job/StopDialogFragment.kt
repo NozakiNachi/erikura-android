@@ -7,7 +7,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -125,7 +127,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
         var message: String = messages?.joinToString("\n")
         viewModel.message.value = message
         when(check_status) {
-            //判定順は終了不可、警告、終了可能
+            //判定順は終了不可、警告理由入力、警告、終了可能
             ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
                 //終了不可の場合はダイアログを表示
                 val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
@@ -149,6 +151,13 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 binding.lifecycleOwner = activity
                 binding.viewModel = viewModel
                 binding.handlers = this
+                binding.root.setOnTouchListener { view, event ->
+                    if (view != null) {
+                        val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    }
+                    return@setOnTouchListener false
+                }
                 val dialog = AlertDialog.Builder(activity)
                     .setView(binding.root)
                     .create()
