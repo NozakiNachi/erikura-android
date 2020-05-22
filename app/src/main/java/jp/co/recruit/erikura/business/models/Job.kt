@@ -57,7 +57,8 @@ data class Job(
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf(),
     var targetGender: Gender? = null,
-    var banned: Boolean = false
+    var banned: Boolean = false,
+    val createdAt: Date? = null
 ): Parcelable {
     var uninitialized: Boolean = false
     val reportId: Int? get() = report?.id
