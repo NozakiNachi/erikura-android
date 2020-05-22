@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -11,7 +10,6 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
-import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
 abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatActivity() {
     companion object {
@@ -22,8 +20,8 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatA
         super.onCreate(savedInstanceState)
         if (!(this is SmsVerifyActivity)){
             //ログイン済かつSMS認証必須の場合　SMS認証チェックを行います。
-            if (Api.isLogin && Api.userSession?.smsVerifiedConfirmed == false) {
-                Api.userSession?.smsVerifiedConfirmed = true
+            if (Api.isLogin && Api.userSession?.smsVerifyCheck == false) {
+                Api.userSession?.smsVerifyCheck = true
                 Api(this).smsVerifyCheck(Api.userSession?.user?.phoneNumber ?:"") { result->
                     if (result) {
                         //SMS認証済みの場合

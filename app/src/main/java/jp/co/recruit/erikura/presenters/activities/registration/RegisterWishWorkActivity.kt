@@ -95,7 +95,6 @@ class RegisterWishWorkActivity : BaseActivity(),
             }
             //ユーザー登録API呼び出し
             Api(this).initialUpdateUser(user) {
-                it.smsVerifiedConfirmed = true
                 Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
                 // 登録完了画面へ遷移
                 val intent: Intent = Intent(this, RegisterFinishedActivity::class.java)

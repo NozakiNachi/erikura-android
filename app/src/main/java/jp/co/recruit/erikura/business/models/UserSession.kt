@@ -11,7 +11,7 @@ data class UserSession(
     val token: String,
     val resignInExpiredAt: Date? = null,
     var user: User? = null,
-    var smsVerifiedConfirmed: Boolean = false
+    var smsVerifyCheck: Boolean = false
 ) {
     companion object {
         const val preferencesFilename = "erikuraPreferences"
