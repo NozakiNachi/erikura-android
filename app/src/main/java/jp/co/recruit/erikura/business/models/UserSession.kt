@@ -10,7 +10,8 @@ data class UserSession(
     val userId: Int,
     val token: String,
     val resignInExpiredAt: Date? = null,
-    var user: User? = null
+    var user: User? = null,
+    var smsVerifiedConfirmed: Boolean = false
 ) {
     companion object {
         const val preferencesFilename = "erikuraPreferences"

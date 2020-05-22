@@ -66,6 +66,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
     override fun onClickResignIn(view: View) {
         Api(this).resignIn(viewModel.email.value ?: "", viewModel.password.value ?: "") {
+            it.smsVerifiedConfirmed = true
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
             finish()
 
