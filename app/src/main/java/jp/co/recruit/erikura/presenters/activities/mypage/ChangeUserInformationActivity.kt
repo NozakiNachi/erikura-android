@@ -356,14 +356,36 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        // 会員情報変更Apiの呼び出し
         var oldPhoneNumber: String? = null
+        var isSkip: Boolean = false
         data?.let {
             user = it.getParcelableExtra("user")
             oldPhoneNumber = user.phoneNumber
-            user.phoneNumber = it.getStringExtra("phoneNumber")
+            val getPhoneNumber = it.getStringExtra("phoneNumber")
+            isSkip = it.getBooleanExtra("isSkip",false)
+            getPhoneNumber?.let {
+                user.phoneNumber = getPhoneNumber
+            }
         }
-        Api(this).updateUser(user) {
+        if (isSkip) {
+            //スキップの場合、ログイン経由で会員情報変更の場合のみ地図画面へ遷移
+            val it = Api.userSession
+            Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
+            // 地図画面へ遷移します
+            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                val intent = Intent(this, MapViewActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else {
+                // 位置情報の許諾、オンボーディングを表示します
+                Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    startActivity(intent)
+                    finish()
+                }
+            }
+        } else {
+            //SMS認証後の場合
             if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
                 //会員情報変更のみの場合、設定画面へ遷移
                 val intent = Intent(this, ConfigurationActivity::class.java)
