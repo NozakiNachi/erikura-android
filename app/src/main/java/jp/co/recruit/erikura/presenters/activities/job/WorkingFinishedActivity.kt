@@ -67,7 +67,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     override fun onStart() {
         super.onStart()
         //警告メッセージがある場合ダイアログを表示する
-        if (message != null) {
+        if (!message.isNullOrEmpty()) {
             val binding: DialogAlertAbleEndBinding = DataBindingUtil.inflate(
                 LayoutInflater.from(this), R.layout.dialog_alert_able_end, null, false)
             binding.lifecycleOwner = this
