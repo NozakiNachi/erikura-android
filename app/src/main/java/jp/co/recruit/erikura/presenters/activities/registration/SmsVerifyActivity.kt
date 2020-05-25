@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationOtherThanPhoneFragment
 import jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import org.apache.commons.lang.StringUtils
 import java.util.regex.Pattern
 
 class SmsVerifyActivity : BaseActivity(),
@@ -247,6 +248,17 @@ class SmsVerifyViewModel : ViewModel() {
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
     var caption: MutableLiveData<String> = MutableLiveData()
 
+    val errorVisibile = MediatorLiveData<Int>().also { result ->
+        result.addSource(error.message) {
+            result.value = if (error.message.value == null || StringUtils.isBlank(error.message.value)) {
+                View.GONE
+            }
+            else {
+                View.VISIBLE
+            }
+        }
+    }
+
     val sendSmsVerifyVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
         result.addSource(isMobilePhoneNumber) {
             if (isMobilePhoneNumber.value == true ) {
@@ -292,12 +304,10 @@ class SmsVerifyViewModel : ViewModel() {
             error.message.value = null
         } else if (valid && !(pattern.matcher(passCode.value).find())) {
             valid = false
-            error.message.value =
-                ErikuraApplication.instance.getString(R.string.passcode_pattern_error)
+            error.message.value = ErikuraApplication.instance.getString(R.string.passcode_pattern_error)
         } else if (valid && !(passCode.value?.length ?: 0 == 8)) {
             valid = false
-            error.message.value =
-                ErikuraApplication.instance.getString(R.string.passcode_count_error)
+            error.message.value = ErikuraApplication.instance.getString(R.string.passcode_count_error)
         } else {
             valid = true
             error.message.value = null
