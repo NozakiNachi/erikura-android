@@ -45,7 +45,7 @@ class StartDialogFragmentViewModel: ViewModel() {
     val messageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     fun setup(job: Job?, messages: String?) {
-        if(!messages.isNullOrEmpty()) {
+        if(!(messages.isNullOrEmpty())) {
             message.value = messages
             messageVisibility.value = View.VISIBLE
         }
