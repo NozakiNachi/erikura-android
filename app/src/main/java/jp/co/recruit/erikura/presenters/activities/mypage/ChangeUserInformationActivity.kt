@@ -246,13 +246,33 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                         startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
                     }
                     else {
-                        // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
-                        user.phoneNumber = newPhoneNumber
-                        Api(this).updateUser(user) {
-                            val intent = Intent(this, ConfigurationActivity::class.java)
-                            intent.putExtra("onClickChangeUserInformationFragment", true)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                            startActivity(intent)
+                        if (isCameThroughLogin) {
+                            //ログイン、自動ログイン経由の場合、SMS認証を行う
+                            val intent = Intent(this, SmsVerifyActivity::class.java)
+                            intent.putExtra("beforeChangeNewPhoneNumber", newPhoneNumber)
+                            intent.putExtra("phoneNumber", newPhoneNumber)
+                            intent.putExtra("user", user)
+                            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                            intent.putExtra(
+                                "requestCode",
+                                ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION
+                            )
+                            //電話番号以外の会員情報変更したモーダル表示
+                            intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
+                            startActivityForResult(
+                                intent,
+                                ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION
+                            )
+                        } else {
+                            // 会員情報変更の場合
+                            // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
+                            user.phoneNumber = newPhoneNumber
+                            Api(this).updateUser(user) {
+                                val intent = Intent(this, ConfigurationActivity::class.java)
+                                intent.putExtra("onClickChangeUserInformationFragment", true)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                            }
                         }
                     }
                 }
