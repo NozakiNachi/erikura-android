@@ -36,7 +36,7 @@ object JobUtil {
         // 実施済み(未報告): finished の場合, green, 12pt
         // 作業報告済み: reported の場合, gray, 12pt
         // 募集開始までn日とn時間: 開始前(now < working_start_at)、
-        // 作業終了までn日とn時間
+        // 作業終了報告までn日とn時間
         var text: SpannableStringBuilder = SpannableStringBuilder().apply { append("") }
         var color: Int = ContextCompat.getColor(context, R.color.warmGrey)
         if (job != null) {
@@ -116,7 +116,7 @@ object JobUtil {
                         val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingFinishAt)
 
                         val sb = SpannableStringBuilder()
-                        sb.append("作業終了まで")
+                        sb.append("作業終了報告まで")
                         if (days > 0) {
                             appendStringAsLarge(sb, days.toString())
                             appendStringAsNormal(sb, "日")
