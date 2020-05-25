@@ -76,7 +76,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="30dp"
-                            android:text="検索条件に合致する案件が\nありませんでした"
+                            android:text="検索条件に合致するお仕事が\nありませんでした"
                             android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                             android:textColor="@color/warmGrey"
                             android:textSize="22dp"
@@ -118,7 +118,7 @@
                             android:layout_marginTop="20dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-                            android:text="募集中の仕事"
+                            android:text="募集中のお仕事"
                             />
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -149,7 +149,7 @@
                             android:layout_marginTop="20dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-                            android:text="募集予定の仕事"
+                            android:text="募集予定のお仕事"
                             />
 
                         <androidx.recyclerview.widget.RecyclerView
@@ -181,7 +181,7 @@
                             android:layout_marginTop="20dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-                            android:text="募集終了した仕事"
+                            android:text="募集終了したお仕事"
                             />
 
                         <androidx.recyclerview.widget.RecyclerView

@@ -240,7 +240,7 @@
                                 android:includeFontPadding="false"
                                 android:textColor="@color/blackTwo"
                                 android:maxLines="1"
-                                android:text="案件タイプ"
+                                android:text="お仕事タイプ"
                                 />
                         </LinearLayout>
                         <Spinner
