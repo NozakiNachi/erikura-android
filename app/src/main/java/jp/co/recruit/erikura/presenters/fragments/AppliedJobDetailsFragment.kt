@@ -357,12 +357,12 @@ class AppliedJobDetailsFragment(
         BaseActivity.currentActivity?.let { activity ->
             val dialog = AlertDialog.Builder(activity)
                 .setView(R.layout.dialog_explain_get_pedometer)
-                .setNegativeButton("許可しない") { dialog: DialogInterface?, which: Int ->
+                .setNegativeButton("同意しない") { dialog: DialogInterface?, which: Int ->
                     //許可しない押した場合の処理
                     ErikuraApplication.instance.setAcceptedExplainGetPedometer(false)
                     checkAcceptedExplainGetPedometer()
                 }
-                .setPositiveButton("OK") { dialog: DialogInterface?, which: Int ->
+                .setPositiveButton("同意する") { dialog: DialogInterface?, which: Int ->
                     //許可した場合の処理
                     ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
                     checkAcceptedExplainGetPedometer()
