@@ -31,7 +31,7 @@
                 android:orientation="vertical">
 
                 <!-- 背景ブラー画像 -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -40,7 +40,9 @@
                     <!-- 時間表示ラベル -->
                     <FrameLayout
                         android:id="@+id/jobDetails_timeLabelFragment"
-                        android:background="@drawable/background_carousel_knob"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@{viewModel.applicable ? @drawable/background_carousel_knob : @drawable/background_carousel_knob_disabled}"
                         android:layout_width="wrap_content"
                         android:layout_height="45dp"
                         android:layout_gravity="right"
@@ -50,7 +52,10 @@
                     <!-- 簡易表示 -->
                     <FrameLayout
                         android:id="@+id/jobDetails_jobInfoViewFragment"
-                        android:background="@drawable/job_info_view_body"
+                        android:layout_below="@id/jobDetails_timeLabelFragment"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
+                        android:background="@{viewModel.applicable ? @drawable/job_info_view_body : @drawable/job_info_view_body_disabled}"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-10dp"
@@ -59,6 +64,9 @@
                     <!-- サムネイル画像 -->
                     <FrameLayout
                         android:id="@+id/jobDetails_thumbnailImageFragment"
+                        android:layout_below="@id/jobDetails_jobInfoViewFragment"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
                         android:layout_width="251dp"
                         android:layout_height="188dp"
                         android:layout_gravity="center"
@@ -66,11 +74,50 @@
                         android:layout_marginBottom="10dp" />
 
                     <View
+                        android:layout_below="@id/jobDetails_thumbnailImageFragment"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:background="@drawable/background_triangle_reverse"/>
 
-                </LinearLayout>
+                    <LinearLayout
+                        android:layout_below="@id/jobDetails_jobInfoViewFragment"
+                        android:layout_alignParentRight="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="-10dp"
+                        android:layout_marginRight="0dp"
+                        android:background="@drawable/background_roundrect_left"
+                        android:orientation="vertical"
+                        android:elevation="@dimen/default_elevation"
+                        android:visibility="@{viewModel.nextUpdateScheduleVisible}">
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:textSize="12dp"
+                            android:textColor="@color/waterBlue"
+                            android:text="次回更新予定日"
+                            />
+                        <TextView
+                            style="@style/label_w6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginBottom="10dp"
+                            android:textSize="20dp"
+                            android:textColor="@color/waterBlue"
+                            android:text="@{viewModel.nextUpdateSchedule}"
+                            />
+                    </LinearLayout>
+
+                </RelativeLayout>
 
                 <!-- マニュアル表示ボタン -->
                 <FrameLayout
