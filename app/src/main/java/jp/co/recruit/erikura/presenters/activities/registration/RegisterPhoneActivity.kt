@@ -18,6 +18,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterPhoneBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
@@ -30,6 +31,7 @@ class RegisterPhoneActivity : BaseActivity(),
     }
 
     var user: User = User()
+    var requestCode: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -37,6 +39,13 @@ class RegisterPhoneActivity : BaseActivity(),
 
         // ユーザ情報を受け取る
         user = intent.getParcelableExtra("user")
+        requestCode = intent.getIntExtra("requestCode",ErikuraApplication.REQUEST_DEFAULT_CODE)
+
+        // エラーメッセージを受け取る
+        val errorMessages = intent.getStringArrayExtra("errorMessages")
+        if(errorMessages != null){
+            Api(this).displayErrorAlert(errorMessages.asList())
+        }
 
         val binding: ActivityRegisterPhoneBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_phone)
         binding.lifecycleOwner = this
@@ -68,9 +77,19 @@ class RegisterPhoneActivity : BaseActivity(),
         Log.v("PHONE", viewModel.phone.value ?: "")
         user.phoneNumber = viewModel.phone.value
 
-        val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
-        intent.putExtra("user", user)
-        startActivity(intent)
+        //新規登録のSMS認証経由で来た場合SMS認証画面へ遷移する
+        if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE) {
+            val intent: Intent = Intent()
+            intent.putExtra("user", user)
+            intent.putExtra("phoneNumber", user.phoneNumber)
+            intent.putExtra("requestCode",ErikuraApplication.REQUEST_SIGN_UP_CODE)
+            setResult(RESULT_OK, intent)
+            finish()
+        } else {
+            val intent: Intent = Intent(this@RegisterPhoneActivity, RegisterJobStatusActivity::class.java)
+            intent.putExtra("user", user)
+            startActivity(intent)
+        }
     }
 }
 
@@ -85,6 +104,7 @@ class RegisterPhoneViewModel: ViewModel() {
     private fun isValid(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
+        val pattern2 = Pattern.compile("^(070|080|090)")
 
         if (valid && phone.value?.isBlank() ?:true) {
             valid = false
@@ -92,9 +112,12 @@ class RegisterPhoneViewModel: ViewModel() {
         }else if(valid && !(pattern.matcher(phone.value).find())) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-        }else if(valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
+        }else if(valid && !(phone.value?.length ?: 0 == 11)) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.phone_count_error)
+        }else if(valid && !(pattern2.matcher(phone.value).find())) {
+            valid = false
+            error.message.value = ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
         } else {
             valid = true
             error.message.value = null

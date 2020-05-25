@@ -23,6 +23,9 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
+import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -30,6 +33,10 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
+    var newPhoneNumber: String? = null
+    var beforeChangeNewPhoneNumber: String? = null
+    var requestCode: Int? = null
+    var isCameThroughLogin: Boolean = false
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -42,12 +49,32 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
+    override fun onCreate(savedInstanceState: Bundle?){
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
+        beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
+        //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
+        if (beforeChangeNewPhoneNumber != null) {
+            viewModel.phone.value = beforeChangeNewPhoneNumber
+        }
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateImpl(savedInstanceState: Bundle?) {
         val binding: ActivityChangeUserInformationBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_change_user_information)
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
+
+        // エラーメッセージを受け取る
+        val errorMessages = intent.getStringArrayExtra("errorMessages")
+        if(errorMessages != null){
+            Api(this).displayErrorAlert(errorMessages.asList())
+        }
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
+        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
+        beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -73,6 +100,10 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Api(this).user() {
             user = it
             loadData()
+            //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
+            if (beforeChangeNewPhoneNumber != null) {
+                viewModel.phone.value = beforeChangeNewPhoneNumber
+            }
         }
     }
 
@@ -171,8 +202,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         user.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
         user.city = viewModel.city.value
         user.street = viewModel.street.value
-        // 電話番号
-        user.phoneNumber = viewModel.phone.value
         // 職業
         user.jobStatus = jobStatusIdList.getString(viewModel.jobStatusId.value ?: 0)
         // やりたいこと
@@ -194,12 +223,73 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
         user.wishWorks = wishWorks
 
-        // 会員情報変更Apiの呼び出し
-        Api(this).updateUser(user) {
-            val intent = Intent(this, ConfigurationActivity::class.java)
-            intent.putExtra("onClickChangeUserInformationFragment", true)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
+        //電話番号以外のユーザー情報を変更します。
+        Api(this).updateUser(user) {}
+
+        // 電話番号はSMS認証後に保存のため別で保持します。
+        newPhoneNumber = viewModel.phone.value
+
+        Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
+        if (newPhoneNumber != null) {
+            //電話番号の変更がある場合
+            if (user.phoneNumber != newPhoneNumber) {
+                Api(this).smsVerifyCheck(newPhoneNumber?: "") { result ->
+                    if (!result) {
+                        val intent = Intent(this, SmsVerifyActivity::class.java)
+                        intent.putExtra("beforeChangeNewPhoneNumber", newPhoneNumber)
+                        intent.putExtra("phoneNumber", newPhoneNumber)
+                        intent.putExtra("user", user)
+                        intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                        intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                        //電話番号以外の会員情報変更したモーダル表示
+                        intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
+                        startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                    }
+                    else {
+                        // 以前にSMS認証済みの番号へ変更する場合があるので会員情報変更Apiの呼び出し
+                        user.phoneNumber = newPhoneNumber
+                        Api(this).updateUser(user) {
+                            val intent = Intent(this, ConfigurationActivity::class.java)
+                            intent.putExtra("onClickChangeUserInformationFragment", true)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            startActivity(intent)
+                        }
+                    }
+                }
+            } else {
+                //電話番号の変更がない場合
+                if (isCameThroughLogin) {
+                    //ログイン経由でSMS認証画面を表示し、
+                    // 電話番号編集リンクから会員情報変更した場合は現在の番号がSMS未認証の場合でもSMS認証画面へ
+                    Api(this).smsVerifyCheck(user.phoneNumber?: "") { result ->
+                        if (!result) {
+                            val intent = Intent(this, SmsVerifyActivity::class.java)
+                            intent.putExtra("phoneNumber", user.phoneNumber)
+                            intent.putExtra("user", user)
+                            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                            intent.putExtra("requestCode", ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                            //電話番号以外の会員情報変更したモーダル表示
+                            intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
+                            startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+                        }
+                        else {
+                            Api(this).updateUser(user) {
+                                val intent = Intent(this, ConfigurationActivity::class.java)
+                                intent.putExtra("onClickChangeUserInformationFragment", true)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                            }
+                        }
+                    }
+                } else {
+                    //スキップして会員情報変更した場合は現在の番号がSMS未認証の場合でも更新し設定画面へ
+                    val intent = Intent(this, ConfigurationActivity::class.java)
+                    intent.putExtra("onClickChangeUserInformationFragment", true)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+
+                }
+            }
         }
     }
 
@@ -241,7 +331,61 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.female.value = true
             }
         }
+        newPhoneNumber = user.phoneNumber
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        // 会員情報変更Apiの呼び出し
+        var oldPhoneNumber: String? = null
+        data?.let {
+            user = it.getParcelableExtra("user")
+            oldPhoneNumber = user.phoneNumber
+            user.phoneNumber = it.getStringExtra("phoneNumber")
+        }
+        Api(this).updateUser(user) {
+            if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && !intent.getBooleanExtra("isCameThroughLogin", false)) {
+                //会員情報変更のみの場合、設定画面へ遷移
+                val intent = Intent(this, ConfigurationActivity::class.java)
+                intent.putExtra("onClickChangeUserInformationFragment", true)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+            } else if(requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK && intent.getBooleanExtra("isCameThroughLogin", false)) {
+                //ログイン経由で会員情報変更の場合のみ地図画面へ遷移
+                val it = Api.userSession
+                Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
+                // 地図画面へ遷移します
+                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                    val intent = Intent(this, MapViewActivity::class.java)
+                    //電話番号を更新しましたのダイアログ表示
+                    if (user.phoneNumber != oldPhoneNumber) {
+                        intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                    }
+                    startActivity(intent)
+                    finish()
+                }
+                else {
+                    // 位置情報の許諾、オンボーディングを表示します
+                    Intent(this, PermitLocationActivity::class.java).let { intent ->
+                        if (user.phoneNumber != oldPhoneNumber) {
+                            intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                        }
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+        }
+    }
+
+    override fun startResignInActivity() {
+        Intent(this, ResignInActivity::class.java).let { intent ->
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("fromActivity", fromActivity)
+            intent.putExtra("requestCode", requestCode)
+            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+            startActivity(intent)
+        }
     }
 }
 
@@ -481,6 +625,7 @@ class ChangeUserInformationViewModel : ViewModel() {
     private fun isValidPhoneNumber(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
+        val pattern2 = Pattern.compile("^(070|080|090)")
 
         if (valid && phone.value?.isBlank() ?: true) {
             valid = false
@@ -489,10 +634,14 @@ class ChangeUserInformationViewModel : ViewModel() {
             valid = false
             phoneError.message.value =
                 ErikuraApplication.instance.getString(R.string.phone_pattern_error)
-        } else if (valid && !(phone.value?.length ?: 0 == 10 || phone.value?.length ?: 0 == 11)) {
+        } else if (valid && !(phone.value?.length ?: 0 == 11)) {
             valid = false
             phoneError.message.value =
                 ErikuraApplication.instance.getString(R.string.phone_count_error)
+        } else if (valid && !(pattern2.matcher(phone.value).find())) {
+            valid = false
+            phoneError.message.value =
+                ErikuraApplication.instance.getString(R.string.phone_pattern2_error)
         } else {
             valid = true
             phoneError.message.value = null

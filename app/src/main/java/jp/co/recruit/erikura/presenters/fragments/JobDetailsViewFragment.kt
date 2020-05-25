@@ -102,6 +102,7 @@ class JobDetailsViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job
 }
 
 class JobDetailsViewFragmentViewModel: ViewModel() {
+    val jobId: MutableLiveData<String> = MutableLiveData()
     val limit: MutableLiveData<String> = MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val tool: MutableLiveData<String> = MutableLiveData()
@@ -112,6 +113,8 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
 
     fun setup(job: Job?){
         job?.let { job ->
+            // お仕事ID
+            jobId.value = job.id?.toString()
             // 納期
             setupLimit(job)
             // 持ち物

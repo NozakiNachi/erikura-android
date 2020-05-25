@@ -53,7 +53,7 @@
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
 
     <!-- 電話番号登録画面 -->
-    <string name="registerPhone_caption">電話番号を教えてください。</string>
+    <string name="registerCellPhone_caption">携帯電話の番号を教えてください。\n後ほど携帯電話番号認証を行います。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
 
     <!-- 職業登録画面 -->
@@ -62,11 +62,20 @@
     <!-- 希望する仕事登録画面 -->
     <string name="registerWishWork_caption">どんなお仕事がやってみたいか教えてください。（複数回答可）</string>
 
+    <!-- SMS認証画面 -->
+    <string name="smsVerify_title">携帯電話番号認証</string>
+    <string name="smsVerify_passcode_resend">パスコードを再送する</string>
+    <string name="smsVerify_register_phone">電話番号を編集する</string>
+    <string name="smsVerify_caption">エリクラを安全にご利用いただくために携帯電話番号認証をお願いしております。</string>
+    <string name="smsVerify_not_mobilePhone_format">ご登録の電話番号が携帯電話番号ではないようです。”電話番号を編集する”リンクからご登録の電話番号を携帯電話番号（070、080、090から始まる番号）に変更してください。</string>
+
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
 
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を更新しました</string>
+    <string name="change_user_information_other_than_phone_success">電話番号以外の会員情報を更新しました。\n※電話番号は携帯電話番号認証後に更新します。</string>
+    <string name="change_user_information_only_phone_success">電話番号を更新しました</string>
 
     <!-- 口座情報登録成功モーダル -->
     <string name="register_account_success">口座情報を登録しました</string>
@@ -81,6 +90,7 @@
     <string name="jobDetails_summary">お仕事概要</string>
     <string name="jobDetails_summaryTitles">報告箇所</string>
     <string name="jobDetails_workingPlace">場所</string>
+    <string name="jobDetails_jobId">お仕事ID</string>
     <string name="jobDetails_workingPlaceLink">この場所のお仕事全て</string>
     <string name="jobDetails_applyFlowCaption">応募後の流れ</string>
     <string name="jobDetails_outOfEntryExpire">応募受付期間外のため応募できません</string>
@@ -215,6 +225,7 @@
     <string name="city">ご住所</string>
     <string name="street">番地以降</string>
     <string name="phone">電話番号</string>
+    <string name="passcode">パスコード</string>
     <string name="cancelReason">キャンセル理由</string>
     <string name="cancelReasonDetail">具体的なキャンセル理由</string>
     <string name="summary_select">箇所</string>
@@ -234,10 +245,13 @@
     <string name="city_count_error">ご住所は20文字以内で入力してください。</string>
     <string name="street_count_error">番地以降は100文字以内で入力してください。</string>
     <string name="phone_pattern_error">電話番号はハイフンを含めずに入力してください。</string>
-    <string name="phone_count_error">電話番号は10桁、または11桁で入力してください。</string>
+    <string name="phone_pattern2_error">電話番号は携帯番号形式で入力してください。</string>
+    <string name="phone_count_error">電話番号は11桁で入力してください。</string>
     <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
     <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
     <string name="password_verificationPassword_match_error">パスワードと同じものを入力してください。</string>
+    <string name="passcode_pattern_error">パスコードは数字で入力してください。</string>
+    <string name="passcode_count_error">パスコードは8桁で入力してください。</string>
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
     <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>
@@ -323,6 +337,7 @@
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>
+    <string name="authenticate">認証</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -337,6 +352,7 @@
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
     <string name="register_phone_hint">例）08046015529</string>
+    <string name="register_passcode_hint">例）12345678</string>
     <string name="cancel_reason_hint">例）急用が入りお仕事が完了できなくなった</string>
     <string name="other_hint">その他(自由記入)</string>
     <string name="summary_hint">例）エレベータ</string>

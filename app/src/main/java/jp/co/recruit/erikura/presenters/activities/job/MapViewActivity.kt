@@ -75,6 +75,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     private lateinit var adapter: ErikuraCarouselAdapter
     private lateinit var tutorialAdapter: ErikuraCarouselAdapter
     private var firstFetchRequested: Boolean = false
+    var isChangeUserInformationOnlyPhone: Boolean = false
 
     private var gestureDetector: GestureDetector? = null
 
@@ -91,6 +92,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             // query.sortBy = SortType.DISTANCE_ASC
             viewModel.apply(query)
         }
+
+        isChangeUserInformationOnlyPhone = intent.getBooleanExtra("onClickChangeUserInformationOnlyPhone", false)
 
         val dummyJob = Job(
             latitude = LocationManager.defaultLatLng.latitude,
@@ -210,6 +213,15 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
         if (!locationManager.checkPermission(this)) {
             locationManager.requestPermission(this)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isChangeUserInformationOnlyPhone) {
+            val dialog = ChangeUserInformationOnlyPhoneFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
+            isChangeUserInformationOnlyPhone = false
         }
     }
 
