@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -50,6 +52,13 @@ class SmsVerifyActivity : BaseActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+        binding.root.setOnTouchListener { view, event ->
+            if (view != null) {
+                val imm: InputMethodManager = this.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.hideSoftInputFromWindow(view.windowToken, 0)
+            }
+            return@setOnTouchListener false
+        }
 
         // ユーザ情報を受け取る
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
