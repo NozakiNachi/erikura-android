@@ -43,9 +43,19 @@
                 android:lineSpacingExtra="10dp"
                 android:text="@{viewModel.message}"/>
 
-            <EditText
+            <TextView
+                style="@style/fieldLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/icon_required_18"
+                android:drawablePadding="10dp"
+                android:layout_marginTop="40dp"
+                android:text="理由" />
+
+            <EditText
+                style="@style/textField"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
                 android:layout_marginTop="10dp"
                 android:hint="こちらに記入してください"
                 android:text="@={viewModel.reason}"
