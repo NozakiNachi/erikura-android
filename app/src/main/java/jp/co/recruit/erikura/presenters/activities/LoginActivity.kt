@@ -122,18 +122,52 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
-            // 地図画面へ遷移します
-            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                val intent = Intent(this, MapViewActivity::class.java)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-                finish()
-            }
-            else {
-                // 位置情報の許諾、オンボーディングを表示します
-                Intent(this, PermitLocationActivity::class.java).let { intent ->
+        val it = Api.userSession
+        Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
+        var isSkip: Boolean = false
+        var isChangePhoneNumber: Boolean = false
+        data?.let{
+            isSkip = it.getBooleanExtra("isSkip", false)
+            isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
+        }
+        if (isSkip) {
+            if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
+                //skipの判定をいれる
+                // 地図画面へ遷移します
+                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                    val intent = Intent(this, MapViewActivity::class.java)
                     startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                     finish()
+                }
+                else {
+                    // 位置情報の許諾、オンボーディングを表示します
+                    Intent(this, PermitLocationActivity::class.java).let { intent ->
+                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                        finish()
+                    }
+                }
+            }
+        } else {
+            if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
+                //skipの判定をいれる
+                // 地図画面へ遷移します
+                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                    val intent = Intent(this, MapViewActivity::class.java)
+                    if (isChangePhoneNumber) {
+                        intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                    }
+                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    finish()
+                }
+                else {
+                    // 位置情報の許諾、オンボーディングを表示します
+                    Intent(this, PermitLocationActivity::class.java).let { intent ->
+                        if (isChangePhoneNumber) {
+                            intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                        }
+                        startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                        finish()
+                    }
                 }
             }
         }

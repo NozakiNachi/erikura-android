@@ -29,6 +29,8 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     var fromActivity: Int = 0
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
+    var isAutoLogin: Boolean = false
+    var fromSms: Boolean = false
 
     private val viewModel: ResignInViewModel by lazy {
         ViewModelProvider(this).get(ResignInViewModel::class.java)
@@ -42,13 +44,16 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        // 登録メールアドレスを取得
+//         登録メールアドレスを取得
         Api(this).user() { user->
             viewModel.email.value = user.email
         }
+
         fromActivity = intent.getIntExtra("fromActivity", 0)
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
+        isAutoLogin = intent.getBooleanExtra("isAutoLogin",false)
+        fromSms = intent.getBooleanExtra("fromSms", false)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -72,10 +77,14 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             // 画面遷移
             when (fromActivity) {
                 BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
-                    val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                    val intent = Intent()
                     intent.putExtra("requestCode", requestCode)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                    startActivity(intent)
+                    intent.putExtra("isAutoLogin", isAutoLogin)
+                    intent.putExtra("fromSms", fromSms)
+                    intent.putExtra("fromResignIn", true)
+                    setResult(RESULT_OK, intent)
+                    finish()
                 }
                 BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS -> {
                     val intent = Intent(this, AccountSettingActivity::class.java)
