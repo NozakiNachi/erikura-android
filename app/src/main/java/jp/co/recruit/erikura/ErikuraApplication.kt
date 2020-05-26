@@ -75,12 +75,6 @@ class ErikuraApplication : Application() {
         const val REQUEST_SIGN_UP_CODE = 1
         const val REQUEST_LOGIN_CODE = 2
         const val REQUEST_CHANGE_USER_INFORMATION = 3
-
-        // 作業厳格化の定数
-        const val RESPONSE_ABLE_START_OR_END = 1
-        const val RESPONSE_ALERT_ABLE_START_OR_END = 2
-        const val RESPONSE_INPUT_REASON_ABLE_START_OR_END = 3
-        const val RESPONSE_NOT_ABLE_START_OR_END = 4
     }
 
     //    var userSession: UserSession? = null

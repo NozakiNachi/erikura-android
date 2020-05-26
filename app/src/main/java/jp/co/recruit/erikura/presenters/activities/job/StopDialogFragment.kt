@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.Entry
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogInputReasonAbleEndBinding
@@ -104,8 +105,8 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 Api(activity!!).stopJob(job, latLng,
                     steps = steps,
                     distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
-                ) { entry_id, check_status, messages ->
-                    checkStatus(job, steps, check_status, messages)
+                ) { entry_id, checkStatus, messages ->
+                    checkStatus(job, steps, checkStatus, messages)
                 }
             }
         }
@@ -123,12 +124,12 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
     }
 
     //API実行後のstatusによって処理を分岐させます。
-    private fun checkStatus(job: Job, steps: Int, check_status: Int, messages: ArrayList<String>) {
+    private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
         var message: String = messages?.joinToString("\n")
         viewModel.message.value = message
-        when(check_status) {
+        when(checkStatus) {
             //判定順は終了不可、警告理由入力、警告、終了可能
-            ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
+            Entry.CheckStatus.ERROR -> {
                 //終了不可の場合はダイアログを表示
                 val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_not_able_end, null, false)
@@ -144,7 +145,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                         dialog.dismiss()
                 })
             }
-            ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
+            Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
                 val binding: DialogInputReasonAbleEndBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_end, null, false)
@@ -168,11 +169,11 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                     onClickConfirmation(it)
                 })
             }
-            ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
+            Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
                 //警告ダイアログは終了画面で表示
                 stopJobPassIntent(job, steps, message)
             }
-            ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
+            Entry.CheckStatus.SUCCESS -> {
                 //作業終了します
                 stopJobPassIntent(job, steps, message)
             }

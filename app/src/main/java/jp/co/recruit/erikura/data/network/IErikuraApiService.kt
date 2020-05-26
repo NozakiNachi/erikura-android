@@ -199,7 +199,7 @@ data class EntryIdResponse(
 
 data class CheckEntryResponse(
     var entryId: Int,
-    var checkStatus: Int,
+    var checkStatus: Entry.CheckStatus,
     var messages: ArrayList<String>
 )
 

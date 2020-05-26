@@ -21,7 +21,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
@@ -34,6 +36,7 @@ import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.Entry
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -231,9 +234,9 @@ class AppliedJobDetailsFragment(
                 job, latLng,
                 steps = steps,
                 distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
-            ) { entry_id, check_status, messages ->
-                Log.v("DEBUG","クリック押下後　check_status＝ ${check_status}")
-                checkStatus(job, steps, check_status, messages)
+            ) { entry_id, checkStatus, messages ->
+                Log.v("DEBUG","クリック押下後　checkStatus＝ ${checkStatus}")
+                checkStatus(job, steps, checkStatus, messages)
             }
         }
     }
@@ -395,12 +398,12 @@ class AppliedJobDetailsFragment(
     }
 
     //API実行後のstatusによって処理を分岐させます。
-    private fun checkStatus(job: Job, steps: Int, check_status: Int, messages: ArrayList<String>) {
+    private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
         var message: String = messages?.joinToString("\n")
         viewModel.message.value = message
-        when(check_status) {
+        when(checkStatus) {
             //判定順は開始不可、警告理由入力、警告、開始可能
-            ErikuraApplication.RESPONSE_NOT_ABLE_START_OR_END -> {
+            Entry.CheckStatus.ERROR -> {
                 //開始不可の場合はダイアログを表示
                 val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
@@ -417,7 +420,7 @@ class AppliedJobDetailsFragment(
                         dialog.dismiss()
                 })
             }
-            ErikuraApplication.RESPONSE_INPUT_REASON_ABLE_START_OR_END -> {
+            Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
                 val binding: DialogInputReasonAbleStartBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
@@ -440,13 +443,12 @@ class AppliedJobDetailsFragment(
                         dialog.dismiss()
                         onClickConfirmation(it)
                 })
-
             }
-            ErikuraApplication.RESPONSE_ALERT_ABLE_START_OR_END -> {
+            Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
                 //警告ダイアログは開始ログに注入して表示する、作業開始
                 startJobPassIntent(job, steps, message)
             }
-            ErikuraApplication.RESPONSE_ABLE_START_OR_END -> {
+            Entry.CheckStatus.SUCCESS -> {
                 //作業開始
                 startJobPassIntent(job, steps, message)
             }

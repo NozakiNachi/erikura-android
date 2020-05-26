@@ -350,7 +350,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, reason: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Int, messages: ArrayList<String>) -> Unit){
+    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, reason: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) -> Unit){
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
@@ -366,9 +366,9 @@ class Api(var context: Context) {
             onError = onError
         ){ body ->
             val id = body.entryId
-            val check_status = body.checkStatus
+            val checkStatus = body.checkStatus
             val messages = body.messages
-            onComplete(id, check_status, messages)
+            onComplete(id, checkStatus, messages)
         }
     }
 
@@ -382,7 +382,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, reason: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Int, messages: ArrayList<String>) -> Unit){
+    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, reason: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) -> Unit){
         executeObservable(
             erikuraApiService.stopJob(
                 StopJobRequest(
@@ -399,9 +399,9 @@ class Api(var context: Context) {
             onError = onError
         ){ body ->
             val id = body.entryId
-            val check_status = body.checkStatus
+            val checkStatus = body.checkStatus
             val messages = body.messages
-            onComplete(id, check_status, messages)
+            onComplete(id, checkStatus, messages)
         }
     }
 
