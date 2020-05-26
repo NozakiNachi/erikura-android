@@ -65,7 +65,7 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
             intent.putExtra(FROM_MYPAGE_KEY, true)
             startActivity(intent)
         },
-        MypageItem(2, "仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
+        MypageItem(2, "お仕事へのコメント・いいね", R.drawable.icon_comment_18, true) {
             Intent(this, OwnJobsActivity::class.java).let { intent ->
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra(FROM_MYPAGE_KEY, true)

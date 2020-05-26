@@ -20,6 +20,15 @@ interface IErikuraApiService {
     @POST("users/confirm")
     fun registerConfirm(@Body request: ConfirmationTokenRequest): ApiObservable<IdResponse>
 
+    @GET("users/sms_verify_check")
+    fun smsVerifyCheck(@Query("phone_number") phoneNumber: String):  ApiObservable<ResultResponse>
+
+    @POST("users/send_sms")
+    fun sendSms(@Body request: SendSmsRequest): ApiObservable<ResultResponse>
+
+    @POST("users/sms_verify")
+    fun smsVerify(@Body request: SmsVerifyRequest): ApiObservable<ResultResponse>
+
     @GET("users")
     fun user(): ApiObservable<User>
 
@@ -228,6 +237,17 @@ data class ConfirmationTokenRequest(
     var confirmationToken: String
 )
 
+data class SendSmsRequest(
+    var confirmationToken: String,
+    var phoneNumber: String
+)
+
+data class SmsVerifyRequest(
+    var confirmationToken: String,
+    var phoneNumber: String,
+    var passcode: String
+)
+
 data class LoginRequest(
     var email: String,
     var password: String
@@ -313,6 +333,7 @@ data class FavoritePlacesResponse(
 
 sealed class ErikuraConfigValue {
     data class DoubleList(val values: List<Double>): ErikuraConfigValue()
+    data class StringValue(val value: String?): ErikuraConfigValue()
 }
 
 class ErikuraConfigMap: HashMap<String, ErikuraConfigValue>()
@@ -329,7 +350,10 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
         jsonObject?.entrySet()?.forEach { entry ->
             val deserializerMap: Map<String, (JsonElement?) -> ErikuraConfigValue> = mapOf(
                 Pair(ErikuraConfig.REWARD_RANGE_KEY, { json -> deserializeDoubleList(json, context) }),
-                Pair(ErikuraConfig.WORKING_TIME_RANGE_KEY, { json -> deserializeDoubleList(json, context) })
+                Pair(ErikuraConfig.WORKING_TIME_RANGE_KEY, { json -> deserializeDoubleList(json, context) }),
+                Pair(ErikuraConfig.FAQ_URL_KEY, { json -> deserializeString(json, context) }),
+                Pair(ErikuraConfig.INQUIRY_URL_KEY, { json -> deserializeString(json, context) }),
+                Pair(ErikuraConfig.RECOMMENDED_URL_KEY, { json -> deserializeString(json, context) })
             )
             deserializerMap[entry.key]?.let { deserializer ->
                 result.put(entry.key, deserializer(entry.value))
@@ -343,4 +367,11 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
             context?.deserialize(json, List::class.java) ?: listOf()
         )
     }
+
+    private fun deserializeString(json: JsonElement?, context: JsonDeserializationContext?): ErikuraConfigValue.StringValue {
+        return ErikuraConfigValue.StringValue(
+            context?.deserialize(json, String::class.java)
+        )
+    }
+
 }

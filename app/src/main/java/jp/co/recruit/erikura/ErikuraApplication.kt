@@ -70,12 +70,17 @@ class ErikuraApplication : Application() {
         const val REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID = 0x0002
         const val REQUEST_EXTERNAL_STORAGE_PERMISSION_ID = 0x0003
 
+        // SMS認証の遷移元の定数
+        const val REQUEST_DEFAULT_CODE = 0
+        const val REQUEST_SIGN_UP_CODE = 1
+        const val REQUEST_LOGIN_CODE = 2
+        const val REQUEST_CHANGE_USER_INFORMATION = 3
+
         // 作業厳格化の定数
         const val RESPONSE_ABLE_START_OR_END = 1
         const val RESPONSE_ALERT_ABLE_START_OR_END = 2
         const val RESPONSE_INPUT_REASON_ABLE_START_OR_END = 3
         const val RESPONSE_NOT_ABLE_START_OR_END = 4
-
     }
 
     //    var userSession: UserSession? = null
@@ -203,7 +208,7 @@ class ErikuraApplication : Application() {
 
                     val button: Button = dialog.findViewById(R.id.update_button)
                     button.setOnSafeClickListener {
-                        val playURL = "http://play.google.com/store/apps/details?id=${packageName}"
+                        val playURL = "https://play.google.com/store/apps/details?id=${packageName}"
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(playURL))
                         activity.startActivity(intent)
                     }
@@ -444,6 +449,30 @@ object Tracking {
             appEventsLogger.logEvent(event)
         } catch (e: Exception) {
             Log.e("ERIKURA", "Facebook LogEvent Failed", e)
+        }
+    }
+
+    fun smsVerify(name: String, user: User) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user.id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
+
+    fun skipSmsVerify(name: String, user: User) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user.id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
         }
     }
 }

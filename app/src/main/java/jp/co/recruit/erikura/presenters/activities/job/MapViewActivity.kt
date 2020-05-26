@@ -75,6 +75,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     private lateinit var adapter: ErikuraCarouselAdapter
     private lateinit var tutorialAdapter: ErikuraCarouselAdapter
     private var firstFetchRequested: Boolean = false
+    var isChangeUserInformationOnlyPhone: Boolean = false
 
     private var gestureDetector: GestureDetector? = null
 
@@ -91,6 +92,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             // query.sortBy = SortType.DISTANCE_ASC
             viewModel.apply(query)
         }
+
+        isChangeUserInformationOnlyPhone = intent.getBooleanExtra("onClickChangeUserInformationOnlyPhone", false)
 
         val dummyJob = Job(
             latitude = LocationManager.defaultLatLng.latitude,
@@ -210,6 +213,15 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
         if (!locationManager.checkPermission(this)) {
             locationManager.requestPermission(this)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isChangeUserInformationOnlyPhone) {
+            val dialog = ChangeUserInformationOnlyPhoneFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
+            isChangeUserInformationOnlyPhone = false
         }
     }
 
@@ -385,7 +397,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             }
             else {
                 AndroidSchedulers.mainThread().scheduleDirect {
-                    MessageUtils.displayAlert(this, listOf("検索した地域で", "仕事が見つからなかったため、", "一番近くの仕事を表示します")) {
+                    MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つからなかったため、", "一番近くのお仕事を表示します")) {
                         // クリアした検索条件での再検索を行います
                         val newQuery = JobQuery(
                             latitude = locationManager.latLngOrDefault.latitude,

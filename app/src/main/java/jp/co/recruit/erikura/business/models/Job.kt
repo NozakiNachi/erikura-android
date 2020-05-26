@@ -36,6 +36,7 @@ data class Job(
     var title: String? = null,
     var workingStartAt: Date? = null,
     var workingFinishAt: Date? = null,
+    val nextUpdateScheduledAt: Date? = null,
     var fee: Int = 0,
     var workingTime: Int = 0,
     var workingPlace: String? = null,
@@ -57,7 +58,8 @@ data class Job(
     var reEntryPermitted: Boolean = false,
     var summaryTitles: List<String> = listOf(),
     var targetGender: Gender? = null,
-    var banned: Boolean = false
+    var banned: Boolean = false,
+    val createdAt: Date? = null
 ): Parcelable {
     var uninitialized: Boolean = false
     val reportId: Int? get() = report?.id

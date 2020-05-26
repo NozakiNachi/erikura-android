@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.content.Intent
 import android.os.Bundle
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -31,12 +32,16 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
                 onCreateImpl(savedInstanceState)
             } else {
                 finish()
-                Intent(this, ResignInActivity::class.java).let { intent ->
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("fromActivity", fromActivity)
-                    startActivity(intent)
-                }
+                startResignInActivity ()
             }
+        }
+    }
+
+    open fun startResignInActivity () {
+        Intent(this, ResignInActivity::class.java).let { intent ->
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("fromActivity", fromActivity)
+            startActivity(intent)
         }
     }
 

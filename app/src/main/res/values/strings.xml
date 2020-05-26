@@ -11,7 +11,7 @@
     <string name="button_cancel">キャンセル</string>
 
     <!-- スタート画面 -->
-    <string name="start_startWithoutLogin"><a href="">スキップして近くの仕事を探す</a></string>
+    <string name="start_startWithoutLogin"><a href="">スキップして近くのお仕事を探す</a></string>
 
     <!-- ログイン画面 -->
     <string name="login_caption">ログイン</string>
@@ -53,7 +53,7 @@
     <string name="registerAddress_notice">※ハイフンは不要です。</string>
 
     <!-- 電話番号登録画面 -->
-    <string name="registerPhone_caption">電話番号を教えてください。</string>
+    <string name="registerCellPhone_caption">携帯電話の番号を教えてください。\n後ほど携帯電話番号認証を行います。</string>
     <string name="registerPhone_notice">※ハイフンは不要です。</string>
 
     <!-- 職業登録画面 -->
@@ -62,11 +62,20 @@
     <!-- 希望する仕事登録画面 -->
     <string name="registerWishWork_caption">どんなお仕事がやってみたいか教えてください。（複数回答可）</string>
 
+    <!-- SMS認証画面 -->
+    <string name="smsVerify_title">携帯電話番号認証</string>
+    <string name="smsVerify_passcode_resend">パスコードを再送する</string>
+    <string name="smsVerify_register_phone">電話番号を編集する</string>
+    <string name="smsVerify_caption">エリクラを安全にご利用いただくために携帯電話番号認証をお願いしております。</string>
+    <string name="smsVerify_not_mobilePhone_format">ご登録の電話番号が携帯電話番号ではないようです。”電話番号を編集する”リンクからご登録の電話番号を携帯電話番号（070、080、090から始まる番号）に変更してください。</string>
+
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
 
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を更新しました</string>
+    <string name="change_user_information_other_than_phone_success">電話番号以外の会員情報を更新しました。\n※電話番号は携帯電話番号認証後に更新します。</string>
+    <string name="change_user_information_only_phone_success">電話番号を更新しました</string>
 
     <!-- 口座情報登録成功モーダル -->
     <string name="register_account_success">口座情報を登録しました</string>
@@ -78,15 +87,16 @@
     <string name="jobDetails_applyFlow"><a href="">応募後の流れを確認</a></string>
     <string name="jobDetails_limit">納期</string>
     <string name="jobDetails_tool">持ち物</string>
-    <string name="jobDetails_summary">仕事概要</string>
+    <string name="jobDetails_summary">お仕事概要</string>
     <string name="jobDetails_summaryTitles">報告箇所</string>
     <string name="jobDetails_workingPlace">場所</string>
-    <string name="jobDetails_workingPlaceLink">この場所の仕事全て</string>
+    <string name="jobDetails_jobId">お仕事ID</string>
+    <string name="jobDetails_workingPlaceLink">この場所のお仕事全て</string>
     <string name="jobDetails_applyFlowCaption">応募後の流れ</string>
     <string name="jobDetails_outOfEntryExpire">応募受付期間外のため応募できません</string>
     <string name="jobDetails_entryFinished">受付が終了いたしました</string>
     <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
-    <string name="jobDetails_maxEntry">未報告案件が%1$d件以上あるため応募できません</string>
+    <string name="jobDetails_maxEntry">未報告のお仕事が%1$d件以上あるため応募できません</string>
     <string name="jobDetails_goWorking">に現地に行って\n作業完了しましょう！</string>
     <string name="jobDetails_overLimit">納期を超過しています</string>
     <string name="jobDetails_pressButton">※現地に着いて、作業開始する時に「作業を開始」ボタンを押してください。</string>
@@ -119,14 +129,14 @@
     <!-- 応募完了画面 -->
     <string name="applyCompleted_caption">応募が完了しました！</string>
     <string name="applyCompleted_note">24時間以内に現地に向かい、\n作業を行いましょう！</string>
-    <string name="applyCompleted_recommend">お近くの仕事</string>
+    <string name="applyCompleted_recommend">お近くのお仕事</string>
 
     <!-- 応募キャンセルモーダル -->
-    <string name="cancel_caption">この仕事をキャンセルしますか？</string>
+    <string name="cancel_caption">このお仕事をキャンセルしますか？</string>
     <string name="cancel_note">キャンセル理由が今後のお仕事に影響することはありません</string>
 
     <!-- 仕事キャンセルモーダル -->
-    <string name="canceledDialog_caption">仕事をキャンセルしました。</string>
+    <string name="canceledDialog_caption">お仕事をキャンセルしました。</string>
 
     <!-- 作業開始モーダル -->
     <string name="startDialog_caption">作業を開始しました！</string>
@@ -161,9 +171,9 @@
     <string name="report_other_form_note">マニュアルに記載のないもので、何か報告があれば記入してください。</string>
 
     <!-- 作業報告評価画面 -->
-    <string name="report_evaluation_caption">案件の評価（任意）</string>
-    <string name="report_evaluation_caption2">案件の評価</string>
-    <string name="report_evaluation_note">今回の仕事はいかがでしたか？</string>
+    <string name="report_evaluation_caption">お仕事の評価（任意）</string>
+    <string name="report_evaluation_caption2">お仕事の評価</string>
+    <string name="report_evaluation_note">今回のお仕事はいかがでしたか？</string>
     <string name="report_evaluation_memo">※頂いたフィードバックは、今後のサービス向上に役立てられます</string>
 
     <!-- 作業報告確認画面 -->
@@ -223,6 +233,7 @@
     <string name="city">ご住所</string>
     <string name="street">番地以降</string>
     <string name="phone">電話番号</string>
+    <string name="passcode">パスコード</string>
     <string name="cancelReason">キャンセル理由</string>
     <string name="cancelReasonDetail">具体的なキャンセル理由</string>
     <string name="summary_select">箇所</string>
@@ -242,10 +253,13 @@
     <string name="city_count_error">ご住所は20文字以内で入力してください。</string>
     <string name="street_count_error">番地以降は100文字以内で入力してください。</string>
     <string name="phone_pattern_error">電話番号はハイフンを含めずに入力してください。</string>
-    <string name="phone_count_error">電話番号は10桁、または11桁で入力してください。</string>
+    <string name="phone_pattern2_error">電話番号は携帯番号形式で入力してください。</string>
+    <string name="phone_count_error">電話番号は11桁で入力してください。</string>
     <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
     <string name="comment_count_error">コメントは5000文字以内で入力してください。</string>
     <string name="password_verificationPassword_match_error">パスワードと同じものを入力してください。</string>
+    <string name="passcode_pattern_error">パスコードは数字で入力してください。</string>
+    <string name="passcode_count_error">パスコードは8桁で入力してください。</string>
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
     <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>
@@ -290,25 +304,25 @@
     <string name="employee">会社員</string>
     <string name="selfEmployed">自営業</string>
     <string name="otherJob">その他</string>
-    <string name="smartPhone">スマホがあればできる仕事</string>
-    <string name="cleaning">ホウキとチリトリがあればできる仕事</string>
-    <string name="walk">徒歩圏内でできる仕事</string>
-    <string name="bicycle">自転車圏内でできる仕事</string>
-    <string name="car">車で通勤する仕事</string>
+    <string name="smartPhone">スマホがあればできるお仕事</string>
+    <string name="cleaning">ホウキとチリトリがあればできるお仕事</string>
+    <string name="walk">徒歩圏内でできるお仕事</string>
+    <string name="bicycle">自転車圏内でできるお仕事</string>
+    <string name="car">車で通勤するお仕事</string>
     <string name="register">会員登録</string>
     <string name="go">進む</string>
     <string name="start">使ってみる</string>
     <string name="showManual">マニュアルを表示</string>
     <string name="openMap">　地図アプリで開く</string>
-    <string name="entry">この仕事に応募</string>
-    <string name="jobDetail">この仕事の詳細</string>
-    <string name="searchOtherJobs">他の仕事を探す</string>
-    <string name="cancel">この仕事をキャンセル</string>
+    <string name="entry">このお仕事に応募</string>
+    <string name="jobDetail">このお仕事の詳細</string>
+    <string name="searchOtherJobs">他のお仕事を探す</string>
+    <string name="cancel">このお仕事をキャンセル</string>
     <string name="startJob">現地に行って\n作業を開始</string>
     <string name="cancelWorking">作業をキャンセル</string>
     <string name="stopJob">作業を完了</string>
-    <string name="go_report">この仕事の作業報告を行う</string>
-    <string name="go_applied_jobs">応募した仕事の一覧へ戻る</string>
+    <string name="go_report">このお仕事の作業報告を行う</string>
+    <string name="go_applied_jobs">応募したお仕事の一覧へ戻る</string>
     <string name="cancel_finished">作業を取り消し</string>
     <string name="report">作業を報告</string>
     <string name="manual">マニュアル</string>
@@ -320,7 +334,7 @@
     <string name="complete">完了</string>
     <string name="edit_working_time">作業時間を編集</string>
     <string name="edit_other_form">マニュアル外の報告を編集</string>
-    <string name="edit_evaluation">案件の評価を編集</string>
+    <string name="edit_evaluation">お仕事の評価を編集</string>
     <string name="edit_summary">実施箇所%1$dを編集</string>
     <string name="remove_summary">実施箇所%1$dを削除</string>
     <string name="remove">削除</string>
@@ -331,6 +345,7 @@
     <string name="retry">再試行</string>
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>
+    <string name="authenticate">認証</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -345,7 +360,8 @@
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
     <string name="register_phone_hint">例）08046015529</string>
-    <string name="cancel_reason_hint">例）急用が入り仕事が完了できなくなった</string>
+    <string name="register_passcode_hint">例）12345678</string>
+    <string name="cancel_reason_hint">例）急用が入りお仕事が完了できなくなった</string>
     <string name="other_hint">その他(自由記入)</string>
     <string name="summary_hint">例）エレベータ</string>
     <string name="comment_hint">例）床が少し汚い状態</string>
