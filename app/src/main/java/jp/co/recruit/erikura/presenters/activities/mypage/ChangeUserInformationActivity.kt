@@ -118,9 +118,9 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     override fun onStart() {
         super.onStart()
         //再認証チェック チェックできてなかったら破棄する
-        if (!(isResighIn)) {
-            finish()
-        }
+//        if (!(isResighIn)) {
+//            finish()
+//        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -391,20 +391,24 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         super.onActivityResult(requestCode, resultCode, data)
         var oldPhoneNumber: String? = null
         var isSkip: Boolean = false
-        data?.let {
-            if (data.getBooleanExtra("fromResignIn", false)) {
-                //再認証経由の場合
-                isResighIn = data.getBooleanExtra("fromResignIn", false)
-                onCreateImpl(savedInstanceState = null)
+        if (resultCode == RESULT_OK) {
+            data?.let {
+                if (data.getBooleanExtra("fromResignIn", false)) {
+                    //再認証経由の場合
+                    isResighIn = data.getBooleanExtra("fromResignIn", false)
+                    onCreateImpl(savedInstanceState = null)
+                }
+                user = it.getParcelableExtra("user")
+                oldPhoneNumber = user.phoneNumber
+                val getPhoneNumber = it.getStringExtra("phoneNumber")
+                isSkip = it.getBooleanExtra("isSkip", false)
+                getPhoneNumber?.let {
+                    user.phoneNumber = getPhoneNumber
+                }
+                isAutoLogin = it.getBooleanExtra("isAutoLogin", false)
             }
-            user = it.getParcelableExtra("user")
-            oldPhoneNumber = user.phoneNumber
-            val getPhoneNumber = it.getStringExtra("phoneNumber")
-            isSkip = it.getBooleanExtra("isSkip", false)
-            getPhoneNumber?.let {
-                user.phoneNumber = getPhoneNumber
-            }
-            isAutoLogin = it.getBooleanExtra("isAutoLogin", false)
+        } else {
+            finish()
         }
 //        if (isSkip) {
 //            //スキップの場合、ログイン経由で会員情報変更の場合のみ地図画面へ遷移

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -93,6 +94,17 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
                 else -> {
                     throw IllegalArgumentException("unknown fromActivity")
                 }
+            }
+        }
+    }
+
+    override fun onBackPressed(){
+        when (fromActivity) {
+            BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
+                setResult(Activity.RESULT_CANCELED)
+            }
+            else -> {
+            super.onBackPressed()
             }
         }
     }
