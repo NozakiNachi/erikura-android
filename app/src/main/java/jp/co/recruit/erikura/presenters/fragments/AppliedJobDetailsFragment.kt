@@ -231,7 +231,9 @@ class AppliedJobDetailsFragment(
             }
         } else {
             //ダイアログ表示後許可した場合
-            checkPermissionPedometer()
+            Api(activity).agree(){
+                checkPermissionPedometer()
+            }
         }
     }
 
