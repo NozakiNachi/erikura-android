@@ -14,7 +14,7 @@ import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
-abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatActivity() {
+abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity() {
     companion object {
         var currentActivity: Activity? = null
     }
@@ -88,8 +88,7 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatA
     override fun onBackPressed() {
         if (isTaskRoot && !finishByBackButton) {
             backToDefaultActivity()
-        }
-        else {
+        } else {
             // ルート画面出ない場合は、通常の遷移で戻ります
             super.onBackPressed()
         }
@@ -107,15 +106,18 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false): AppCompatA
         super.onActivityResult(requestCode, resultCode, data)
         var isSkip: Boolean = false
         var isChangePhoneNumber: Boolean = false
-        data?.let{
+        var isSmsAuthenticate: Boolean = false
+        data?.let {
             isSkip = it.getBooleanExtra("isSkip", false)
             isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
+            isSmsAuthenticate = it.getBooleanExtra("isSmsAuthenticate", false)
+            Log.v("DEBUG", "ここ通ってる？？？ skip=${isSkip}, isChangepho=${isChangePhoneNumber}, isSmsAuth=${isSmsAuthenticate}")
+            if (!(isSkip) && isChangePhoneNumber && isSmsAuthenticate) {
+                Log.v("DEBUG", "ここ通ってる？？？ skip=${isSkip}, isChangepho=${isChangePhoneNumber}, isSmsAuth=${isSmsAuthenticate}")
+                //認証確認できてかつ番号に変更がある場合　番号変更が完了したダイアログを表示する
+                val dialog = ChangeUserInformationOnlyPhoneFragment()
+                dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
+            }
         }
-        if (!(isSkip) && isChangePhoneNumber) {
-            //認証確認できてかつ番号に変更がある場合　番号変更が完了したダイアログを表示する
-            val dialog = ChangeUserInformationOnlyPhoneFragment()
-            dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
-        }
-        finish()
     }
 }

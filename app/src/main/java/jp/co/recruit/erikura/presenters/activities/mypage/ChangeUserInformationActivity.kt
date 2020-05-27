@@ -117,6 +117,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     }
 
     override fun onStart() {
+        //会員情報変更で番号変更されたかつ変更した番号が一致しなかったら　sendSms
         super.onStart()
         //再認証チェック チェックできてなかったら破棄する
 //        if (!(isResighIn)) {
@@ -250,6 +251,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             // 電話番号はSMS認証後に保存のため別で保持します。
             newPhoneNumber = viewModel.phone.value
             if (fromSms) {
+                val intent = Intent()
                 //SMS認証画面経由の場合、元の認証画面へ
                 intent.putExtra("newPhoneNumber", newPhoneNumber)
                 //電話番号の変更があることを元の認証画面へ
@@ -402,15 +404,16 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     //再認証経由の場合
                     isResighIn = data.getBooleanExtra("fromResignIn", false)
                     onCreateImpl(savedInstanceState = null)
+                } else {
+                    user = it.getParcelableExtra("user")
+                    oldPhoneNumber = user.phoneNumber
+                    val getPhoneNumber = it.getStringExtra("phoneNumber")
+                    isSkip = it.getBooleanExtra("isSkip", false)
+                    getPhoneNumber?.let {
+                        user.phoneNumber = getPhoneNumber
+                    }
+                    isAutoLogin = it.getBooleanExtra("isAutoLogin", false)
                 }
-                user = it.getParcelableExtra("user")
-                oldPhoneNumber = user.phoneNumber
-                val getPhoneNumber = it.getStringExtra("phoneNumber")
-                isSkip = it.getBooleanExtra("isSkip", false)
-                getPhoneNumber?.let {
-                    user.phoneNumber = getPhoneNumber
-                }
-                isAutoLogin = it.getBooleanExtra("isAutoLogin", false)
             }
         } else {
             finish()

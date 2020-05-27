@@ -44,6 +44,7 @@ class SmsVerifyActivity : BaseActivity(),
     var isMobilePhoneNumber: Boolean? = false
     var isChangeUserInformationOtherThanPhone: Boolean = false
     var isAutoLogin: Boolean = false
+    var isChangePhoneNumber: Boolean = false
     val pattern = Pattern.compile("^(070|080|090)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -150,9 +151,11 @@ class SmsVerifyActivity : BaseActivity(),
             if (isAutoLogin) {
                 intent.putExtra("isAutoLogin", isAutoLogin)
             }
-            if(intent.getBooleanExtra("isChangePhoneNumber", false)) {
-                intent.putExtra("isChangePhoneNumber", intent.getBooleanExtra("isChangePhoneNumber", false))
+            if(isChangePhoneNumber) {
+                intent.putExtra("isChangePhoneNumber", isChangePhoneNumber)
             }
+            //認証成功のフラグ
+            intent.putExtra("isSmsAuthenticate", true)
             setResult(RESULT_OK, intent)
             finish()
         }
@@ -188,7 +191,7 @@ class SmsVerifyActivity : BaseActivity(),
                 if (isAutoLogin) {
                     intent.putExtra("isAutoLogin", isAutoLogin)
                 }
-                startActivityForResult(intent, 4)
+                startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
             }
             else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
@@ -276,7 +279,8 @@ class SmsVerifyActivity : BaseActivity(),
             }
         } else {
             data?.let {
-                data.getStringExtra("newPhoneNumber")?.let {
+                isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
+                    it.getStringExtra("newPhoneNumber")?.let {
                     if (phoneNumber != data.getStringExtra("newPhoneNumber")) {
                         phoneNumber = data.getStringExtra("newPhoneNumber")
                         Log.v("INFO", "SMS認証メール送信")
@@ -287,7 +291,7 @@ class SmsVerifyActivity : BaseActivity(),
                         }
                     }
                 }
-                isChangeUserInformationOtherThanPhone = data.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
+                isChangeUserInformationOtherThanPhone = it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
                 if (isChangeUserInformationOtherThanPhone) {
                     val dialog = ChangeUserInformationOtherThanPhoneFragment()
                     dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")

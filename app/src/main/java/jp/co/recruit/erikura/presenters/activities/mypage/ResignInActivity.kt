@@ -73,7 +73,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         Api(this).resignIn(viewModel.email.value ?: "", viewModel.password.value ?: "") {
             it.smsVerifyCheck = true
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
-            finish()
 
             // 画面遷移
             when (fromActivity) {
@@ -90,6 +89,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
                 BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS -> {
                     val intent = Intent(this, AccountSettingActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }
                 else -> {
                     throw IllegalArgumentException("unknown fromActivity")
@@ -102,6 +102,7 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         when (fromActivity) {
             BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
                 setResult(Activity.RESULT_CANCELED)
+                finish()
             }
             else -> {
             super.onBackPressed()
