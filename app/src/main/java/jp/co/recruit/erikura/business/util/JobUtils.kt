@@ -120,7 +120,7 @@ object JobUtils {
 
     private val compareWorkingFinishAt: Comparator<Job> = compareBy(Job::workingFinishAt)
     private val compareWorkingStartAt: Comparator<Job> = compareBy(Job::workingStartAt)
-    private val compareFee: Comparator<Job> = compareBy(Job::fee)
+    private val compareFee: Comparator<Job> = compareBy(Job::fee).reversed()
     private val compareCreatedAt: Comparator<Job> = compareBy(Job::createdAt)
     private val compareId: Comparator<Job> = compareBy(Job::id)
 }
