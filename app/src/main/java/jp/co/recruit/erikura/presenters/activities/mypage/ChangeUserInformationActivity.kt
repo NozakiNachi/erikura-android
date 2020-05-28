@@ -38,7 +38,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     var newPhoneNumber: String? = null
     var beforeChangeNewPhoneNumber: String? = null
     var requestCode: Int? = null
-    var isCameThroughLogin: Boolean = false
     var fromSms: Boolean = false
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
@@ -54,7 +53,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
     override fun onCreate(savedInstanceState: Bundle?){
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
-        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
         beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
         fromSms = intent.getBooleanExtra("fromSms", false)
         //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
@@ -77,7 +75,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             Api(this).displayErrorAlert(errorMessages.asList())
         }
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
-        isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
         if (beforeChangeNewPhoneNumber == null){
             beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
         }
@@ -382,7 +379,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Intent(this, ResignInActivity::class.java).let { intent ->
             intent.putExtra("fromActivity", fromActivity)
             intent.putExtra("requestCode", requestCode)
-            intent.putExtra("isCameThroughLogin", isCameThroughLogin)
             intent.putExtra("fromSms", fromSms)
             startActivityForResult(intent, ErikuraApplication.REQUEST_RESIGHIN)
         }
