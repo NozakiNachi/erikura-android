@@ -361,13 +361,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 } else if (isSkip) {
                     //会員情報経由でスキップした場合
                     finish()
-                } else if(data.getBooleanExtra("onClickChangeUserInformation", false)) {
-                    //会員情報変更経由のSMS認証画面で番号編集リンクを押下した場合
-                    user = data.getParcelableExtra("user")
-                    beforeChangeNewPhoneNumber = data.getStringExtra("beforeChangeNewPhoneNumber")
-                    onCreateImpl(savedInstanceState = null)
-                } else {
-                    finish()
                 }
             }
         } else {

@@ -104,13 +104,6 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
-        //会員情報変更した際のダイアログ
-        isChangeUserInformationOtherThanPhone = intent.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
-        if (isChangeUserInformationOtherThanPhone) {
-            val dialog = ChangeUserInformationOtherThanPhoneFragment()
-            dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
-            isChangeUserInformationOtherThanPhone = false
-        }
         //SMS認証画面表示のトラッキングの送出
         Tracking.logEvent(event= "view_sms_verify", params= bundleOf())
         Tracking.view(name= "/user/view_sms_verify", title= "SMS認証画面")
@@ -162,7 +155,7 @@ class SmsVerifyActivity : BaseActivity(),
                 intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
                 startActivityForResult(intent, ErikuraApplication.REQUEST_SIGN_UP_CODE)
             }
-            ErikuraApplication.REQUEST_LOGIN_CODE -> {
+            else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
                 if (beforeChangeNewPhoneNumber != null) {
@@ -172,29 +165,6 @@ class SmsVerifyActivity : BaseActivity(),
                 //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
                 intent.putExtra("isCameThroughLogin", true)
                 intent.putExtra("fromSms", true)
-                startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
-            }
-            ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION -> {
-                val intent: Intent =  Intent()
-                intent.putExtra("user", user)
-                if (beforeChangeNewPhoneNumber != null) {
-                    intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
-                }
-                intent.putExtra("onClickChangeUserInformation", true)
-                setResult(RESULT_OK ,intent)
-                finish()
-            }
-            else -> {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                intent.putExtra("user", user)
-                if (beforeChangeNewPhoneNumber != null) {
-                    intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
-                }
-                intent.putExtra("requestCode", requestCode)
-                intent.putExtra("fromSms", true)
-                if (isCameThroughLogin) {
-                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                }
                 startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
             }
         }
