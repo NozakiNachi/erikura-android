@@ -17,10 +17,22 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentTimeLabelBinding
 
-class TimeLabelFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user) {
+class TimeLabelFragment : BaseJobDetailFragment {
+    companion object {
+        fun newInstance(job: Job?, user: User?): TimeLabelFragment {
+            return TimeLabelFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
     private val viewModel: TimeLabelFragmentViewModel by lazy {
         ViewModelProvider(this).get(TimeLabelFragmentViewModel::class.java)
     }
+
+    constructor(): super()
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -31,6 +43,8 @@ class TimeLabelFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, use
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         // Inflate the layout for this fragment
         val binding = FragmentTimeLabelBinding.inflate(inflater, container, false)
         viewModel.setup(job, user)

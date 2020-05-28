@@ -2,28 +2,36 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.os.bundleOf
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
-import android.graphics.drawable.BitmapDrawable
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.os.bundleOf
-import androidx.lifecycle.MediatorLiveData
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
+import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 
-class NormalJobDetailsFragment(private val activity: AppCompatActivity, job: Job?, user: User?) : BaseJobDetailFragment(job, user) {
+class NormalJobDetailsFragment : BaseJobDetailFragment {
+    companion object {
+        fun newInstance(job: Job?, user: User?): NormalJobDetailsFragment {
+            val args = Bundle()
+            fillArguments(args, job, user)
+
+            return NormalJobDetailsFragment().also {
+                it.arguments = args
+            }
+        }
+    }
+
     private val viewModel: NormalJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(NormalJobDetailsFragmentViewModel::class.java)
     }
@@ -36,6 +44,8 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, job: Job
     private var mapView: MapViewFragment? = null
     private var applyFlowView: ApplyFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
+
+    constructor() : super()
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -59,12 +69,14 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, job: Job
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        super.onCreateView(inflater, container, savedInstanceState)
+
         container?.removeAllViews()
         val binding = FragmentNormalJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         binding.viewModel = viewModel
 
-        viewModel.setup(activity, job, user)
+        viewModel.setup(activity!!, job, user)
         return binding.root
     }
 
@@ -72,15 +84,15 @@ class NormalJobDetailsFragment(private val activity: AppCompatActivity, job: Job
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        timeLabel = TimeLabelFragment(job, user)
-        jobInfoView = JobInfoViewFragment(job, user)
-        thumbnailImage = ThumbnailImageFragment(job, user)
-        manualButton = ManualButtonFragment(job, user)
-        applyFlowLink = ApplyFlowLinkFragment(job, user)
-        jobDetailsView = JobDetailsViewFragment(job, user)
-        mapView = MapViewFragment(activity, job, user)
-        applyFlowView = ApplyFlowViewFragment(job, user)
-        applyButton = ApplyButtonFragment(job, user)
+        timeLabel = TimeLabelFragment.newInstance(job, user)
+        jobInfoView = JobInfoViewFragment.newInstance(job, user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
+        manualButton = ManualButtonFragment.newInstance(job, user)
+        applyFlowLink = ApplyFlowLinkFragment.newInstance(job, user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
+        mapView = MapViewFragment.newInstance(job, user)
+        applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
+        applyButton = ApplyButtonFragment.newInstance(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")

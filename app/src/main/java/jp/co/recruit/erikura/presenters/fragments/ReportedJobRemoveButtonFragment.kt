@@ -19,7 +19,19 @@ import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 import java.util.*
 
 
-class ReportedJobRemoveButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ReportedJobRemoveButtonFragmentEventHandlers {
+class ReportedJobRemoveButtonFragment : BaseJobDetailFragment, ReportedJobRemoveButtonFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ReportedJobRemoveButtonFragment {
+            return ReportedJobRemoveButtonFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobRemoveButtonViewModel::class.java)
     }

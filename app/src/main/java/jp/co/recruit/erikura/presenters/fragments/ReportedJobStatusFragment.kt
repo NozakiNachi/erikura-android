@@ -1,22 +1,19 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.business.models.Report
 import jp.co.recruit.erikura.business.models.ReportStatus
 import jp.co.recruit.erikura.databinding.FragmentReportedJobStatusBinding
-import androidx.appcompat.app.AppCompatActivity
 
-
-class ReportedJobStatusFragment (private val activity: AppCompatActivity, val report: Report?) : Fragment() {
+class ReportedJobStatusFragment(private val activity: AppCompatActivity, val report: Report?) : Fragment() {
     private val viewModel: ReportedJobStatusFragmentViewModel by lazy {
         ViewModelProvider(this).get(ReportedJobStatusFragmentViewModel::class.java)
     }
