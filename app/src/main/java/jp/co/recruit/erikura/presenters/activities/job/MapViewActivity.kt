@@ -218,11 +218,10 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     override fun onStart() {
         super.onStart()
-        isChangeUserInformationOnlyPhone = intent.getBooleanExtra("onClickChangeUserInformationOnlyPhone", false)
         if (isChangeUserInformationOnlyPhone) {
+            isChangeUserInformationOnlyPhone = false
             val dialog = ChangeUserInformationOnlyPhoneFragment()
             dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
-            isChangeUserInformationOnlyPhone = false
         }
     }
 
@@ -322,6 +321,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        data?.let{
+            isChangeUserInformationOnlyPhone = data.getBooleanExtra("onClickChangeUserInformationOnlyPhone", false)
+        }
         if (resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 REQUEST_SEARCH_CONDITIONS -> {
