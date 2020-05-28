@@ -218,6 +218,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     override fun onStart() {
         super.onStart()
+        isChangeUserInformationOnlyPhone = intent.getBooleanExtra("onClickChangeUserInformationOnlyPhone", false)
         if (isChangeUserInformationOnlyPhone) {
             val dialog = ChangeUserInformationOnlyPhoneFragment()
             dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
@@ -321,7 +322,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (resultCode == Activity.RESULT_OK) {
             when(requestCode) {
                 REQUEST_SEARCH_CONDITIONS -> {

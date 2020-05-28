@@ -31,13 +31,13 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
             if (isResignIn) {
                 onCreateImpl(savedInstanceState)
             } else {
-                finish()
                 startResignInActivity ()
             }
         }
     }
 
     open fun startResignInActivity () {
+        finish()
         Intent(this, ResignInActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra("fromActivity", fromActivity)
