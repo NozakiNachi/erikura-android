@@ -79,7 +79,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
                     intent.putExtra("requestCode", requestCode)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                     intent.putExtra("fromSms", fromSms)
-                    intent.putExtra("fromResignIn", true)
                     setResult(RESULT_OK, intent)
                     finish()
                 }

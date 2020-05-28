@@ -40,7 +40,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
     var fromSms: Boolean = false
-    var isResighIn: Boolean = false
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -393,9 +392,8 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         if (resultCode == RESULT_OK) {
             data?.let {
                 isSkip = it.getBooleanExtra("isSkip", false)
-                if (data.getBooleanExtra("fromResignIn", false)) {
+                if (requestCode == ErikuraApplication.REQUEST_RESIGHIN) {
                     //再認証経由の場合
-                    isResighIn = data.getBooleanExtra("fromResignIn", false)
                     onCreateImpl(savedInstanceState = null)
                 } else if (data.getBooleanExtra("isSmsAuthenticate", false)) {
                     //会員情報経由でSMS認証した場合
@@ -427,7 +425,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             intent.putExtra("requestCode", requestCode)
             intent.putExtra("isCameThroughLogin", isCameThroughLogin)
             intent.putExtra("fromSms", fromSms)
-            startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
+            startActivityForResult(intent, ErikuraApplication.REQUEST_RESIGHIN)
         }
     }
 }
