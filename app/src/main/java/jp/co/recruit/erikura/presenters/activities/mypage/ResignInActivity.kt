@@ -30,7 +30,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     var fromActivity: Int = 0
     var requestCode: Int? = null
     var isCameThroughLogin: Boolean = false
-    var isAutoLogin: Boolean = false
     var fromSms: Boolean = false
 
     private val viewModel: ResignInViewModel by lazy {
@@ -53,7 +52,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         fromActivity = intent.getIntExtra("fromActivity", 0)
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin",false)
-        isAutoLogin = intent.getBooleanExtra("isAutoLogin",false)
         fromSms = intent.getBooleanExtra("fromSms", false)
     }
 
@@ -80,7 +78,6 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
                     val intent = Intent()
                     intent.putExtra("requestCode", requestCode)
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                    intent.putExtra("isAutoLogin", isAutoLogin)
                     intent.putExtra("fromSms", fromSms)
                     intent.putExtra("fromResignIn", true)
                     setResult(RESULT_OK, intent)

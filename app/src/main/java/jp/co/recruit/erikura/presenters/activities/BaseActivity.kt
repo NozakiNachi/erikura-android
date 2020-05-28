@@ -39,7 +39,6 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
                             //SMS未認証の場合、認証画面へ遷移します。
                             val intent = Intent(this, SmsVerifyActivity::class.java)
                             intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
-                            intent.putExtra("isAutoLogin", true)
                             startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
                         }
                     }
