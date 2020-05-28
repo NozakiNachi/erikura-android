@@ -43,7 +43,6 @@ class SmsVerifyActivity : BaseActivity(),
     var isCameThroughLogin: Boolean = false
     var isMobilePhoneNumber: Boolean? = false
     var isChangeUserInformationOtherThanPhone: Boolean = false
-    var isAutoLogin: Boolean = false
     var isChangePhoneNumber: Boolean = false
     val pattern = Pattern.compile("^(070|080|090)")
 
@@ -69,7 +68,6 @@ class SmsVerifyActivity : BaseActivity(),
         isCameThroughLogin = intent.getBooleanExtra("isCameThroughLogin", false)
         viewModel.isCameThroughLogin.value = isCameThroughLogin
         isChangeUserInformationOtherThanPhone = intent.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
-        isAutoLogin = intent.getBooleanExtra("isAutoLogin", false)
 
         if (requestCode == ErikuraApplication.REQUEST_SIGN_UP_CODE || requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
             user = intent.getParcelableExtra("user")
@@ -106,18 +104,7 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
-        //会員情報変更から戻ってきた際に番号の変更があった場合、再度SMS送信
-        intent.getStringExtra("newPhoneNumber")?.let{
-            if (phoneNumber != intent.getStringExtra("newPhoneNumber")) {
-                phoneNumber = intent.getStringExtra("newPhoneNumber")
-                Log.v("INFO", "SMS認証メール送信")
-                // trueしか返ってこないので送信結果の判定は入れていない
-                Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-                    phoneNumber?.let { viewModel.setCaption(it) }
-                    viewModel.error.message.value = null
-                }
-            }
-        }
+        //会員情報変更した際のダイアログ
         isChangeUserInformationOtherThanPhone = intent.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
         if (isChangeUserInformationOtherThanPhone) {
             val dialog = ChangeUserInformationOtherThanPhoneFragment()
@@ -147,9 +134,6 @@ class SmsVerifyActivity : BaseActivity(),
             intent.putExtra("phoneNumber", phoneNumber)
             if (isCameThroughLogin) {
                 intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-            }
-            if (isAutoLogin) {
-                intent.putExtra("isAutoLogin", isAutoLogin)
             }
             if(isChangePhoneNumber) {
                 intent.putExtra("isChangePhoneNumber", isChangePhoneNumber)
@@ -188,10 +172,17 @@ class SmsVerifyActivity : BaseActivity(),
                 //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
                 intent.putExtra("isCameThroughLogin", true)
                 intent.putExtra("fromSms", true)
-                if (isAutoLogin) {
-                    intent.putExtra("isAutoLogin", isAutoLogin)
-                }
                 startActivityForResult(intent, ErikuraApplication.REQUEST_LOGIN_CODE)
+            }
+            ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION -> {
+                val intent: Intent =  Intent()
+                intent.putExtra("user", user)
+                if (beforeChangeNewPhoneNumber != null) {
+                    intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
+                }
+                intent.putExtra("onClickChangeUserInformation", true)
+                setResult(RESULT_OK ,intent)
+                finish()
             }
             else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
@@ -204,7 +195,7 @@ class SmsVerifyActivity : BaseActivity(),
                 if (isCameThroughLogin) {
                     intent.putExtra("isCameThroughLogin", isCameThroughLogin)
                 }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
             }
         }
     }
@@ -250,9 +241,6 @@ class SmsVerifyActivity : BaseActivity(),
         if (isCameThroughLogin) {
             intent.putExtra("isCameThroughLogin", isCameThroughLogin)
         }
-        if (isAutoLogin) {
-            intent.putExtra("isAutoLogin", isAutoLogin)
-        }
         setResult(RESULT_OK, intent)
         finish()
         // SMS認証スキップのトラッキングの送出
@@ -272,26 +260,28 @@ class SmsVerifyActivity : BaseActivity(),
                     Log.v("INFO", "SMS認証メール送信")
                     // trueしか返ってこないので送信結果の判定は入れていない
                     Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-                        phoneNumber?.let { viewModel.setCaption(it) }
+                        phoneNumber?.let {phoneNum-> viewModel.setCaption(phoneNum) }
                         viewModel.error.message.value = null
                     }
                 }
             }
         } else {
             data?.let {
+                beforeChangeNewPhoneNumber = it.getStringExtra("beforeChangeNewPhoneNumber")
                 isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
-                    it.getStringExtra("newPhoneNumber")?.let {
+                it.getStringExtra("newPhoneNumber")?.let {
                     if (phoneNumber != data.getStringExtra("newPhoneNumber")) {
                         phoneNumber = data.getStringExtra("newPhoneNumber")
                         Log.v("INFO", "SMS認証メール送信")
                         // trueしか返ってこないので送信結果の判定は入れていない
                         Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-                            phoneNumber?.let { viewModel.setCaption(it) }
+                            phoneNumber?.let { phoneNum -> viewModel.setCaption(phoneNum) }
                             viewModel.error.message.value = null
                         }
                     }
                 }
-                isChangeUserInformationOtherThanPhone = it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
+                isChangeUserInformationOtherThanPhone =
+                    it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
                 if (isChangeUserInformationOtherThanPhone) {
                     val dialog = ChangeUserInformationOtherThanPhoneFragment()
                     dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
