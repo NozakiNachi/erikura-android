@@ -15,13 +15,19 @@ import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivit
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
 abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity() {
+    protected var isSkipSmsVerification: Boolean = false
     companion object {
         var currentActivity: Activity? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (!(this is SmsVerifyActivity)) {
+        Log.v("ERIKURA", "${this.javaClass.name}: onCreate")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (!(this is SmsVerifyActivity) && !isSkipSmsVerification) {
             //ログイン済かつSMS認証必須の場合　SMS認証チェックを行います。
             if (Api.isLogin && Api.userSession?.smsVerifyCheck == false) {
                 Api.userSession?.smsVerifyCheck = true
@@ -40,11 +46,6 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
                 }
             }
         }
-        Log.v("ERIKURA", "${this.javaClass.name}: onCreate")
-    }
-
-    override fun onStart() {
-        super.onStart()
         Log.v("ERIKURA", "${this.javaClass.name}: onStart")
     }
 
@@ -111,10 +112,8 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
             isSkip = it.getBooleanExtra("isSkip", false)
             isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
             isSmsAuthenticate = it.getBooleanExtra("isSmsAuthenticate", false)
-            Log.v("DEBUG", "ここ通ってる？？？ skip=${isSkip}, isChangepho=${isChangePhoneNumber}, isSmsAuth=${isSmsAuthenticate}")
             if (!(isSkip) && isChangePhoneNumber && isSmsAuthenticate) {
-                Log.v("DEBUG", "ここ通ってる？？？ skip=${isSkip}, isChangepho=${isChangePhoneNumber}, isSmsAuth=${isSmsAuthenticate}")
-                //認証確認できてかつ番号に変更がある場合　番号変更が完了したダイアログを表示する
+                //スキップせず、SMS認証確認OK、番号に変更がある場合、番号変更が完了したダイアログを表示する
                 val dialog = ChangeUserInformationOnlyPhoneFragment()
                 dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
             }
