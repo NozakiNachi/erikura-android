@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.drawToBitmap
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
@@ -27,7 +28,7 @@ import java.util.*
 // マーカーの作成が終わった場合に呼び出されるコールバック
 typealias MarkerSetupCallback = (Marker) -> Unit
 
-class ErikuraMarkerView(private val activity: AppCompatActivity, private val map: GoogleMap, private val job: Job, private val optionsRequired: Boolean) {
+class ErikuraMarkerView(private val activity: FragmentActivity, private val map: GoogleMap, private val job: Job, private val optionsRequired: Boolean) {
     companion object {
         const val BASE_ZINDEX: Float            = 5000f
         const val ACTIVE_ZINDEX_OFFSET: Float   = 10000f
@@ -39,7 +40,7 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
 
         val assetsManager: AssetsManager get() = ErikuraApplication.assetsManager
 
-        fun build(activity: AppCompatActivity, map: GoogleMap, job: Job, optionsRequired: Boolean = true, callback: MarkerSetupCallback?): ErikuraMarkerView {
+        fun build(activity: FragmentActivity, map: GoogleMap, job: Job, optionsRequired: Boolean = true, callback: MarkerSetupCallback?): ErikuraMarkerView {
             val markerView = ErikuraMarkerView(activity, map, job, optionsRequired)
             callback?.invoke(markerView.marker)
             return markerView

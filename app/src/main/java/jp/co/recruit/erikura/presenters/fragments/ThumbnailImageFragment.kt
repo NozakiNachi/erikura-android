@@ -16,7 +16,18 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentThumbnailImageBinding
 
-class ThumbnailImageFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user) {
+class ThumbnailImageFragment : BaseJobDetailFragment {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ThumbnailImageFragment {
+            return ThumbnailImageFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+    constructor(): super()
+
     private val viewModel: ThumbnailImageFragmentViewModel by lazy {
         ViewModelProvider(this).get(ThumbnailImageFragmentViewModel::class.java)
     }
