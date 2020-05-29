@@ -171,6 +171,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
                 cancelButton.setOnClickListener(View.OnClickListener {
                     dialog.dismiss()
+                    dismiss()
                 })
             }
             Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
