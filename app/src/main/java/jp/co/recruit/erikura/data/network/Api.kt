@@ -126,6 +126,8 @@ class Api(var context: Context) {
             calendar.time = Date()
             calendar.add(Calendar.SECOND, 10 * 60)
             val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = calendar.time)
+            //再認証に来る場合、SMS認証画面を遷移してきたのでtrue
+            session.smsVerifyCheck = true
             userSession = session
             onComplete(session)
         }
@@ -138,6 +140,36 @@ class Api(var context: Context) {
         ) { body ->
             val id = body.id
             onComplete(id)
+        }
+    }
+
+    fun smsVerifyCheck(phoneNumber: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.smsVerifyCheck(phoneNumber),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
+        }
+    }
+
+    fun sendSms(confirmationToken: String, phoneNumber: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.sendSms(SendSmsRequest(confirmationToken = confirmationToken ,phoneNumber = phoneNumber)),
+            onError = onError
+        ) { body ->
+            //bodyはtrueしか返ってこないので送信結果の判定は入れていない
+            onComplete()
+        }
+    }
+
+    fun smsVerify(confirmationToken: String, phoneNumber: String, passcode: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.smsVerify(SmsVerifyRequest(confirmationToken = confirmationToken ,phoneNumber = phoneNumber,passcode = passcode )),
+            onError = onError
+        ) { body ->
+            //bodyはtrueしか返ってこないので送信結果の判定は入れていない
+            onComplete()
         }
     }
 
@@ -231,6 +263,8 @@ class Api(var context: Context) {
             onError = onError
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
+            //本登録処理はSMS認証後に行うのでtrue
+            session.smsVerifyCheck = true
             userSession = session
             Tracking.identify(body.userId)
             onComplete(session)

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.app.ActivityOptions
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.SurfaceTexture
@@ -42,6 +43,8 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
+        isSkipSmsVerification = true
+
         val intent = getIntent()
         if (intent != null) {
             intent.getStringExtra("extra")?.let { data ->
@@ -67,14 +70,17 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         binding.viewModel = viewModel
 
         if (Api.isLogin) {
-            // すでにログイン済の場合には以降の処理はスキップして、地図画面に遷移します
+            // すでにログイン済でSMS認証済の場合には以降の処理はスキップして、地図画面に遷移します
             Intent(this, MapViewActivity::class.java).let { intent ->
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
+                finish()
+                return
             }
-            finish()
-            return
         }
+
+        isSkipSmsVerification = false
 
         val displayMetrics = resources.displayMetrics
 
@@ -171,6 +177,29 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         }
         else {
             resumeVideo()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
+            if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                Intent(this, MapViewActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            } else {
+                // 位置情報の許諾、オンボーディングを表示します
+                Intent(this, PermitLocationActivity::class.java).let { intent ->
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(
+                        intent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                    )
+                    finish()
+                }
+            }
         }
     }
 

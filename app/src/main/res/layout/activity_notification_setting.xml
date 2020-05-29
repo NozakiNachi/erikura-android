@@ -104,7 +104,7 @@
                                     style="@style/label_w2"
                                     android:textSize="12dp"
                                     android:textColor="@color/blackTwo"
-                                    android:text="納期間近の案件があった場合のリマインドメール。"/>
+                                    android:text="納期間近のお仕事があった場合のリマインドメール。"/>
                             </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -386,7 +386,7 @@
                                     android:textSize="12dp"
                                     android:layout_marginBottom="19.5dp"
                                     android:textColor="@color/blackTwo"
-                                    android:text="納期間近の案件があった場合のプッシュ通知。"/>
+                                    android:text="納期間近のお仕事があった場合のプッシュ通知。"/>
                             </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>

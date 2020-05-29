@@ -37,17 +37,21 @@ object JobUtils {
     fun sortJobs(jobs: List<Job>): List<Job> {
         val comparators = arrayOf(
             compareJobState,
+            compareWanted, compareBoosted,
             compareWorkingFinishAtForActive, compareWorkingStartAtForFuture, compareWorkingFinishAtForPast,
-            compareWorkingFinishAt, compareWorkingStartAt, compareId
+            compareFee, compareCreatedAt, compareId
+//            compareWorkingFinishAt, compareWorkingStartAt, compareId
         )
         return jobs.sortedWith(comparators.reduce { c1, c2 -> c1.then(c2) })
     }
 
     private fun jobStatusPriority(job: Job): Int {
         return when {
-            job.isFuture -> 1
-            job.isPastOrInactive -> 2
-            else -> 0
+            job.isEntried && job.isOwner && !job.isReported -> 0
+            job.isActive -> 1
+            job.isFuture -> 2
+            job.isEntried && job.isOwner -> 3
+            else -> 4
         }
     }
 
@@ -94,7 +98,29 @@ object JobUtils {
         }
     }
 
+    private val compareWanted: Comparator<Job> = Comparator { j1, j2 ->
+        val aWanted = j1.wanted ?: false
+        val bWanted = j2.wanted ?: false
+        when {
+            aWanted && !bWanted -> -1
+            !aWanted && bWanted -> 1
+            else -> 0
+        }
+    }
+
+    private val compareBoosted: Comparator<Job> = Comparator { j1, j2 ->
+        val aBoosted = j1.boost ?: false
+        val bBoosted = j2.boost ?: false
+        when {
+            aBoosted && !bBoosted -> -1
+            !aBoosted && bBoosted -> 1
+            else -> 0
+        }
+    }
+
     private val compareWorkingFinishAt: Comparator<Job> = compareBy(Job::workingFinishAt)
     private val compareWorkingStartAt: Comparator<Job> = compareBy(Job::workingStartAt)
+    private val compareFee: Comparator<Job> = compareBy(Job::fee).reversed()
+    private val compareCreatedAt: Comparator<Job> = compareBy(Job::createdAt)
     private val compareId: Comparator<Job> = compareBy(Job::id)
 }

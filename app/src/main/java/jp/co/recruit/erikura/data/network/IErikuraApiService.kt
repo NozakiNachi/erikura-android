@@ -20,6 +20,15 @@ interface IErikuraApiService {
     @POST("users/confirm")
     fun registerConfirm(@Body request: ConfirmationTokenRequest): ApiObservable<IdResponse>
 
+    @GET("users/sms_verify_check")
+    fun smsVerifyCheck(@Query("phone_number") phoneNumber: String):  ApiObservable<ResultResponse>
+
+    @POST("users/send_sms")
+    fun sendSms(@Body request: SendSmsRequest): ApiObservable<ResultResponse>
+
+    @POST("users/sms_verify")
+    fun smsVerify(@Body request: SmsVerifyRequest): ApiObservable<ResultResponse>
+
     @GET("users")
     fun user(): ApiObservable<User>
 
@@ -220,6 +229,17 @@ data class RegisterEmailRequest(
 
 data class ConfirmationTokenRequest(
     var confirmationToken: String
+)
+
+data class SendSmsRequest(
+    var confirmationToken: String,
+    var phoneNumber: String
+)
+
+data class SmsVerifyRequest(
+    var confirmationToken: String,
+    var phoneNumber: String,
+    var passcode: String
 )
 
 data class LoginRequest(

@@ -207,6 +207,37 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/silver"/>
+
+            <!-- 報告箇所 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:gravity="center"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:text="@string/jobDetails_jobId" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:lineSpacingExtra="10dp"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:text="@{viewModel.jobId}"
+                    android:textIsSelectable="true" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/silver"/>
         </LinearLayout>
 
     </FrameLayout>

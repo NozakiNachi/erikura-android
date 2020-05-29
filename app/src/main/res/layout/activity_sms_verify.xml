@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".presenters.activities.registration.SmsVerifyActivity">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyViewModel" />
+
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyEventHandlers" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="29dp"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                android:text="@string/smsVerify_title"
+                android:textColor="@color/black"
+                android:textSize="22dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="29dp"
+                android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                android:text="@string/smsVerify_caption"
+                android:textColor="@color/black"
+                android:textSize="18dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="@{viewModel.sendSmsVerifyVisible}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="29dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:text="@={viewModel.caption}"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/passcode" />
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_passcode_hint"
+                    android:inputType="number"
+                    android:text="@={viewModel.passCode}" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.errorVisibile}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.error.message}"
+                    />
+
+                <Button
+                    style="@style/primaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:enabled="@{viewModel.isAuthenticateButtonEnabled()}"
+                    android:onClick="@{handlers::onClickAuthenticate}"
+                    android:text="@string/authenticate" />
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="10dp"
+                    android:onClick="@{handlers::onClickPassCodeResend}"
+                    android:text="@string/smsVerify_passcode_resend"
+                    android:textSize="14dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:visibility="@{viewModel.notSendSmsVerifyVisible}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="29dp"
+                    android:layout_marginBottom="20dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:text="@string/smsVerify_not_mobilePhone_format"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+
+            </LinearLayout>
+
+            <TextView
+                style="@style/linkText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:onClick="@{handlers::onClickRegisterPhone}"
+                android:text="@string/smsVerify_register_phone"
+                android:textSize="14dp" />
+
+            <TextView
+                style="@style/linkText"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="80dp"
+                android:onClick="@{handlers::onClickSkip}"
+                android:text="あとで設定する"
+                android:textSize="14dp"
+                android:visibility="@{viewModel.skipButtonVisible}" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>

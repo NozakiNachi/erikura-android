@@ -1,6 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -13,6 +13,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -27,6 +28,8 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     val date: Date = Date()
 
     var fromActivity: Int = 0
+    var requestCode: Int? = null
+    var fromSms: Boolean = false
 
     private val viewModel: ResignInViewModel by lazy {
         ViewModelProvider(this).get(ResignInViewModel::class.java)
@@ -40,12 +43,14 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        // 登録メールアドレスを取得
+//         登録メールアドレスを取得
         Api(this).user() { user->
             viewModel.email.value = user.email
         }
 
         fromActivity = intent.getIntExtra("fromActivity", 0)
+        requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
+        fromSms = intent.getBooleanExtra("fromSms", false)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -62,22 +67,38 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
     override fun onClickResignIn(view: View) {
         Api(this).resignIn(viewModel.email.value ?: "", viewModel.password.value ?: "") {
+            it.smsVerifyCheck = true
             Log.v("DEBUG", "再認証成功: userId=${it.userId}")
-            finish()
 
             // 画面遷移
             when (fromActivity) {
                 BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
-                    val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                    startActivity(intent)
+                    val intent = Intent()
+                    intent.putExtra("requestCode", requestCode)
+                    intent.putExtra("fromSms", fromSms)
+                    setResult(RESULT_OK, intent)
+                    finish()
                 }
                 BaseReSignInRequiredActivity.ACTIVITY_ACCOUNT_SETTINGS -> {
                     val intent = Intent(this, AccountSettingActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }
                 else -> {
                     throw IllegalArgumentException("unknown fromActivity")
                 }
+            }
+        }
+    }
+
+    override fun onBackPressed(){
+        when (fromActivity) {
+            BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
+            else -> {
+            super.onBackPressed()
             }
         }
     }
