@@ -31,6 +31,9 @@ import java.util.regex.Pattern
 
 class SmsVerifyActivity : BaseActivity(),
     SmsVerifyEventHandlers {
+    companion object {
+        val mobilePhonePattern = Pattern.compile("^(070|080|090)")
+    }
     private val viewModel: SmsVerifyViewModel by lazy {
         ViewModelProvider(this).get(SmsVerifyViewModel::class.java)
     }
@@ -44,7 +47,6 @@ class SmsVerifyActivity : BaseActivity(),
     var isMobilePhoneNumber: Boolean? = false
     var isChangeUserInformationOtherThanPhone: Boolean = false
     var isChangePhoneNumber: Boolean = false
-    val pattern = Pattern.compile("^(070|080|090)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -74,28 +76,29 @@ class SmsVerifyActivity : BaseActivity(),
             phoneNumber = intent.getStringExtra("phoneNumber")
             confirmationToken = user.confirmationToken
             beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
-            sendSms(pattern, phoneNumber ?:"")
+            sendSms(phoneNumber ?:"")
         } else {
             Api(this).user {
                 user = it
                 phoneNumber = user.phoneNumber
                 confirmationToken = user.confirmationToken
                 beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
-                sendSms(pattern, phoneNumber ?:"")
+                sendSms(phoneNumber ?:"")
             }
         }
     }
 
-    fun sendSms(pattern: Pattern, phoneNumber: String) {
+    fun sendSms(phoneNumber: String) {
         //携帯番号形式化チェック
-        isMobilePhoneNumber = pattern.matcher(phoneNumber ?:"").find()
+        isMobilePhoneNumber = mobilePhonePattern.matcher(phoneNumber ?:"").find()
         if (isMobilePhoneNumber == true) {
             Log.v("DEBUG", "SMS認証メール送信")
+            viewModel.isMobilePhoneNumber.value = isMobilePhoneNumber
             // trueしか返ってこないので送信結果の判定は入れていない
             Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
                 phoneNumber?.let { viewModel.setCaption(it) }
                 viewModel.error.message.value = null
-                viewModel.isMobilePhoneNumber.value = isMobilePhoneNumber
+                viewModel.passCode.value = null
             }
         } else {
             viewModel.isMobilePhoneNumber.value = isMobilePhoneNumber
@@ -141,9 +144,7 @@ class SmsVerifyActivity : BaseActivity(),
     override fun onClickPassCodeResend(view: View) {
         Log.v("DEBUG", "SMS認証メール送信")
         // trueしか返ってこないので送信結果の判定は入れていない
-        Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-            phoneNumber?.let { viewModel.setCaption(it) }
-        }
+        sendSms(phoneNumber ?: "")
     }
 
     override fun onClickRegisterPhone(view: View) {
@@ -229,13 +230,10 @@ class SmsVerifyActivity : BaseActivity(),
                     phoneNumber = newPhoneNumber
                     Log.v("INFO", "SMS認証メール送信")
                     // trueしか返ってこないので送信結果の判定は入れていない
-                    Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-                        phoneNumber?.let {phoneNum-> viewModel.setCaption(phoneNum) }
-                        viewModel.error.message.value = null
-                    }
+                    sendSms(phoneNumber ?: "")
                 }
             }
-        } else {
+        } else if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION &&  resultCode == RESULT_OK) {
             data?.let {
                 beforeChangeNewPhoneNumber = it.getStringExtra("beforeChangeNewPhoneNumber")
                 isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
@@ -244,9 +242,8 @@ class SmsVerifyActivity : BaseActivity(),
                         phoneNumber = data.getStringExtra("newPhoneNumber")
                         Log.v("INFO", "SMS認証メール送信")
                         // trueしか返ってこないので送信結果の判定は入れていない
-                        Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-                            phoneNumber?.let { phoneNum -> viewModel.setCaption(phoneNum) }
-                            viewModel.error.message.value = null
+                        phoneNumber.let{
+                            sendSms(phoneNumber ?: "")
                         }
                     }
                 }
@@ -258,6 +255,8 @@ class SmsVerifyActivity : BaseActivity(),
                     isChangeUserInformationOtherThanPhone = false
                 }
             }
+        } else {
+            //万が一、会員情報編集に失敗した場合、画面更新はしない
         }
     }
 }
