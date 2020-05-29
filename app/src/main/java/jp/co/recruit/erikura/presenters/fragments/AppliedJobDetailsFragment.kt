@@ -383,19 +383,23 @@ class AppliedJobDetailsFragment(
         BaseActivity.currentActivity?.let { activity ->
             val dialog = AlertDialog.Builder(activity)
                 .setView(R.layout.dialog_explain_get_pedometer)
-                .setNegativeButton("同意しない") { dialog: DialogInterface?, which: Int ->
-                    //許可しない押した場合の処理
-                    ErikuraApplication.instance.setAcceptedExplainGetPedometer(false)
-                    checkAcceptedExplainGetPedometer()
-                }
-                .setPositiveButton("同意する") { dialog: DialogInterface?, which: Int ->
-                    //許可した場合の処理
-                    ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
-                    checkAcceptedExplainGetPedometer()
-                }
                 .setCancelable(false)
                 .create()
             dialog.show()
+            val button: Button = dialog.findViewById(R.id.accepted_button)
+            button.setOnClickListener(View.OnClickListener{
+                //同意した場合
+                dialog.dismiss()
+                ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
+                checkAcceptedExplainGetPedometer()
+            })
+            val cancelButton: Button = dialog.findViewById(R.id.not_accepted_button)
+            cancelButton.setOnClickListener(View.OnClickListener {
+                //同意しない場合
+                dialog.dismiss()
+                ErikuraApplication.instance.setAcceptedExplainGetPedometer(false)
+                checkAcceptedExplainGetPedometer()
+            })
         }
     }
 
@@ -444,6 +448,10 @@ class AppliedJobDetailsFragment(
                 button.setOnClickListener(View.OnClickListener{
                         dialog.dismiss()
                         onClickConfirmation(it)
+                })
+                val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+                cancelButton.setOnClickListener(View.OnClickListener {
+                    dialog.dismiss()
                 })
             }
             Entry.CheckStatus.SUCCESS_WITH_WARNING -> {

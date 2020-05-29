@@ -484,6 +484,8 @@
 
     <!--歩数計取得の説明ダイアログ-->
     <string name="pedometer_explain">作業をするには、作業を行っている証明を発注主に報告する目的で、位置情報と歩数を取得しますがよろしいでしょうか？</string>
-    <string name="pedometer_not_accepted">※許可をいただけない場合、作業を開始することができません</string>
+    <string name="pedometer_not_accepted">※同意をいただけない場合、作業を開始することができません</string>
+    <string name="pedometer_accepted_button">同意する</string>
+    <string name="pedometer_not_accepted_button">同意しない</string>
 
 </resources>

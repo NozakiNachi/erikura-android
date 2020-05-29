@@ -10,6 +10,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="20dp"
             android:background="@color/white"
             android:fillViewport="true">
 
@@ -25,6 +26,26 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:text="@string/pedometer_explain" />
+
+                <Button
+                    android:id="@+id/accepted_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    style="@style/primaryButton"
+                    android:text="@string/pedometer_accepted_button" />
+
+                <Button
+                    android:id="@+id/not_accepted_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    style="@style/secondaryButton"
+                    android:text="@string/pedometer_not_accepted_button"/>
 
             </LinearLayout>
         </ScrollView>

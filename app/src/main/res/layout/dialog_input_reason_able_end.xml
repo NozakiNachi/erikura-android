@@ -72,6 +72,16 @@
                 android:text="@string/confirmation"
                 android:enabled="@{viewModel.isEnabledButton}"/>
 
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                style="@style/secondaryButton"
+                android:text="@string/button_cancel"/>
+
         </LinearLayout>
     </ScrollView>
 </layout>

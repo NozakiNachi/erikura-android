@@ -168,6 +168,10 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                     dialog.dismiss()
                     onClickConfirmation(it)
                 })
+                val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+                cancelButton.setOnClickListener(View.OnClickListener {
+                    dialog.dismiss()
+                })
             }
             Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
                 //警告ダイアログは終了画面で表示
