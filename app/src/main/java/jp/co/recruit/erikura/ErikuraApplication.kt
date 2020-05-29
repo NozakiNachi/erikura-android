@@ -75,6 +75,9 @@ class ErikuraApplication : Application() {
         const val REQUEST_SIGN_UP_CODE = 1
         const val REQUEST_LOGIN_CODE = 2
         const val REQUEST_CHANGE_USER_INFORMATION = 3
+
+        // 再認証画面の遷移元の定数
+        const val REQUEST_RESIGHIN = 4
     }
 
     //    var userSession: UserSession? = null

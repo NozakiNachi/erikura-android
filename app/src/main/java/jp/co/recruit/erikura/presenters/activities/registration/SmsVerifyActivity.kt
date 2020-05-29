@@ -43,6 +43,7 @@ class SmsVerifyActivity : BaseActivity(),
     var isCameThroughLogin: Boolean = false
     var isMobilePhoneNumber: Boolean? = false
     var isChangeUserInformationOtherThanPhone: Boolean = false
+    var isChangePhoneNumber: Boolean = false
     val pattern = Pattern.compile("^(070|080|090)")
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,11 +104,6 @@ class SmsVerifyActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
-        if (isChangeUserInformationOtherThanPhone) {
-            val dialog = ChangeUserInformationOtherThanPhoneFragment()
-            dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
-            isChangeUserInformationOtherThanPhone = false
-        }
         //SMS認証画面表示のトラッキングの送出
         Tracking.logEvent(event= "view_sms_verify", params= bundleOf())
         Tracking.view(name= "/user/view_sms_verify", title= "SMS認証画面")
@@ -132,6 +128,11 @@ class SmsVerifyActivity : BaseActivity(),
             if (isCameThroughLogin) {
                 intent.putExtra("isCameThroughLogin", isCameThroughLogin)
             }
+            if(isChangePhoneNumber) {
+                intent.putExtra("isChangePhoneNumber", isChangePhoneNumber)
+            }
+            //認証成功のフラグ
+            intent.putExtra("isSmsAuthenticate", true)
             setResult(RESULT_OK, intent)
             finish()
         }
@@ -154,7 +155,7 @@ class SmsVerifyActivity : BaseActivity(),
                 intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
                 startActivityForResult(intent, ErikuraApplication.REQUEST_SIGN_UP_CODE)
             }
-            ErikuraApplication.REQUEST_LOGIN_CODE -> {
+            else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
                 if (beforeChangeNewPhoneNumber != null) {
@@ -163,19 +164,8 @@ class SmsVerifyActivity : BaseActivity(),
                 intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
                 //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
                 intent.putExtra("isCameThroughLogin", true)
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
-            }
-            else -> {
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                intent.putExtra("user", user)
-                if (beforeChangeNewPhoneNumber != null) {
-                    intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
-                }
-                intent.putExtra("requestCode", requestCode)
-                if (isCameThroughLogin) {
-                    intent.putExtra("isCameThroughLogin", isCameThroughLogin)
-                }
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                intent.putExtra("fromSms", true)
+                startActivityForResult(intent, ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION)
             }
         }
     }
@@ -183,14 +173,14 @@ class SmsVerifyActivity : BaseActivity(),
     override fun onBackPressed() {
         //ログイン、自動ログインから遷移してきた場合、戻るボタンを制御します。
         if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE) {
-            Logout()
+            logout()
         } else {
             //　その他からの遷移は通常遷移
             super.onBackPressed()
         }
     }
 
-    fun Logout() {
+    fun logout() {
         Api(this).logout() { deletedSession ->
             // ログアウトのトラッキングの送出
             Tracking.logEvent(event = "logout", params = bundleOf())
@@ -240,9 +230,32 @@ class SmsVerifyActivity : BaseActivity(),
                     Log.v("INFO", "SMS認証メール送信")
                     // trueしか返ってこないので送信結果の判定は入れていない
                     Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
-                        phoneNumber?.let { viewModel.setCaption(it) }
+                        phoneNumber?.let {phoneNum-> viewModel.setCaption(phoneNum) }
                         viewModel.error.message.value = null
                     }
+                }
+            }
+        } else {
+            data?.let {
+                beforeChangeNewPhoneNumber = it.getStringExtra("beforeChangeNewPhoneNumber")
+                isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
+                it.getStringExtra("newPhoneNumber")?.let {
+                    if (phoneNumber != data.getStringExtra("newPhoneNumber")) {
+                        phoneNumber = data.getStringExtra("newPhoneNumber")
+                        Log.v("INFO", "SMS認証メール送信")
+                        // trueしか返ってこないので送信結果の判定は入れていない
+                        Api(this).sendSms(confirmationToken ?: "", phoneNumber ?: "") {
+                            phoneNumber?.let { phoneNum -> viewModel.setCaption(phoneNum) }
+                            viewModel.error.message.value = null
+                        }
+                    }
+                }
+                isChangeUserInformationOtherThanPhone =
+                    it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
+                if (isChangeUserInformationOtherThanPhone) {
+                    val dialog = ChangeUserInformationOtherThanPhoneFragment()
+                    dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
+                    isChangeUserInformationOtherThanPhone = false
                 }
             }
         }
@@ -296,7 +309,7 @@ class SmsVerifyViewModel : ViewModel() {
     val skipButtonVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
         result.addSource(isCameThroughLogin) {
             result.addSource(requestCode) {
-                if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE) {
+                if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
                     result.value =View.VISIBLE
                 } else {
                     result.value =View.GONE
