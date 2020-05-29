@@ -18,16 +18,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
-import android.graphics.drawable.BitmapDrawable
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.os.bundleOf
-import androidx.lifecycle.MediatorLiveData
-import jp.co.recruit.erikura.Tracking
-import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.business.util.JobUtils
+import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
