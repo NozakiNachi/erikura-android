@@ -20,6 +20,8 @@ import jp.co.recruit.erikura.presenters.view_models.MarkerViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
+import java.lang.IllegalArgumentException
 import java.util.*
 
 // マーカーの作成が終わった場合に呼び出されるコールバック
@@ -65,38 +67,48 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
     private fun buildMarker(): Marker {
         val markerUrl = markerViewModel.markerUrl
 
-        return assetsManager.lookupAsset(markerUrl)?.let {
-            marker = map.addMarker(
-                MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromPath(it.path))
-                    .position(job.latLng)
-            )
-            marker
-        } ?: run {
-            marker = map.addMarker(
-                MarkerOptions()
-                    .position(job.latLng)
-            ).also {
-                marker = it
-                updateMarkerIcon()
+        try {
+            return assetsManager.lookupAsset(markerUrl)?.let {
+                if (File(it.path).exists()) {
+                    marker = map.addMarker(MarkerOptions().icon(BitmapDescriptorFactory.fromPath(it.path)).position(job.latLng))
+                    marker
+                } else {
+                    null
+                }
+            } ?: run {
+                marker = map.addMarker(MarkerOptions().position(job.latLng)).also {
+                    marker = it
+                    updateMarkerIcon()
+                }
+                marker
             }
-            marker
+        }
+        catch (e: Exception) {
+            // 何かしらの例外が発生した場合に、デフォルトマーカーを表示する
+            return map.addMarker(MarkerOptions().position(job.latLng))
         }
     }
 
     private fun updateMarkerIcon() {
         val markerUrl = markerViewModel.markerUrl
 
-        return assetsManager.lookupAsset(markerUrl)?.let {
-            activity.run {
-                marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
-            }
-        } ?: run {
-            buildMarkerImage() {
-                activity.run {
-                    marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
+        try {
+            assetsManager.lookupAsset(markerUrl)?.let {
+                if (File(it.path).exists()) {
+                    activity.run {
+                        marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
+                    }
+                } else { null }
+            } ?: run {
+                buildMarkerImage() {
+                    activity.run {
+                        marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
+                    }
                 }
             }
+        }
+        catch (e: IllegalArgumentException) {
+            Log.e(ErikuraApplication.LOG_TAG, e.message, e)
         }
     }
 
