@@ -91,8 +91,8 @@ object JobUtils {
             val aFinishedAt = j1.workingFinishAt ?: Date()
             val bFinishedAt = j2.workingFinishAt ?: Date()
             when {
-                aFinishedAt > bFinishedAt -> -1
-                aFinishedAt < bFinishedAt -> 1
+                aFinishedAt < bFinishedAt -> -1
+                aFinishedAt > bFinishedAt -> 1
                 else -> 0
             }
         }
