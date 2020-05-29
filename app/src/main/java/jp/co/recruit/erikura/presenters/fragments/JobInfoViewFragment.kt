@@ -13,7 +13,18 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentJobInfoViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 
-class JobInfoViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), JobInfoViewFragmentEventHandlers {
+class JobInfoViewFragment : BaseJobDetailFragment, JobInfoViewFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): JobInfoViewFragment {
+            return JobInfoViewFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+    constructor(): super()
+
     private val viewModel: JobInfoViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobInfoViewFragmentViewModel::class.java)
     }

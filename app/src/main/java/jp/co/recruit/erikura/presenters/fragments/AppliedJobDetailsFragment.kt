@@ -48,11 +48,18 @@ import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.util.*
 
 
-class AppliedJobDetailsFragment(
-    private val activity: AppCompatActivity,
-    job: Job?,
-    user: User?
-) : BaseJobDetailFragment(job, user), AppliedJobDetailsFragmentEventHandlers {
+class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): AppliedJobDetailsFragment {
+            val args = Bundle()
+            fillArguments(args, job, user)
+
+            return AppliedJobDetailsFragment().also {
+                it.arguments = args
+            }
+        }
+    }
+
     private val viewModel: AppliedJobDetailsFragmentViewModel by lazy {
         ViewModelProvider(this).get(AppliedJobDetailsFragmentViewModel::class.java)
     }
@@ -72,6 +79,8 @@ class AppliedJobDetailsFragment(
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+
+    constructor(): super()
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -97,7 +106,7 @@ class AppliedJobDetailsFragment(
         container?.removeAllViews()
         val binding = FragmentAppliedJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(activity, job, user)
+        viewModel.setup(activity!!, job, user)
         updateTimeLimit()
         binding.viewModel = viewModel
         binding.handlers = this
@@ -108,13 +117,13 @@ class AppliedJobDetailsFragment(
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        jobInfoView = JobInfoViewFragment(job, user)
-        manualImage = ManualImageFragment(job, user)
-        cancelButton = CancelButtonFragment(job, user)
-        manualButton = ManualButtonFragment(job, user)
-        thumbnailImage = ThumbnailImageFragment(job, user)
-        jobDetailsView = JobDetailsViewFragment(job, user)
-        mapView = MapViewFragment(activity, job, user)
+        jobInfoView = JobInfoViewFragment.newInstance(job, user)
+        manualImage = ManualImageFragment.newInstance(job, user)
+        cancelButton = CancelButtonFragment.newInstance(job, user)
+        manualButton = ManualButtonFragment.newInstance(job, user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
+        mapView = MapViewFragment.newInstance(job, user)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton!!, "cancelButton")
@@ -208,7 +217,7 @@ class AppliedJobDetailsFragment(
     }
 
     override fun onClickStart(view: View) {
-        if (!ErikuraApplication.pedometerManager.checkPermission(activity)) {
+        if (!ErikuraApplication.pedometerManager.checkPermission(activity!!)) {
             inStartJob = true
             if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
                 var openSettings = false
@@ -271,7 +280,7 @@ class AppliedJobDetailsFragment(
                 null
             }
 
-            Api(activity).startJob(
+            Api(activity!!).startJob(
                 job, latLng,
                 steps = steps,
                 distance = null, floorAsc = null, floorDesc = null
