@@ -442,6 +442,7 @@ class AppliedJobDetailsFragment(
                 }
                 val dialog = AlertDialog.Builder(activity)
                     .setView(binding.root)
+                    .setCancelable(false)
                     .create()
                 dialog.show()
                 val button: Button = dialog.findViewById(R.id.confirmation_button)
