@@ -43,6 +43,8 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
+        isSkipSmsVerification = true
+
         val intent = getIntent()
         if (intent != null) {
             intent.getStringExtra("extra")?.let { data ->
@@ -73,8 +75,12 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
                 intent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)
+                finish()
+                return
             }
         }
+
+        isSkipSmsVerification = false
 
         val displayMetrics = resources.displayMetrics
 

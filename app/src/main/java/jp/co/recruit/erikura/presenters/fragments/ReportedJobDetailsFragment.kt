@@ -31,11 +31,18 @@ import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
 
-class ReportedJobDetailsFragment(
-    private val activity: AppCompatActivity,
-    job: Job?,
-    user: User?
-) : BaseJobDetailFragment(job, user), ReportedJobDetailsFragmentEventHandlers {
+class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ReportedJobDetailsFragment {
+            val args = Bundle()
+            fillArguments(args, job, user)
+
+            return ReportedJobDetailsFragment().also {
+                it.arguments = args
+            }
+        }
+    }
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobDetailsFragmentViewModel::class.java)
     }
@@ -48,6 +55,8 @@ class ReportedJobDetailsFragment(
     private var reportedJobEditButton: ReportedJobEditButtonFragment? = null
     private var reportedJobRemoveButton: ReportedJobRemoveButtonFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
+
+    constructor(): super()
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -83,23 +92,23 @@ class ReportedJobDetailsFragment(
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        reportSummaryAdapter = ReportSummaryAdapter(activity, listOf(), true)
-        val reportSummaryView: RecyclerView = activity.findViewById(R.id.reportedJobDetails_reportSummaries)
+        reportSummaryAdapter = ReportSummaryAdapter(activity!!, listOf(), true)
+        val reportSummaryView: RecyclerView = activity!!.findViewById(R.id.reportedJobDetails_reportSummaries)
         reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
 
-        additionalOperatorCommentsAdapter = OperatorCommentAdapter(activity, listOf())
-        val additionalCommentView: RecyclerView = activity.findViewById(R.id.reportedJobDetails_additionalOperatorComments)
+        additionalOperatorCommentsAdapter = OperatorCommentAdapter(activity!!, listOf())
+        val additionalCommentView: RecyclerView = activity!!.findViewById(R.id.reportedJobDetails_additionalOperatorComments)
         additionalCommentView.setHasFixedSize(true)
         additionalCommentView.adapter = additionalOperatorCommentsAdapter
 
         val transaction = childFragmentManager.beginTransaction()
-        timeLabel = TimeLabelFragment(job, user)
-        jobInfoView = JobInfoViewFragment(job, user)
-        thumbnailImage = ThumbnailImageFragment(job, user)
-        reportedJobEditButton = ReportedJobEditButtonFragment(job, user)
-        reportedJobRemoveButton = ReportedJobRemoveButtonFragment(job, user)
-        jobDetailsView = JobDetailsViewFragment(job, user)
+        timeLabel = TimeLabelFragment.newInstance(job, user)
+        jobInfoView = JobInfoViewFragment.newInstance(job, user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
+        reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(job, user)
+        reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(job, user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
 
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
@@ -150,7 +159,7 @@ class ReportedJobDetailsFragment(
                 setup()
             }
             else {
-                Api(activity).reloadReport(job) {
+                Api(activity!!).reloadReport(job) {
                     var report = it
                     report.additionalPhotoAsset = if (report.additionalReportPhotoUrl.isNullOrEmpty()){
                         null
@@ -180,8 +189,8 @@ class ReportedJobDetailsFragment(
                 viewModel.bitmapDrawable.value = bitmapDraw
             }else {
                 val assetsManager = ErikuraApplication.assetsManager
-                assetsManager.fetchImage(activity, thumbnailUrl) { result ->
-                    activity.runOnUiThread {
+                assetsManager.fetchImage(activity!!, thumbnailUrl) { result ->
+                    activity!!.runOnUiThread {
                         val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
                         val bitmapDraw = BitmapDrawable(bitmapReduced)
                         bitmapDraw.alpha = 150
@@ -192,7 +201,7 @@ class ReportedJobDetailsFragment(
 
             // お気に入り状態の取得
             if (Api.isLogin) {
-                Api(activity).placeFavoriteShow(job?.place?.id ?: 0) {
+                Api(activity!!).placeFavoriteShow(job?.place?.id ?: 0) {
                     viewModel.favorited.value = it
                 }
             }
@@ -263,8 +272,8 @@ class ReportedJobDetailsFragment(
                 // マニュアル外報告の取得
                 val item = it.additionalPhotoAsset ?: MediaItem()
                 if (item.contentUri != null) {
-                    val imageView: ImageView = activity.findViewById(R.id.reported_job_details_other_image)
-                    item.loadImageFromString(activity, imageView)
+                    val imageView: ImageView = activity!!.findViewById(R.id.reported_job_details_other_image)
+                    item.loadImageFromString(activity!!, imageView)
                     viewModel.otherFormImageVisibility.value = View.VISIBLE
                 } else {
                     viewModel.otherFormImageVisibility.value = View.GONE

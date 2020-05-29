@@ -17,10 +17,23 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
 
-class ManualImageFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ManualImageFragmentEventHandlers {
+class ManualImageFragment : BaseJobDetailFragment, ManualImageFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ManualImageFragment {
+            val args = Bundle()
+            fillArguments(args, job, user)
+
+            return ManualImageFragment().also {
+                it.arguments = args
+            }
+        }
+    }
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(ManualImageFragmentViewModel::class.java)
     }
+
+    constructor(): super()
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)

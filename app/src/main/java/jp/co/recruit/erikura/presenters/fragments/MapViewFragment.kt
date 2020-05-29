@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -23,7 +24,19 @@ import jp.co.recruit.erikura.databinding.FragmentMapViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 
-class MapViewFragment(private val activity: AppCompatActivity, job: Job?, user: User?) : BaseJobDetailFragment(job, user), OnMapReadyCallback {
+class MapViewFragment: BaseJobDetailFragment, OnMapReadyCallback {
+    companion object {
+        fun newInstance(job: Job?, user: User?): MapViewFragment {
+            return MapViewFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     private val viewModel: MapViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(MapViewFragmentViewModel::class.java)
     }
@@ -90,7 +103,7 @@ class MapViewFragment(private val activity: AppCompatActivity, job: Job?, user: 
             }
 
             job?.let { job ->
-                val erikuraMarker = ErikuraMarkerView.build(activity, mMap, job, false) {  }
+                val erikuraMarker = ErikuraMarkerView.build(activity!!, mMap, job, false) {  }
                 erikuraMarker.active = true
                 viewModel.marker.value = erikuraMarker
             }

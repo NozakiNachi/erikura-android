@@ -8,7 +8,19 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 
-class ApplyFlowViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user) {
+class ApplyFlowViewFragment : BaseJobDetailFragment {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ApplyFlowViewFragment {
+            return ApplyFlowViewFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     private var applyFlowLink: ApplyFlowLinkFragment? = null
 
     override fun refresh(job: Job?, user: User?) {
@@ -27,7 +39,7 @@ class ApplyFlowViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job,
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val transaction = childFragmentManager.beginTransaction()
-        applyFlowLink = ApplyFlowLinkFragment(job, user)
+        applyFlowLink = ApplyFlowLinkFragment.newInstance(job, user)
         transaction.add(R.id.applyFlow_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
         transaction.commitAllowingStateLoss()
     }
