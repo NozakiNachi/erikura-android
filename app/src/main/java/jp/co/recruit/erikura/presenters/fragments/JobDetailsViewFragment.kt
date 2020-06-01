@@ -34,7 +34,19 @@ import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 import java.lang.ref.WeakReference
 import java.util.*
 
-class JobDetailsViewFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), JobDetailsViewFragmentEventHandlers {
+class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): JobDetailsViewFragment {
+            return JobDetailsViewFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     private val viewModel: JobDetailsViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobDetailsViewFragmentViewModel::class.java)
     }

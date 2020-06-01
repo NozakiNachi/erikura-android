@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.registration
 import android.app.DatePickerDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -111,6 +112,11 @@ class RegisterBirthdayActivity : BaseActivity(),
         dp.maxDate = maxDate.timeInMillis
 
         dpd.show()
+
+        // 初期状態で年選択を表示した状態にします
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            dpd.datePicker.touchables[0].performClick()
+        }
     }
 }
 

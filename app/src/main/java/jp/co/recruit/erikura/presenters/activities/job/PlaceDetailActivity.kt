@@ -105,8 +105,8 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
                 }
             }
             val transaction = supportFragmentManager.beginTransaction()
-            val workingPlaceView = WorkingPlaceViewFragment(place)
-            val jobsList = JobsListFragment(place.jobs)
+            val workingPlaceView = WorkingPlaceViewFragment.newInstance(place)
+            val jobsList = JobsListFragment.newInstance(place.jobs)
             transaction.replace(R.id.placeDetail_workingPlaceView, workingPlaceView)
             transaction.replace(R.id.placeDetail_jobsList, jobsList)
             transaction.commitAllowingStateLoss()

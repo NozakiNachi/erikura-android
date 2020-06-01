@@ -133,7 +133,7 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
                 val sortedJobs = jobs.sortedBy{
                     it.entry?.limitAt
                 }.first()
-                val timerCircle = WorkingTimeCircleFragment(sortedJobs)
+                val timerCircle = WorkingTimeCircleFragment.newInstance(sortedJobs)
                 transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
                 transaction.commitAllowingStateLoss()
             }else {

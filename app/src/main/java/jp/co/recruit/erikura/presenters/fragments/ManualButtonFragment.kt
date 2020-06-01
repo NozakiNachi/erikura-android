@@ -9,7 +9,19 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentManualButtonBinding
 
-class ManualButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ManualButtonFragmentEventHandlers {
+class ManualButtonFragment : BaseJobDetailFragment, ManualButtonFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ManualButtonFragment {
+            return ManualButtonFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
