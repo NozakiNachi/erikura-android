@@ -122,9 +122,9 @@
     <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
 
     <!-- 応募確認モーダル -->
-    <string name="applyDialog_caption1">作業報告締切は、応募後24時間以内となります。24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
-    <string name="applyDialog_caption2Pattern1">報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
-    <string name="applyDialog_caption2Pattern2">必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
+    <string name="applyDialog_caption1">※作業報告締切は、応募後24時間以内となります。24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
+    <string name="applyDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
+    <string name="applyDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
 
     <!-- 応募完了画面 -->
     <string name="applyCompleted_caption">応募が完了しました！</string>
