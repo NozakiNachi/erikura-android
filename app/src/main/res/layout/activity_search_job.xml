@@ -89,18 +89,17 @@
                     android:visibility="@{viewModel.detailConditionsVisibility}"
                     >
                     
-                    <RelativeLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         >
                         <LinearLayout
-                            android:id="@+id/search_job_fee_label"
-                            android:layout_width="93dp"
+                            android:layout_width="83dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentLeft="true"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
                             android:orientation="vertical">
                             <ImageView
                                 android:layout_width="16dp"
@@ -127,11 +126,11 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="62dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_toRightOf="@id/search_job_fee_label"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
                             android:layout_marginTop="0dp"
-                            android:layout_marginLeft="0dp"
+                            android:layout_marginLeft="83dp"
                             android:layout_marginRight="0dp"
                             android:layout_marginBottom="0dp"
                             style="@style/spinnerField"
@@ -147,20 +146,19 @@
                             app:onSafeClick="@{handlers::onClickRewardSpinner}"
                             android:text="@{viewModel.rewardLabel}"
                             />
-                    </RelativeLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <RelativeLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         >
                         <LinearLayout
-                            android:id="@+id/search_job_working_time_label"
-                            android:layout_width="93dp"
+                            android:layout_width="83dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentLeft="true"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
                             android:orientation="vertical">
                             <ImageView
                                 android:layout_width="16dp"
@@ -188,11 +186,11 @@
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="62dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_toRightOf="@id/search_job_working_time_label"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
                             android:layout_marginTop="0dp"
-                            android:layout_marginLeft="0dp"
+                            android:layout_marginLeft="83dp"
                             android:layout_marginRight="0dp"
                             android:layout_marginBottom="0dp"
                             style="@style/spinnerField"
@@ -208,20 +206,19 @@
                             app:onSafeClick="@{handlers::onClickWorkingTimeSpinner}"
                             android:text="@{viewModel.workingTimeLabel}"
                             />
-                    </RelativeLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <RelativeLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         android:layout_marginBottom="20dp"
                         >
                         <LinearLayout
-                            android:id="@+id/search_job_job_kind_label"
-                            android:layout_width="93dp"
+                            android:layout_width="83dp"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentLeft="true"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
                             android:orientation="vertical">
                             <ImageView
                                 android:layout_width="16dp"
@@ -249,26 +246,18 @@
                         <Spinner
                             android:layout_width="match_parent"
                             android:layout_height="62dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_alignParentRight="true"
-                            android:layout_toRightOf="@id/search_job_job_kind_label"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintRight_toRightOf="parent"
                             android:layout_marginTop="0dp"
-                            android:layout_marginLeft="0dp"
+                            android:layout_marginLeft="83dp"
                             android:layout_marginRight="0dp"
                             android:layout_marginBottom="0dp"
                             style="@style/spinnerField"
                             android:textColor="@color/blackTwo"
                             android:entries="@{viewModel.jobKindsItems}"
-                            android:onItemSelected="@{(parent, view, position, id) -> handlers.onJobKindSelected(parent, view, position, id)}"
+                            android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onJobKindSelected(parent, view, position, id)}}"
                             />
-
-                    </RelativeLayout>
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        >
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
