@@ -35,7 +35,7 @@
     <string name="registerEmailFinished_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
 
     <!-- パスワード登録画面 -->
-    <string name="registerPassword_caption">パスワード設定して下さい。</string>
+    <string name="registerPassword_caption">パスワードを設定して下さい。</string>
     <string name="registerPassword_notice">※6文字以上の半角英数で入力してください。</string>
 
     <!-- 名前登録画面 -->
