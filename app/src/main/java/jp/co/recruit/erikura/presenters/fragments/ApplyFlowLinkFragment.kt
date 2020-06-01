@@ -11,7 +11,19 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentApplyFlowLinkBinding
 import jp.co.recruit.erikura.presenters.activities.job.ApplyFlowDialogFragment
 
-class ApplyFlowLinkFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ApplyFlowLinkFragmentEventHandlers {
+class ApplyFlowLinkFragment : BaseJobDetailFragment, ApplyFlowLinkFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ApplyFlowLinkFragment {
+            return ApplyFlowLinkFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

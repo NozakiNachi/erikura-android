@@ -1,19 +1,42 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.databinding.FragmentWorkingPlaceViewBinding
 
-class WorkingPlaceViewFragment(private val place: Place) : Fragment() {
+class WorkingPlaceViewFragment : Fragment {
+    companion object {
+        const val PLACE_ARGUMENT = "place"
+
+        fun newInstance(place: Place): WorkingPlaceViewFragment {
+            return WorkingPlaceViewFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelable(PLACE_ARGUMENT, place)
+                }
+            }
+        }
+    }
+
     private val viewModel: WorkingPlaceViewFragmentViewModel by lazy {
         ViewModelProvider(this).get(WorkingPlaceViewFragmentViewModel::class.java)
+    }
+    private var place: Place = Place()
+
+    constructor(): super()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.let { args ->
+            place = args.getParcelable(PLACE_ARGUMENT) ?: Place()
+        }
     }
 
     override fun onCreateView(

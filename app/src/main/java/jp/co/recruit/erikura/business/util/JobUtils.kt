@@ -91,8 +91,8 @@ object JobUtils {
             val aFinishedAt = j1.workingFinishAt ?: Date()
             val bFinishedAt = j2.workingFinishAt ?: Date()
             when {
-                aFinishedAt > bFinishedAt -> -1
-                aFinishedAt < bFinishedAt -> 1
+                aFinishedAt < bFinishedAt -> -1
+                aFinishedAt > bFinishedAt -> 1
                 else -> 0
             }
         }
@@ -120,7 +120,7 @@ object JobUtils {
 
     private val compareWorkingFinishAt: Comparator<Job> = compareBy(Job::workingFinishAt)
     private val compareWorkingStartAt: Comparator<Job> = compareBy(Job::workingStartAt)
-    private val compareFee: Comparator<Job> = compareBy(Job::fee)
+    private val compareFee: Comparator<Job> = compareBy(Job::fee).reversed()
     private val compareCreatedAt: Comparator<Job> = compareBy(Job::createdAt)
     private val compareId: Comparator<Job> = compareBy(Job::id)
 }

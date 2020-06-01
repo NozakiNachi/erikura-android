@@ -19,7 +19,19 @@ import jp.co.recruit.erikura.databinding.FragmentApplyButtonBinding
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 
-class ApplyButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ApplyButtonFragmentEventHandlers {
+class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ApplyButtonFragment {
+            return ApplyButtonFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     private val viewModel: ApplyButtonFragmentViewModel by lazy {
         ViewModelProvider(this).get(ApplyButtonFragmentViewModel::class.java)
     }
