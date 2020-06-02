@@ -66,19 +66,19 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         },
         MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
             val frequentlyQuestionsURLString = ErikuraConfig.frequentlyQuestionsURLString
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(frequentlyQuestionsURLString)
+            Uri.parse(frequentlyQuestionsURLString)?.let { uri ->
+                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                    startActivity(intent)
+                }
             }
-            startActivity(intent)
         },
         MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
             val inquiryURLString = ErikuraConfig.inquiryURLString
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(inquiryURLString)
+            Uri.parse(inquiryURLString)?.let { uri ->
+                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                    startActivity(intent)
+                }
             }
-            startActivity(intent)
         },
         MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()

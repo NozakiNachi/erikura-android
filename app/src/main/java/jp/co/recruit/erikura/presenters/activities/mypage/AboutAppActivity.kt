@@ -56,11 +56,11 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
         },
         MenuItem(2, "推奨環境") {
             val recommendedEnvironmentURLString = ErikuraConfig.recommendedEnvironmentURLString
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(recommendedEnvironmentURLString)
+            Uri.parse(recommendedEnvironmentURLString)?.let { uri ->
+                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                    startActivity(intent)
+                }
             }
-            startActivity(intent)
         },
         MenuItem(3, "ライセンス") {
             val intent = Intent(this, OssLicensesMenuActivity::class.java)
