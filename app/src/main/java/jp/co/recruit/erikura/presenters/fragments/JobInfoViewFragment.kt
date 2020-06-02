@@ -1,13 +1,20 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentJobInfoViewBinding
@@ -54,12 +61,40 @@ class JobInfoViewFragment : BaseJobDetailFragment, JobInfoViewFragmentEventHandl
 }
 
 class JobInfoViewFragmentViewModel: ViewModel() {
+    val job = MutableLiveData<Job>()
     val title: MutableLiveData<String> = MutableLiveData()
     val workingTime: MutableLiveData<String> = MutableLiveData()
     val fee: MutableLiveData<String> = MutableLiveData()
 
+    val boostVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) { job ->
+            result.value = if (job.boost) { View.VISIBLE } else { View.GONE }
+        }
+    }
+    val wantedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) { job ->
+            result.value = if (job.wanted) { View.VISIBLE } else { View.GONE }
+        }
+    }
+    val feeLabel = MediatorLiveData<CharSequence>().also { result ->
+        result.addSource(job) { job ->
+            val taxLabel = "（税込）"
+            val sb = SpannableStringBuilder()
+            sb.append(ErikuraApplication.instance.resources.getString(R.string.jobDetails_fee))
+            if (job.boost) {
+                sb.setSpan(
+                    AbsoluteSizeSpan(12, true),
+                    sb.indexOf(taxLabel), sb.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            }
+            result.value = sb
+        }
+    }
+
     fun setup(job: Job?) {
-        if(job != null) {
+        this.job.value = job
+        job?.let { job ->
             title.value = job.title
             workingTime.value = "${job.workingTime}分"
             val feeStr = String.format("%,d", job.fee)
