@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -57,8 +58,16 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
         MenuItem(2, "推奨環境") {
             val recommendedEnvironmentURLString = ErikuraConfig.recommendedEnvironmentURLString
             Uri.parse(recommendedEnvironmentURLString)?.let { uri ->
-                Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                    startActivity(intent)
+                try {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        intent.setPackage("com.android.chrome")
+                        startActivity(intent)
+                    }
+                }
+                catch (e: ActivityNotFoundException) {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        startActivity(intent)
+                    }
                 }
             }
         },
