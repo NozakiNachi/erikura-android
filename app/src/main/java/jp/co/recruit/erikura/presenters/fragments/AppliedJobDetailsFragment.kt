@@ -47,6 +47,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
+import java.lang.StringBuilder
 import java.util.*
 
 
@@ -405,7 +406,22 @@ class AppliedJobDetailsFragment(
 
     //API実行後のstatusによって処理を分岐させます。
     private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
-        var message: String = messages?.joinToString("\n")
+        var message: String? = ""
+        messages.forEach {
+//            var matchIndentPlace = "(^.*?)(。)".toRegex()
+            var appendtext = "・"
+            var ulMessage = appendtext.plus(it)
+//            var mainMessage = (matchIndentPlace.find(ulMessage))?.groupValues
+//            if (! ulMessage.isNullOrEmpty()) {
+//                ulMessage = "\n　".plus(ulMessage)
+//                message +=    (mainMessage?.plus(ulMessage))?.plus("\n")
+//            } else {
+                message += ulMessage.plus("\n")
+//            }
+        }
+        if (message.isNullOrEmpty()) {
+            message = messages.joinToString("\n")
+        }
         viewModel.message.value = message
         when(checkStatus) {
             //判定順は開始不可、警告理由入力、警告、開始可能
@@ -428,6 +444,8 @@ class AppliedJobDetailsFragment(
             }
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
+                viewModel.message.value = message.plus("\nこのまま作業を開始する場合は理由を記入ください。\n" +
+                        "（理由によっては、作業報告が差し戻しとなる場合があります）")
                 val binding: DialogInputReasonAbleStartBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
                 binding.lifecycleOwner = activity

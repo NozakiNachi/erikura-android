@@ -125,7 +125,22 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
 
     //API実行後のstatusによって処理を分岐させます。
     private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
-        var message: String = messages?.joinToString("\n")
+        var message: String? = ""
+        messages.forEach {
+//            var matchIndentPlace = "(^.*?)(。)".toRegex()
+            var appendtext = "・"
+            var ulMessage = appendtext.plus(it)
+//            var mainMessage = (matchIndentPlace.find(ulMessage))?.groupValues
+//            if (! ulMessage.isNullOrEmpty()) {
+//                ulMessage = "\n　".plus(ulMessage)
+//                message +=    (mainMessage?.plus(ulMessage))?.plus("\n")
+//            } else {
+            message += ulMessage.plus("\n")
+//            }
+        }
+        if (message.isNullOrEmpty()) {
+            message = messages.joinToString("\n")
+        }
         viewModel.message.value = message
         when(checkStatus) {
             //判定順は終了不可、警告理由入力、警告、終了可能
@@ -147,6 +162,8 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             }
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
+                viewModel.message.value = message.plus("\nこのまま作業を終了する場合は理由を記入ください。\n" +
+                        "(理由によっては、作業報告が差し戻しとなる場合があります)")
                 val binding: DialogInputReasonAbleEndBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_end, null, false)
                 binding.lifecycleOwner = activity
