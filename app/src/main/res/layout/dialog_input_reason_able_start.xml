@@ -34,14 +34,14 @@
                 android:textColor="@color/black" />
 
             <TextView
+                android:id="@+id/alert_message"
                 style="@style/errorField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:textColor="@color/coral"
-                android:lineSpacingExtra="10dp"
-                android:text="@{viewModel.message}"/>
+                android:lineSpacingExtra="10dp" />
 
             <TextView
                 style="@style/fieldLabel"

@@ -12,10 +12,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
+import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
+import android.text.TextPaint
+import android.text.style.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -237,7 +238,7 @@ class AppliedJobDetailsFragment(
                 distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
             ) { entry_id, checkStatus, messages ->
                 Log.v("DEBUG","クリック押下後　checkStatus＝ ${checkStatus}")
-                checkStatus(job, steps, checkStatus, messages)
+                checkStatuses(job, steps, checkStatus, messages)
             }
         }
     }
@@ -327,12 +328,12 @@ class AppliedJobDetailsFragment(
                 steps = steps,
                 distance = null, floorAsc = null, floorDesc = null, reason = null
             ) { entry_id, check_status, messages ->
-                checkStatus(job, steps, check_status, messages)
+                checkStatuses(job, steps, check_status, messages)
             }
         }
     }
 
-    private fun startJobPassIntent(job: Job, steps: Int, message: String) {
+    private fun startJobPassIntent(job: Job, steps: Int, sb: String) {
         // 作業開始のトラッキングの送出
         Tracking.logEvent(event = "push_start_job", params = bundleOf())
         Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
@@ -340,7 +341,7 @@ class AppliedJobDetailsFragment(
         val intent = Intent(activity, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
         intent.putExtra("onClickStart", true)
-        intent.putExtra("message", message)
+        intent.putExtra("message", sb)
         startActivity(intent)
     }
 
@@ -405,49 +406,49 @@ class AppliedJobDetailsFragment(
     }
 
     //API実行後のstatusによって処理を分岐させます。
-    private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
-        var message: String? = ""
-        messages.forEach {
-//            var matchIndentPlace = "(^.*?)(。)".toRegex()
-            var appendtext = "・"
-            var ulMessage = appendtext.plus(it)
-//            var mainMessage = (matchIndentPlace.find(ulMessage))?.groupValues
-//            if (! ulMessage.isNullOrEmpty()) {
-//                ulMessage = "\n　".plus(ulMessage)
-//                message +=    (mainMessage?.plus(ulMessage))?.plus("\n")
-//            } else {
-                message += ulMessage.plus("\n")
-//            }
+    private fun checkStatuses(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
+
+        val sb = SpannableStringBuilder()
+        messages.forEach { msg ->
+            val start = sb.length
+//            sb.append("・")
+            sb.append(msg)
+            val end = sb.length
+            val lb = LeadingMarginSpan.Standard(0,100)
+//            val le = ListElementSpan(20)
+//            sb.setSpan(lb, start , end, 0)
+            val bl = BulletSpan(100).getLeadingMargin(false)
+            sb.setSpan( bl, start , end, 0)
+//            sb.setSpan(le, start , end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+            sb.append("\n")
         }
-        if (message.isNullOrEmpty()) {
-            message = messages.joinToString("\n")
-        }
-        viewModel.message.value = message
+
         when(checkStatus) {
             //判定順は開始不可、警告理由入力、警告、開始可能
-            Entry.CheckStatus.ERROR -> {
-                //開始不可の場合はダイアログを表示
-                val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
-                    LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
-                binding.lifecycleOwner = activity
-                binding.viewModel = viewModel
-                binding.handlers = this
-                val dialog = AlertDialog.Builder(activity)
-                    .setView(binding.root)
-                    .setPositiveButton("確認", null)
-                    .create()
-                dialog.show()
-                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                confirmation.setOnClickListener(View.OnClickListener {
-                        dialog.dismiss()
-                })
-            }
+//            Entry.CheckStatus.ERROR -> {
+//                //開始不可の場合はダイアログを表示
+//                val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
+//                    LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
+//                binding.lifecycleOwner = activity
+//                binding.viewModel = viewModel
+//                binding.handlers = this
+//                val dialog = AlertDialog.Builder(activity)
+//                    .setView(binding.root)
+//                    .setPositiveButton("確認", null)
+//                    .create()
+//                dialog.show()
+//                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+//                confirmation.setOnClickListener(View.OnClickListener {
+//                        dialog.dismiss()
+//                })
+//            }
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
-                viewModel.message.value = message.plus("\nこのまま作業を開始する場合は理由を記入ください。\n" +
+                sb.append("\nこのまま作業を開始する場合は理由を記入ください。\n" +
                         "（理由によっては、作業報告が差し戻しとなる場合があります）")
                 val binding: DialogInputReasonAbleStartBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
+                binding.alertMessage.setText(sb)
                 binding.lifecycleOwner = activity
                 binding.viewModel = viewModel
                 binding.handlers = this
@@ -475,11 +476,13 @@ class AppliedJobDetailsFragment(
             }
             Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
                 //警告ダイアログは開始ログに注入して表示する、作業開始
-                startJobPassIntent(job, steps, message)
+                var message = messages.joinToString("\n")
+                startJobPassIntent(job, steps, message?: "")
             }
             Entry.CheckStatus.SUCCESS -> {
                 //作業開始
-                startJobPassIntent(job, steps, message)
+                var message = messages.joinToString("\n")
+                startJobPassIntent(job, steps, message?: "")
             }
         }
     }
@@ -492,7 +495,7 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val reason: MutableLiveData<String> = MutableLiveData()
-    var message: MutableLiveData<String> = MutableLiveData()
+//    var message: MutableLiveData<String> = MutableLiveData()
 
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
@@ -546,4 +549,22 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
 interface AppliedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickStart(view: View)
+}
+
+public class ListElementSpan : MetricAffectingSpan {
+    var mHeight: Int? = null
+
+    constructor(height: Int){
+        mHeight = height
+    }
+    override fun updateMeasureState(textPaint: TextPaint) {
+    }
+
+    override fun updateDrawState(tp: TextPaint?) {
+        mHeight?.let{mH->
+            tp?.let {
+                tp.baselineShift += mH
+            }
+        }
+    }
 }
