@@ -39,9 +39,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:gravity="center"
                 android:textColor="@color/coral"
-                android:lineSpacingExtra="10dp" />
+                android:lineSpacingExtra="10dp"
+                android:text="@={viewModel.message}"/>
 
             <TextView
                 style="@style/fieldLabel"

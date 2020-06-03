@@ -126,20 +126,11 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
     //API実行後のstatusによって処理を分岐させます。
     private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
         var message: String? = ""
-        messages.forEach {
-//            var matchIndentPlace = "(^.*?)(。)".toRegex()
-            var appendtext = "・"
-            var ulMessage = appendtext.plus(it)
-//            var mainMessage = (matchIndentPlace.find(ulMessage))?.groupValues
-//            if (! ulMessage.isNullOrEmpty()) {
-//                ulMessage = "\n　".plus(ulMessage)
-//                message +=    (mainMessage?.plus(ulMessage))?.plus("\n")
-//            } else {
-            message += ulMessage.plus("\n")
-//            }
-        }
-        if (message.isNullOrEmpty()) {
-            message = messages.joinToString("\n")
+        if (!messages.isNullOrEmpty()) {
+            messages.forEach { msg->
+                var appendText = "・"
+                message += appendText.plus(msg).plus("\n")
+            }
         }
         viewModel.message.value = message
         when(checkStatus) {
@@ -194,11 +185,11 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             }
             Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
                 //警告ダイアログは終了画面で表示
-                stopJobPassIntent(job, steps, message)
+                stopJobPassIntent(job, steps, message?: "")
             }
             Entry.CheckStatus.SUCCESS -> {
                 //作業終了します
-                stopJobPassIntent(job, steps, message)
+                stopJobPassIntent(job, steps, message?: "")
             }
         }
     }
