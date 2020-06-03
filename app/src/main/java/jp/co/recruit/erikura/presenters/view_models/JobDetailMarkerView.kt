@@ -4,6 +4,8 @@ import android.view.View
 import jp.co.recruit.erikura.business.models.Job
 
 class JobDetailMarkerView(job: Job): MarkerViewModel(job) {
+    override val isOwnerMarker: Boolean
+        get() = false
     override val isDisabled: Boolean
         get() {return false}
     override val boostVisibility: Int

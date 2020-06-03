@@ -10,7 +10,20 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentCancelButtonBinding
 import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 
-class CancelButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), CancelButtonFragmentEventHandler {
+class CancelButtonFragment : BaseJobDetailFragment, CancelButtonFragmentEventHandler {
+    companion object {
+        fun newInstance(job: Job?, user: User?): CancelButtonFragment {
+            val args = Bundle()
+            fillArguments(args, job, user)
+
+            return CancelButtonFragment().also {
+                it.arguments = args
+            }
+        }
+    }
+
+    constructor(): super()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

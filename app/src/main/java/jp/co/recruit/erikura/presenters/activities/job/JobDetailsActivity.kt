@@ -133,22 +133,22 @@ class JobDetailsActivity : BaseActivity() {
             // jobのステータスで挿しこむフラグメントを変更します
             when (job.status) {
                 JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment(this, job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Applied -> {
-                    fragment = AppliedJobDetailsFragment(this, job, user)
+                    fragment = AppliedJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Working -> {
-                    fragment = WorkingJobDetailsFragment(this, job, user)
+                    fragment = WorkingJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Finished -> {
-                    fragment = FinishedJobDetailsFragment(this, job, user)
+                    fragment = FinishedJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Reported -> {
-                    fragment = ReportedJobDetailsFragment(this, job, user)
+                    fragment = ReportedJobDetailsFragment.newInstance(job, user)
                 }
                 else -> {
-                    fragment = NormalJobDetailsFragment(this, job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user)
                 }
             }
             // fragmentの更新

@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.ActivityOptions
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -66,19 +67,35 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         },
         MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
             val frequentlyQuestionsURLString = ErikuraConfig.frequentlyQuestionsURLString
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(frequentlyQuestionsURLString)
+            Uri.parse(frequentlyQuestionsURLString)?.let { uri ->
+                try {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        intent.setPackage("com.android.chrome")
+                        startActivity(intent)
+                    }
+                }
+                catch (e: ActivityNotFoundException) {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        startActivity(intent)
+                    }
+                }
             }
-            startActivity(intent)
         },
         MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
             val inquiryURLString = ErikuraConfig.inquiryURLString
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(inquiryURLString)
+            Uri.parse(inquiryURLString)?.let { uri ->
+                try {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        intent.setPackage("com.android.chrome")
+                        startActivity(intent)
+                    }
+                }
+                catch (e: ActivityNotFoundException) {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        startActivity(intent)
+                    }
+                }
             }
-            startActivity(intent)
         },
         MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()

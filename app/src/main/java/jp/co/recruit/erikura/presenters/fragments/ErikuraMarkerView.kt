@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.drawToBitmap
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.Marker
@@ -20,24 +21,27 @@ import jp.co.recruit.erikura.presenters.view_models.MarkerViewModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.lang.Exception
+import java.lang.IllegalArgumentException
 import java.util.*
 
 // マーカーの作成が終わった場合に呼び出されるコールバック
 typealias MarkerSetupCallback = (Marker) -> Unit
 
-class ErikuraMarkerView(private val activity: AppCompatActivity, private val map: GoogleMap, private val job: Job, private val optionsRequired: Boolean) {
+class ErikuraMarkerView(private val activity: FragmentActivity, private val map: GoogleMap, private val job: Job, private val optionsRequired: Boolean) {
     companion object {
-        const val BASE_ZINDEX: Float            = 5000f
-        const val ACTIVE_ZINDEX_OFFSET: Float   = 10000f
+        const val BASE_ZINDEX: Float            = 999f
+        const val ACTIVE_ZINDEX_OFFSET: Float   = 100000f
+        const val OWN_JOB_ZINDEX_OFFSET: Float  = 10000f
         const val BOOST_ZINDEX_OFFSET: Float    = 1000f
         const val WANTED_ZINDEX_OFFSET: Float   = 2000f
-        const val SOON_ZINDEX_OFFSET: Float     = -1000f
-        const val FUTURE_ZINDEX_OFFSET: Float   = -2000f
-        const val ENTRIED_ZINDEX_OFFSET: Float  = -6000f
+        const val SOON_ZINDEX_OFFSET: Float     = -20000f
+        const val FUTURE_ZINDEX_OFFSET: Float   = -30000f
+        const val ENTRIED_ZINDEX_OFFSET: Float  = -60000f
 
         val assetsManager: AssetsManager get() = ErikuraApplication.assetsManager
 
-        fun build(activity: AppCompatActivity, map: GoogleMap, job: Job, optionsRequired: Boolean = true, callback: MarkerSetupCallback?): ErikuraMarkerView {
+        fun build(activity: FragmentActivity, map: GoogleMap, job: Job, optionsRequired: Boolean = true, callback: MarkerSetupCallback?): ErikuraMarkerView {
             val markerView = ErikuraMarkerView(activity, map, job, optionsRequired)
             callback?.invoke(markerView.marker)
             return markerView
@@ -65,38 +69,48 @@ class ErikuraMarkerView(private val activity: AppCompatActivity, private val map
     private fun buildMarker(): Marker {
         val markerUrl = markerViewModel.markerUrl
 
-        return assetsManager.lookupAsset(markerUrl)?.let {
-            marker = map.addMarker(
-                MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromPath(it.path))
-                    .position(job.latLng)
-            )
-            marker
-        } ?: run {
-            marker = map.addMarker(
-                MarkerOptions()
-                    .position(job.latLng)
-            ).also {
-                marker = it
-                updateMarkerIcon()
+        try {
+            return assetsManager.lookupAsset(markerUrl)?.let {
+                if (File(it.path).exists()) {
+                    marker = map.addMarker(MarkerOptions().icon(BitmapDescriptorFactory.fromPath(it.path)).position(job.latLng))
+                    marker
+                } else {
+                    null
+                }
+            } ?: run {
+                marker = map.addMarker(MarkerOptions().position(job.latLng)).also {
+                    marker = it
+                    updateMarkerIcon()
+                }
+                marker
             }
-            marker
+        }
+        catch (e: Exception) {
+            // 何かしらの例外が発生した場合に、デフォルトマーカーを表示する
+            return map.addMarker(MarkerOptions().position(job.latLng))
         }
     }
 
     private fun updateMarkerIcon() {
         val markerUrl = markerViewModel.markerUrl
 
-        return assetsManager.lookupAsset(markerUrl)?.let {
-            activity.run {
-                marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
-            }
-        } ?: run {
-            buildMarkerImage() {
-                activity.run {
-                    marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
+        try {
+            assetsManager.lookupAsset(markerUrl)?.let {
+                if (File(it.path).exists()) {
+                    activity.run {
+                        marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
+                    }
+                } else { null }
+            } ?: run {
+                buildMarkerImage() {
+                    activity.run {
+                        marker.setIcon(BitmapDescriptorFactory.fromPath(it.path))
+                    }
                 }
             }
+        }
+        catch (e: IllegalArgumentException) {
+            Log.e(ErikuraApplication.LOG_TAG, e.message, e)
         }
     }
 

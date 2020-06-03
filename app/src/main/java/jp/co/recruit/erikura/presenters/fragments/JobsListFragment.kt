@@ -1,12 +1,11 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,14 +19,48 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 
-class JobsListFragment(private val jobs: Map<PlaceJobType, List<Job>>) : Fragment() {
+class JobsListFragment : Fragment() {
+    companion object {
+        const val ACTIVE_JOBS_ARGUMENT = "activeJobs"
+        const val FUTURE_JOBS_ARGUMENTS = "futureJobs"
+        const val PAST_JOBS_ARGUMENTS = "pastJobs"
+
+        fun newInstance(jobs: Map<PlaceJobType, List<Job>>): JobsListFragment {
+            return JobsListFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelableArrayList(ACTIVE_JOBS_ARGUMENT, ArrayList(jobs[PlaceJobType.ACTIVE] ?: listOf()))
+                    args.putParcelableArrayList(FUTURE_JOBS_ARGUMENTS, ArrayList(jobs[PlaceJobType.FUTURE] ?: listOf()))
+                    args.putParcelableArrayList(PAST_JOBS_ARGUMENTS, ArrayList(jobs[PlaceJobType.PAST] ?: listOf()))
+                }
+            }
+        }
+    }
+
     private val viewModel: JobsListFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobsListFragmentViewModel::class.java)
     }
 
+    private lateinit var jobs: Map<PlaceJobType, List<Job>>
     private lateinit var activeJobsAdapter: JobListAdapter
     private lateinit var futureJobsAdapter: JobListAdapter
     private lateinit var pastJobsAdapter: JobListAdapter
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.also { args ->
+            val activeJobs: List<Job> = args.getParcelableArrayList<Job>(ACTIVE_JOBS_ARGUMENT)?.toList() ?: listOf()
+            val futureJobs: List<Job> = args.getParcelableArrayList<Job>(FUTURE_JOBS_ARGUMENTS)?.toList() ?: listOf()
+            val pastJobs: List<Job> = args.getParcelableArrayList<Job>(PAST_JOBS_ARGUMENTS)?.toList() ?: listOf()
+            jobs = mapOf(
+                PlaceJobType.ACTIVE to activeJobs,
+                PlaceJobType.FUTURE to futureJobs,
+                PlaceJobType.PAST   to pastJobs
+            )
+        } ?: run {
+            jobs = mapOf()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

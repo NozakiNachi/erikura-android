@@ -27,11 +27,18 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 import java.util.*
 
-class FinishedJobDetailsFragment(
-    private val activity: AppCompatActivity,
-    job: Job?,
-    user: User?
-) : BaseJobDetailFragment(job, user), FinishedJobDetailsFragmentEventHandlers {
+class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): FinishedJobDetailsFragment {
+            val args = Bundle()
+            fillArguments(args, job, user)
+
+            return FinishedJobDetailsFragment().also {
+                it.arguments = args
+            }
+        }
+    }
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(FinishedJobDetailsFragmentViewModel::class.java)
     }
@@ -41,6 +48,8 @@ class FinishedJobDetailsFragment(
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+
+    constructor(): super()
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -66,7 +75,7 @@ class FinishedJobDetailsFragment(
         container?.removeAllViews()
         val binding = FragmentFinishedJobDetailsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
-        viewModel.setup(activity, job, user)
+        viewModel.setup(activity!!, job, user)
         binding.viewModel = viewModel
         binding.handlers = this
         return binding.root
@@ -76,12 +85,12 @@ class FinishedJobDetailsFragment(
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        jobInfoView = JobInfoViewFragment(job, user)
-        manualImage = ManualImageFragment(job, user)
-        manualButton = ManualButtonFragment(job, user)
-        thumbnailImage = ThumbnailImageFragment(job, user)
-        jobDetailsView = JobDetailsViewFragment(job, user)
-        mapView = MapViewFragment(activity, job, user)
+        jobInfoView = JobInfoViewFragment.newInstance(job, user)
+        manualImage = ManualImageFragment.newInstance(job, user)
+        manualButton = ManualButtonFragment.newInstance(job, user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
+        mapView = MapViewFragment.newInstance(job, user)
         transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
@@ -131,7 +140,7 @@ class FinishedJobDetailsFragment(
     override fun onClickCancelWorking(view: View) {
         job?.let { job ->
             if (job.entry?.limitAt?: Date() > Date()) {
-                Api(activity).abortJob(job) {
+                Api(activity!!).abortJob(job) {
                     val intent = Intent(activity, JobDetailsActivity::class.java)
                     intent.putExtra("job", job)
                     intent.putExtra("onClickCancelWorking", true)
@@ -139,7 +148,7 @@ class FinishedJobDetailsFragment(
                 }
             }else {
                 val errorMessages = mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-                Api(activity).displayErrorAlert(errorMessages)
+                Api(activity!!).displayErrorAlert(errorMessages)
             }
         }
     }
@@ -153,7 +162,7 @@ class FinishedJobDetailsFragment(
             }else {
                 val errorMessages =
                     mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-                Api(activity).displayErrorAlert(errorMessages)
+                Api(activity!!).displayErrorAlert(errorMessages)
             }
         }
     }

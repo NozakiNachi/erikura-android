@@ -20,7 +20,19 @@ import jp.co.recruit.erikura.presenters.activities.report.ReportConfirmActivity
 import java.util.*
 
 
-class ReportedJobEditButtonFragment(job: Job?, user: User?) : BaseJobDetailFragment(job, user), ReportedJobEditButtonFragmentEventHandlers {
+class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButtonFragmentEventHandlers {
+    companion object {
+        fun newInstance(job: Job?, user: User?): ReportedJobEditButtonFragment {
+            return ReportedJobEditButtonFragment().also {
+                it.arguments = Bundle().also { args ->
+                    fillArguments(args, job, user)
+                }
+            }
+        }
+    }
+
+    constructor(): super()
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportedJobEditButtonViewModel::class.java)
     }

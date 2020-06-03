@@ -35,7 +35,7 @@
     <string name="registerEmailFinished_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
 
     <!-- パスワード登録画面 -->
-    <string name="registerPassword_caption">パスワードを入力してください。</string>
+    <string name="registerPassword_caption">パスワードを設定して下さい。</string>
     <string name="registerPassword_notice">※6文字以上の半角英数で入力してください。</string>
 
     <!-- 名前登録画面 -->
@@ -74,7 +74,7 @@
 
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を更新しました</string>
-    <string name="change_user_information_other_than_phone_success">電話番号以外の会員情報を更新しました。\n※電話番号は携帯電話番号認証後に更新します。</string>
+    <string name="change_user_information_other_than_phone_success">会員情報を更新しました\n※電話番号は携帯電話番号認証後に更新します</string>
     <string name="change_user_information_only_phone_success">電話番号を更新しました</string>
 
     <!-- 口座情報登録成功モーダル -->
@@ -97,7 +97,7 @@
     <string name="jobDetails_entryFinished">受付が終了いたしました</string>
     <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
     <string name="jobDetails_maxEntry">未報告のお仕事が%1$d件以上あるため応募できません</string>
-    <string name="jobDetails_goWorking">に現地に行って\n作業完了しましょう！</string>
+    <string name="jobDetails_goWorking">に現地で作業後、\n作業報告しましょう！</string>
     <string name="jobDetails_overLimit">納期を超過しています</string>
     <string name="jobDetails_pressButton">※現地に着いて、作業開始する時に「作業を開始」ボタンを押してください。</string>
     <string name="jobDetails_manualImageURL">https://s3-ap-northeast-1.amazonaws.com/assets.prd.erikura.net/manual_pdfs/manual_thumbnail.png</string>
@@ -122,13 +122,13 @@
     <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
 
     <!-- 応募確認モーダル -->
-    <string name="applyDialog_caption1">作業報告締切は、応募後24時間以内となります。</string>
-    <string name="applyDialog_caption2Pattern1">報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
-    <string name="applyDialog_caption2Pattern2">必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
+    <string name="applyDialog_caption1">※作業報告締切は、応募後24時間以内となります。24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
+    <string name="applyDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
+    <string name="applyDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
 
     <!-- 応募完了画面 -->
     <string name="applyCompleted_caption">応募が完了しました！</string>
-    <string name="applyCompleted_note">24時間以内に現地に向かい、\n作業を行いましょう！</string>
+    <string name="applyCompleted_note">現地に向かい、作業を行いましょう！\n(24時間以内に報告必須)</string>
     <string name="applyCompleted_recommend">お近くのお仕事</string>
 
     <!-- 応募キャンセルモーダル -->

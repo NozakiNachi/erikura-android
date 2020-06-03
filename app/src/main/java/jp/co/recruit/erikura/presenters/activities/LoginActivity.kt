@@ -122,17 +122,36 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+        val it = Api.userSession
+        Log.v("DEBUG", "ログイン成功: userId=${it?.userId}")
+        var isSkip: Boolean = false
+        var isChangePhoneNumber: Boolean = false
+        data?.let {
+            isSkip = it.getBooleanExtra("isSkip", false)
+            if (!isSkip) {
+                isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
+            }
+        }
         if (requestCode == ErikuraApplication.REQUEST_LOGIN_CODE && resultCode == RESULT_OK) {
+            //skipの判定をいれる
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 val intent = Intent(this, MapViewActivity::class.java)
+                if (isChangePhoneNumber && !isSkip) {
+                    intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                }
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 finish()
-            }
-            else {
+            } else {
                 // 位置情報の許諾、オンボーディングを表示します
                 Intent(this, PermitLocationActivity::class.java).let { intent ->
-                    startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
+                    if (isChangePhoneNumber && !isSkip) {
+                        intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
+                    }
+                    startActivity(
+                        intent,
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle()
+                    )
                     finish()
                 }
             }
