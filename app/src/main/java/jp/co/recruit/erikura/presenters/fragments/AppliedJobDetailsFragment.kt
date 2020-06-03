@@ -548,21 +548,3 @@ interface AppliedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickStart(view: View)
 }
-
-public class ListElementSpan : MetricAffectingSpan {
-    var mHeight: Int? = null
-
-    constructor(height: Int){
-        mHeight = height
-    }
-    override fun updateMeasureState(textPaint: TextPaint) {
-    }
-
-    override fun updateDrawState(tp: TextPaint?) {
-        mHeight?.let{mH->
-            tp?.let {
-                tp.baselineShift += mH
-            }
-        }
-    }
-}
