@@ -241,7 +241,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
                 null
             }
             Log.v("DEBUG","クリック押下後　理由取得＝ ${viewModel.reason.value}")
-            Api(activity).startJob(
+            Api(activity!!).startJob(
                 job, latLng,
                 steps = steps,
                 distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
@@ -263,7 +263,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             }
         } else {
             //ダイアログ表示後許可した場合
-            Api(activity).agree(){
+            Api(activity!!).agree(){
                 checkPermissionPedometer()
             }
         }
