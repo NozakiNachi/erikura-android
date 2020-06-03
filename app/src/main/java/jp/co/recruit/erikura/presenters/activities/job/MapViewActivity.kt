@@ -432,13 +432,23 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 else if (job.isFuture) {
                     marker.zIndex += ErikuraMarkerView.FUTURE_ZINDEX_OFFSET
                 }
+
+                if (job.isEntried) {
+                    if (!job.isReported && job.isOwner) {
+                        marker.zIndex += ErikuraMarkerView.OWN_JOB_ZINDEX_OFFSET
+                    }
+                    else {
+                        marker.zIndex += ErikuraMarkerView.ENTRIED_ZINDEX_OFFSET
+                    }
+                }
                 else if (job.isPastOrInactive) {
                     marker.zIndex += ErikuraMarkerView.ENTRIED_ZINDEX_OFFSET
                 }
-                else if (job.boost) {
+
+                if (job.boost) {
                     marker.zIndex += ErikuraMarkerView.BOOST_ZINDEX_OFFSET
                 }
-                else if (job.wanted) {
+                if (job.wanted) {
                     marker.zIndex += ErikuraMarkerView.WANTED_ZINDEX_OFFSET
                 }
 
