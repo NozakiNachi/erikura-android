@@ -126,40 +126,33 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
     //API実行後のstatusによって処理を分岐させます。
     private fun checkStatus(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
         var message: String? = ""
-        messages.forEach {
-//            var matchIndentPlace = "(^.*?)(。)".toRegex()
-            var appendtext = "・"
-            var ulMessage = appendtext.plus(it)
-//            var mainMessage = (matchIndentPlace.find(ulMessage))?.groupValues
-//            if (! ulMessage.isNullOrEmpty()) {
-//                ulMessage = "\n　".plus(ulMessage)
-//                message +=    (mainMessage?.plus(ulMessage))?.plus("\n")
-//            } else {
-            message += ulMessage.plus("\n")
-//            }
-        }
-        if (message.isNullOrEmpty()) {
+        if (!messages.isNullOrEmpty()) {
+            messages.forEach { msg->
+                var appendText = "・"
+                message += appendText.plus(msg).plus("\n")
+            }
+        } else {
             message = messages.joinToString("\n")
         }
         viewModel.message.value = message
         when(checkStatus) {
             //判定順は終了不可、警告理由入力、警告、終了可能
-            Entry.CheckStatus.ERROR -> {
-                //終了不可の場合はダイアログを表示
-                val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
-                    LayoutInflater.from(activity), R.layout.dialog_not_able_end, null, false)
-                binding.lifecycleOwner = activity
-                binding.viewModel = viewModel
-                val dialog = AlertDialog.Builder(activity)
-                    .setView(binding.root)
-                    .setPositiveButton("確認", null)
-                    .create()
-                dialog.show()
-                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-                confirmation.setOnClickListener(View.OnClickListener {
-                        dialog.dismiss()
-                })
-            }
+//            Entry.CheckStatus.ERROR -> {
+//                //終了不可の場合はダイアログを表示
+//                val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
+//                    LayoutInflater.from(activity), R.layout.dialog_not_able_end, null, false)
+//                binding.lifecycleOwner = activity
+//                binding.viewModel = viewModel
+//                val dialog = AlertDialog.Builder(activity)
+//                    .setView(binding.root)
+//                    .setPositiveButton("確認", null)
+//                    .create()
+//                dialog.show()
+//                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+//                confirmation.setOnClickListener(View.OnClickListener {
+//                        dialog.dismiss()
+//                })
+//            }
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
                 viewModel.message.value = message.plus("\nこのまま作業を終了する場合は理由を記入ください。\n" +
@@ -194,11 +187,11 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
             }
             Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
                 //警告ダイアログは終了画面で表示
-                stopJobPassIntent(job, steps, message)
+                stopJobPassIntent(job, steps, message?: "")
             }
             Entry.CheckStatus.SUCCESS -> {
                 //作業終了します
-                stopJobPassIntent(job, steps, message)
+                stopJobPassIntent(job, steps, message?: "")
             }
         }
     }
