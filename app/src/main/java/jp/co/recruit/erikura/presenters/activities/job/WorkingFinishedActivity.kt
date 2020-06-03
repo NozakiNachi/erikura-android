@@ -1,11 +1,14 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -16,6 +19,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
+import jp.co.recruit.erikura.databinding.DialogAlertAbleEndBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
@@ -27,6 +31,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     }
 
     var job: Job = Job()
+    var message: String? = null
     private lateinit var recommendedJobsAdapter: JobListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,6 +39,8 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         super.onCreate(savedInstanceState)
 
         job = intent.getParcelableExtra<Job>("job")
+        message = intent.getStringExtra("message")
+        viewModel.message.value = message
         Log.v("DEBUG", job.toString())
 
         val binding: ActivityWorkingFinishedBinding = DataBindingUtil.setContentView(this, R.layout.activity_working_finished)
@@ -53,6 +60,21 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         jobList.adapter = recommendedJobsAdapter
         jobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         jobList.addItemDecoration(JobListItemDecorator())
+    }
+
+    override fun onStart() {
+        super.onStart()
+        //警告メッセージがある場合ダイアログを表示する
+        if (!(message.isNullOrEmpty())) {
+            val binding: DialogAlertAbleEndBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(this), R.layout.dialog_alert_able_end, null, false)
+            binding.lifecycleOwner = this
+            binding.viewModel = viewModel
+            val dialog = AlertDialog.Builder(this)
+                .setView(binding.root)
+                .create()
+            dialog.show()
+        }
     }
 
     override fun onResume() {
@@ -106,6 +128,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
 class WorkingFinishedViewModel: ViewModel() {
     var recommendedJobs: List<Job> = listOf()
+    var message: MutableLiveData<String> = MutableLiveData()
 }
 
 interface WorkingFinishedEventHandlers {

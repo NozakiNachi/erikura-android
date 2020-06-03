@@ -28,22 +28,26 @@ open class MarkerViewModel(val job: Job): ViewModel() {
         }
     }
 
+    open val isOwnerMarker: Boolean get() {
+        // 自身が応募した案件、かつ作業報告前の場合のみ「自身が応募」の表示を行います
+        return job.isOwner && !job.isReported
+    }
+
     open val boostVisibility: Int get() {
-        if (job.boost) {
-            return View.VISIBLE
-        }
-        else {
-            return View.GONE
+        return when {
+            isOwnerMarker -> View.GONE
+            job.boost -> View.VISIBLE
+            else -> View.GONE
         }
     }
     open val wantedVisibility: Int get() {
-        if (job.wanted) {
-            return View.VISIBLE
-        }
-        else {
-            return View.GONE
+        return when {
+            isOwnerMarker -> View.GONE
+            job.wanted -> View.VISIBLE
+            else -> View.GONE
         }
     }
+
     open val soonVisibility: Int get() {
         if (job.isStartSoon) {
             return View.VISIBLE
@@ -67,6 +71,13 @@ open class MarkerViewModel(val job: Job): ViewModel() {
             val sdf = SimpleDateFormat("MM/dd")
             return String.format("%s開始", sdf.format(it))
         } ?: ""
+    }
+
+    open val ownerVisibility: Int get() {
+        return when {
+            isOwnerMarker -> View.VISIBLE
+            else -> View.GONE
+        }
     }
 
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
@@ -126,14 +137,19 @@ open class MarkerViewModel(val job: Job): ViewModel() {
 
     open val markerUrl: String get() {
         val iconPath = job.jobKind?.activeIconUrl?.path ?: "EMPTY_PATH"
+        val entry = when {
+            isOwnerMarker   -> "owner"
+            job.isEntried   -> "true"
+            else            -> "false"
+        }
         if (job.isStartSoon) {
-            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/comingSoon/${iconPath}/"
+            return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/comingSoon/${iconPath}/"
         } else if (job.isFuture) {
             val df = SimpleDateFormat("YYYYMMdd")
             val time = df.format(job.workingStartAt ?: Date())
-            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/${time}/${iconPath}/"
+            return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/${time}/${iconPath}/"
         } else {
-            return "eriukra-marker://v2/${job.fee}/${job.isEntried}/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/current/${iconPath}/"
+            return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/current/${iconPath}/"
         }
     }
 }

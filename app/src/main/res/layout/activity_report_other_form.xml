@@ -212,13 +212,11 @@
                     android:text="@string/comment" />
 
                 <EditText
-                    style="@style/textField"
+                    style="@style/textArea"
                     android:layout_width="match_parent"
                     android:layout_height="140dp"
                     android:layout_marginTop="10dp"
-                    android:gravity="top"
                     android:hint="@string/other_comment_hint"
-                    android:paddingTop="24dp"
                     android:text="@={viewModel.comment}" />
 
                 <TextView

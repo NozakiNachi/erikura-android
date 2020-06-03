@@ -35,7 +35,7 @@
     <string name="registerEmailFinished_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
 
     <!-- パスワード登録画面 -->
-    <string name="registerPassword_caption">パスワードを入力してください。</string>
+    <string name="registerPassword_caption">パスワードを設定して下さい。</string>
     <string name="registerPassword_notice">※6文字以上の半角英数で入力してください。</string>
 
     <!-- 名前登録画面 -->
@@ -97,7 +97,7 @@
     <string name="jobDetails_entryFinished">受付が終了いたしました</string>
     <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
     <string name="jobDetails_maxEntry">未報告のお仕事が%1$d件以上あるため応募できません</string>
-    <string name="jobDetails_goWorking">に現地に行って\n作業完了しましょう！</string>
+    <string name="jobDetails_goWorking">に現地で作業後、\n作業報告しましょう！</string>
     <string name="jobDetails_overLimit">納期を超過しています</string>
     <string name="jobDetails_pressButton">※現地に着いて、作業開始する時に「作業を開始」ボタンを押してください。</string>
     <string name="jobDetails_manualImageURL">https://s3-ap-northeast-1.amazonaws.com/assets.prd.erikura.net/manual_pdfs/manual_thumbnail.png</string>
@@ -122,13 +122,13 @@
     <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
 
     <!-- 応募確認モーダル -->
-    <string name="applyDialog_caption1">作業報告締切は、応募後24時間以内となります。</string>
-    <string name="applyDialog_caption2Pattern1">報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
-    <string name="applyDialog_caption2Pattern2">必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
+    <string name="applyDialog_caption1">※作業報告締切は、応募後24時間以内となります。24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
+    <string name="applyDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルをご覧ください。</string>
+    <string name="applyDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルをご確認ください。</string>
 
     <!-- 応募完了画面 -->
     <string name="applyCompleted_caption">応募が完了しました！</string>
-    <string name="applyCompleted_note">24時間以内に現地に向かい、\n作業を行いましょう！</string>
+    <string name="applyCompleted_note">現地に向かい、作業を行いましょう！\n(24時間以内に報告必須)</string>
     <string name="applyCompleted_recommend">お近くのお仕事</string>
 
     <!-- 応募キャンセルモーダル -->
@@ -199,6 +199,14 @@
     <!-- 作業報告完了モーダル -->
     <string name="report_completed_title">作業報告が完了しました！</string>
     <string name="report_completed_title2">続けて、振込用の口座を登録しましょう！</string>
+
+    <!-- 作業開始終了厳格化ダイアログ-->
+    <string name="job_alert">ご注意ください</string>
+    <string name="job_not_able_start">作業を開始できません</string>
+    <string name="job_not_able_end">作業を終了できません</string>
+    <string name="input_reason">理由を記入してください</string>
+    <string name="confirmation">確認</string>
+
 
     <!--　作業報告済み仕事詳細画面-->
     <string name="location">箇所</string>
@@ -473,5 +481,11 @@
     <string name="onboarding_2_explain">まずは\n地図上のピンを押して\nお仕事を探そう！</string>
     <string name="onboarding_4_explain">応募した後は、\n24時間以内に\n現地でお仕事を実行！</string>
     <string name="onboarding_5_explain">終わったら、写真を\n撮って作業報告！\n翌月末に報酬GET！</string>
+
+    <!--歩数計取得の説明ダイアログ-->
+    <string name="pedometer_explain">作業をするには、作業を行っている証明を発注主に報告する目的で、位置情報と歩数を取得しますがよろしいでしょうか？</string>
+    <string name="pedometer_not_accepted">※同意をいただけない場合、作業を開始することができません</string>
+    <string name="pedometer_accepted_button">同意する</string>
+    <string name="pedometer_not_accepted_button">同意しない</string>
 
 </resources>

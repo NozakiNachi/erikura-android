@@ -24,7 +24,7 @@
                 android:id="@+id/carousel_cell_timelimit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="作業終了まで1日と27時間"
+                android:text="作業終了報告まで1日と27時間"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:textColor="@color/coral"
                 android:textSize="12dp"

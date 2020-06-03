@@ -3,31 +3,33 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.provider.Settings
+import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.style.ForegroundColorSpan
-import android.text.style.StyleSpan
-import android.text.style.TypefaceSpan
+import android.text.TextPaint
+import android.text.style.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -35,16 +37,18 @@ import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.Entry
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.databinding.DialogInputReasonAbleStartBinding
+import jp.co.recruit.erikura.databinding.DialogNotAbleStartBinding
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
-import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
+import java.lang.StringBuilder
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
@@ -218,63 +222,111 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 
     override fun onClickStart(view: View) {
+        //明確に歩数取得することを説明するダイアログに許可したか
+        if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+            //許可していない場合ダイアログを表示
+            displayExplainGetPedometer()
+        } else {
+            //許可してた場合
+            checkPermissionPedometer()
+        }
+    }
+
+    private fun onClickConfirmation(view: View) {
+        //入力された理由をリクエストをパラメーターに加え、再度実行する
+        job?.let { job ->
+            val steps = ErikuraApplication.pedometerManager.readStepCount()
+            val latLng: LatLng? = if (locationManager.checkPermission(this)) {
+                locationManager.latLng
+            } else {
+                null
+            }
+            Log.v("DEBUG","クリック押下後　理由取得＝ ${viewModel.reason.value}")
+            Api(activity!!).startJob(
+                job, latLng,
+                steps = steps,
+                distance = null, floorAsc = null, floorDesc = null, reason = viewModel.reason.value
+            ) { entry_id, checkStatus, messages ->
+                Log.v("DEBUG","クリック押下後　checkStatus＝ ${checkStatus}")
+                checkStatuses(job, steps, checkStatus, messages)
+            }
+        }
+    }
+
+    private fun checkAcceptedExplainGetPedometer() {
+        if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+            //ダイアログ表示後許可していない場合
+            BaseActivity.currentActivity?.let { activity ->
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_not_accepted_get_pedometer)
+                    .create()
+                dialog.show()
+            }
+        } else {
+            //ダイアログ表示後許可した場合
+            Api(activity!!).agree(){
+                checkPermissionPedometer()
+            }
+        }
+    }
+
+    private fun checkPermissionPedometer() {
         if (!ErikuraApplication.pedometerManager.checkPermission(activity!!)) {
             inStartJob = true
-            if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
-                var openSettings = false
-                BaseActivity.currentActivity?.let { activity ->
-                    val dialog = AlertDialog.Builder(activity)
-                        .setView(R.layout.dialog_allow_activity_recognition)
-                        .create()
-                    dialog.show()
-
-                    val label1: TextView = dialog.findViewById(R.id.allow_activity_label1)
-                    val sb = SpannableStringBuilder("・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。")
-                    val becomeBold: (String) -> Unit = { keyword ->
-                        val start = sb.toString().indexOf(keyword)
-                        sb.setSpan(StyleSpan(R.style.label_w6), start, start + keyword.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                    }
-                    becomeBold("「権限」")
-                    becomeBold("「身体活動」")
-                    becomeBold("「許可」")
-
-                    label1.text = sb
-
-                    val button: Button = dialog.findViewById(R.id.update_button)
-                    button.setOnSafeClickListener {
-                        openSettings = true
-                        val uriString = "package:" + ErikuraApplication.instance.packageName
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
-                        startActivity(intent)
-                    }
-
-                    allowPedometerDialog = dialog
-                    // ダイアログが消えた場合の対応
-                    dialog.setOnDismissListener {
-                        allowPedometerDialog = null
-                        if (!openSettings) {
-                            startJob()
-                        }
-                    }
-                }
-            }
-            else {
-                ErikuraApplication.pedometerManager.requestPermission(this)
-            }
+            checkNotAskAgainPedometer()
         }
         else {
             startJob()
         }
     }
 
+    private fun checkNotAskAgainPedometer() {
+        if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
+            var openSettings = false
+            BaseActivity.currentActivity?.let { activity ->
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_allow_activity_recognition)
+                    .create()
+                dialog.show()
+
+                val label1: TextView = dialog.findViewById(R.id.allow_activity_label1)
+                val sb = SpannableStringBuilder("・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。")
+                val becomeBold: (String) -> Unit = { keyword ->
+                    val start = sb.toString().indexOf(keyword)
+                    sb.setSpan(StyleSpan(R.style.label_w6), start, start + keyword.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
+                }
+                becomeBold("「権限」")
+                becomeBold("「身体活動」")
+                becomeBold("「許可」")
+
+                label1.text = sb
+
+                val button: Button = dialog.findViewById(R.id.update_button)
+                button.setOnSafeClickListener {
+                    openSettings = true
+                    val uriString = "package:" + ErikuraApplication.instance.packageName
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+                    startActivity(intent)
+                }
+
+                allowPedometerDialog = dialog
+                // ダイアログが消えた場合の対応
+                dialog.setOnDismissListener {
+                    allowPedometerDialog = null
+                    if (!openSettings) {
+                        startJob()
+                    }
+                }
+            }
+        }
+        else {
+            ErikuraApplication.pedometerManager.requestPermission(this)
+        }
+    }
+
     private fun startJob() {
         job?.let { job ->
             val steps = ErikuraApplication.pedometerManager.readStepCount()
-
-            // 作業開始のトラッキングの送出
-            Tracking.logEvent(event = "push_start_job", params = bundleOf())
-            Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
-
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
                 locationManager.latLng
             } else {
@@ -284,16 +336,24 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             Api(activity!!).startJob(
                 job, latLng,
                 steps = steps,
-                distance = null, floorAsc = null, floorDesc = null
-            ) {
-                val intent = Intent(activity, JobDetailsActivity::class.java)
-                intent.putExtra("job", job)
-                intent.putExtra("onClickStart", true)
-                startActivity(intent)
+                distance = null, floorAsc = null, floorDesc = null, reason = null
+            ) { entry_id, check_status, messages ->
+                checkStatuses(job, steps, check_status, messages)
             }
         }
     }
 
+    private fun startJobPassIntent(job: Job, steps: Int, sb: String) {
+        // 作業開始のトラッキングの送出
+        Tracking.logEvent(event = "push_start_job", params = bundleOf())
+        Tracking.trackJobDetails(name = "push_start_job", jobId = job.id, steps = steps)
+
+        val intent = Intent(activity, JobDetailsActivity::class.java)
+        intent.putExtra("job", job)
+        intent.putExtra("onClickStart", true)
+        intent.putExtra("message", sb)
+        startActivity(intent)
+    }
 
     private fun updateTimeLimit() {
         val str = SpannableStringBuilder()
@@ -330,6 +390,112 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             viewModel.startButtonVisibility.value = View.INVISIBLE
         }
     }
+
+    fun displayExplainGetPedometer() {
+        BaseActivity.currentActivity?.let { activity ->
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_explain_get_pedometer)
+                .setCancelable(false)
+                .create()
+            dialog.show()
+            val button: Button = dialog.findViewById(R.id.accepted_button)
+            button.setOnClickListener(View.OnClickListener{
+                //同意した場合
+                dialog.dismiss()
+                ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
+                checkAcceptedExplainGetPedometer()
+            })
+            val cancelButton: Button = dialog.findViewById(R.id.not_accepted_button)
+            cancelButton.setOnClickListener(View.OnClickListener {
+                //同意しない場合
+                dialog.dismiss()
+                ErikuraApplication.instance.setAcceptedExplainGetPedometer(false)
+                checkAcceptedExplainGetPedometer()
+            })
+        }
+    }
+
+    //API実行後のstatusによって処理を分岐させます。
+    private fun checkStatuses(job: Job, steps: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) {
+
+        val sb = SpannableStringBuilder()
+        messages.forEach { msg ->
+            val start = sb.length
+//            sb.append("・")
+            sb.append(msg)
+            val end = sb.length
+            val lb = LeadingMarginSpan.Standard(0,100)
+//            val le = ListElementSpan(20)
+//            sb.setSpan(lb, start , end, 0)
+            val bl = BulletSpan(100).getLeadingMargin(false)
+            sb.setSpan( bl, start , end, 0)
+//            sb.setSpan(le, start , end, Spannable.SPAN_INCLUSIVE_EXCLUSIVE)
+            sb.append("\n")
+        }
+
+        when(checkStatus) {
+            //判定順は開始不可、警告理由入力、警告、開始可能
+//            Entry.CheckStatus.ERROR -> {
+//                //開始不可の場合はダイアログを表示
+//                val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
+//                    LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
+//                binding.lifecycleOwner = activity
+//                binding.viewModel = viewModel
+//                binding.handlers = this
+//                val dialog = AlertDialog.Builder(activity)
+//                    .setView(binding.root)
+//                    .setPositiveButton("確認", null)
+//                    .create()
+//                dialog.show()
+//                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+//                confirmation.setOnClickListener(View.OnClickListener {
+//                        dialog.dismiss()
+//                })
+//            }
+            Entry.CheckStatus.REASON_REQUIRED -> {
+                //警告ダイアログ理由入力
+                sb.append("\nこのまま作業を開始する場合は理由を記入ください。\n" +
+                        "（理由によっては、作業報告が差し戻しとなる場合があります）")
+                val binding: DialogInputReasonAbleStartBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
+                binding.alertMessage.setText(sb)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
+                binding.handlers = this
+                binding.root.setOnTouchListener { view, event ->
+                    if (view != null) {
+                        val imm: InputMethodManager = activity!!.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(view.windowToken, 0)
+                    }
+                    return@setOnTouchListener false
+                }
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(binding.root)
+                    .setCancelable(false)
+                    .create()
+                dialog.show()
+                val button: Button = dialog.findViewById(R.id.confirmation_button)
+                button.setOnClickListener(View.OnClickListener{
+                        dialog.dismiss()
+                        onClickConfirmation(it)
+                })
+                val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+                cancelButton.setOnClickListener(View.OnClickListener {
+                    dialog.dismiss()
+                })
+            }
+            Entry.CheckStatus.SUCCESS_WITH_WARNING -> {
+                //警告ダイアログは開始ログに注入して表示する、作業開始
+                var message = messages.joinToString("\n")
+                startJobPassIntent(job, steps, message?: "")
+            }
+            Entry.CheckStatus.SUCCESS -> {
+                //作業開始
+                var message = messages.joinToString("\n")
+                startJobPassIntent(job, steps, message?: "")
+            }
+        }
+    }
 }
 
 class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
@@ -338,6 +504,12 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val reason: MutableLiveData<String> = MutableLiveData()
+//    var message: MutableLiveData<String> = MutableLiveData()
+
+    val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(reason) { result.value = isValid() }
+    }
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job
@@ -372,9 +544,40 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
             }
         }
     }
+
+    private fun isValid(): Boolean {
+        var valid = true
+        // 必須チェック
+        if (valid && reason.value.isNullOrBlank()) {
+            valid = false
+        }
+        // 文字数チェック
+        if (valid && (reason.value?.length ?: 0) > 50) {
+            valid = false
+        }
+        return valid
+    }
 }
 
 interface AppliedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickStart(view: View)
+}
+
+public class ListElementSpan : MetricAffectingSpan {
+    var mHeight: Int? = null
+
+    constructor(height: Int){
+        mHeight = height
+    }
+    override fun updateMeasureState(textPaint: TextPaint) {
+    }
+
+    override fun updateDrawState(tp: TextPaint?) {
+        mHeight?.let{mH->
+            tp?.let {
+                tp.baselineShift += mH
+            }
+        }
+    }
 }
