@@ -32,6 +32,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.StopDialogFragment
+import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
 
@@ -205,13 +206,16 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     }
 }
 
-class WorkingJobDetailsFragmentViewModel : ViewModel() {
+class WorkingJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val stopButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User?) {
+        this.job.value = job
+        this.user.value = user
+
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}

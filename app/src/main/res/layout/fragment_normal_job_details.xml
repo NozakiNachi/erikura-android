@@ -117,6 +117,46 @@
                             />
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/jobDetails_jobInfoViewFragment"
+                        android:layout_marginTop="-10dp"
+                        android:background="@drawable/background_roundrect_orange_yellow2"
+                        style="@style/label_w6"
+                        android:text="急募"
+                        android:textSize="20dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/orangeYellow"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:visibility="@{viewModel.wantedVisibility}"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/jobDetails_jobInfoViewFragment"
+                        android:layout_marginTop="-10dp"
+                        android:background="@drawable/background_roundrect_coral2"
+                        style="@style/label_w6"
+                        android:text="報酬UP"
+                        android:textSize="20dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/coral"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:visibility="@{viewModel.boostVisibility}"
+                        />
                 </RelativeLayout>
 
                 <!-- マニュアル表示ボタン -->

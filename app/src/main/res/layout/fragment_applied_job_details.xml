@@ -34,7 +34,7 @@
                 android:orientation="vertical">
 
                 <!-- 背景ブラー画像 -->
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -49,8 +49,11 @@
                         android:layout_marginTop="40dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"/>
+
                     <!-- タイムリミット表示 -->
                     <LinearLayout
+                        android:id="@+id/appliedJobDetails_timeLimit"
+                        android:layout_below="@id/appliedJobDetails_jobInfoViewFragment"
                         android:background="@drawable/background_dialog_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -78,12 +81,54 @@
 
                     </LinearLayout>
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/appliedJobDetails_jobInfoViewFragment"
+                        android:layout_marginTop="-10dp"
+                        android:background="@drawable/background_roundrect_orange_yellow2"
+                        style="@style/label_w6"
+                        android:text="急募"
+                        android:textSize="20dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/orangeYellow"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:visibility="@{viewModel.wantedVisibility}"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/appliedJobDetails_jobInfoViewFragment"
+                        android:layout_marginTop="-10dp"
+                        android:background="@drawable/background_roundrect_coral2"
+                        style="@style/label_w6"
+                        android:text="報酬UP"
+                        android:textSize="20dp"
+                        android:firstBaselineToTopHeight="0dp"
+                        android:lastBaselineToBottomHeight="0dp"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/coral"
+                        android:paddingLeft="20dp"
+                        android:paddingRight="20dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:visibility="@{viewModel.boostVisibility}"
+                        />
+
                     <View
+                        android:layout_below="@id/appliedJobDetails_timeLimit"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:background="@drawable/background_triangle_reverse"/>
 
-                </LinearLayout>
+                </RelativeLayout>
 
                 <!-- マニュアル画像 -->
                 <FrameLayout

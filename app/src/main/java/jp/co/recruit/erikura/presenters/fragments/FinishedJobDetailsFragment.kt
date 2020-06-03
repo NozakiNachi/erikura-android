@@ -25,6 +25,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
+import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
 class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFragmentEventHandlers {
@@ -169,12 +170,15 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
 
 }
 
-class FinishedJobDetailsFragmentViewModel: ViewModel() {
+class FinishedJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val reportButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User?) {
+        this.job.value = job
+        this.user.value = user
+
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}

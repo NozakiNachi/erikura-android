@@ -45,6 +45,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.GoogleFitApiManager
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
+import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
 
@@ -331,7 +332,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 }
 
-class AppliedJobDetailsFragmentViewModel : ViewModel() {
+class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
@@ -339,6 +340,9 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User?) {
+        this.job.value = job
+        this.user.value = user
+
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}
