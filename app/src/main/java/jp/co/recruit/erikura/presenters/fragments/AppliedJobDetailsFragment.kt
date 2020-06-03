@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -13,7 +14,6 @@ import android.os.Handler
 import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.TextPaint
 import android.text.style.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,7 +29,6 @@ import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
@@ -40,6 +39,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogInputReasonAbleStartBinding
+import jp.co.recruit.erikura.databinding.DialogNotAbleStartBinding
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
