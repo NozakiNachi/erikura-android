@@ -41,6 +41,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogInputReasonAbleStartBinding
+import jp.co.recruit.erikura.databinding.DialogNotAbleStartBinding
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
@@ -419,30 +420,28 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
                 var appendText = "・"
                 message += ((appendText.plus(msg)).plus("\n"))
             }
-        } else {
-            message = messages.joinToString("\n")
         }
         viewModel.message.value = message
 
         when(checkStatus) {
             //判定順は開始不可、警告理由入力、警告、開始可能
-//            Entry.CheckStatus.ERROR -> {
-//                //開始不可の場合はダイアログを表示
-//                val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
-//                    LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
-//                binding.lifecycleOwner = activity
-//                binding.viewModel = viewModel
-//                binding.handlers = this
-//                val dialog = AlertDialog.Builder(activity)
-//                    .setView(binding.root)
-//                    .setPositiveButton("確認", null)
-//                    .create()
-//                dialog.show()
-//                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-//                confirmation.setOnClickListener(View.OnClickListener {
-//                        dialog.dismiss()
-//                })
-//            }
+            Entry.CheckStatus.ERROR -> {
+                //開始不可の場合はダイアログを表示
+                val binding: DialogNotAbleStartBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_not_able_start,null, false)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
+                binding.handlers = this
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(binding.root)
+                    .setPositiveButton("確認", null)
+                    .create()
+                dialog.show()
+                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                confirmation.setOnClickListener(View.OnClickListener {
+                        dialog.dismiss()
+                })
+            }
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
                 viewModel.message.value = message.plus("\nこのまま作業を開始する場合は理由を記入ください。\n" +

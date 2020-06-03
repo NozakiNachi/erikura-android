@@ -131,28 +131,26 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
                 var appendText = "・"
                 message += appendText.plus(msg).plus("\n")
             }
-        } else {
-            message = messages.joinToString("\n")
         }
         viewModel.message.value = message
         when(checkStatus) {
             //判定順は終了不可、警告理由入力、警告、終了可能
-//            Entry.CheckStatus.ERROR -> {
-//                //終了不可の場合はダイアログを表示
-//                val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
-//                    LayoutInflater.from(activity), R.layout.dialog_not_able_end, null, false)
-//                binding.lifecycleOwner = activity
-//                binding.viewModel = viewModel
-//                val dialog = AlertDialog.Builder(activity)
-//                    .setView(binding.root)
-//                    .setPositiveButton("確認", null)
-//                    .create()
-//                dialog.show()
-//                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
-//                confirmation.setOnClickListener(View.OnClickListener {
-//                        dialog.dismiss()
-//                })
-//            }
+            Entry.CheckStatus.ERROR -> {
+                //終了不可の場合はダイアログを表示
+                val binding: DialogNotAbleEndBinding = DataBindingUtil.inflate(
+                    LayoutInflater.from(activity), R.layout.dialog_not_able_end, null, false)
+                binding.lifecycleOwner = activity
+                binding.viewModel = viewModel
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(binding.root)
+                    .setPositiveButton("確認", null)
+                    .create()
+                dialog.show()
+                val confirmation: Button = dialog.getButton(DialogInterface.BUTTON_POSITIVE)
+                confirmation.setOnClickListener(View.OnClickListener {
+                        dialog.dismiss()
+                })
+            }
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
                 viewModel.message.value = message.plus("\nこのまま作業を終了する場合は理由を記入ください。\n" +
