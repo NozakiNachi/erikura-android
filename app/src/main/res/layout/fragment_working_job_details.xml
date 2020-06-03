@@ -44,6 +44,9 @@
                     <!-- 簡易表示 -->
                     <FrameLayout
                         android:id="@+id/workingJobDetails_jobInfoViewFragment"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -54,6 +57,8 @@
                     <LinearLayout
                         android:id="@+id/workingJobDetails_timeLimit"
                         android:layout_below="@id/workingJobDetails_jobInfoViewFragment"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -147,6 +152,8 @@
 
                     <View
                         android:layout_below="@id/workingJobDetails_timeLimit"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentRight="true"
                         android:layout_width="match_parent"
                         android:layout_height="30dp"
                         android:background="@drawable/background_triangle_reverse" />
