@@ -200,6 +200,14 @@
     <string name="report_completed_title">作業報告が完了しました！</string>
     <string name="report_completed_title2">続けて、振込用の口座を登録しましょう！</string>
 
+    <!-- 作業開始終了厳格化ダイアログ-->
+    <string name="job_alert">ご注意ください</string>
+    <string name="job_not_able_start">作業を開始できません</string>
+    <string name="job_not_able_end">作業を終了できません</string>
+    <string name="input_reason">理由を記入してください</string>
+    <string name="confirmation">確認</string>
+
+
     <!--　作業報告済み仕事詳細画面-->
     <string name="location">箇所</string>
     <string name="evaluation_from_management">お仕事依頼元からのコメント</string>
@@ -473,5 +481,11 @@
     <string name="onboarding_2_explain">まずは\n地図上のピンを押して\nお仕事を探そう！</string>
     <string name="onboarding_4_explain">応募した後は、\n24時間以内に\n現地でお仕事を実行！</string>
     <string name="onboarding_5_explain">終わったら、写真を\n撮って作業報告！\n翌月末に報酬GET！</string>
+
+    <!--歩数計取得の説明ダイアログ-->
+    <string name="pedometer_explain">作業をするには、作業を行っている証明を発注主に報告する目的で、位置情報と歩数を取得しますがよろしいでしょうか？</string>
+    <string name="pedometer_not_accepted">※同意をいただけない場合、作業を開始することができません</string>
+    <string name="pedometer_accepted_button">同意する</string>
+    <string name="pedometer_not_accepted_button">同意しない</string>
 
 </resources>

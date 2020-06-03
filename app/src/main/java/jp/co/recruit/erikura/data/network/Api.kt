@@ -350,7 +350,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun startJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, reason: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) -> Unit){
         executeObservable(
             erikuraApiService.startJob(
                 StartJobRequest(
@@ -360,12 +360,15 @@ class Api(var context: Context) {
                     steps = steps,
                     distance = distance,
                     floorAsc = floorAsc,
-                    floorDesc = floorDesc
+                    floorDesc = floorDesc,
+                    reason = reason
                 )),
             onError = onError
         ){ body ->
             val id = body.entryId
-            onComplete(id)
+            val checkStatus = body.checkStatus
+            val messages = body.messages
+            onComplete(id, checkStatus, messages)
         }
     }
 
@@ -379,7 +382,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int) -> Unit){
+    fun stopJob(job: Job, latLng: LatLng?, steps: Int?, distance: Double?, floorAsc: Int?, floorDesc: Int?, reason: String?, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (entryId: Int, checkStatus: Entry.CheckStatus, messages: ArrayList<String>) -> Unit){
         executeObservable(
             erikuraApiService.stopJob(
                 StopJobRequest(
@@ -389,13 +392,24 @@ class Api(var context: Context) {
                     steps = steps,
                     distance = distance,
                     floorAsc = floorAsc,
-                    floorDesc = floorDesc
+                    floorDesc = floorDesc,
+                    reason = reason
                 )
             ),
             onError = onError
         ){ body ->
             val id = body.entryId
-            onComplete(id)
+            val checkStatus = body.checkStatus
+            val messages = body.messages
+            onComplete(id, checkStatus, messages)
+        }
+    }
+
+    fun agree(onError: ((message: List<String>?) -> Unit)? = null) {
+        executeObservable(
+            erikuraApiService.agree(),
+            onError = onError
+        ) {
         }
     }
 

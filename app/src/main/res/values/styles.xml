@@ -105,6 +105,13 @@
         <item name="android:background">@drawable/text_field_noborder</item>
     </style>
 
+    <!-- テキストエリア -->
+    <style name="textArea" parent="textField">
+        <item name="android:paddingTop">20dp</item>
+        <item name="android:paddingBottom">20dp</item>
+        <item name="android:gravity">top</item>
+    </style>
+
     <!-- パスワードフィールド -->
     <style name="passwordField" parent="textField">
         <item name="android:inputType">textPassword</item>

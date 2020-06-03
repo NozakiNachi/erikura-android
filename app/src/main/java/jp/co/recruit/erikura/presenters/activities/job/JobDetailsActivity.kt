@@ -79,6 +79,7 @@ class JobDetailsActivity : BaseActivity() {
         supportFragmentManager.executePendingTransactions()
 
         val errorMessages = intent.getStringArrayExtra("errorMessages")
+        val message = intent.getStringExtra("message")
         if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
         } else if (fromWorkingJobDetailsFragment) {
@@ -86,7 +87,7 @@ class JobDetailsActivity : BaseActivity() {
             dialog.show(supportFragmentManager, "CancelWorking")
             fromWorkingJobDetailsFragment = false
         } else if (fromAppliedJobDetailsFragment) {
-            val dialog = StartDialogFragment(job)
+            val dialog = StartDialogFragment(job, message)
             dialog.show(supportFragmentManager, "Start")
             fromAppliedJobDetailsFragment = false
         }

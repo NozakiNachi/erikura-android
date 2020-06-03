@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.job.StopDialogFragmentViewModel" />
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.job.StopDialogFragmentEventHandlers" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/titleLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/input_reason"
+                android:textColor="@color/black" />
+
+            <TextView
+                style="@style/errorField"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:textColor="@color/coral"
+                android:lineSpacingExtra="10dp"
+                android:text="@{viewModel.message}"/>
+
+            <TextView
+                style="@style/fieldLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/icon_required_18"
+                android:drawablePadding="10dp"
+                android:layout_marginTop="40dp"
+                android:text="理由" />
+
+            <EditText
+                style="@style/textArea"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="10dp"
+                android:hint="こちらに記入してください"
+                android:text="@={viewModel.reason}"
+                />
+
+            <Button
+                android:id="@+id/confirmation_button"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                style="@style/primaryButton"
+                android:text="@string/confirmation"
+                android:enabled="@{viewModel.isEnabledButton}"/>
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="match_parent"
+                android:layout_height="70dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                style="@style/secondaryButton"
+                android:text="@string/button_cancel"/>
+
+        </LinearLayout>
+    </ScrollView>
+</layout>
