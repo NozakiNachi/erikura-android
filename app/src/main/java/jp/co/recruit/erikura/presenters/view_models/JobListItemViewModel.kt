@@ -45,6 +45,9 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     val goodVisible: Int get() = if (timeLabelType == JobUtil.TimeLabelType.OWNED && hasGood) { View.VISIBLE } else { View.GONE }
     val commentVisible: Int get() = if (timeLabelType == JobUtil.TimeLabelType.OWNED && hasComment) { View.VISIBLE } else { View.GONE }
 
+    val boostVisibility: Int get() { return if (job.boost) { View.VISIBLE } else { View.GONE} }
+    val wantedVisibility: Int get() { return if (job.wanted) { View.VISIBLE } else { View.GONE} }
+
     init {
         val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType)
         textColor.value = timeLimitColor

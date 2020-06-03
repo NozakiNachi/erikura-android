@@ -114,18 +114,71 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp">
-
-            <ImageView
-                android:id="@+id/job_list_item_image"
-                android:layout_width="100dp"
-                android:layout_height="75dp"
+            
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="0dp"
-                />
-<!--            app:bitmap="@{viewModel.image}"-->
+                >
+                <ImageView
+                    android:id="@+id/job_list_item_image"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_width="100dp"
+                    android:layout_height="75dp"
+                    />
+
+                <TextView
+                    android:id="@+id/marker_boosted"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="16dp"
+                    android:text="報酬UP"
+                    android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
+                    android:textSize="10dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/coral"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:background="@drawable/background_roundrect_coral"
+                    android:visibility="@{viewModel.boostVisibility}"
+                    />
+                <TextView
+                    android:id="@+id/marker_wanted"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="16dp"
+                    android:text="急募"
+                    android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
+                    android:textSize="10dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/orangeYellow"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:background="@drawable/background_roundrect_orange_yellow"
+                    android:visibility="@{viewModel.wantedVisibility}"
+                    />
+
+
+            </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"

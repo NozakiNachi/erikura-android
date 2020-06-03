@@ -30,6 +30,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
+import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
 class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFragmentEventHandlers {
     companion object {
@@ -60,6 +61,8 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
+        viewModel.job.value = job
+        viewModel.user.value = user
 
         if (isAdded) {
             timeLabel?.refresh(job, user)
@@ -85,6 +88,9 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         binding.lifecycleOwner = activity
         binding.viewModel = viewModel
         binding.handlers = this
+
+        viewModel.job.value = this.job
+        viewModel.user.value = this.user
 
         return binding.root
     }
@@ -323,7 +329,7 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
     }
 }
 
-class ReportedJobDetailsFragmentViewModel : ViewModel() {
+class ReportedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData()
 
