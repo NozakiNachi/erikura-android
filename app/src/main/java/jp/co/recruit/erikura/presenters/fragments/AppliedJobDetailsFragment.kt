@@ -3,7 +3,6 @@ package jp.co.recruit.erikura.presenters.fragments
 import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
@@ -41,12 +40,12 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogInputReasonAbleStartBinding
-import jp.co.recruit.erikura.databinding.DialogNotAbleStartBinding
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
+import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
 
@@ -486,7 +485,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 }
 
-class AppliedJobDetailsFragmentViewModel : ViewModel() {
+class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
@@ -500,6 +499,9 @@ class AppliedJobDetailsFragmentViewModel : ViewModel() {
     }
 
     fun setup(activity: Activity, job: Job?, user: User?) {
+        this.job.value = job
+        this.user.value = user
+
         if (job != null) {
             // ダウンロード
             val thumbnailUrl = if (!job.thumbnailUrl.isNullOrBlank()) {job.thumbnailUrl}else {job.jobKind?.noImageIconUrl?.toString()}

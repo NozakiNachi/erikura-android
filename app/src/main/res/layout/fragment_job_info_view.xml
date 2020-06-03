@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://app.erikura.net/">
     <data>
         <variable
             name="viewModel"
@@ -45,6 +46,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginRight="14dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -94,18 +96,49 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:layout_marginLeft="14dp"
                     android:orientation="vertical">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:layout_marginTop="6dp"
-                        android:layout_marginBottom="8dp"
-                        android:textSize="16dp"
-                        android:textColor="@color/black"
-                        android:text="@string/jobDetails_fee" />
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center_horizontal"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/marker_boosted"
+                            android:layout_width="wrap_content"
+                            android:layout_height="16dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintRight_toRightOf="@id/marker_body"
+                            android:text="報酬UP"
+                            android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
+                            android:textSize="10dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:textColor="@color/coral"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:paddingTop="3dp"
+                            android:paddingBottom="3dp"
+                            android:background="@drawable/background_roundrect_coral"
+                            android:visibility="@{viewModel.boostVisibility}"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginBottom="8dp"
+                            android:textSize="16dp"
+                            android:breakStrategy="balanced"
+                            android:textColor="@color/black"
+                            android:text="@{viewModel.feeLabel}" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"

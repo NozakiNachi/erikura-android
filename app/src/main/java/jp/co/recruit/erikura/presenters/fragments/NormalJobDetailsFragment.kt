@@ -20,6 +20,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
+import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
@@ -114,10 +115,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     }
 }
 
-class NormalJobDetailsFragmentViewModel: ViewModel() {
-    val job = MutableLiveData<Job>()
-    val user = MutableLiveData<User>()
-
+class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
     val nextUpdateSchedule = MediatorLiveData<String>()?.also { result ->
         result.addSource(job) { job ->
             result.value = job.nextUpdateScheduledAt?.let { JobUtils.DateFormats.simple.format(it) }
