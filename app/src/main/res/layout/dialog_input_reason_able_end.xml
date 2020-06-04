@@ -38,6 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
                 android:textColor="@color/coral"
                 android:lineSpacingExtra="10dp"
                 android:text="@{viewModel.message}"/>
@@ -48,7 +50,9 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/icon_required_18"
                 android:drawablePadding="10dp"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
                 android:text="理由" />
 
             <EditText
@@ -56,6 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="140dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
                 android:hint="こちらに記入してください"
                 android:text="@={viewModel.reason}"
                 />
@@ -75,7 +81,7 @@
                 android:id="@+id/cancel_button"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 style="@style/secondaryButton"
