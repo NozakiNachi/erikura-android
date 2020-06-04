@@ -206,6 +206,8 @@
     <string name="job_not_able_end">作業を終了できません</string>
     <string name="input_reason">理由を記入してください</string>
     <string name="confirmation">確認</string>
+    <string name="job_start">作業を開始</string>
+    <string name="job_end">作業を完了</string>
 
 
     <!--　作業報告済み仕事詳細画面-->
