@@ -208,7 +208,7 @@
     <string name="confirmation">確認</string>
     <string name="job_start">作業を開始</string>
     <string name="job_end">作業を完了</string>
-    <string name="input_reason_hint">こちらに記入してください(必須)</string>
+    <string name="input_reason_hint">こちらに記入してください</string>
 
 
     <!--　作業報告済み仕事詳細画面-->
