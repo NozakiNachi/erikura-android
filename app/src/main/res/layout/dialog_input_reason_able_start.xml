@@ -75,7 +75,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
-                android:text="@string/confirmation"
+                android:text="@string/job_start"
                 android:enabled="@{viewModel.isEnabledButton}"/>
 
             <Button
