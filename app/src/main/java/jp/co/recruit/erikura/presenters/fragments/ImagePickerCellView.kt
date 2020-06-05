@@ -12,10 +12,6 @@ import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.FragmentImagePickerCellViewBinding
-import android.widget.Toast
-import android.widget.CompoundButton
-import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
-
 
 class ImagePickerCellView : FrameLayout {
     var imageView: ImageView
@@ -35,7 +31,7 @@ class ImagePickerCellView : FrameLayout {
         imageView = binding.root.findViewById(R.id.image_picker_cell_image)
         toggleButton = binding.root.findViewById(R.id.image_picker_cell_check)
 
-        toggleButton.setOnSafeClickListener {
+        toggleButton.setOnClickListener {
             toggleClickListener?.apply {
                 onClick(toggleButton.isChecked)
             }
@@ -51,8 +47,6 @@ class ImagePickerCellView : FrameLayout {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec)
     }
 }
-
-
 
 object ImagePickerCellViewAdapter {
     @BindingAdapter("checked")
