@@ -7,12 +7,12 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationOnlyPhoneFragment
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
-import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
 abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity() {
     protected var isSkipSmsVerification: Boolean = false
@@ -23,6 +23,10 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.v("ERIKURA", "${this.javaClass.name}: onCreate")
+        this.intent = intent
+        intent?.dataString?.let { uriString ->
+            ErikuraApplication.instance.pushUri = uriString.toUri()
+        }
     }
 
     override fun onStart() {
