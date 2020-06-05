@@ -81,8 +81,14 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                         //SMS認証済みの場合
                         // 地図画面へ遷移します
                         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                            val intent = Intent(this, MapViewActivity::class.java)
+                            var intent = Intent(this, MapViewActivity::class.java)
+                            // プッシュ通知のURLがあるならそちらへ遷移
+                            ErikuraApplication.instance.pushUri?.let {
+                                intent = Intent(Intent.ACTION_VIEW, it)
+                                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            }
                             startActivity(intent)
+                            ErikuraApplication.instance.pushUri = null
                         }
                         else {
                             // 位置情報の許諾、オンボーディングを表示します
@@ -136,12 +142,19 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             //skipの判定をいれる
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                val intent = Intent(this, MapViewActivity::class.java)
+                var intent = Intent(this, MapViewActivity::class.java)
+                // プッシュ通知のURLがあるならそちらへ遷移
+                ErikuraApplication.instance.pushUri?.let {
+                    intent = Intent(Intent.ACTION_VIEW, it)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+
                 if (isChangePhoneNumber && !isSkip) {
                     intent.putExtra("onClickChangeUserInformationOnlyPhone", true)
                 }
                 startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(this).toBundle())
                 finish()
+                ErikuraApplication.instance.pushUri = null
             } else {
                 // 位置情報の許諾、オンボーディングを表示します
                 Intent(this, PermitLocationActivity::class.java).let { intent ->

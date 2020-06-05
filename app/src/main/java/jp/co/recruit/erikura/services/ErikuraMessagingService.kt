@@ -10,6 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.presenters.activities.StartActivity
@@ -48,6 +49,8 @@ class ErikuraMessagingService : FirebaseMessagingService() {
         // 通知内のデータを取得しておきます
         val notificationData = NotificationData.fromJSON(remoteMessage.data["extra"])
         val openURI = notificationData?.openURI
+        // ログイントークン切れの時のためにURLを保存しておきます
+        ErikuraApplication.instance.pushUri = openURI
         openURI?.also {
             // URL が指定されているので、URL をもとに開くための通知を行います
             val intent = Intent(Intent.ACTION_VIEW, it)

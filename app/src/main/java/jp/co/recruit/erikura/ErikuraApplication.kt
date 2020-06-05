@@ -85,6 +85,9 @@ class ErikuraApplication : Application() {
 
     var reportingJob: Job? = null
 
+    // プッシュ通知のURL
+    var pushUri: Uri? = null
+
     override fun onCreate() {
         super.onCreate()
         instance = this
