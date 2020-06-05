@@ -62,7 +62,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
-                android:hint="こちらに記入してください"
+                android:hint="@string/input_reason_hint"
                 android:text="@={viewModel.reason}"
                 />
 
