@@ -49,6 +49,7 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
         if (intent != null) {
             intent.getStringExtra("extra")?.let { data ->
                 NotificationData.fromJSON(data)?.openURI?.let { uri ->
+                    ErikuraApplication.instance.pushUri = uri
                     val intent = Intent(Intent.ACTION_VIEW, uri)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)

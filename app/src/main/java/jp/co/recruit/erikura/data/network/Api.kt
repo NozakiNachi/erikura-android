@@ -668,7 +668,7 @@ class Api(var context: Context) {
     }
 
     fun pushEndpoint(fcmToken: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (result: Boolean) -> Unit) {
-        executeObservable(erikuraApiService.pushEndpoint(PushEndpointRequest(ios_fcm_token = fcmToken)), showProgress = false, onError = onError) { response ->
+        executeObservable(erikuraApiService.pushEndpoint(PushEndpointRequest(ios_fcm_token = fcmToken)), showProgress = false, ignoreUnauthorizedError = true, onError = onError) { response ->
             onComplete(response.result)
         }
     }
@@ -686,6 +686,7 @@ class Api(var context: Context) {
                                       showProgress: Boolean = true,
                                       defaultError: String? = null,
                                       runCompleteOnUIThread: Boolean = true,
+                                      ignoreUnauthorizedError: Boolean = false,
                                       onError: ((messages: List<String>?) -> Unit)?,
                                       onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
@@ -745,34 +746,35 @@ class Api(var context: Context) {
                             }
                             when(response.code()) {
                                 401 -> {
-                                    // セッション情報があればクリアしておきます
-                                    userSession?.let {
-                                        userSession = null
-                                        UserSession.clear()
-                                    }
-
-                                    var fromMypage = false
-                                    (context as? FragmentActivity)?.also { activity ->
-                                        // マイページから遷移してきたかのフラグを取得します
-                                        fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
-                                        // 元画面は表示できないはずなので閉じておきます
-                                        activity.finish()
-
-                                        // ログイン必須画面に遷移させます
-                                        Intent(context, LoginRequiredActivity::class.java).let {
-                                            it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                            it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
-                                            context.startActivity(it)
+                                    if (!ignoreUnauthorizedError) {
+                                        // セッション情報があればクリアしておきます
+                                        userSession?.let {
+                                            userSession = null
+                                            UserSession.clear()
                                         }
-                                    } ?: run {
-                                       // ログイン必須画面に遷移させます
-                                        Intent(context, LoginRequiredActivity::class.java).let {
-                                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                            it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
-                                            context.startActivity(it)
+
+                                        var fromMypage = false
+                                        (context as? FragmentActivity)?.also { activity ->
+                                            // マイページから遷移してきたかのフラグを取得します
+                                            fromMypage = activity.intent.getBooleanExtra(MypageActivity.FROM_MYPAGE_KEY, false)
+                                            // 元画面は表示できないはずなので閉じておきます
+                                            activity.finish()
+
+                                            // ログイン必須画面に遷移させます
+                                            Intent(context, LoginRequiredActivity::class.java).let {
+                                                it.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                                it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                                context.startActivity(it)
+                                            }
+                                        } ?: run {
+                                            // ログイン必須画面に遷移させます
+                                            Intent(context, LoginRequiredActivity::class.java).let {
+                                                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                                it.putExtra(MypageActivity.FROM_MYPAGE_KEY, fromMypage)
+                                                context.startActivity(it)
+                                            }
                                         }
                                     }
-
                                 }
                                 500 -> {
                                     Log.v("ERROR RESPONSE", response.errorBody().toString())
