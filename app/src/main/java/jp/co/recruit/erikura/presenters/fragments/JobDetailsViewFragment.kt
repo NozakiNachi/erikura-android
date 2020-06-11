@@ -21,6 +21,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -122,6 +123,12 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     val summaryTitles: MutableLiveData<String> = MutableLiveData()
     val summaryTitlesVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val openMapButtonText: MutableLiveData<SpannableString> = MutableLiveData()
+    val workableTime =  MutableLiveData<String>()
+    val workableTimeVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(workableTime) {
+            result.value = if ((workableTime.value ?: "").isNotBlank()) { View.VISIBLE } else { View.GONE }
+        }
+    }
 
     fun setup(job: Job?){
         job?.let { job ->
@@ -131,6 +138,8 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             setupLimit(job)
             // 持ち物
             setupTools(job)
+            // 作業可能時間帯
+            setupWorkableTime(job)
             // 仕事概要
             setupSummary(job)
             // 報告箇所
@@ -178,6 +187,14 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
         tool.value = job.tools
     }
 
+    private fun setupWorkableTime(job: Job) {
+        if ((job.workableStart ?: "").isNotBlank() && (job.workableFinish ?: "").isNotBlank()) {
+            workableTime.value = "${job.workableStart}〜${job.workableFinish}の間に作業を実施して下さい(必須)"
+        }
+        else {
+            workableTime.value = null
+        }
+    }
     /**
      * 仕事概要を設定します
      */
