@@ -42,6 +42,8 @@ data class Job(
     var workingPlace: String? = null,
     var summary: String? = null,
     var tools: String? = null,
+    var workableStart: String? = null,
+    var workableFinish: String? = null,
     var entryQuestion: String? = null,
     var latitude: Double? = null,
     var longitude: Double? = null,
