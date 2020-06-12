@@ -260,9 +260,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             }
         } else {
             //ダイアログ表示後許可した場合
-            Api(activity!!).agree(){
-                checkPermissionPedometer()
-            }
+            checkPermissionPedometer()
         }
     }
 
@@ -398,8 +396,12 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             button.setOnClickListener(View.OnClickListener{
                 //同意した場合
                 dialog.dismiss()
-                ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
-                checkAcceptedExplainGetPedometer()
+                Api(activity).agree(){result ->
+                    if (result){
+                        ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
+                        checkAcceptedExplainGetPedometer()
+                    }
+                }
             })
             val cancelButton: Button = dialog.findViewById(R.id.not_accepted_button)
             cancelButton.setOnClickListener(View.OnClickListener {

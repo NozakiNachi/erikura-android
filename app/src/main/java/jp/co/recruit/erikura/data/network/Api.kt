@@ -405,11 +405,13 @@ class Api(var context: Context) {
         }
     }
 
-    fun agree(onError: ((message: List<String>?) -> Unit)? = null) {
+    fun agree(onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: Boolean) -> Unit) {
         executeObservable(
             erikuraApiService.agree(),
             onError = onError
-        ) {
+        ) { body ->
+            val result = body.result
+            onComplete(result)
         }
     }
 
