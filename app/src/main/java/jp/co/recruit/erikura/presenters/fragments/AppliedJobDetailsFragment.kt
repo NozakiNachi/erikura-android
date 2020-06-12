@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -66,6 +67,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+    private var allowLocationDialog: Dialog? = null
     private var allowPedometerDialog: Dialog? = null
 
     private var timer: Timer = Timer()
@@ -145,8 +147,19 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     override fun onResume() {
         super.onResume()
         ErikuraApplication.pedometerManager.start()
-        allowPedometerDialog?.dismiss()
-        allowPedometerDialog = null
+
+        if (allowLocationDialog != null) {
+            if (ErikuraApplication.locationManager.checkPermission(this)) {
+                allowLocationDialog?.dismiss()
+                allowLocationDialog = null
+            }
+        }
+        if (allowPedometerDialog != null) {
+            if (ErikuraApplication.pedometerManager.checkPermission(this)) {
+                allowPedometerDialog?.dismiss()
+                allowPedometerDialog = null
+            }
+        }
 
         timer = Timer()
         timer.schedule(object : TimerTask() {
@@ -171,19 +184,32 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         ErikuraApplication.pedometerManager.onRequestPermissionResult(this, requestCode, permissions, grantResults,
+            onDisplayAlert = { dialog ->
+                allowPedometerDialog = dialog
+            },
             onPermissionNotGranted = {
+                allowPedometerDialog = null
                 updateTimeLimit()
-                if (inStartJob) {
-                    startJob()
-                }
-                inStartJob = false
+                startJob()
             },
             onPermissionGranted = {
+                allowPedometerDialog = null
                 updateTimeLimit()
-                if (inStartJob) {
-                    startJob()
-                }
-                inStartJob = false
+                startJob()
+            })
+        ErikuraApplication.locationManager.onRequestPermissionResult(this, requestCode, permissions, grantResults,
+            onDisplayAlert = { dialog ->
+                allowLocationDialog = dialog
+            },
+            onPermissionNotGranted = {
+                allowLocationDialog = null
+                updateTimeLimit()
+                startJobWithPedometerPermissionCheck()
+            },
+            onPermissionGranted = {
+                allowLocationDialog = null
+                updateTimeLimit()
+                startJobWithPedometerPermissionCheck()
             })
     }
 
@@ -224,7 +250,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             displayExplainGetPedometer()
         } else {
             //許可してた場合
-            checkPermissionPedometer()
+            startJobWithPermissionCheck()
         }
     }
 
@@ -260,61 +286,31 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             }
         } else {
             //ダイアログ表示後許可した場合
-            checkPermissionPedometer()
+            startJobWithPermissionCheck()
         }
     }
 
-    private fun checkPermissionPedometer() {
+    private fun startJobWithPermissionCheck() {
+        startJobWithLocationPermissionCheck()
+    }
+
+    private fun startJobWithLocationPermissionCheck() {
+        if (ErikuraApplication.locationManager.checkPermission(this)) {
+            // 位置情報のパーミッションが許可されている場合
+            startJobWithPedometerPermissionCheck()
+        }
+        else {
+            // 位置情報のパーミッションが許可されていない場合
+            ErikuraApplication.locationManager.requestPermission(this)
+        }
+    }
+
+    private fun startJobWithPedometerPermissionCheck() {
         if (!ErikuraApplication.pedometerManager.checkPermission(activity!!)) {
-            inStartJob = true
-            checkNotAskAgainPedometer()
+            ErikuraApplication.pedometerManager.requestPermission(this)
         }
         else {
             startJob()
-        }
-    }
-
-    private fun checkNotAskAgainPedometer() {
-        if (ErikuraApplication.pedometerManager.checkedNotAskAgain) {
-            var openSettings = false
-            BaseActivity.currentActivity?.let { activity ->
-                val dialog = AlertDialog.Builder(activity)
-                    .setView(R.layout.dialog_allow_activity_recognition)
-                    .create()
-                dialog.show()
-
-                val label1: TextView = dialog.findViewById(R.id.allow_activity_label1)
-                val sb = SpannableStringBuilder("・設定画面から「権限」＞「身体活動」をタップし「許可」を選択してください。")
-                val becomeBold: (String) -> Unit = { keyword ->
-                    val start = sb.toString().indexOf(keyword)
-                    sb.setSpan(StyleSpan(R.style.label_w6), start, start + keyword.length, Spanned.SPAN_EXCLUSIVE_INCLUSIVE)
-                }
-                becomeBold("「権限」")
-                becomeBold("「身体活動」")
-                becomeBold("「許可」")
-
-                label1.text = sb
-
-                val button: Button = dialog.findViewById(R.id.update_button)
-                button.setOnSafeClickListener {
-                    openSettings = true
-                    val uriString = "package:" + ErikuraApplication.instance.packageName
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
-                    startActivity(intent)
-                }
-
-                allowPedometerDialog = dialog
-                // ダイアログが消えた場合の対応
-                dialog.setOnDismissListener {
-                    allowPedometerDialog = null
-                    if (!openSettings) {
-                        startJob()
-                    }
-                }
-            }
-        }
-        else {
-            ErikuraApplication.pedometerManager.requestPermission(this)
         }
     }
 

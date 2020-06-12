@@ -61,6 +61,7 @@ class PermitLocationActivity : AppCompatActivity(), PermitLocationHandlers {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         locationManager.onRequestPermissionResult(this, requestCode, permissions, grantResults,
+            displayAlert = false,
             onPermissionNotGranted = {
                 startNextActivity()
             },

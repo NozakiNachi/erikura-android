@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.util
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -49,6 +50,10 @@ class PedometerManager: SensorEventListener {
         }
     }
 
+    fun checkPermission(fragment: Fragment): Boolean {
+        return checkPermission(fragment.activity!!)
+    }
+
     /**
      * ACTIVITY_RECOGNITION パーミッションを要求します
      */
@@ -73,6 +78,8 @@ class PedometerManager: SensorEventListener {
 
     fun onRequestPermissionResult(activity: FragmentActivity,
                                   requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  displayAlert: Boolean = true,
+                                  onDisplayAlert: ((dialog: AlertDialog) -> Unit)? = null,
                                   onPermissionNotGranted: (() -> Unit)? = null,
                                   onPermissionGranted: (() -> Unit)? = null) {
         //　ACTIVITY_RECOGNITION 以外の場合にはスキップします
@@ -88,31 +95,25 @@ class PedometerManager: SensorEventListener {
         else {
             // 次回以降表示しないに回答しているか
             checkedNotAskAgain = !activity.shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION)
-
-            onPermissionNotGranted?.invoke()
+            if (displayAlert) {
+                val dialog = MessageUtils.displayPedometerAlert(activity) {
+                    onPermissionNotGranted?.invoke()
+                }
+                onDisplayAlert?.invoke(dialog)
+            }
+            else {
+                onPermissionNotGranted?.invoke()
+            }
         }
     }
 
     fun onRequestPermissionResult(fragment: Fragment,
                                   requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  displayAlert: Boolean = true,
+                                  onDisplayAlert: ((dialog: AlertDialog) -> Unit)? = null,
                                   onPermissionNotGranted: (() -> Unit)? = null,
                                   onPermissionGranted: (() -> Unit)? = null) {
-        //　ACTIVITY_RECOGNITION 以外の場合にはスキップします
-        if (requestCode != ErikuraApplication.REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID)
-            return
-
-        if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            checkedNotAskAgain = false
-            // センサの読み取りを開始します
-            start()
-            onPermissionGranted?.invoke()
-        }
-        else {
-            // 次回以降表示しないに回答しているか
-            checkedNotAskAgain = !fragment.shouldShowRequestPermissionRationale(Manifest.permission.ACTIVITY_RECOGNITION)
-
-            onPermissionNotGranted?.invoke()
-        }
+        onRequestPermissionResult(fragment.activity!!, requestCode, permissions, grantResults, displayAlert, onDisplayAlert, onPermissionNotGranted, onPermissionGranted)
     }
 
     fun readStepCount(): Int {
