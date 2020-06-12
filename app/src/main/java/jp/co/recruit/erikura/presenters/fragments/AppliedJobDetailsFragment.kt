@@ -396,9 +396,11 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             button.setOnClickListener(View.OnClickListener{
                 //同意した場合
                 dialog.dismiss()
-                Api(activity).agree(){
-                    ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
-                    checkAcceptedExplainGetPedometer()
+                Api(activity).agree(){result ->
+                    if (result){
+                        ErikuraApplication.instance.setAcceptedExplainGetPedometer(true)
+                        checkAcceptedExplainGetPedometer()
+                    }
                 }
             })
             val cancelButton: Button = dialog.findViewById(R.id.not_accepted_button)

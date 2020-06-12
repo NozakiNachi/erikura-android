@@ -92,7 +92,7 @@ interface IErikuraApiService {
     fun stopJob(@Body request: StopJobRequest): ApiObservable<CheckEntryResponse>
 
     @POST("entries/agree")
-    fun agree(): NoBodyObservable
+    fun agree(): ApiObservable<ResultResponse>
 
     @PATCH("entries/abort")
     fun abortJob(@Body request: AbortJobRequest): ApiObservable<EntryIdResponse>
