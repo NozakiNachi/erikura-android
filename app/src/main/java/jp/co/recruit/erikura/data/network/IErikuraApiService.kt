@@ -159,17 +159,9 @@ interface IErikuraApiService {
 }
 
 typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
-typealias NoBodyObservable = Observable<Response<NoBodyResponse>>
 
 data class ApiResponse<BODY>(
     var body: BODY,
-    var errors: List<String>? = null
-) {
-    // エラーが存在するかを判定します
-    val hasError: Boolean get() = !(this.errors?.isEmpty() ?: true)
-}
-
-data class NoBodyResponse(
     var errors: List<String>? = null
 ) {
     // エラーが存在するかを判定します
