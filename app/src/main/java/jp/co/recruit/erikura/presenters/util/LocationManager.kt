@@ -1,14 +1,15 @@
 package jp.co.recruit.erikura.presenters.util
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Looper
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.preference.PreferenceManager
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
@@ -19,6 +20,7 @@ typealias LocationUpdateCallback = (LatLng) -> Unit
 
 @Singleton
 class LocationManager {
+
     companion object {
         const val Interval: Long = 5000
         const val FastestInterval: Long = 1000
@@ -26,6 +28,16 @@ class LocationManager {
         // 自己位置が取得できない場合のデフォルト値は渋谷駅
         val defaultLatLng = LatLng(35.658322, 139.70163)
     }
+
+    val fineLocationCheckedNotAskAgainKey = "ACCESS_FINE_LOCATION_CHECKED_NOT_ASK_AGAIN"
+    var checkedNotAskAgain: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(ErikuraApplication.instance).getBoolean(fineLocationCheckedNotAskAgainKey, false)
+        set(value) {
+            PreferenceManager.getDefaultSharedPreferences(ErikuraApplication.instance)
+                .edit()
+                .putBoolean(fineLocationCheckedNotAskAgainKey, value)
+                .commit()
+        }
 
     private var fusedClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(ErikuraApplication.applicationContext)
@@ -76,8 +88,19 @@ class LocationManager {
         }
     }
 
+    fun requestPermission(fragment: Fragment) {
+        if (!checkPermission(fragment)) {
+            fragment.requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                ErikuraApplication.REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID
+            )
+        }
+    }
+
     fun onRequestPermissionResult(activity: FragmentActivity,
                                   requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  displayAlert: Boolean = true,
+                                  onDisplayAlert: ((dialog: AlertDialog) -> Unit)? = null,
                                   onPermissionNotGranted: (() -> Unit)? = null,
                                   onPermissionGranted: (() -> Unit)? = null) {
         // ACCESS_FINE_LOCATION_PERMISSION 以外の場合にはスキップします
@@ -85,22 +108,31 @@ class LocationManager {
             return
 
         if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+            checkedNotAskAgain = false
             start(activity)
             onPermissionGranted?.invoke()
         }
         else {
-            // 次回以降表示しないにしている場合は警告モーダルを表示します
-            if (!activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                val dialog = MessageUtils.displayLocationAlert(activity)
-                dialog.setOnDismissListener {
+            checkedNotAskAgain = activity.shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
+            if (displayAlert) {
+                val dialog = MessageUtils.displayLocationAlert(activity) {
                     onPermissionNotGranted?.invoke()
                 }
+                onDisplayAlert?.invoke(dialog)
             }
             else {
                 onPermissionNotGranted?.invoke()
             }
         }
+    }
 
+    fun onRequestPermissionResult(fragment: Fragment,
+                                  requestCode: Int, permissions: Array<out String>, grantResults: IntArray,
+                                  displayAlert: Boolean = true,
+                                  onDisplayAlert: ((dialog: AlertDialog) -> Unit)? = null,
+                                  onPermissionNotGranted: (() -> Unit)? = null,
+                                  onPermissionGranted: (() -> Unit)? = null) {
+        onRequestPermissionResult(fragment.activity!!, requestCode, permissions, grantResults, displayAlert, onDisplayAlert, onPermissionNotGranted, onPermissionGranted)
     }
 
     fun start(activity: FragmentActivity) {
