@@ -189,7 +189,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
 
     private fun setupWorkableTime(job: Job) {
         if ((job.workableStart ?: "").isNotBlank() && (job.workableFinish ?: "").isNotBlank()) {
-            workableTime.value = "${job.workableStart}〜${job.workableFinish}の間に作業を実施して下さい(必須)"
+            workableTime.value = "${job.workableStart}〜${job.workableFinish}の間に作業を実施してください(必須)"
         }
         else {
             workableTime.value = null
