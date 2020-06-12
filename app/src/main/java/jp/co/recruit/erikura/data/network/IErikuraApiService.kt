@@ -92,7 +92,7 @@ interface IErikuraApiService {
     fun stopJob(@Body request: StopJobRequest): ApiObservable<CheckEntryResponse>
 
     @POST("entries/agree")
-    fun agree(): ApiObservable<ResultResponse>
+    fun agree(): NoBodyObservable
 
     @PATCH("entries/abort")
     fun abortJob(@Body request: AbortJobRequest): ApiObservable<EntryIdResponse>
@@ -159,9 +159,17 @@ interface IErikuraApiService {
 }
 
 typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
+typealias NoBodyObservable = Observable<Response<NoBodyResponse>>
 
 data class ApiResponse<BODY>(
     var body: BODY,
+    var errors: List<String>? = null
+) {
+    // エラーが存在するかを判定します
+    val hasError: Boolean get() = !(this.errors?.isEmpty() ?: true)
+}
+
+data class NoBodyResponse(
     var errors: List<String>? = null
 ) {
     // エラーが存在するかを判定します

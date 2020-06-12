@@ -405,13 +405,8 @@ class Api(var context: Context) {
         }
     }
 
-    fun agree(onError: ((message: List<String>?) -> Unit)? = null, onComplete: () -> Unit) {
-        executeObservable(
-            erikuraApiService.agree(),
-            onError = onError
-        ) { body ->
-            onComplete()
-        }
+    fun agree() {
+            erikuraApiService.agree()
     }
 
     fun recommendedJobs(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (jobs: List<Job>) -> Unit) {
