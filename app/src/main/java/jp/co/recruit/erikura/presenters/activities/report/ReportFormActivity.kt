@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
@@ -314,9 +315,9 @@ class ReportFormViewModel: ViewModel() {
         if (valid && comment.value.isNullOrBlank()) {
             valid = false
             commentError.message.value = null
-        }else if (valid && comment.value?.length?: 0 > 5000) {
+        }else if (valid && comment.value?.length?: 0 > ErikuraConst.maxCommentLength) {
             valid = false
-            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error, ErikuraConst.maxCommentLength)
         }else {
             valid = true
             commentError.message.value = null
