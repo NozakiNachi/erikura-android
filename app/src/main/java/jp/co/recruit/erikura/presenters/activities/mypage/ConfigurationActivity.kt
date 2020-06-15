@@ -81,23 +81,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
                 }
             }
         },
-        MenuItem(5, "問い合わせ", R.drawable.icon_mail_15, false) {
-            val inquiryURLString = ErikuraConfig.inquiryURLString
-            Uri.parse(inquiryURLString)?.let { uri ->
-                try {
-                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                        intent.setPackage("com.android.chrome")
-                        startActivity(intent)
-                    }
-                }
-                catch (e: ActivityNotFoundException) {
-                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                        startActivity(intent)
-                    }
-                }
-            }
-        },
-        MenuItem(6, "ログアウト", R.drawable.icon_exit_15, true) {
+        MenuItem(5, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()
         }
     )
