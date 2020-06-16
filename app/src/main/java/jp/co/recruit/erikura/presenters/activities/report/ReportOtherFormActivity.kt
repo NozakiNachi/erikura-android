@@ -22,6 +22,7 @@ import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
@@ -272,18 +273,12 @@ class ReportOtherFormViewModel: ViewModel() {
         var valid = true
         if (valid && comment.value.isNullOrBlank()) {
             valid = false
-//            commentErrorMsg.value = ""
-//            commentErrorVisibility.value = View.GONE
             commentError.message.value = null
-        }else if (valid && comment.value?.length?: 0 > 5000) {
+        }else if (valid && comment.value?.length?: 0 > ErikuraConst.maxCommentLength) {
             valid = false
-//            commentErrorMsg.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
-//            commentErrorVisibility.value = View.VISIBLE
-            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error)
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error, ErikuraConst.maxCommentLength)
         }else {
             valid = true
-//            commentErrorMsg.value = ""
-//            commentErrorVisibility.value = View.GONE
             commentError.message.value = null
         }
         return valid
