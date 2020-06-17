@@ -147,15 +147,20 @@ class SmsVerifyActivity : BaseActivity(),
         sendSms(phoneNumber ?: "")
     }
 
+    /**
+     * 電話番号を変更するリンククリック時
+     */
     override fun onClickRegisterPhone(view: View) {
         //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
         when (requestCode) {
+            // 新規会員登録のフローから遷移した場合
             ErikuraApplication.REQUEST_SIGN_UP_CODE -> {
                 val intent = Intent(this, RegisterPhoneActivity::class.java)
                 intent.putExtra("user", user)
                 intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
                 startActivityForResult(intent, ErikuraApplication.REQUEST_SIGN_UP_CODE)
             }
+            // それ以外のフローからの遷移の場合
             else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
@@ -237,16 +242,15 @@ class SmsVerifyActivity : BaseActivity(),
             data?.let {
                 beforeChangeNewPhoneNumber = it.getStringExtra("beforeChangeNewPhoneNumber")
                 isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
-                it.getStringExtra("newPhoneNumber")?.let {
-                    if (phoneNumber != data.getStringExtra("newPhoneNumber")) {
-                        phoneNumber = data.getStringExtra("newPhoneNumber")
-                        Log.v("INFO", "SMS認証メール送信")
-                        // trueしか返ってこないので送信結果の判定は入れていない
-                        phoneNumber.let{
-                            sendSms(phoneNumber ?: "")
-                        }
+                it.getStringExtra("newPhoneNumber")?.let { newPhoneNumber ->
+                    if (phoneNumber != newPhoneNumber) {
+                        phoneNumber = newPhoneNumber
+                        // 電話番号が変更されている場合？
+                        Log.v(ErikuraApplication.LOG_TAG, "SMS認証メール送信")
+                        sendSms(phoneNumber ?: "")
                     }
                 }
+
                 isChangeUserInformationOtherThanPhone =
                     it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
                 if (isChangeUserInformationOtherThanPhone) {
