@@ -220,18 +220,35 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             // 電話番号はSMS認証後に保存のため別で保持します。
             val newPhoneNumber = viewModel.phone.value
             if (fromSms) {
-                val intent = Intent()
-                //SMS認証画面経由の場合、元の認証画面へ
-                intent.putExtra("newPhoneNumber", newPhoneNumber)
-                intent.putExtra("beforeChangeNewPhoneNumber", newPhoneNumber)
-                //電話番号の変更があることを元の認証画面へ
-                if (user.phoneNumber != newPhoneNumber) {
-                    intent.putExtra("isChangePhoneNumber", true)
+                Api(this).smsVerifyCheck(newPhoneNumber ?: "") { result ->
+                    val isChangedPhoneNumber = user.phoneNumber != newPhoneNumber
+                    val finishEditing: () -> Unit = {
+                        val intent = Intent()
+                        //SMS認証画面経由の場合、元の認証画面へ
+                        intent.putExtra(SmsVerifyActivity.NewPhoneNumber, newPhoneNumber)
+                        intent.putExtra(SmsVerifyActivity.BeforeChangeNewPhoneNumber, newPhoneNumber)
+                        intent.putExtra(SmsVerifyActivity.SmsVerified, result)
+                        //電話番号の変更があることを元の認証画面へ
+                        if (isChangedPhoneNumber) {
+                            intent.putExtra(SmsVerifyActivity.IsChangePhoneNumber, true)
+                        }
+                        //電話番号以外の会員情報変更したモーダル表示
+                        intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+                    if (isChangedPhoneNumber) {
+                        // 電話番号が変更されているので、永続化処理をした上で、SMS認証に戻ります
+                        user.phoneNumber = newPhoneNumber
+                        Api(this).updateUser(user) {
+                            finishEditing()
+                        }
+                    }
+                    else {
+                        // SMS認証画面に戻ります
+                        finishEditing()
+                    }
                 }
-                //電話番号以外の会員情報変更したモーダル表示
-                intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
-                setResult(RESULT_OK, intent)
-                finish()
             } else {
                 Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
                 if (newPhoneNumber != null) {
