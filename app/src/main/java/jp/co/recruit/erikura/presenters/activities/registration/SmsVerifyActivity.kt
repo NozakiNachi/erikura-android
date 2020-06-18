@@ -32,6 +32,11 @@ import java.util.regex.Pattern
 class SmsVerifyActivity : BaseActivity(),
     SmsVerifyEventHandlers {
     companion object {
+        const val BeforeChangeNewPhoneNumber = "beforeChangeNewPhoneNumber"
+        const val IsChangePhoneNumber = "isChangePhoneNumber"
+        const val NewPhoneNumber = "newPhoneNumber"
+        const val SmsVerified = "smsVerified"
+
         val mobilePhonePattern = Pattern.compile("^(070|080|090)")
     }
     private val viewModel: SmsVerifyViewModel by lazy {
@@ -147,15 +152,20 @@ class SmsVerifyActivity : BaseActivity(),
         sendSms(phoneNumber ?: "")
     }
 
+    /**
+     * 電話番号を変更するリンククリック時
+     */
     override fun onClickRegisterPhone(view: View) {
         //本登録の電話番号画面と会員情報変更画面のどちらかへ遷移する
         when (requestCode) {
+            // 新規会員登録のフローから遷移した場合
             ErikuraApplication.REQUEST_SIGN_UP_CODE -> {
                 val intent = Intent(this, RegisterPhoneActivity::class.java)
                 intent.putExtra("user", user)
                 intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
                 startActivityForResult(intent, ErikuraApplication.REQUEST_SIGN_UP_CODE)
             }
+            // それ以外のフローからの遷移の場合
             else -> {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra("user", user)
@@ -233,26 +243,48 @@ class SmsVerifyActivity : BaseActivity(),
                     sendSms(phoneNumber ?: "")
                 }
             }
-        } else if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION &&  resultCode == RESULT_OK) {
+        } else if (requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION && resultCode == RESULT_OK) {
             data?.let {
-                beforeChangeNewPhoneNumber = it.getStringExtra("beforeChangeNewPhoneNumber")
-                isChangePhoneNumber = it.getBooleanExtra("isChangePhoneNumber", false)
-                it.getStringExtra("newPhoneNumber")?.let {
-                    if (phoneNumber != data.getStringExtra("newPhoneNumber")) {
-                        phoneNumber = data.getStringExtra("newPhoneNumber")
-                        Log.v("INFO", "SMS認証メール送信")
-                        // trueしか返ってこないので送信結果の判定は入れていない
-                        phoneNumber.let{
+                beforeChangeNewPhoneNumber = it.getStringExtra(BeforeChangeNewPhoneNumber)
+                isChangePhoneNumber = it.getBooleanExtra(IsChangePhoneNumber, false)
+                val smsVerified = it.getBooleanExtra(SmsVerified, false)
+                // FIXME: ログインから遷移している場合は SMS認証画面に戻る必要があります
+                val fromLogin = (this.requestCode == ErikuraApplication.REQUEST_LOGIN_CODE)
+                if (smsVerified && !fromLogin) {
+                    // FIXME: 会員情報変更までをここで完了させます
+                    //認証成功後 onActivityResultへ飛ぶ
+                    val intent: Intent = Intent()
+                    intent.putExtra("user", user)
+                    intent.putExtra("requestCode", requestCode)
+                    intent.putExtra("phoneNumber", phoneNumber)
+                    if (isCameThroughLogin) {
+                        intent.putExtra("isCameThroughLogin", isCameThroughLogin)
+                    }
+                    if(isChangePhoneNumber) {
+                        intent.putExtra("isChangePhoneNumber", isChangePhoneNumber)
+                    }
+                    //認証成功のフラグ
+                    intent.putExtra("isSmsAuthenticate", true)
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
+                else {
+                    it.getStringExtra(NewPhoneNumber)?.let { newPhoneNumber ->
+                        if (phoneNumber != newPhoneNumber) {
+                            phoneNumber = newPhoneNumber
+                            // 電話番号が変更されている場合？
+                            Log.v(ErikuraApplication.LOG_TAG, "SMS認証メール送信")
                             sendSms(phoneNumber ?: "")
                         }
                     }
-                }
-                isChangeUserInformationOtherThanPhone =
-                    it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
-                if (isChangeUserInformationOtherThanPhone) {
-                    val dialog = ChangeUserInformationOtherThanPhoneFragment()
-                    dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
-                    isChangeUserInformationOtherThanPhone = false
+
+                    isChangeUserInformationOtherThanPhone =
+                        it.getBooleanExtra("onClickChangeUserInformationOtherThanPhone", false)
+                    if (isChangeUserInformationOtherThanPhone) {
+                        val dialog = ChangeUserInformationOtherThanPhoneFragment()
+                        dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
+                        isChangeUserInformationOtherThanPhone = false
+                    }
                 }
             }
         } else {

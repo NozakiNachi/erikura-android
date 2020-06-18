@@ -25,9 +25,7 @@ import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
-import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -35,8 +33,6 @@ import java.util.regex.Pattern
 class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
-    var newPhoneNumber: String? = null
-    var beforeChangeNewPhoneNumber: String? = null
     var requestCode: Int? = null
     var fromSms: Boolean = false
 
@@ -53,12 +49,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
     override fun onCreate(savedInstanceState: Bundle?){
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
-        beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
         fromSms = intent.getBooleanExtra("fromSms", false)
-        //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
-        if (beforeChangeNewPhoneNumber != null) {
-            viewModel.phone.value = beforeChangeNewPhoneNumber
-        }
         super.onCreate(savedInstanceState)
     }
 
@@ -75,14 +66,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             Api(this).displayErrorAlert(errorMessages.asList())
         }
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
-        if (beforeChangeNewPhoneNumber == null){
-            beforeChangeNewPhoneNumber = intent.getStringExtra("beforeChangeNewPhoneNumber")
-        }
         fromSms = intent.getBooleanExtra("fromSms", false)
-        //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
-        if (beforeChangeNewPhoneNumber != null) {
-            viewModel.phone.value = beforeChangeNewPhoneNumber
-        }
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -108,10 +92,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Api(this).user() {
             user = it
             loadData()
-            //SMS認証から電話番号を修正した場合　DBの更新は行っていないが電話番号のフィールドには表示する
-            if (beforeChangeNewPhoneNumber != null) {
-                viewModel.phone.value = beforeChangeNewPhoneNumber
-            }
         }
     }
 
@@ -237,22 +217,38 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
         //電話番号以外のユーザー情報を変更します。
         Api(this).updateUser(user) {
-
             // 電話番号はSMS認証後に保存のため別で保持します。
-            newPhoneNumber = viewModel.phone.value
+            val newPhoneNumber = viewModel.phone.value
             if (fromSms) {
-                val intent = Intent()
-                //SMS認証画面経由の場合、元の認証画面へ
-                intent.putExtra("newPhoneNumber", newPhoneNumber)
-                intent.putExtra("beforeChangeNewPhoneNumber", newPhoneNumber)
-                //電話番号の変更があることを元の認証画面へ
-                if (user.phoneNumber != newPhoneNumber) {
-                    intent.putExtra("isChangePhoneNumber", true)
+                Api(this).smsVerifyCheck(newPhoneNumber ?: "") { result ->
+                    val isChangedPhoneNumber = user.phoneNumber != newPhoneNumber
+                    val finishEditing: () -> Unit = {
+                        val intent = Intent()
+                        //SMS認証画面経由の場合、元の認証画面へ
+                        intent.putExtra(SmsVerifyActivity.NewPhoneNumber, newPhoneNumber)
+                        intent.putExtra(SmsVerifyActivity.BeforeChangeNewPhoneNumber, newPhoneNumber)
+                        intent.putExtra(SmsVerifyActivity.SmsVerified, result)
+                        //電話番号の変更があることを元の認証画面へ
+                        if (isChangedPhoneNumber) {
+                            intent.putExtra(SmsVerifyActivity.IsChangePhoneNumber, true)
+                        }
+                        //電話番号以外の会員情報変更したモーダル表示
+                        intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+                    if (isChangedPhoneNumber) {
+                        // 電話番号が変更されているので、永続化処理をした上で、SMS認証に戻ります
+                        user.phoneNumber = newPhoneNumber
+                        Api(this).updateUser(user) {
+                            finishEditing()
+                        }
+                    }
+                    else {
+                        // SMS認証画面に戻ります
+                        finishEditing()
+                    }
                 }
-                //電話番号以外の会員情報変更したモーダル表示
-                intent.putExtra("onClickChangeUserInformationOtherThanPhone", true)
-                setResult(RESULT_OK, intent)
-                finish()
             } else {
                 Log.v("DEBUG", "SMS認証チェック： userId=${user.id}")
                 if (newPhoneNumber != null) {
@@ -339,7 +335,6 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.female.value = true
             }
         }
-        newPhoneNumber = user.phoneNumber
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
