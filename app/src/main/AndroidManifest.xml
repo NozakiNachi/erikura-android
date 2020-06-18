@@ -10,6 +10,7 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 精細な位置情報(GPS) -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- おおよその位置情報(ネットワーク基地局) -->
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 完全なネットワークアクセス -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -273,6 +274,7 @@
 
         <receiver
             android:name="com.adjust.sdk.AdjustReferrerReceiver"
+            android:permission="android.permission.INSTALL_PACKAGES"
             android:exported="true" >
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
