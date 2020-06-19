@@ -237,7 +237,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                         setResult(RESULT_OK, intent)
                         finish()
                     }
-                    if (result && isChangedPhoneNumber) {
+                    if (result && isChangedPhoneNumber && this.requestCode == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
                         // 電話番号が変更されているので、永続化処理をした上で、SMS認証に戻ります
                         user.phoneNumber = newPhoneNumber
                         Api(this).updateUser(user) {
