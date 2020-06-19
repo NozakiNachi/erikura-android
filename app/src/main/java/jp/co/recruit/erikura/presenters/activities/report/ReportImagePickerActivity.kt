@@ -206,6 +206,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
             outputSummaryList.add(summary)
         }
+        // 撮影日時昇順でソートを行います
+        outputSummaryList.sortWith(compareBy(OutputSummary::photoTakedAt))
 
         if (job.report == null) {
             job.report = Report()
