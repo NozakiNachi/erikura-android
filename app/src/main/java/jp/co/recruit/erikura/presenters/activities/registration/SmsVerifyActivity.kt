@@ -172,7 +172,7 @@ class SmsVerifyActivity : BaseActivity(),
                 if (beforeChangeNewPhoneNumber != null) {
                     intent.putExtra("beforeChangeNewPhoneNumber", beforeChangeNewPhoneNumber)
                 }
-                intent.putExtra("requestCode", ErikuraApplication.REQUEST_LOGIN_CODE)
+                intent.putExtra("requestCode", requestCode)
                 //ログイン経由で番号を編集する場合地図画面へ遷移させるフラグを付けます。
                 intent.putExtra("isCameThroughLogin", true)
                 intent.putExtra("fromSms", true)
