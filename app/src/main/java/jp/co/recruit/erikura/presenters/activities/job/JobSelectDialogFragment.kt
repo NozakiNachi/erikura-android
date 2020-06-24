@@ -33,7 +33,7 @@ import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
 import java.io.File
 import java.util.concurrent.Executors
 
-class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectDialogHandler {
+class JobSelectDialogFragment(val jobs: List<Job>, val position: LatLng?): DialogFragment(), JobSelectDialogHandler {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return Dialog(activity!!)?.also { dialog ->
 
@@ -73,7 +73,7 @@ class JobSelectDialogFragment(val jobs: List<Job>): DialogFragment(), JobSelectD
             lp.gravity = Gravity.BOTTOM
             window.attributes = lp
 
-            val adapter = JobListAdapter(this@JobSelectDialogFragment.activity!!, jobs, null)
+            val adapter = JobListAdapter(this@JobSelectDialogFragment.activity!!, jobs, position)
             adapter.onClickListner = object: JobListAdapter.OnClickListener {
                 override fun onClick(job: Job) {
                     onClickCarouselItem(job)

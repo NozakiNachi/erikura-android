@@ -16,15 +16,15 @@
         android:paddingLeft="0dp"
         android:paddingRight="0dp">
         <!-- 残り時間、距離 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
                 android:id="@+id/job_list_item_timelimit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
                 android:text="@{viewModel.timeLimit}"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:textColor="@{viewModel.textColor}"
@@ -36,10 +36,11 @@
                 />
             <TextView
                 android:id="@+id/job_list_item_distance"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/job_list_item_timelimit"
                 android:text="@{viewModel.distance}"
                 android:fontFamily="@font/hirakakupron_w2_alphanum_01"
                 android:textColor="@color/warmGrey"
@@ -48,6 +49,9 @@
                 android:lastBaselineToBottomHeight="0dp"
                 android:includeFontPadding="false"
                 android:layout_marginLeft="0dp"
+                android:gravity="right"
+                android:singleLine="true"
+                android:ellipsize="end"
                 />
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -92,7 +96,7 @@
                     android:visibility="@{viewModel.goodVisible}"
                     />
             </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </RelativeLayout>
         <TextView
             android:id="@+id/job_list_item_title"
             android:layout_width="match_parent"
