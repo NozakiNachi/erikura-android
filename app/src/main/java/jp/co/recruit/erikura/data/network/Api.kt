@@ -473,6 +473,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun placeCautions(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<Caution>) -> Unit){
+        executeObservable(
+            erikuraApiService.placeCautions(FavoriteRequest(placeId)),
+            onError = onError
+        ) { body ->
+            val cautions = body.cautions
+            onComplete(cautions)
+        }
+    }
+
     fun report(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (reportId: Int) -> Unit) {
         job.report?.let { report ->
             val outputSummaries = report.outputSummaries.filter{ it.needsToSendAPI }.map { outputSummary ->
