@@ -23,10 +23,10 @@ import jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity
 
 class PropertyNotesFragment : BaseJobDetailFragment, PropertyNotesFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): PropertyNotesFragment {
+        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): PropertyNotesFragment {
             return PropertyNotesFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, job, user, cautionsCount)
                 }
             }
         }
@@ -35,7 +35,6 @@ class PropertyNotesFragment : BaseJobDetailFragment, PropertyNotesFragmentEventH
     private val viewModel: PropertyNotesViewModel by lazy {
         ViewModelProvider(this).get(PropertyNotesViewModel::class.java)
     }
-    private var cautions: List<Caution>? = null
 
     constructor(): super()
 
@@ -43,15 +42,7 @@ class PropertyNotesFragment : BaseJobDetailFragment, PropertyNotesFragmentEventH
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // 物件の注意事項を取得
-        job?.placeId?.let {
-            Api(this).placeCautions(it) {
-                //ボタンのラベルを生成しセット
-                cautions = it
-                createPropertyNotesButtonText(it)
-            }
-        }
-
+        createPropertyNotesButtonText(cautionsCount?: 0)
         val binding = FragmentPropertyNotesButtonBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         binding.handler = this
@@ -60,28 +51,33 @@ class PropertyNotesFragment : BaseJobDetailFragment, PropertyNotesFragmentEventH
 
     override fun onClickPropertyNotes(view: View) {
         val intent = Intent(activity, PropertyNotesActivity::class.java)
-        intent.putExtra("caution", cautions)
+        intent.putExtra("place_id", job?.placeId)
         startActivity(intent)
     }
 
-    fun createPropertyNotesButtonText(cautions: List<Caution>) {
+    fun createPropertyNotesButtonText(cautionsCount: Int) {
         val textView: TextView = activity!!.findViewById(R.id.property_notes_button_text)
         var count = "（0件）"
-        var spanColor: Int = FF4242
-        if (cautions.isNotEmpty()) {
+        if (cautionsCount > 0) {
             viewModel.isNotEmptyCaution.value = true
-            var num = cautions.count()
-            count = "（${num}件）"
-            var button_text = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
-            SpannableStringBuilder(button_text).let {
-                it.setSpan(ForegroundColorSpan(spanColor), button_text.indexOf("（"), button_text.indexOf("）"), 0)
-                textView.text = it.subSequence(0, it.length)
-            }
+            count = "（${cautionsCount}件）"
         }
-        else {
+        // FIXME 下記のテキストの色分けは一旦保留
+//        var spanColor: Int = FF4242
+//        if (cautions.isNotEmpty()) {
+//            viewModel.isNotEmptyCaution.value = true
+//            var num = cautions.count()
+//            count = "（${num}件）"
+//            var button_text = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
+//            SpannableStringBuilder(button_text).let {
+//                it.setSpan(ForegroundColorSpan(spanColor), button_text.indexOf("（"), button_text.indexOf("）"), 0)
+//                textView.text = it.subSequence(0, it.length)
+//            }
+//        }
+//        else {
             viewModel.isNotEmptyCaution.value = false
             textView.text = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
-        }
+//        }
     }
 }
 

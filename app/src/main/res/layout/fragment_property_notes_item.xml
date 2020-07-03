@@ -32,6 +32,7 @@
                 android:padding="20dp">
 
                 <TextView
+                    android:id="@+id/question"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -44,6 +45,7 @@
                     android:background="@color/silverTwo" />
 
                 <TextView
+                    android:id="@+id/answer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
@@ -51,6 +53,7 @@
 
 
                 <ImageView
+                    android:id="@+id/file_url"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp" />

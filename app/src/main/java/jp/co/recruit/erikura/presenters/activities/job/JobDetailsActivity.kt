@@ -20,6 +20,7 @@ class JobDetailsActivity : BaseActivity() {
     var fragment: BaseJobDetailFragment? = null
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
+    var cautionsCount: Int? =null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -98,9 +99,10 @@ class JobDetailsActivity : BaseActivity() {
 
     private fun fetchJob() {
         // jobの再取得
-        Api(this).reloadJob(job) {
-            it.toString()
-            job = it
+        Api(this).reloadJob(job) { get_job, get_cautions_count ->
+            get_job.toString()
+            job = get_job
+            cautionsCount = get_cautions_count
             if (Api.isLogin) {
                 Api(this).user {
                     user = it
@@ -133,7 +135,7 @@ class JobDetailsActivity : BaseActivity() {
             // jobのステータスで挿しこむフラグメントを変更します
             when (job.status) {
                 JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
                 JobStatus.Applied -> {
                     fragment = AppliedJobDetailsFragment.newInstance(job, user)
@@ -148,7 +150,7 @@ class JobDetailsActivity : BaseActivity() {
                     fragment = ReportedJobDetailsFragment.newInstance(job, user)
                 }
                 else -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
             }
             // fragmentの更新

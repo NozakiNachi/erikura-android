@@ -9,10 +9,12 @@ abstract class BaseJobDetailFragment : Fragment {
     companion object {
         const val JOB_ARGUMENT = "job"
         const val USER_ARGUMENT = "user"
+        const val CAUTIONS_COUNT_ARGUMENT = "cautionsCount"
 
-        fun fillArguments(bundle: Bundle, job: Job?, user: User?) {
+        fun fillArguments(bundle: Bundle, job: Job?, user: User?, cautionsCount: Int?) {
             bundle.putParcelable(JOB_ARGUMENT, job)
             bundle.putParcelable(USER_ARGUMENT, user)
+            bundle.putInt(CAUTIONS_COUNT_ARGUMENT, cautionsCount?: 0)
         }
     }
 
@@ -26,6 +28,7 @@ abstract class BaseJobDetailFragment : Fragment {
 
     protected var job: Job? = null
     protected var user: User? = null
+    protected var cautionsCount: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,15 +36,17 @@ abstract class BaseJobDetailFragment : Fragment {
         arguments?.let { args ->
             this.job = args.getParcelable(JOB_ARGUMENT)
             this.user = args.getParcelable(USER_ARGUMENT)
+            this.cautionsCount = args.getInt(CAUTIONS_COUNT_ARGUMENT)
         }
     }
 
     open fun refresh(job: Job?, user: User?) {
         arguments?.let { args ->
-            fillArguments(args, job, user)
+            fillArguments(args, job, user, cautionsCount)
         }
         this.job = job
         this.user = user
+        this.cautionsCount = cautionsCount
         // MEMO: viewModel の更新はサブクラスで実施します
     }
 }

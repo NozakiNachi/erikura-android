@@ -8,11 +8,11 @@
 
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.job.PlaceDetailViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.job.PropertyNotesViewModel" />
 
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.job.PlaceDetailEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.job.PropertyNotesEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -54,7 +54,7 @@
 <!--                android:text="@{viewModel.address}"-->
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/payment_information_monthly_list"
+                    android:id="@+id/property_notes_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"

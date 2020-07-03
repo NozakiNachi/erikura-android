@@ -61,7 +61,7 @@ interface IErikuraApiService {
     fun reloadReport(@Query("job_id") jobId: Int): ApiObservable<Report>
 
     @GET("jobs/{jobId}")
-    fun reloadJob(@Path("jobId") jobId: Int): ApiObservable<Job>
+    fun reloadJob(@Path("jobId") jobId: Int): ApiObservable<JobResponse>
 
     @GET("jobs/own")
     fun ownJobs(
@@ -199,6 +199,11 @@ data class JobsResponse(
     var jobs: List<Job>
 )
 
+data class JobResponse (
+    var job: Job,
+    var cautions_count: Int
+)
+
 data class EntryIdResponse(
     var entryId: Int
 )
@@ -236,7 +241,7 @@ data class PostalCodeResponse(
 )
 
 data class CautionResponse(
-    var cautions: ArrayList<Caution>
+    var cautions: List<Caution>
 )
 
 data class RegisterEmailRequest(
