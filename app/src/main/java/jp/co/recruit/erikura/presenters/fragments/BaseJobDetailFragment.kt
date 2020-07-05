@@ -11,7 +11,7 @@ abstract class BaseJobDetailFragment : Fragment {
         const val USER_ARGUMENT = "user"
         const val CAUTIONS_COUNT_ARGUMENT = "cautionsCount"
 
-        fun fillArguments(bundle: Bundle, job: Job?, user: User?, cautionsCount: Int?) {
+        fun fillArguments(bundle: Bundle, job: Job?, user: User?, cautionsCount: Int? = 0) {
             bundle.putParcelable(JOB_ARGUMENT, job)
             bundle.putParcelable(USER_ARGUMENT, user)
             bundle.putInt(CAUTIONS_COUNT_ARGUMENT, cautionsCount?: 0)

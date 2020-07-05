@@ -56,7 +56,7 @@ class PropertyNotesFragment : BaseJobDetailFragment, PropertyNotesFragmentEventH
     }
 
     fun createPropertyNotesButtonText(cautionsCount: Int) {
-        val textView: TextView = activity!!.findViewById(R.id.property_notes_button_text)
+        val textView: TextView? = activity!!.findViewById(R.id.property_notes_button_text)
         var count = "（0件）"
         if (cautionsCount > 0) {
             viewModel.isNotEmptyCaution.value = true
@@ -76,7 +76,7 @@ class PropertyNotesFragment : BaseJobDetailFragment, PropertyNotesFragmentEventH
 //        }
 //        else {
             viewModel.isNotEmptyCaution.value = false
-            textView.text = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
+            textView?.text = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
 //        }
     }
 }
