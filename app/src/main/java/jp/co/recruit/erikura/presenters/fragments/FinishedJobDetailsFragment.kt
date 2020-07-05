@@ -30,9 +30,9 @@ import java.util.*
 
 class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): FinishedJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): FinishedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, job, user, cautionsCount)
 
             return FinishedJobDetailsFragment().also {
                 it.arguments = args
@@ -49,6 +49,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+    private var propertyNotesButton: PropertyNotesFragment? = null
 
     constructor(): super()
 
@@ -92,12 +93,14 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
+        propertyNotesButton = PropertyNotesFragment.newInstance(job, user, cautionsCount)
         transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
         transaction.add(R.id.finishedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.finishedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView!!, "mapView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 

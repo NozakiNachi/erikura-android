@@ -52,9 +52,9 @@ import java.util.*
 
 class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): AppliedJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): AppliedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, job, user, cautionsCount)
 
             return AppliedJobDetailsFragment().also {
                 it.arguments = args
@@ -82,6 +82,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+    private var propertyNotesButton: PropertyNotesFragment? = null
 
     constructor(): super()
 
@@ -127,6 +128,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
+        propertyNotesButton = PropertyNotesFragment.newInstance(job, user, cautionsCount)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton!!, "cancelButton")
@@ -134,6 +136,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage!!,"thumbnailImage")
         transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView!!,"jobDetailsView")
         transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView!!, "mapView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 

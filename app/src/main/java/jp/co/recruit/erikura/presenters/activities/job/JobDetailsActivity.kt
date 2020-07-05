@@ -138,16 +138,16 @@ class JobDetailsActivity : BaseActivity() {
                     fragment = NormalJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
                 JobStatus.Applied -> {
-                    fragment = AppliedJobDetailsFragment.newInstance(job, user)
+                    fragment = AppliedJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
                 JobStatus.Working -> {
-                    fragment = WorkingJobDetailsFragment.newInstance(job, user)
+                    fragment = WorkingJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
                 JobStatus.Finished -> {
-                    fragment = FinishedJobDetailsFragment.newInstance(job, user)
+                    fragment = FinishedJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
                 JobStatus.Reported -> {
-                    fragment = ReportedJobDetailsFragment.newInstance(job, user)
+                    fragment = ReportedJobDetailsFragment.newInstance(job, user, cautionsCount)
                 }
                 else -> {
                     fragment = NormalJobDetailsFragment.newInstance(job, user, cautionsCount)

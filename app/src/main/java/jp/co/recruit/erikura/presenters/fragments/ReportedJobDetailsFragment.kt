@@ -34,9 +34,9 @@ import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
 class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ReportedJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): ReportedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, job, user, cautionsCount)
 
             return ReportedJobDetailsFragment().also {
                 it.arguments = args
@@ -56,6 +56,7 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
     private var reportedJobEditButton: ReportedJobEditButtonFragment? = null
     private var reportedJobRemoveButton: ReportedJobRemoveButtonFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
+    private var propertyNotesButton: PropertyNotesFragment? = null
 
     constructor(): super()
 
@@ -115,13 +116,14 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(job, user)
         reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
-
+        propertyNotesButton = PropertyNotesFragment.newInstance(job, user, cautionsCount)
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.reportedJobEditButton, reportedJobEditButton!!, "reportedJobEditButton")
         transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton!!, "reportedJobRemoveButton")
         transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
 
         fetchReport()

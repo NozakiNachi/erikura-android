@@ -38,9 +38,9 @@ import java.util.*
 
 class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): WorkingJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): WorkingJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, job, user, cautionsCount)
 
             return WorkingJobDetailsFragment().also {
                 it.arguments = args
@@ -61,6 +61,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+    private var propertyNotesButton: PropertyNotesFragment? = null
 
     constructor(): super()
 
@@ -103,11 +104,13 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
+        propertyNotesButton = PropertyNotesFragment.newInstance(job, user, cautionsCount)
         transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton!!, "manualButton")
         transaction.add(R.id.workingJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.workingJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.commitAllowingStateLoss()
     }
