@@ -27,9 +27,9 @@ import java.util.*
 
 class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): FinishedJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?): FinishedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user, cautionsCount)
+            fillArguments(args, job, user)
 
             return FinishedJobDetailsFragment().also {
                 it.arguments = args
@@ -90,7 +90,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
-        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user, cautionsCount)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")

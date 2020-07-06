@@ -33,9 +33,9 @@ import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
 class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): ReportedJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?): ReportedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user, cautionsCount)
+            fillArguments(args, job, user)
 
             return ReportedJobDetailsFragment().also {
                 it.arguments = args
@@ -115,7 +115,7 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(job, user)
         reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
-        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user, cautionsCount)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")

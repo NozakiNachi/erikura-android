@@ -23,9 +23,9 @@ import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?, cautionsCount: Int?): NormalJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?): NormalJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user, cautionsCount)
+            fillArguments(args, job, user)
 
             return NormalJobDetailsFragment().also {
                 it.arguments = args
@@ -95,7 +95,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         mapView = MapViewFragment.newInstance(job, user)
         applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
         applyButton = ApplyButtonFragment.newInstance(job, user)
-        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user, cautionsCount)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")

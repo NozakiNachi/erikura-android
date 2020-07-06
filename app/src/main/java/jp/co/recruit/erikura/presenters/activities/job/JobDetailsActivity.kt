@@ -20,7 +20,6 @@ class JobDetailsActivity : BaseActivity() {
     var fragment: BaseJobDetailFragment? = null
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
-    var cautionsCount: Int? =null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -99,10 +98,9 @@ class JobDetailsActivity : BaseActivity() {
 
     private fun fetchJob() {
         // jobの再取得
-        Api(this).reloadJob(job) { get_job->
-            get_job.toString()
-            job = get_job
-            cautionsCount = get_job.cautionsCount
+        Api(this).reloadJob(job) {
+            it.toString()
+            job = it
             if (Api.isLogin) {
                 Api(this).user {
                     user = it
@@ -135,22 +133,22 @@ class JobDetailsActivity : BaseActivity() {
             // jobのステータスで挿しこむフラグメントを変更します
             when (job.status) {
                 JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user, cautionsCount)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Applied -> {
-                    fragment = AppliedJobDetailsFragment.newInstance(job, user, cautionsCount)
+                    fragment = AppliedJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Working -> {
-                    fragment = WorkingJobDetailsFragment.newInstance(job, user, cautionsCount)
+                    fragment = WorkingJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Finished -> {
-                    fragment = FinishedJobDetailsFragment.newInstance(job, user, cautionsCount)
+                    fragment = FinishedJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Reported -> {
-                    fragment = ReportedJobDetailsFragment.newInstance(job, user, cautionsCount)
+                    fragment = ReportedJobDetailsFragment.newInstance(job, user)
                 }
                 else -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user, cautionsCount)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user)
                 }
             }
             // fragmentの更新
