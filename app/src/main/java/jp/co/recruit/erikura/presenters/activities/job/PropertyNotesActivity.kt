@@ -11,12 +11,12 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Caution
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPropertyNotesBinding
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesButtonBinding
+import jp.co.recruit.erikura.databinding.FragmentPropertyNotesItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
 class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
@@ -44,9 +44,9 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
         //実行結果をitemFragmentに埋め込みviewを作成
-
-        val propertyNotesView: RecyclerView = findViewById((R.id.property_notes_list))
-        propertyNotesView.setHasFixedSize(true)
+        val propertyNotesItemView: RecyclerView = findViewById((R.id.property_notes_list))
+        propertyNotesItemView.setHasFixedSize(true)
+        propertyNotesItemView.adapter = propertyNotesAdapter
         //viewをセットする
     }
 
@@ -65,7 +65,7 @@ interface PropertyNotesEventHandlers {
 }
 
 
-class PropertyNotesViewHolder(val binding: FragmentPropertyNotesButtonBinding): RecyclerView.ViewHolder(binding.root)
+class PropertyNotesViewHolder(val binding: FragmentPropertyNotesItemBinding): RecyclerView.ViewHolder(binding.root)
 
 class PropertyNotesAdapter(
     val activity: FragmentActivity,
@@ -73,7 +73,7 @@ class PropertyNotesAdapter(
     ): RecyclerView.Adapter<PropertyNotesViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyNotesViewHolder {
         //表示するレイアウトを設定
-        val binding = DataBindingUtil.inflate<FragmentPropertyNotesButtonBinding>(
+        val binding = DataBindingUtil.inflate<FragmentPropertyNotesItemBinding>(
             LayoutInflater.from(parent.context),
             R.layout.fragment_property_notes_item,
             parent,
@@ -90,19 +90,12 @@ class PropertyNotesAdapter(
         //1行分のデータを受け取り１行分のデータをセットする データ表示
         val questionTextView: TextView = holder.binding.root.findViewById(R.id.question)
         val answerTextView: TextView = holder.binding.root.findViewById(R.id.answer)
-        val imageView: ImageView = holder.binding.root.findViewById(R.id.file_url)
         val caution = cautions[position]
         questionTextView.setText(caution.question)
         answerTextView.setText(caution.answer)
         var files: List<String> = caution.files
+        // FIXME pdf 画像用のrecyclerViewを呼び出す
 
-//        if (file_url.isNullOrBlank()) {
-//            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
-//        }
-//        else {
-//            val assetsManager = ErikuraApplication.assetsManager
-//            assetsManager.fetchImage(activity, file_url!!, imageView)
-//        }
         holder.binding.lifecycleOwner = activity
     }
 }
