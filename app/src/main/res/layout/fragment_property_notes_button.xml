@@ -5,16 +5,16 @@
     <data>
         <variable
             name="handler"
-            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesFragmentEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesButtonFragmentEventHandlers" />
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesViewModel" />
+            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesButtonViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presenters.fragments.PropertyNotesFragment">
+        tools:context=".presenters.fragments.PropertyNotesButtonButtonFragment">
     <Button
         android:id="@+id/property_notes_button_text"
         style="@style/tertiaryButton"

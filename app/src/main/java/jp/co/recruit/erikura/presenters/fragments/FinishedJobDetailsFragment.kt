@@ -9,12 +9,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -49,7 +46,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
-    private var propertyNotesButton: PropertyNotesFragment? = null
+    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
 
     constructor(): super()
 
@@ -93,14 +90,14 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
-        propertyNotesButton = PropertyNotesFragment.newInstance(job, user, cautionsCount)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user, cautionsCount)
         transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
         transaction.add(R.id.finishedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.finishedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView!!, "mapView")
-        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 

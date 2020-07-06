@@ -61,7 +61,7 @@ interface IErikuraApiService {
     fun reloadReport(@Query("job_id") jobId: Int): ApiObservable<Report>
 
     @GET("jobs/{jobId}")
-    fun reloadJob(@Path("jobId") jobId: Int): ApiObservable<JobResponse>
+    fun reloadJob(@Path("jobId") jobId: Int): ApiObservable<Job>
 
     @GET("jobs/own")
     fun ownJobs(

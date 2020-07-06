@@ -4,18 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.ListView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Caution
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPropertyNotesBinding
-import jp.co.recruit.erikura.databinding.FragmentPropertyNotesButtonBinding
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 
@@ -36,7 +40,18 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                 //ボタンのラベルを生成しセット
                 cautions = it
             }
+            Api(this).place(placeId) { place ->
+                if (place.hasEntries) {
+                    // 現ユーザーが応募済の物件の場合　フル住所を表示
+                    viewModel.address.value = place.workingPlace
+                } else {
+                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                    viewModel.address.value = place.workingPlaceShort
+                }
+            }
         }
+
+
         propertyNotesAdapter.cautions = cautions
 
         val binding: ActivityPropertyNotesBinding = DataBindingUtil.setContentView(this, R.layout.activity_property_notes)
@@ -57,7 +72,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 }
 
 class PropertyNotesViewModel : ViewModel() {
-    //recyclerviewをviewをidで渡す
+    var address: MutableLiveData<String> = MutableLiveData()
 }
 
 interface PropertyNotesEventHandlers {
@@ -87,6 +102,7 @@ class PropertyNotesAdapter(
     }
 
     override fun onBindViewHolder(holder: PropertyNotesViewHolder, position: Int) {
+        holder.binding.lifecycleOwner = activity
         //1行分のデータを受け取り１行分のデータをセットする データ表示
         val questionTextView: TextView = holder.binding.root.findViewById(R.id.question)
         val answerTextView: TextView = holder.binding.root.findViewById(R.id.answer)
@@ -96,6 +112,52 @@ class PropertyNotesAdapter(
         var files: List<String> = caution.files
         // FIXME pdf 画像用のrecyclerViewを呼び出す
 
-        holder.binding.lifecycleOwner = activity
+        val propertyNotesItemFileView: ListView = holder.binding.root.findViewById(R.id.property_notes_file_list)
+        val propertyNotesItemFileAdapter = PropertyNotesItemFileAdapter(activity, LayoutInflater.from(applicationContext), files)
+        propertyNotesItemFileView.adapter = propertyNotesItemFileAdapter
+        propertyNotesItemFileAdapter.notifyDataSetChanged()
+    }
+}
+
+class PropertyNotesItemFileAdapter(
+    val activity: FragmentActivity,
+    var inflater: LayoutInflater,
+    val files: List<String>) : BaseAdapter() {
+    internal data class ViewHolder(val image: ImageView)
+
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+        var view = convertView
+        val viewHolder: ViewHolder
+        if (convertView == null) {
+            view = inflater.inflate(R.layout.fragment_property_notes_item_file, parent)
+            viewHolder = ViewHolder(view.findViewById(R.id.file))
+            view.tag = viewHolder
+        } else {
+            viewHolder = view!!.tag as ViewHolder
+        }
+        if (files[position].isNullOrBlank()) {
+            viewHolder.image.setImageDrawable(
+                ErikuraApplication.instance.applicationContext.resources.getDrawable(
+                    R.drawable.ic_noimage,
+                    null
+                )
+            )
+        } else {
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchImage(activity, files[position], viewHolder.image)
+        }
+        return view!!
+    }
+
+    override fun getCount(): Int {
+        return files.count()
+    }
+
+    override fun getItem(position: Int): Int {
+        return position
+    }
+
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 }

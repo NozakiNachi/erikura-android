@@ -3,17 +3,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-        <variable
-            name="viewModel"
-            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesItemViewModel" />
-
-        <variable
-            name="handlers"
-            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesItemFragmentEventHandlers" />
-    </data>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -55,7 +44,7 @@
                     android:layout_marginTop="10dp"
                     android:text="aaaaaaaaa" />
 
-                <androidx.recyclerview.widget.RecyclerView
+                <ListView
                     android:id="@+id/property_notes_file_list"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -65,11 +54,6 @@
                     android:orientation="vertical"
                     />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp" />
-<!--                android:visibility=""-->
 
             </LinearLayout>
         </RelativeLayout>

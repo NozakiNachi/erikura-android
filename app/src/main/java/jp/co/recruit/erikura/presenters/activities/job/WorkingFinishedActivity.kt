@@ -81,9 +81,9 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     override fun onResume() {
         super.onResume()
         // jobの再取得
-        Api(this).reloadJob(job) { get_job, get_cautions_count ->
+        Api(this).reloadJob(job) { get_job->
             job = get_job
-            cautionsCount = get_cautions_count
+            cautionsCount = get_job.cautionsCount
             Api(this).recommendedJobs(job) { jobsList ->
                 viewModel.recommendedJobs = jobsList
                 recommendedJobsAdapter.jobs = viewModel.recommendedJobs

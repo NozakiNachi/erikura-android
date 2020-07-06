@@ -50,7 +50,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="30dp"
-                    android:text="東京都中央区銀座" />
+                    android:text="@{viewModel.address}" />
 <!--                android:text="@{viewModel.address}"-->
 
                 <androidx.recyclerview.widget.RecyclerView

@@ -99,10 +99,10 @@ class JobDetailsActivity : BaseActivity() {
 
     private fun fetchJob() {
         // jobの再取得
-        Api(this).reloadJob(job) { get_job, get_cautions_count ->
+        Api(this).reloadJob(job) { get_job->
             get_job.toString()
             job = get_job
-            cautionsCount = get_cautions_count
+            cautionsCount = get_job.cautionsCount
             if (Api.isLogin) {
                 Api(this).user {
                     user = it
