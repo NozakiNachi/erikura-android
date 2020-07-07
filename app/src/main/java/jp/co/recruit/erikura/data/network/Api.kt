@@ -475,7 +475,7 @@ class Api(var context: Context) {
 
     fun placeCautions(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<Caution>) -> Unit){
         executeObservable(
-            erikuraApiService.placeCautions(FavoriteRequest(placeId)),
+            erikuraApiService.placeCautions(placeId),
             onError = onError
         ) { body ->
             val cautions = body.cautions

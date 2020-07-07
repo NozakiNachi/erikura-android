@@ -17,10 +17,10 @@
         tools:context=".presenters.fragments.PropertyNotesButtonButtonFragment">
     <Button
         android:id="@+id/property_notes_button_text"
-        style="@style/tertiaryButton"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:enabled="@{viewModel.isButtonEnabled()}"
+        style="@style/tertiaryButton"
+        android:text="@{viewModel.buttonText}"
         app:onSafeClick="@{handler::onClickPropertyNotes}"/>
 
 

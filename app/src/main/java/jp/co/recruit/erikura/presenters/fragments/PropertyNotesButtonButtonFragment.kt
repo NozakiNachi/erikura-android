@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MediatorLiveData
@@ -56,38 +57,32 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
     }
 
     override fun onClickPropertyNotes(view: View) {
-        val intent = Intent(activity, PropertyNotesActivity::class.java)
+        val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity::class.java)
         intent.putExtra("place_id", job?.placeId)
         startActivity(intent)
     }
 
-    fun createPropertyNotesButtonText(cautionsCount: Int) {
-        val textView: TextView? = activity!!.findViewById(R.id.property_notes_button_text)
-        var count = "（0件）"
+    private fun createPropertyNotesButtonText(cautionsCount: Int) {
+        val button: Button = activity!!.findViewById(R.id.property_notes_button_text)
+        var count = "（${cautionsCount}件）"
         var buttonText = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
-        viewModel.isNotEmptyCaution.value = false
         if (cautionsCount > 0) {
-            viewModel.isNotEmptyCaution.value = true
-            count = "（${cautionsCount}件）"
-
         // FIXME 下記のテキストの色分けは一旦保留
         var spanColor: Int = ContextCompat.getColor(activity!!, R.color.coral)
-            buttonText = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
             SpannableStringBuilder(buttonText).let {
-                it.setSpan(ForegroundColorSpan(spanColor), buttonText.indexOf("（"), buttonText.length, 0)
-                textView?.text = it.subSequence(0, it.length)
+               it.setSpan(ForegroundColorSpan(spanColor), buttonText.indexOf("（"), buttonText.length, 0)
+                viewModel.buttonText.value = it.subSequence(0, it.length).toString()
+//                button.text = it.subSequence(0, it.length).toString()
             }
         } else {
-            textView?.text = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
+            viewModel.buttonText.value = buttonText
+//            button.text = buttonText
         }
     }
 }
 
 class PropertyNotesButtonViewModel: ViewModel() {
-    val isNotEmptyCaution = MediatorLiveData<Boolean>()
-    val isButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.value = isNotEmptyCaution.value
-    }
+
     var buttonText: MutableLiveData<String> = MutableLiveData()
 //    val propertyNotesButtonText: MutableLiveData<String> = MutableLiveData()
 }

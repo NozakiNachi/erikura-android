@@ -50,10 +50,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                 }
             }
         }
-
-
-        propertyNotesAdapter.cautions = cautions
-
+        propertyNotesAdapter = PropertyNotesAdapter( this, cautions)
         val binding: ActivityPropertyNotesBinding = DataBindingUtil.setContentView(this, R.layout.activity_property_notes)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
