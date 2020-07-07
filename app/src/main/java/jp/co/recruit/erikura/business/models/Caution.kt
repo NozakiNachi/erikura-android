@@ -5,6 +5,6 @@ import java.util.*
 data class Caution(
     var question: String,
     var answer: String,
-    var files: List<String> = listOf()
+    var files: List<CautionFile> = listOf()
 ) {
 }

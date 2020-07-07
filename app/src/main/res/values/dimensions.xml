@@ -8,4 +8,6 @@
     <dimen name="condition_margin">10dp</dimen>
 
     <dimen name="job_list_item_margin">20dp</dimen>
+
+    <dimen name="Property_notes_item_margin">20dp</dimen>
 </resources>
