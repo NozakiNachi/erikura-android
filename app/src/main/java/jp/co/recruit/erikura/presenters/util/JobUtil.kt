@@ -170,6 +170,31 @@ object JobUtil {
         }
     }
 
+        fun openPropertyNotes(activity: FragmentActivity, url: String) {
+            val pdfUrl = url
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchAsset(activity!!, pdfUrl!!, Asset.AssetType.Pdf) { asset ->
+                // PDFディレクトリにコピーします
+                val filesDir = activity.filesDir
+                val pdfDir = File(filesDir, "pdfs")
+                if (!pdfDir.exists()) {
+                    pdfDir.mkdirs()
+                }
+                val pdfFile = File(pdfDir, "propertyNotes.pdf")
+                val out = FileOutputStream(pdfFile)
+                val input = FileInputStream(File(asset.path))
+                IOUtils.copy(input, out)
+                out.closeQuietly()
+                input.closeQuietly()
+
+                val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".fileprovider", pdfFile)
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                activity.startActivity(intent)
+            }
+        }
+
     data class DiffPart(
         val days: Int,
         val hours: Int,

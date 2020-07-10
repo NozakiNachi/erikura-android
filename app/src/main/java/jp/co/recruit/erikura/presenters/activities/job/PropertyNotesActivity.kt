@@ -8,8 +8,6 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,22 +109,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 }
 
 class PropertyNotesViewModel : ViewModel() {
-    val bitmap: MutableLiveData<Bitmap> = MutableLiveData()
     var address: MutableLiveData<String> = MutableLiveData()
-
-    fun setup(activity: Activity, root: View, file: CautionFile?) {
-        if (file != null){
-            // ダウンロード
-            val imageView: ImageView = root.findViewById(R.id.property_notes_thumbnailImage_image)
-            val thumbnailUrl = if (!file.url.isNullOrBlank()) {file.url} else {null}
-            if (thumbnailUrl.isNullOrBlank()) {
-                imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
-            }else {
-                val assetsManager = ErikuraApplication.assetsManager
-                assetsManager.fetchImage(activity, thumbnailUrl, imageView)
-            }
-        }
-    }
 }
 
 interface PropertyNotesEventHandlers {
@@ -188,28 +171,55 @@ class PropertyNotesAdapter(
                 files as ArrayList<CautionFile>
             )
             propertyNotesItemFileView.adapter = propertyNotesItemFileAdapter
+            setListViewHeightBasedOnChildren(propertyNotesItemFileView)
             propertyNotesItemFileAdapter.notifyDataSetChanged()
             propertyNotesItemFileView.setOnItemClickListener {parent, view, position, id ->
                 // listViewのクリックされた行のテキストを取得
                 val itemUrl : String = files[position].url
                 // 画像かpdfで分岐
-                //　下記のコメントは削除
-                //またアプリ側の画像拡大表示の実装ですが、他のモーダルと同様に周りをタップすることで閉じるという動作でよろしいでしょうか。
-                //こちらですが、PDFがあることも考えると、
-                // モーダルではなくマニュアルのように下から出てくるダイアログがいいと思います。閉じる時はバツボタン。
                 if (itemUrl.endsWith(".pdf")) {
                     //マニュアル表示を元にpdfを表示
+                    JobUtil.openPropertyNotes(activity, itemUrl)
 //                    pdfの場合リンクを表示しクリックでマニュアルボタンと同じように表示させる
                 }
                 else {
-                    //画像の場合
-                    val item = (view.findViewById<TextView>(android.R.id.text1)).text
-                    // トーストで表示する
-                    Toast.makeText(applicationContext, item, Toast.LENGTH_LONG).show()
+                    //画像の場合 アプリ内のこのアプリについて　利用規約　の表示と同様の表示の仕方を検討する
+                    //FIXME 下記未実装
+//                    val item = (view.findViewById<TextView>(android.R.id.text1)).text
+//                    // トーストで表示する
+//                    Toast.makeText(applicationContext, item, Toast.LENGTH_LONG).show()
                 }
             }
         }
     }
+    fun setListViewHeightBasedOnChildren(listView:ListView) {
+
+        //ListAdapterを取得
+        val listAdapter = listView.getAdapter()
+        if (listAdapter == null)
+        {
+            return
+        }
+
+        var totalHeight = 0
+
+        //個々のアイテムの高さを測り、加算していく
+        for (i in 0 until listAdapter.getCount())
+        {
+            val listItem = listAdapter.getView(i, null, listView)
+            listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            totalHeight += listItem.getMeasuredHeight()
+        }
+
+        //LayoutParamsを取得
+        val params = listView.getLayoutParams()
+
+        //(区切り線の高さ * 要素数の数)だけ足
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1))
+        //LayoutParamsにheightをセット
+        listView.setLayoutParams(params)
+    }
+
 }
 
 class PropertyNotesItemFileAdapter(
@@ -240,15 +250,12 @@ class PropertyNotesItemFileAdapter(
                 }
                 //pdfはリンクを表示し押下で、別画面に表示される
                 var textView: TextView = view!!.findViewById(R.id.property_notes_pdf_button)
-                textView.setText(files.get(position).url)
+                textView.setText(files.get(position).file_name)
             } else {
                 if (convertView == null) {
                     view =
                         inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
                 }
-                Log.v("DEBUG", "files.get(position)があるか${files.get(position)}")
-                Log.v("DEBUG", "files.get(position).urlがあるか${files.get(position).url}")
-
 
                var thumbnailImageView: ImageView  = view!!.findViewById(R.id.property_notes_thumbnailImage_image)
                 //viewのidとurlとactivityを元にサムネイル画像をセットする
@@ -258,7 +265,6 @@ class PropertyNotesItemFileAdapter(
         }
         return view!!
     }
-    //画像の場合サムネで表示しクリックで拡大
 
     override fun getCount(): Int {
         return files.count()
