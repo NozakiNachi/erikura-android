@@ -173,34 +173,58 @@ class PropertyNotesAdapter(
 
         if (files.isNotEmpty()) {
             //FIXME addviewで実装中
-//            var linearLayout :LinearLayout = activity.findViewById(R.id.property_notes_image_pdf)
-//            for (i in 0 until files.size) {
-//                if (files[i].url.endsWith(".pdf")){
-//                    //pdf クリックイベントの処理も追加
-//                } else {
-//                    //jpeg　クリックイベントの処理も追加
-////                    linearLayout.addView()
-//                }
-//            }
-
-            val propertyNotesItemFileView: ListView =
-                holder.binding.root.findViewById(R.id.property_notes_file_list)
-            val propertyNotesItemFileAdapter = PropertyNotesItemFileAdapter(
-                activity, LayoutInflater.from(applicationContext),
-                files as ArrayList<CautionFile>
-            )
-            propertyNotesItemFileView.adapter = propertyNotesItemFileAdapter
-            setListViewHeightBasedOnChildren(propertyNotesItemFileView, position)
-            propertyNotesItemFileAdapter.notifyDataSetChanged()
-            propertyNotesItemFileView.setOnItemClickListener { parent, view, position, id ->
-                // listViewのクリックされた行のテキストを取得
-                val itemUrl: String = files[position].url
-                val intent = Intent(activity, WebViewActivity::class.java).apply {
-                    action = Intent.ACTION_VIEW
-                    data = Uri.parse(itemUrl)
+            var linearLayout :LinearLayout = activity.findViewById(R.id.property_notes_image_pdf)
+            for (i in 0 until files.size) {
+                if (files[i].url.endsWith(".pdf")){
+                    val textView = TextView(activity)
+                    textView.setText(files[i].file_name)
+                    textView.setOnClickListener {
+                        val itemUrl: String = files[i].url
+                        val intent = Intent(activity, WebViewActivity::class.java).apply {
+                            action = Intent.ACTION_VIEW
+                            data = Uri.parse(itemUrl)
+                        }
+                        activity.startActivity(intent)
+                    }
+                    linearLayout.addView(textView)
+                    //pdf クリックイベントの処理も追加
+                } else {
+                    //jpeg　クリックイベントの処理も追加
+                    val imageView = ImageView(activity)
+                    val assetsManager = ErikuraApplication.assetsManager
+                    assetsManager.fetchImage(activity, files[i].url){
+                        imageView.setImageBitmap(it)
+                    }
+                    linearLayout.addView(imageView)
+                    imageView.setOnClickListener{
+                        val itemUrl: String = files[i].url
+                        val intent = Intent(activity, WebViewActivity::class.java).apply {
+                            action = Intent.ACTION_VIEW
+                            data = Uri.parse(itemUrl)
+                        }
+                        activity.startActivity(intent)
+                    }
                 }
-                activity.startActivity(intent)
             }
+
+//            val propertyNotesItemFileView: ListView =
+//                holder.binding.root.findViewById(R.id.property_notes_file_list)
+//            val propertyNotesItemFileAdapter = PropertyNotesItemFileAdapter(
+//                activity, LayoutInflater.from(applicationContext),
+//                files as ArrayList<CautionFile>
+//            )
+//            propertyNotesItemFileView.adapter = propertyNotesItemFileAdapter
+//            setListViewHeightBasedOnChildren(propertyNotesItemFileView, position)
+//            propertyNotesItemFileAdapter.notifyDataSetChanged()
+//            propertyNotesItemFileView.setOnItemClickListener { parent, view, position, id ->
+//                // listViewのクリックされた行のテキストを取得
+//                val itemUrl: String = files[position].url
+//                val intent = Intent(activity, WebViewActivity::class.java).apply {
+//                    action = Intent.ACTION_VIEW
+//                    data = Uri.parse(itemUrl)
+//                }
+//                activity.startActivity(intent)
+//            }
         }
     }
 
