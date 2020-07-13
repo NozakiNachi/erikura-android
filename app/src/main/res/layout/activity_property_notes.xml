@@ -46,7 +46,7 @@
                     android:text="@string/property_notes_title" />
 
                 <TextView
-                    style="@style/Block"
+                    style="@style/block"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="30dp"

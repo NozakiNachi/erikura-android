@@ -325,11 +325,18 @@
     </style>
 
     <!-- Block -->
-    <style name="Block">
+    <style name="block">
         <item name="android:background">@drawable/block</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:padding">20dp</item>
         <item name="android:textSize">22dp</item>
         <item name="android:elevation">@dimen/default_elevation</item>
+    </style>
+
+    <!-- 物件注意事項画面テキスト -->
+    <style name="propertyNotesText">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">16dp</item>
+        <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
     </style>
 </resources>
