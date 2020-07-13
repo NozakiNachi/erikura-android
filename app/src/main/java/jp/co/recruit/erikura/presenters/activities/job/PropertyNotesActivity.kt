@@ -262,7 +262,6 @@ class PropertyNotesItemFileAdapter(
                     view =
                         inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
                 }
-                //pdfはリンクを表示し押下で、別画面に表示される
                 var textView: TextView = view!!.findViewById(R.id.property_notes_pdf_button)
                 textView.setText(files.get(position).file_name)
             } else {
