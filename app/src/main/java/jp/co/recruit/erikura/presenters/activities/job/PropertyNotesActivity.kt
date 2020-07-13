@@ -47,7 +47,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
         placeId = intent.getIntExtra("place_id", 0)
         // 物件の注意事項を取得
-        placeId?.let {place_id ->
+        placeId?.let { place_id ->
             Api(this).placeCautions(place_id) {
                 //ボタンのラベルを生成しセット
                 cautions = it
@@ -184,44 +184,30 @@ class PropertyNotesAdapter(
             propertyNotesItemFileView.adapter = propertyNotesItemFileAdapter
             setListViewHeightBasedOnChildren(propertyNotesItemFileView)
             propertyNotesItemFileAdapter.notifyDataSetChanged()
-            propertyNotesItemFileView.setOnItemClickListener {parent, view, position, id ->
+            propertyNotesItemFileView.setOnItemClickListener { parent, view, position, id ->
                 // listViewのクリックされた行のテキストを取得
-                val itemUrl : String = files[position].url
-                // 画像かpdfで分岐
-                if (itemUrl.endsWith(".pdf")) {
-                    //マニュアル表示を元にpdfを表示
-//                    pdfの場合リンクを表示しクリックでマニュアルボタンと同じように表示させる
-                    val propertyNotesImageURLString = files[position].url
-                    val intent = Intent(activity, WebViewActivity::class.java).apply {
-                        action = Intent.ACTION_VIEW
-                        data = Uri.parse(propertyNotesImageURLString)
-                    }
-                    activity.startActivity(intent)
+                val itemUrl: String = files[position].url
+                val intent = Intent(activity, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(itemUrl)
                 }
-                else {
-                    val intent = Intent(activity, WebViewActivity::class.java).apply {
-                        action = Intent.ACTION_VIEW
-                        data = Uri.parse(itemUrl)
-                    }
-                    activity.startActivity(intent)
-                }
+                activity.startActivity(intent)
             }
         }
     }
-    private fun setListViewHeightBasedOnChildren(listView:ListView) {
+
+    private fun setListViewHeightBasedOnChildren(listView: ListView) {
 
         //ListAdapterを取得
         val listAdapter = listView.getAdapter()
-        if (listAdapter == null)
-        {
+        if (listAdapter == null) {
             return
         }
 
         var totalHeight = 0
 
         //個々のアイテムの高さを測り、加算していく
-        for (i in 0 until listAdapter.getCount())
-        {
+        for (i in 0 until listAdapter.getCount()) {
             val listItem = listAdapter.getView(i, null, listView)
             listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
             //各子要素の高さを加算
@@ -232,7 +218,7 @@ class PropertyNotesAdapter(
         val params = listView.getLayoutParams()
 
         //(区切り線の高さ * 要素数の数)だけ足す
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() ))
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount()))
         //LayoutParamsにheightをセット
         listView.setLayoutParams(params)
     }
@@ -243,6 +229,7 @@ class PropertyNotesItemViewModel(
 ) : ViewModel() {
     var question: MutableLiveData<String> = MutableLiveData()
     var answer: MutableLiveData<String> = MutableLiveData()
+
     init {
         question.value = "Q. ".plus(caution.question)
         answer.value = "A. ".plus(caution.answer)
@@ -284,7 +271,8 @@ class PropertyNotesItemFileAdapter(
                         inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
                 }
 
-               var thumbnailImageView: ImageView  = view!!.findViewById(R.id.property_notes_thumbnailImage_image)
+                var thumbnailImageView: ImageView =
+                    view!!.findViewById(R.id.property_notes_thumbnailImage_image)
                 //viewのidとurlとactivityを元にサムネイル画像をセットする
                 val assetsManager = ErikuraApplication.assetsManager
                 assetsManager.fetchImage(activity, files.get(position).url, thumbnailImageView)
