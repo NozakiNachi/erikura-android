@@ -47,6 +47,12 @@
             android:layout_marginBottom="20dp"
             android:text="@{viewModel.answer}"/>
 
+        <LinearLayout
+            android:id="@+id/property_notes_image_pdf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+
         <ListView
             android:divider="@null"
             android:id="@+id/property_notes_file_list"

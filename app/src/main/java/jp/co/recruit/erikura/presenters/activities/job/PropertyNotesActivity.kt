@@ -172,6 +172,17 @@ class PropertyNotesAdapter(
         var files: List<CautionFile> = caution.files
 
         if (files.isNotEmpty()) {
+            //FIXME addviewで実装中
+//            var linearLayout :LinearLayout = activity.findViewById(R.id.property_notes_image_pdf)
+//            for (i in 0 until files.size) {
+//                if (files[i].url.endsWith(".pdf")){
+//                    //pdf クリックイベントの処理も追加
+//                } else {
+//                    //jpeg　クリックイベントの処理も追加
+////                    linearLayout.addView()
+//                }
+//            }
+
             val propertyNotesItemFileView: ListView =
                 holder.binding.root.findViewById(R.id.property_notes_file_list)
             val propertyNotesItemFileAdapter = PropertyNotesItemFileAdapter(
