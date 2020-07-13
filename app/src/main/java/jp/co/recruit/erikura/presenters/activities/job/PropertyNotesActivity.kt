@@ -12,7 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -166,14 +168,9 @@ class PropertyNotesAdapter(
         holder.binding.lifecycleOwner = activity
         holder.binding.viewModel = PropertyNotesItemViewModel(cautions[position])
         //1行分のデータを受け取り１行分のデータをセットする データ表示
-        val questionTextView: TextView = holder.binding.root.findViewById(R.id.question)
-        val answerTextView: TextView = holder.binding.root.findViewById(R.id.answer)
         val caution = cautions[position]
-//        questionTextView.setText("Q. ".plus(caution.question))
-//        answerTextView.setText("A. ".plus(caution.answer))
         var files: List<CautionFile> = caution.files
 
-        // FIXME pdf 画像用のrecyclerViewを呼び出す
         if (files.isNotEmpty()) {
             val propertyNotesItemFileView: ListView =
                 holder.binding.root.findViewById(R.id.property_notes_file_list)
@@ -182,7 +179,7 @@ class PropertyNotesAdapter(
                 files as ArrayList<CautionFile>
             )
             propertyNotesItemFileView.adapter = propertyNotesItemFileAdapter
-            setListViewHeightBasedOnChildren(propertyNotesItemFileView)
+            setListViewHeightBasedOnChildren(propertyNotesItemFileView, position)
             propertyNotesItemFileAdapter.notifyDataSetChanged()
             propertyNotesItemFileView.setOnItemClickListener { parent, view, position, id ->
                 // listViewのクリックされた行のテキストを取得
@@ -196,10 +193,11 @@ class PropertyNotesAdapter(
         }
     }
 
-    private fun setListViewHeightBasedOnChildren(listView: ListView) {
+    private fun setListViewHeightBasedOnChildren(listView: ListView, position: Int) {
 
         //ListAdapterを取得
         val listAdapter = listView.getAdapter()
+        val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
         if (listAdapter == null) {
             return
         }
@@ -209,16 +207,21 @@ class PropertyNotesAdapter(
         //個々のアイテムの高さを測り、加算していく
         for (i in 0 until listAdapter.getCount()) {
             val listItem = listAdapter.getView(i, null, listView)
-            listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
             //各子要素の高さを加算
-            totalHeight += listItem.getMeasuredHeight()
+            if (this.cautions[position].files[i].url.endsWith(".pdf")) {
+                totalHeight += (listItem.measuredHeight * 0.01 * displayMetrics.density).toInt()
+            } else {
+                totalHeight += (listItem.measuredHeight * 1.2 * displayMetrics.density).toInt()
+            }
         }
 
         //LayoutParamsを取得
         val params = listView.getLayoutParams()
 
         //(区切り線の高さ * 要素数の数)だけ足す
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount()))
+        params.height = totalHeight + (listView.getDividerHeight() *
+                (listAdapter.getCount() * displayMetrics.density).toInt())
         //LayoutParamsにheightをセット
         listView.setLayoutParams(params)
     }
@@ -256,6 +259,8 @@ class PropertyNotesItemFileAdapter(
 //                )
 //            )
         } else {
+            view =
+                inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
             // 画像かpdfで分岐
             if (files.get(position).url.endsWith(".pdf")) {
                 if (convertView == null) {

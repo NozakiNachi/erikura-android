@@ -7,10 +7,6 @@
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.job.PropertyNotesItemViewModel" />
-
-        <variable
-            name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.job.PropertyNotesEventHandlers" />
     </data>
 
     <LinearLayout
@@ -52,14 +48,15 @@
             android:text="@{viewModel.answer}"/>
 
         <ListView
+            android:divider="@null"
             android:id="@+id/property_notes_file_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginBottom="20dp"
-            android:orientation="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:dividerHeight="20dp"
+            android:orientation="vertical" />
 
 
     </LinearLayout>
