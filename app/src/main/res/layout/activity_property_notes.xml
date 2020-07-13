@@ -46,10 +46,12 @@
                     android:text="@string/property_notes_title" />
 
                 <TextView
-                    style="@style/fieldLabel"
+                    style="@style/Block"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="30dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:textSize="22dp"
                     android:text="@{viewModel.address}" />
 
@@ -60,8 +62,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    android:orientation="vertical"
-                    />
+                    android:orientation="vertical"/>
 
 
                 <Button

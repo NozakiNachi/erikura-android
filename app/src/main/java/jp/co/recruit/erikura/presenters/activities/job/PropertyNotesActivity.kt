@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import jp.co.recruit.erikura.R
@@ -30,34 +32,27 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPropertyNotesBinding
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 
 class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     private val viewModel: PropertyNotesViewModel by lazy {
         ViewModelProvider(this).get(PropertyNotesViewModel::class.java)
     }
     private var cautions: List<Caution> = listOf()
+    private var placeId: Int? = null
 
     private lateinit var propertyNotesAdapter: PropertyNotesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var placeId: Int = intent.getIntExtra("place_id", 0)
+        placeId = intent.getIntExtra("place_id", 0)
         // 物件の注意事項を取得
-        placeId?.let {
-            Api(this).placeCautions(it) {
+        placeId?.let {place_id ->
+            Api(this).placeCautions(place_id) {
                 //ボタンのラベルを生成しセット
                 cautions = it
                 propertyNotesAdapter.cautions = it
                 propertyNotesAdapter.notifyDataSetChanged()
-            }
-            Api(this).place(placeId) { place ->
-                if (place.hasEntries) {
-                    // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace
-                } else {
-                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
-                    viewModel.address.value = place.workingPlaceShort
-                }
             }
         }
         val binding: ActivityPropertyNotesBinding =
@@ -68,6 +63,21 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
         //RecyclerView の初期化を行います
         displayPropertyNotesItem()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        placeId?.let {
+            Api(this).place(it) { place ->
+                if (place.hasEntries) {
+                    // 現ユーザーが応募済の物件の場合　フル住所を表示
+                    viewModel.address.value = place.workingPlace
+                } else {
+                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                    viewModel.address.value = place.workingPlaceShort
+                }
+            }
+        }
     }
 
     override fun onClickShowOtherFAQ(view: View) {
@@ -154,12 +164,13 @@ class PropertyNotesAdapter(
     override fun onBindViewHolder(holder: PropertyNotesViewHolder, position: Int) {
         // ビューホルダーに値を割り当てて、個々のリスト項目を生成
         holder.binding.lifecycleOwner = activity
+        holder.binding.viewModel = PropertyNotesItemViewModel(cautions[position])
         //1行分のデータを受け取り１行分のデータをセットする データ表示
         val questionTextView: TextView = holder.binding.root.findViewById(R.id.question)
         val answerTextView: TextView = holder.binding.root.findViewById(R.id.answer)
         val caution = cautions[position]
-        questionTextView.setText("Q.".plus(caution.question))
-        answerTextView.setText("A.".plus(caution.answer))
+//        questionTextView.setText("Q. ".plus(caution.question))
+//        answerTextView.setText("A. ".plus(caution.answer))
         var files: List<CautionFile> = caution.files
 
         // FIXME pdf 画像用のrecyclerViewを呼び出す
@@ -179,20 +190,25 @@ class PropertyNotesAdapter(
                 // 画像かpdfで分岐
                 if (itemUrl.endsWith(".pdf")) {
                     //マニュアル表示を元にpdfを表示
-                    JobUtil.openPropertyNotes(activity, itemUrl)
 //                    pdfの場合リンクを表示しクリックでマニュアルボタンと同じように表示させる
+                    val propertyNotesImageURLString = files[position].url
+                    val intent = Intent(activity, WebViewActivity::class.java).apply {
+                        action = Intent.ACTION_VIEW
+                        data = Uri.parse(propertyNotesImageURLString)
+                    }
+                    activity.startActivity(intent)
                 }
                 else {
-                    //画像の場合 アプリ内のこのアプリについて　利用規約　の表示と同様の表示の仕方を検討する
-                    //FIXME 下記未実装
-//                    val item = (view.findViewById<TextView>(android.R.id.text1)).text
-//                    // トーストで表示する
-//                    Toast.makeText(applicationContext, item, Toast.LENGTH_LONG).show()
+                    val intent = Intent(activity, WebViewActivity::class.java).apply {
+                        action = Intent.ACTION_VIEW
+                        data = Uri.parse(itemUrl)
+                    }
+                    activity.startActivity(intent)
                 }
             }
         }
     }
-    fun setListViewHeightBasedOnChildren(listView:ListView) {
+    private fun setListViewHeightBasedOnChildren(listView:ListView) {
 
         //ListAdapterを取得
         val listAdapter = listView.getAdapter()
@@ -208,18 +224,29 @@ class PropertyNotesAdapter(
         {
             val listItem = listAdapter.getView(i, null, listView)
             listItem.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+            //各子要素の高さを加算
             totalHeight += listItem.getMeasuredHeight()
         }
 
         //LayoutParamsを取得
         val params = listView.getLayoutParams()
 
-        //(区切り線の高さ * 要素数の数)だけ足
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1))
+        //(区切り線の高さ * 要素数の数)だけ足す
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() ))
         //LayoutParamsにheightをセット
         listView.setLayoutParams(params)
     }
+}
 
+class PropertyNotesItemViewModel(
+    var caution: Caution
+) : ViewModel() {
+    var question: MutableLiveData<String> = MutableLiveData()
+    var answer: MutableLiveData<String> = MutableLiveData()
+    init {
+        question.value = "Q. ".plus(caution.question)
+        answer.value = "A. ".plus(caution.answer)
+    }
 }
 
 class PropertyNotesItemFileAdapter(
