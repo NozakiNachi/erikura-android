@@ -8,6 +8,7 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -110,7 +111,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         manager.orientation = RecyclerView.VERTICAL
         recyclerView.layoutManager = manager
         //アダプター取得　レイアウトとデータ関連付けさせるため
-        propertyNotesAdapter = PropertyNotesAdapter(this, cautions)
+        propertyNotesAdapter = PropertyNotesAdapter(this, cautions, (this.resources.getDimension(R.dimen.Property_notes_item_margin)).toInt())
         // アダプターをRecyclerViewにセット
         recyclerView.adapter = propertyNotesAdapter
         // アイテム間の幅をセットします
@@ -146,7 +147,8 @@ class PropertyNotesItemDecorator : RecyclerView.ItemDecoration() {
 
 class PropertyNotesAdapter(
     val activity: FragmentActivity,
-    var cautions: List<Caution>
+    var cautions: List<Caution>,
+    val margin: Int
 ) : RecyclerView.Adapter<PropertyNotesViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyNotesViewHolder {
         //表示するレイアウトを設定
@@ -170,13 +172,15 @@ class PropertyNotesAdapter(
         //1行分のデータを受け取り１行分のデータをセットする データ表示
         val caution = cautions[position]
         var files: List<CautionFile> = caution.files
-
+        var linearLayout :LinearLayout = holder.itemView.findViewById(R.id.property_notes_image_pdf)
+        val layout = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        layout.setMargins(margin, margin, margin, margin)
         if (files.isNotEmpty()) {
             //FIXME addviewで実装中
-            var linearLayout :LinearLayout = activity.findViewById(R.id.property_notes_image_pdf)
             for (i in 0 until files.size) {
                 if (files[i].url.endsWith(".pdf")){
-                    val textView = TextView(activity)
+                    val textView = TextView(
+                        ContextThemeWrapper(activity, R.style.linkText))
                     textView.setText(files[i].file_name)
                     textView.setOnClickListener {
                         val itemUrl: String = files[i].url
@@ -186,7 +190,7 @@ class PropertyNotesAdapter(
                         }
                         activity.startActivity(intent)
                     }
-                    linearLayout.addView(textView)
+                    linearLayout.addView(textView, layout)
                     //pdf クリックイベントの処理も追加
                 } else {
                     //jpeg　クリックイベントの処理も追加
@@ -195,7 +199,7 @@ class PropertyNotesAdapter(
                     assetsManager.fetchImage(activity, files[i].url){
                         imageView.setImageBitmap(it)
                     }
-                    linearLayout.addView(imageView)
+                    linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
                         val itemUrl: String = files[i].url
                         val intent = Intent(activity, WebViewActivity::class.java).apply {
