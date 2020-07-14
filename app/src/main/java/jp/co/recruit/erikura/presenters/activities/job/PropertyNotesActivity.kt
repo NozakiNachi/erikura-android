@@ -171,10 +171,10 @@ class PropertyNotesAdapter(
         holder.binding.viewModel = PropertyNotesItemViewModel(cautions[position])
         //1行分のデータを受け取り１行分のデータをセットする データ表示
         val caution = cautions[position]
-        var files: List<CautionFile> = caution.files
+        val files: List<CautionFile> = caution.files
         //ListViewで実装しようとしたが高さが適性値を取得できないため、addViewで実装　
         // ListViewについてはコメントアウトで残してます。
-        var linearLayout :LinearLayout = holder.itemView.findViewById(R.id.property_notes_image_pdf)
+        val linearLayout :LinearLayout = holder.itemView.findViewById(R.id.property_notes_image_pdf)
         val layout = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         layout.setMargins(margin, margin, margin, margin)
         if (files.isNotEmpty()) {

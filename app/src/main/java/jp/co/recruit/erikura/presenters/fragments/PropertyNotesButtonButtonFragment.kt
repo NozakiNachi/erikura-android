@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -37,10 +38,6 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
         }
     }
 
-    private val viewModel: PropertyNotesButtonViewModel by lazy {
-        ViewModelProvider(this).get(PropertyNotesButtonViewModel::class.java)
-    }
-
     constructor(): super()
 
     override fun refresh(job: Job?, user: User?) {
@@ -64,7 +61,6 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
         val binding = FragmentPropertyNotesButtonBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         binding.handler = this
-        binding.viewModel = viewModel
         return binding.root
     }
 
@@ -86,24 +82,15 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
         var count = "（${cautionsCount}件）"
         var buttonText = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
         if (cautionsCount > 0) {
-        // FIXME 下記のテキストの色分けは一旦保留
         var spanColor: Int = ContextCompat.getColor(activity!!, R.color.coral)
             SpannableStringBuilder(buttonText).let {
-               it.setSpan(ForegroundColorSpan(spanColor), buttonText.indexOf("（"), buttonText.indexOf("）"), 0)
-//                viewModel.buttonText.value = it.subSequence(0, it.length).toString()
-                button.text = it.subSequence(0, it.length).toString()
+               it.setSpan(ForegroundColorSpan(spanColor), buttonText.indexOf("（"), buttonText.length, 0)
+                button.text = it.subSequence(0, it.length)
             }
         } else {
-//            viewModel.buttonText.value = buttonText
             button.text = buttonText
         }
     }
-}
-
-class PropertyNotesButtonViewModel: ViewModel() {
-
-//    var buttonText: MutableLiveData<String> = MutableLiveData()
-//    val propertyNotesButtonText: MutableLiveData<String> = MutableLiveData()
 }
 
 interface PropertyNotesButtonFragmentEventHandlers {

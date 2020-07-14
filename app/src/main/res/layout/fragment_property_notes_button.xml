@@ -6,9 +6,6 @@
         <variable
             name="handler"
             type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesButtonFragmentEventHandlers" />
-        <variable
-            name="viewModel"
-            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesButtonViewModel" />
     </data>
 
     <FrameLayout
