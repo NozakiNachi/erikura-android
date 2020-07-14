@@ -172,11 +172,12 @@ class PropertyNotesAdapter(
         //1行分のデータを受け取り１行分のデータをセットする データ表示
         val caution = cautions[position]
         var files: List<CautionFile> = caution.files
+        //ListViewで実装しようとしたが高さが適性値を取得できないため、addViewで実装　
+        // ListViewについてはコメントアウトで残してます。
         var linearLayout :LinearLayout = holder.itemView.findViewById(R.id.property_notes_image_pdf)
         val layout = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
         layout.setMargins(margin, margin, margin, margin)
         if (files.isNotEmpty()) {
-            //FIXME addviewで実装中
             for (i in 0 until files.size) {
                 if (files[i].url.endsWith(".pdf")){
                     val textView = TextView(
@@ -232,38 +233,38 @@ class PropertyNotesAdapter(
         }
     }
 
-    private fun setListViewHeightBasedOnChildren(listView: ListView, position: Int) {
-
-        //ListAdapterを取得
-        val listAdapter = listView.getAdapter()
-        val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
-        if (listAdapter == null) {
-            return
-        }
-
-        var totalHeight = 0
-
-        //個々のアイテムの高さを測り、加算していく
-        for (i in 0 until listAdapter.getCount()) {
-            val listItem = listAdapter.getView(i, null, listView)
-            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
-            //各子要素の高さを加算
-            if (this.cautions[position].files[i].url.endsWith(".pdf")) {
-                totalHeight += (listItem.measuredHeight * 0.01 * displayMetrics.density).toInt()
-            } else {
-                totalHeight += (listItem.measuredHeight * 1.2 * displayMetrics.density).toInt()
-            }
-        }
-
-        //LayoutParamsを取得
-        val params = listView.getLayoutParams()
-
-        //(区切り線の高さ * 要素数の数)だけ足す
-        params.height = totalHeight + (listView.getDividerHeight() *
-                (listAdapter.getCount() * displayMetrics.density).toInt())
-        //LayoutParamsにheightをセット
-        listView.setLayoutParams(params)
-    }
+//    private fun setListViewHeightBasedOnChildren(listView: ListView, position: Int) {
+//
+//        //ListAdapterを取得
+//        val listAdapter = listView.getAdapter()
+//        val displayMetrics = ErikuraApplication.applicationContext.resources.displayMetrics
+//        if (listAdapter == null) {
+//            return
+//        }
+//
+//        var totalHeight = 0
+//
+//        //個々のアイテムの高さを測り、加算していく
+//        for (i in 0 until listAdapter.getCount()) {
+//            val listItem = listAdapter.getView(i, null, listView)
+//            listItem.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+//            //各子要素の高さを加算
+//            if (this.cautions[position].files[i].url.endsWith(".pdf")) {
+//                totalHeight += (listItem.measuredHeight * 0.01 * displayMetrics.density).toInt()
+//            } else {
+//                totalHeight += (listItem.measuredHeight * 1.2 * displayMetrics.density).toInt()
+//            }
+//        }
+//
+//        //LayoutParamsを取得
+//        val params = listView.getLayoutParams()
+//
+//        //(区切り線の高さ * 要素数の数)だけ足す
+//        params.height = totalHeight + (listView.getDividerHeight() *
+//                (listAdapter.getCount() * displayMetrics.density).toInt())
+//        //LayoutParamsにheightをセット
+//        listView.setLayoutParams(params)
+//    }
 }
 
 class PropertyNotesItemViewModel(
@@ -278,61 +279,61 @@ class PropertyNotesItemViewModel(
     }
 }
 
-class PropertyNotesItemFileAdapter(
-    val activity: FragmentActivity,
-    var inflater: LayoutInflater,
-    val files: ArrayList<CautionFile>
-) : BaseAdapter() {
-    internal data class ViewHolder(val image: ImageView)
-
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
-        var view = convertView
-        val viewHolder: ViewHolder
-
-        if (files.get(position).url.isNullOrBlank()) {
-            //何もセットしない
-//            viewHolder.image.setImageDrawable(
-//                ErikuraApplication.instance.applicationContext.resources.getDrawable(
-//                    R.drawable.ic_noimage,
-//                    null
-//                )
-//            )
-        } else {
-            view =
-                inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
-            // 画像かpdfで分岐
-            if (files.get(position).url.endsWith(".pdf")) {
-                if (convertView == null) {
-                    view =
-                        inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
-                }
-                var textView: TextView = view!!.findViewById(R.id.property_notes_pdf_button)
-                textView.setText(files.get(position).file_name)
-            } else {
-                if (convertView == null) {
-                    view =
-                        inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
-                }
-
-                var thumbnailImageView: ImageView =
-                    view!!.findViewById(R.id.property_notes_thumbnailImage_image)
-                //viewのidとurlとactivityを元にサムネイル画像をセットする
-                val assetsManager = ErikuraApplication.assetsManager
-                assetsManager.fetchImage(activity, files.get(position).url, thumbnailImageView)
-            }
-        }
-        return view!!
-    }
-
-    override fun getCount(): Int {
-        return files.count()
-    }
-
-    override fun getItem(position: Int): Int {
-        return position
-    }
-
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
-}
+//class PropertyNotesItemFileAdapter(
+//    val activity: FragmentActivity,
+//    var inflater: LayoutInflater,
+//    val files: ArrayList<CautionFile>
+//) : BaseAdapter() {
+//    internal data class ViewHolder(val image: ImageView)
+//
+//    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+//        var view = convertView
+//        val viewHolder: ViewHolder
+//
+//        if (files.get(position).url.isNullOrBlank()) {
+//            //何もセットしない
+////            viewHolder.image.setImageDrawable(
+////                ErikuraApplication.instance.applicationContext.resources.getDrawable(
+////                    R.drawable.ic_noimage,
+////                    null
+////                )
+////            )
+//        } else {
+//            view =
+//                inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
+//            // 画像かpdfで分岐
+//            if (files.get(position).url.endsWith(".pdf")) {
+//                if (convertView == null) {
+//                    view =
+//                        inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
+//                }
+//                var textView: TextView = view!!.findViewById(R.id.property_notes_pdf_button)
+//                textView.setText(files.get(position).file_name)
+//            } else {
+//                if (convertView == null) {
+//                    view =
+//                        inflater.inflate(R.layout.fragment_property_notes_item_file, parent, false)
+//                }
+//
+//                var thumbnailImageView: ImageView =
+//                    view!!.findViewById(R.id.property_notes_thumbnailImage_image)
+//                //viewのidとurlとactivityを元にサムネイル画像をセットする
+//                val assetsManager = ErikuraApplication.assetsManager
+//                assetsManager.fetchImage(activity, files.get(position).url, thumbnailImageView)
+//            }
+//        }
+//        return view!!
+//    }
+//
+//    override fun getCount(): Int {
+//        return files.count()
+//    }
+//
+//    override fun getItem(position: Int): Int {
+//        return position
+//    }
+//
+//    override fun getItemId(position: Int): Long {
+//        return position.toLong()
+//    }
+//}
