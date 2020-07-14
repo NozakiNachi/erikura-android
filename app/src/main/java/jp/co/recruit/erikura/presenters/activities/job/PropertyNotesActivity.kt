@@ -180,10 +180,12 @@ class PropertyNotesAdapter(
         if (files.isNotEmpty()) {
             for (i in 0 until files.size) {
                 if (files[i].url.endsWith(".pdf")){
-                    val textView = TextView(
-                        ContextThemeWrapper(activity, R.style.linkText))
-                    textView.setText(files[i].file_name)
-                    textView.setOnClickListener {
+                    val imageView = ImageView(activity)
+                    val assetsManager = ErikuraApplication.assetsManager
+                    assetsManager.fetchImage(activity, files[i].thumbnail_url){
+                        imageView.setImageBitmap(it)
+                    }
+                    imageView.setOnClickListener {
                         val itemUrl: String = files[i].url
                         val intent = Intent(activity, WebViewActivity::class.java).apply {
                             action = Intent.ACTION_VIEW
@@ -191,10 +193,8 @@ class PropertyNotesAdapter(
                         }
                         activity.startActivity(intent)
                     }
-                    linearLayout.addView(textView, layout)
-                    //pdf クリックイベントの処理も追加
+                    linearLayout.addView(imageView, layout)
                 } else {
-                    //jpeg　クリックイベントの処理も追加
                     val imageView = ImageView(activity)
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchImage(activity, files[i].url){

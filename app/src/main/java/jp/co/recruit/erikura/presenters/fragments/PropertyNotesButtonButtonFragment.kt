@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,27 +73,28 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
     }
 
     private fun createPropertyNotesButtonText(cautionsCount: Int) {
-        val button: Button = activity!!.findViewById(R.id.property_notes_button_text)
+        val button:  Button = activity!!.findViewById(R.id.property_notes_button_text)
+        button.setAllCaps(false)
         var count = "（${cautionsCount}件）"
         var buttonText = ErikuraApplication.instance.getString(R.string.property_notes_title) + count
         if (cautionsCount > 0) {
         // FIXME 下記のテキストの色分けは一旦保留
         var spanColor: Int = ContextCompat.getColor(activity!!, R.color.coral)
             SpannableStringBuilder(buttonText).let {
-               it.setSpan(ForegroundColorSpan(spanColor), buttonText.indexOf("（"), buttonText.length, 0)
-                viewModel.buttonText.value = it.subSequence(0, it.length).toString()
-//                button.text = it.subSequence(0, it.length).toString()
+               it.setSpan(ForegroundColorSpan(spanColor), buttonText.indexOf("（"), buttonText.indexOf("）"), 0)
+//                viewModel.buttonText.value = it.subSequence(0, it.length).toString()
+                button.text = it.subSequence(0, it.length).toString()
             }
         } else {
-            viewModel.buttonText.value = buttonText
-//            button.text = buttonText
+//            viewModel.buttonText.value = buttonText
+            button.text = buttonText
         }
     }
 }
 
 class PropertyNotesButtonViewModel: ViewModel() {
 
-    var buttonText: MutableLiveData<String> = MutableLiveData()
+//    var buttonText: MutableLiveData<String> = MutableLiveData()
 //    val propertyNotesButtonText: MutableLiveData<String> = MutableLiveData()
 }
 

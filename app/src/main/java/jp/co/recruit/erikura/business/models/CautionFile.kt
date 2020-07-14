@@ -4,6 +4,7 @@ import java.util.*
 
 data class CautionFile(
     var url: String,
-    var file_name: String
+    var file_name: String,
+    var thumbnail_url: String
 ) {
 }
