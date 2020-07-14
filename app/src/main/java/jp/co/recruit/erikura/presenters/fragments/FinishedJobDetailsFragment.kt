@@ -60,6 +60,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
             thumbnailImage?.refresh(job, user)
             jobDetailsView?.refresh(job, user)
             mapView?.refresh(job, user)
+            propertyNotesButtonButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)

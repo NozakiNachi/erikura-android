@@ -63,6 +63,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
                 mapView?.refresh(job, user)
                 applyFlowView?.refresh(job, user)
                 applyButton?.refresh(job, user)
+                propertyNotesButtonButton?.refresh(job, user)
             }
         }
     }

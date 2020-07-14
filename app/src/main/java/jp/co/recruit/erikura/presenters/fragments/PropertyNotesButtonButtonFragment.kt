@@ -40,6 +40,15 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
 
     constructor(): super()
 
+    override fun refresh(job: Job?, user: User?) {
+        super.refresh(job, user)
+        job?.let {
+            Api(activity!!).reloadJob(it) { get_job ->
+                createPropertyNotesButtonText(get_job.cautionsCount ?: 0)
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

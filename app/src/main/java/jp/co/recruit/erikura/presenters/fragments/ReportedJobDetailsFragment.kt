@@ -71,6 +71,7 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
             reportedJobEditButton?.refresh(job, user)
             reportedJobRemoveButton?.refresh(job, user)
             jobDetailsView?.refresh(job, user)
+            propertyNotesButtonButton?.refresh(job, user)
 
             activity?.let { activity ->
                 fetchReport()
