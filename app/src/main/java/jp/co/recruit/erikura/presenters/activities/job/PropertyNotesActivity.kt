@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import android.content.ContentResolver
 import android.content.Intent
@@ -191,7 +192,8 @@ class PropertyNotesAdapter(
                             action = Intent.ACTION_VIEW
                             data = Uri.parse(itemUrl)
                         }
-                        activity.startActivity(intent)
+                        activity.startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     }
                     linearLayout.addView(imageView, layout)
                 } else {
@@ -207,7 +209,8 @@ class PropertyNotesAdapter(
                             action = Intent.ACTION_VIEW
                             data = Uri.parse(itemUrl)
                         }
-                        activity.startActivity(intent)
+                        activity.startActivity(intent,
+                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     }
                 }
             }
