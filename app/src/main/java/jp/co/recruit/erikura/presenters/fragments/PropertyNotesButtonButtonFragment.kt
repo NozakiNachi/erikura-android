@@ -12,12 +12,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -67,9 +69,15 @@ class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesBu
     }
 
     override fun onClickPropertyNotes(view: View) {
+        // ページ参照のトラッキングの送出
+        job?.let { job ->
+        Tracking.logEvent(event= "view_cautions", params= bundleOf())
+        Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
+
         val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity::class.java)
-        intent.putExtra("place_id", job?.placeId)
+        intent.putExtra("place_id", job.placeId)
         startActivity(intent)
+        }
     }
 
     private fun createPropertyNotesButtonText(cautionsCount: Int) {
