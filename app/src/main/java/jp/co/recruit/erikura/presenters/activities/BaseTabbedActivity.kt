@@ -3,6 +3,8 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.util.Log
 import android.view.MenuItem
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -16,6 +18,7 @@ open class BaseTabbedActivity(private val currentTabId: Int, finishByBackButton:
         var searchJobCurrentActivity: Class<*> = MapViewActivity::class.java
         var searchJobQuery: JobQuery? = null
         var mypageCurrentActivity: Class<*> = MypageActivity::class.java
+        var mapCameraPosition: CameraPosition? = null
     }
 
     protected var onTabButtonInitialization: Boolean = false
