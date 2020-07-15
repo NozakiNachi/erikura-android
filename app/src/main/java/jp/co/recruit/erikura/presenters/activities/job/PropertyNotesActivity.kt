@@ -73,9 +73,9 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         super.onResume()
         placeId?.let {
             Api(this).place(it) { place ->
-                if (place.hasEntries) {
+                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                     // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace
+                    viewModel.address.value = place.workingPlace + place.workingBuilding
                 } else {
                     // 現ユーザーが未応募の物件の場合　短縮住所を表示
                     viewModel.address.value = place.workingPlaceShort
