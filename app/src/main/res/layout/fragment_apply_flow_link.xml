@@ -13,9 +13,9 @@
         tools:context=".presenters.fragments.ApplyFlowLinkFragment">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="right">
+            android:gravity="center">
 
             <ImageView
                 android:layout_width="16dp"
