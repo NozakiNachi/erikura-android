@@ -77,6 +77,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
 
     private var jobInfoView: JobInfoViewFragment? = null
     private var manualImage: ManualImageFragment? = null
+    private var entryInformationFragment: EntryInformationFragment? = null
     private var cancelButton: CancelButtonFragment? = null
     private var manualButton: ManualButtonFragment? = null
     private var thumbnailImage: ThumbnailImageFragment? = null
@@ -90,6 +91,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         if (isAdded) {
             jobInfoView?.refresh(job, user)
             manualImage?.refresh(job, user)
+            entryInformationFragment?.refresh(job, user)
             cancelButton?.refresh(job, user)
             manualButton?.refresh(job, user)
             thumbnailImage?.refresh(job, user)
@@ -122,6 +124,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         val transaction = childFragmentManager.beginTransaction()
         jobInfoView = JobInfoViewFragment.newInstance(job, user)
         manualImage = ManualImageFragment.newInstance(job, user)
+        entryInformationFragment = EntryInformationFragment.newInstance(job, user)
         cancelButton = CancelButtonFragment.newInstance(job, user)
         manualButton = ManualButtonFragment.newInstance(job, user)
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
@@ -129,6 +132,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         mapView = MapViewFragment.newInstance(job, user)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
+        transaction.add(R.id.appliedJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
         transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton!!, "cancelButton")
         transaction.add(R.id.appliedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
         transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage!!,"thumbnailImage")

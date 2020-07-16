@@ -61,6 +61,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+    private var entryInformationFragment: EntryInformationFragment? = null
 
     constructor(): super()
 
@@ -73,6 +74,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
             thumbnailImage?.refresh(job, user)
             jobDetailsView?.refresh(job, user)
             mapView?.refresh(job, user)
+            entryInformationFragment?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -103,12 +105,14 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
+        entryInformationFragment = EntryInformationFragment.newInstance(job, user)
         transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton!!, "manualButton")
         transaction.add(R.id.workingJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.workingJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
+        transaction.add(R.id.workingJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
         transaction.commitAllowingStateLoss()
     }
 

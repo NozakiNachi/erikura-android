@@ -175,6 +175,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp" />
 
+                <!-- 応募者への連絡事項 -->
+                <FrameLayout
+                    android:id="@+id/workingJobDetails_entryInformationFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" />
+
                 <!-- 作業をキャンセル -->
                 <Button
                     style="@style/tertiaryButton"
