@@ -32,6 +32,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
     var job: Job = Job()
     var message: String? = null
+    var cautionsCount: Int? = null
     private lateinit var recommendedJobsAdapter: JobListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -80,8 +81,9 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
     override fun onResume() {
         super.onResume()
         // jobの再取得
-        Api(this).reloadJob(job) {
-            job = it
+        Api(this).reloadJob(job) { get_job->
+            job = get_job
+            cautionsCount = get_job.cautionsCount
             Api(this).recommendedJobs(job) { jobsList ->
                 viewModel.recommendedJobs = jobsList
                 recommendedJobsAdapter.jobs = viewModel.recommendedJobs

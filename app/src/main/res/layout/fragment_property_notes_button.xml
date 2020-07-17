@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="handler"
+            type="jp.co.recruit.erikura.presenters.fragments.PropertyNotesButtonFragmentEventHandlers" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.PropertyNotesButtonButtonFragment">
+
+<!--        ボタンのテキストの色を動的にするため、スタイルはコード上で指定してます-->
+    <Button
+        style="@style/tertiaryButton"
+        android:id="@+id/property_notes_button_text"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:textAllCaps="false"
+        app:onSafeClick="@{handler::onClickPropertyNotes}"/>
+
+
+    </FrameLayout>
+</layout>

@@ -4,30 +4,21 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentWorkingJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
@@ -62,6 +53,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
     private var entryInformationFragment: EntryInformationFragment? = null
+    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
 
     constructor(): super()
 
@@ -75,6 +67,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
             jobDetailsView?.refresh(job, user)
             mapView?.refresh(job, user)
             entryInformationFragment?.refresh(job, user)
+            propertyNotesButtonButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -106,11 +99,13 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
         entryInformationFragment = EntryInformationFragment.newInstance(job, user)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton!!, "manualButton")
         transaction.add(R.id.workingJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.workingJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.workingJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
         transaction.commitAllowingStateLoss()

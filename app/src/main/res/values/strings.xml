@@ -112,6 +112,10 @@
     <string name="report_rejected_comment">差し戻しコメント</string>
     <string name="job_details_reported_additional_summary">マニュアル外の報告</string>
 
+    <!--物件注意事項画面-->
+    <string name="property_notes_title">このお仕事の注意事項</string>
+    <string name="property_notes_other_button">その他のFAQを見る</string>
+
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
     <string name="applyFlowDialog_step1">マニュアルをチェックする</string>

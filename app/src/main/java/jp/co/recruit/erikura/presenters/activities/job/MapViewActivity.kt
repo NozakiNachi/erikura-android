@@ -231,6 +231,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         locationManager.clearLocationUpdateCallback()
 
         searchJobQuery = viewModel.query(viewModel.latLng.value ?: LocationManager.defaultLatLng)
+        if (::mMap.isInitialized) {
+            mapCameraPosition = mMap.cameraPosition
+        }
     }
 
     override fun onResume() {
@@ -284,9 +287,17 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
 
         // ズームの初期設定を行っておきます
-        val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
-        Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
-        mMap.moveCamera(updateRequest)
+        mapCameraPosition?.also {
+            // 保存済みの位置に移動します
+            val updateRequest = CameraUpdateFactory.newCameraPosition(it)
+            Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+            mMap.moveCamera(updateRequest)
+        } ?: run {
+            // 初期位置に移動させます
+            val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
+            Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+            mMap.moveCamera(updateRequest)
+        }
 
         if (locationManager.checkPermission(this)) {
             mMap.isMyLocationEnabled = true

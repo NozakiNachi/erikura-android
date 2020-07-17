@@ -141,6 +141,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp" />
 
+                <!-- 物件注意表示ボタン -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_propertyNotesButtonFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp" />
+
                 <!-- 応募者への連絡事項 -->
                 <FrameLayout
                     android:id="@+id/finishedJobDetails_entryInformationFragment"

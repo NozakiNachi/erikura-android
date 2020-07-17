@@ -316,8 +316,8 @@ class Api(var context: Context) {
         executeObservable(
             erikuraApiService.reloadJob(job.id),
             onError = onError
-        ) { reloadedJob ->
-            onComplete(reloadedJob)
+        ) { job ->
+            onComplete(job)
         }
     }
 
@@ -470,6 +470,16 @@ class Api(var context: Context) {
         ) { body ->
             val placeList = body.places
             onComplete(placeList)
+        }
+    }
+
+    fun placeCautions(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<Caution>) -> Unit){
+        executeObservable(
+            erikuraApiService.placeCautions(placeId),
+            onError = onError
+        ) { body ->
+            val cautions = body.cautions
+            onComplete(cautions)
         }
     }
 

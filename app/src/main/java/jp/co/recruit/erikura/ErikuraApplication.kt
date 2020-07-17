@@ -362,6 +362,15 @@ object Tracking {
         ))
     }
 
+    fun viewCautions(name: String, title: String, jobId: Int, placeId: Int) {
+        Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+        Tracker.getInstance().view(name, title, bundleOf(
+            Pair("job_id", jobId),
+            Pair("place_id", placeId)
+        ))
+
+    }
+
     fun trackJobs(name: String, jobId: List<Int>) {
         Log.v("ERIKURA", "Sending view tracking: ${name}")
         Tracker.getInstance().view(name, bundleOf(

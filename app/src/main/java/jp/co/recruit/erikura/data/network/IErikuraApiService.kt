@@ -112,6 +112,9 @@ interface IErikuraApiService {
     @GET("place_favorites")
     fun favoritePlaces(): ApiObservable<FavoritePlacesResponse>
 
+    @GET("places/cautions")
+    fun placeCautions(@Query("place_id") placeId: Int): ApiObservable<CautionResponse>
+
     @POST("reports")
     fun createReport(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
 
@@ -230,6 +233,10 @@ data class PostalCodeResponse(
     var prefecture: String?,
     var city: String?,
     var street: String?
+)
+
+data class CautionResponse(
+    var cautions: List<Caution>
 )
 
 data class RegisterEmailRequest(
