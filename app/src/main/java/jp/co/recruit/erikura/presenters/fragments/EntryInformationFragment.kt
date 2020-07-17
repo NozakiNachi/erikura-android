@@ -63,7 +63,7 @@ class EntryInformationFragment : BaseJobDetailFragment {
 
         private fun decideEntryInformationVisibility(): Int {
             return job.value?.let { job ->
-                if (job.isEntried && job.isOwner && !job.isReported) {
+                if (job.isEntried && job.isOwner && !job.isReported && (job.entryInformation ?: "").isNotBlank()) {
                     return View.VISIBLE
                 }
                 else {
