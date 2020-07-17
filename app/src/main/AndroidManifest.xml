@@ -140,6 +140,8 @@
                 <data android:pathPrefix="/places/" />
             </intent-filter>
         </activity>
+        <activity android:name=".presenters.activities.job.PropertyNotesActivity"
+            android:screenOrientation="portrait"/>
         <!-- ============================================================ -->
         <!-- 応募済みの仕事関連 -->
         <activity

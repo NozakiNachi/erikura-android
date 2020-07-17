@@ -11,7 +11,6 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -46,6 +45,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var mapView: MapViewFragment? = null
     private var applyFlowView: ApplyFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
+    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
 
     constructor() : super()
 
@@ -63,6 +63,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
                 mapView?.refresh(job, user)
                 applyFlowView?.refresh(job, user)
                 applyButton?.refresh(job, user)
+                propertyNotesButtonButton?.refresh(job, user)
             }
         }
     }
@@ -95,6 +96,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         mapView = MapViewFragment.newInstance(job, user)
         applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
         applyButton = ApplyButtonFragment.newInstance(job, user)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
@@ -104,6 +106,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
         transaction.add(R.id.jobDetails_applyButtonFragment, applyButton!!, "applyButton")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 

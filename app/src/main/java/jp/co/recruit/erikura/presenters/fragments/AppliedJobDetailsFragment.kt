@@ -8,10 +8,8 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.provider.Settings
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.*
@@ -21,13 +19,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
-import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
@@ -45,7 +41,6 @@ import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
-import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
@@ -82,6 +77,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     private var thumbnailImage: ThumbnailImageFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
+    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
 
     constructor(): super()
 
@@ -95,6 +91,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             thumbnailImage?.refresh(job, user)
             jobDetailsView?.refresh(job, user)
             mapView?.refresh(job, user)
+            propertyNotesButtonButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -127,6 +124,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
+        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.appliedJobDetails_cancelButtonFragment, cancelButton!!, "cancelButton")
@@ -134,6 +132,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         transaction.add(R.id.appliedJobDetails_thumbnailImageFragment, thumbnailImage!!,"thumbnailImage")
         transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView!!,"jobDetailsView")
         transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView!!, "mapView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 
