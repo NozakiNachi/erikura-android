@@ -55,7 +55,6 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
     private var reportedJobEditButton: ReportedJobEditButtonFragment? = null
     private var reportedJobRemoveButton: ReportedJobRemoveButtonFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
-    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
 
     constructor(): super()
 
@@ -71,7 +70,6 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
             reportedJobEditButton?.refresh(job, user)
             reportedJobRemoveButton?.refresh(job, user)
             jobDetailsView?.refresh(job, user)
-            propertyNotesButtonButton?.refresh(job, user)
 
             activity?.let { activity ->
                 fetchReport()
@@ -116,14 +114,12 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(job, user)
         reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(job, user)
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
-        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.reportedJobEditButton, reportedJobEditButton!!, "reportedJobEditButton")
         transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton!!, "reportedJobRemoveButton")
         transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
-        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
 
         fetchReport()
