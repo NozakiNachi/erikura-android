@@ -45,6 +45,7 @@ data class Job(
     var workableStart: String? = null,
     var workableFinish: String? = null,
     var entryQuestion: String? = null,
+    var entryInformation: String? = null,
     var latitude: Double? = null,
     var longitude: Double? = null,
     var thumbnailUrl: String? = null,
