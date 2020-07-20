@@ -33,22 +33,13 @@ class PropertyNotesButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFr
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
-        job?.let {
-            Api(activity!!).reloadJob(it) { get_job ->
-                createPropertyNotesButtonText(get_job.cautionsCount ?: 0)
-            }
-        }
+        createPropertyNotesButtonText(job?.cautionsCount ?: 0)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        job?.let {
-            Api(activity!!).reloadJob(it) { get_job ->
-                createPropertyNotesButtonText(get_job.cautionsCount ?: 0)
-            }
-        }
         val binding = FragmentPropertyNotesButtonBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         binding.handler = this
