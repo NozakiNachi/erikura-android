@@ -47,7 +47,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
     private var entryInformationFragment: EntryInformationFragment? = null
-    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
+    private var propertyNotesButton: PropertyNotesButtonFragment? = null
 
     constructor(): super()
 
@@ -62,7 +62,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
             jobDetailsView?.refresh(job, user)
             mapView?.refresh(job, user)
             entryInformationFragment?.refresh(job, user)
-            propertyNotesButtonButton?.refresh(job, user)
+            propertyNotesButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -94,7 +94,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
         entryInformationFragment = EntryInformationFragment.newInstance(job, user)
-        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
+        propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
         transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")
@@ -102,7 +102,7 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         transaction.add(R.id.finishedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.finishedJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.finishedJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
-        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 

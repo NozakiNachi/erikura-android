@@ -72,7 +72,8 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     override fun onResume() {
         super.onResume()
         placeId?.let {
-            Api(this).place(it) { place ->
+            val api = Api(this)
+            api.place(it) { place ->
                 if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                     // 現ユーザーが応募済の物件の場合　フル住所を表示
                     viewModel.address.value = place.workingPlace + place.workingBuilding
@@ -80,6 +81,12 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                     // 現ユーザーが未応募の物件の場合　短縮住所を表示
                     viewModel.address.value = place.workingPlaceShort
                 }
+            }
+            api.placeCautions(it) {
+                //ボタンのラベルを生成しセット
+                cautions = it
+                propertyNotesAdapter.cautions = it
+                propertyNotesAdapter.notifyDataSetChanged()
             }
         }
     }
