@@ -180,7 +180,7 @@ class PropertyNotesAdapter(
         layout.setMargins(margin, margin, margin, margin)
         if (files.isNotEmpty()) {
             for (i in 0 until files.size) {
-                if (files[i].url.endsWith(".pdf")){
+                if (files[i].file_name.endsWith(".pdf")){
                     val imageView = ImageView(activity)
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchImage(activity, files[i].thumbnail_url){
