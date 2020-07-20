@@ -81,6 +81,14 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                     viewModel.address.value = place.workingPlaceShort
                 }
             }
+            Api(this).placeCautions(it) {
+                //ボタンのラベルを生成しセット
+                cautions = it
+                propertyNotesAdapter.cautions = it
+                propertyNotesAdapter.notifyDataSetChanged()
+                //RecyclerView の初期化を行います
+                displayPropertyNotesItem()
+            }
         }
     }
 
