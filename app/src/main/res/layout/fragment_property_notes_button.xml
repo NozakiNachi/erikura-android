@@ -12,7 +12,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".presenters.fragments.PropertyNotesButtonButtonFragment">
+        tools:context=".presenters.fragments.PropertyNotesButtonFragment">
 
         <!-- ボタンのテキストの色を動的にするため、スタイルはコード上で指定してます -->
         <Button

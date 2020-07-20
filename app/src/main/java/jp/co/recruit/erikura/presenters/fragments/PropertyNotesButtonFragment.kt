@@ -18,10 +18,10 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesButtonBinding
 
-class PropertyNotesButtonButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFragmentEventHandlers {
+class PropertyNotesButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): PropertyNotesButtonButtonFragment {
-            return PropertyNotesButtonButtonFragment().also {
+        fun newInstance(job: Job?, user: User?): PropertyNotesButtonFragment {
+            return PropertyNotesButtonFragment().also {
                 it.arguments = Bundle().also { args ->
                     fillArguments(args, job, user)
                 }

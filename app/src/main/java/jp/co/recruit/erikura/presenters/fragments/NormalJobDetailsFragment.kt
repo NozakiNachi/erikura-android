@@ -45,7 +45,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var mapView: MapViewFragment? = null
     private var applyFlowView: ApplyFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
-    private var propertyNotesButtonButton: PropertyNotesButtonButtonFragment? = null
+    private var propertyNotesButton: PropertyNotesButtonFragment? = null
 
     constructor() : super()
 
@@ -63,7 +63,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
                 mapView?.refresh(job, user)
                 applyFlowView?.refresh(job, user)
                 applyButton?.refresh(job, user)
-                propertyNotesButtonButton?.refresh(job, user)
+                propertyNotesButton?.refresh(job, user)
             }
         }
     }
@@ -96,7 +96,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         mapView = MapViewFragment.newInstance(job, user)
         applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
         applyButton = ApplyButtonFragment.newInstance(job, user)
-        propertyNotesButtonButton = PropertyNotesButtonButtonFragment.newInstance(job, user)
+        propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
@@ -106,7 +106,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
         transaction.add(R.id.jobDetails_applyButtonFragment, applyButton!!, "applyButton")
-        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButtonButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.commitAllowingStateLoss()
     }
 
