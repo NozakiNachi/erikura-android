@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
@@ -192,8 +193,8 @@ class PropertyNotesAdapter(
                 if (files[i].file_name.endsWith(".pdf")){
                     val imageView = ImageView(activity)
                     val assetsManager = ErikuraApplication.assetsManager
-                    assetsManager.fetchImage(activity, files[i].thumbnail_url){
-                        imageView.setImageBitmap(it)
+                    assetsManager.fetchAsset(activity, files[i].thumbnail_url) { asset ->
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
 
                     imageView.setOnClickListener {
@@ -224,8 +225,8 @@ class PropertyNotesAdapter(
                 } else {
                     val imageView = ImageView(activity)
                     val assetsManager = ErikuraApplication.assetsManager
-                    assetsManager.fetchImage(activity, files[i].url){
-                        imageView.setImageBitmap(it)
+                    assetsManager.fetchAsset(activity, files[i].url) { asset ->
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
