@@ -17,6 +17,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesButtonBinding
+import jp.co.recruit.erikura.databinding.FragmentReportExamplesButtonBinding
 
 class ReportExamplesButtonFragment : BaseJobDetailFragment, ReportExamplesButtonFragmentEventHandlers {
     companion object {
@@ -46,10 +47,10 @@ class ReportExamplesButtonFragment : BaseJobDetailFragment, ReportExamplesButton
         // ページ参照のトラッキングの送出
         job?.let { job ->
             // FIXME トラッキングタグの修正
-            Tracking.logEvent(event= "view_cautions", params= bundleOf())
-            Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
+//            Tracking.logEvent(event= "view_cautions", params= bundleOf())
+//            Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
 
-            val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.ReportExamplesActivity::class.java)
+            val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity::class.java)
             intent.putExtra("job", job)
             startActivity(intent)
         }

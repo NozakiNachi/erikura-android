@@ -46,6 +46,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var applyFlowView: ApplyFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var reportExamplesButton: ReportExamplesButtonFragment? = null
 
     constructor() : super()
 
@@ -64,6 +65,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
                 applyFlowView?.refresh(job, user)
                 applyButton?.refresh(job, user)
                 propertyNotesButton?.refresh(job, user)
+                reportExamplesButton?.refresh(job, user)
             }
         }
     }
@@ -97,6 +99,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
         applyButton = ApplyButtonFragment.newInstance(job, user)
         propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
@@ -107,6 +110,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
         transaction.add(R.id.jobDetails_applyButtonFragment, applyButton!!, "applyButton")
         transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")
         transaction.commitAllowingStateLoss()
     }
 

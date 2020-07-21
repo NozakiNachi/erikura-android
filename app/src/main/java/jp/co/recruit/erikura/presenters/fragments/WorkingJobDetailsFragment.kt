@@ -54,6 +54,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     private var mapView: MapViewFragment? = null
     private var entryInformationFragment: EntryInformationFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var reportExamplesButton: ReportExamplesButtonFragment? = null
 
     constructor(): super()
 
@@ -68,6 +69,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
             mapView?.refresh(job, user)
             entryInformationFragment?.refresh(job, user)
             propertyNotesButton?.refresh(job, user)
+            reportExamplesButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -100,6 +102,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         mapView = MapViewFragment.newInstance(job, user)
         entryInformationFragment = EntryInformationFragment.newInstance(job, user)
         propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
         transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton!!, "manualButton")
@@ -108,6 +111,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.workingJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
+        transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")
         transaction.commitAllowingStateLoss()
     }
 

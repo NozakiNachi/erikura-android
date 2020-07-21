@@ -116,6 +116,19 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         }
     }
 
+    override fun onClickReportExamples(view: View) {
+        // ページ参照のトラッキングの送出
+        job?.let { job ->
+            // FIXME トラッキングタグの修正
+//            Tracking.logEvent(event= "view_cautions", params= bundleOf())
+//            Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
+
+            val intent = Intent(this, jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity::class.java)
+            intent.putExtra("job", job)
+            startActivity(intent)
+        }
+    }
+
     private fun loadData() {
         job.report?.let {
             val evaluation = it.evaluation
@@ -170,4 +183,5 @@ interface ReportEvaluationEventHandler {
     fun onClickGood(view: View)
     fun onClickBad(view: View)
     fun onClickManual(view: View)
+    fun onClickReportExamples(view: View)
 }
