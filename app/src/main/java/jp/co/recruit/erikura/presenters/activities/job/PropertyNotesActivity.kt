@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
+import androidx.core.view.marginTop
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -192,9 +193,14 @@ class PropertyNotesAdapter(
             for (i in 0 until files.size) {
                 if (files[i].file_name.endsWith(".pdf")){
                     val imageView = ImageView(activity)
+                    imageView.layoutParams.let { lp ->
+                        lp.width = LinearLayout.LayoutParams.MATCH_PARENT
+                        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT
+                        imageView.layoutParams = lp
+                    }
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].thumbnail_url) { asset ->
-                        Glide.with(activity).load(File(asset.path)).into(imageView)
+                        Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
                     }
 
                     imageView.setOnClickListener {
@@ -224,9 +230,15 @@ class PropertyNotesAdapter(
                     linearLayout.addView(imageView, layout)
                 } else {
                     val imageView = ImageView(activity)
+                    imageView.layoutParams.let { lp ->
+                        lp.width = LinearLayout.LayoutParams.MATCH_PARENT
+                        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT
+                        imageView.layoutParams = lp
+                    }
+
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].url) { asset ->
-                        Glide.with(activity).load(File(asset.path)).into(imageView)
+                        Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
                     }
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
