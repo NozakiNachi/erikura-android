@@ -13,9 +13,11 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -33,10 +35,16 @@ import jp.co.recruit.erikura.business.models.CautionFile
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityPropertyNotesBinding
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     private val viewModel: PropertyNotesViewModel by lazy {
@@ -187,14 +195,30 @@ class PropertyNotesAdapter(
                     assetsManager.fetchImage(activity, files[i].thumbnail_url){
                         imageView.setImageBitmap(it)
                     }
+
                     imageView.setOnClickListener {
                         val itemUrl: String = files[i].url
-                        val intent = Intent(activity, WebViewActivity::class.java).apply {
-                            action = Intent.ACTION_VIEW
-                            data = Uri.parse(itemUrl)
+
+                        assetsManager.fetchAsset(activity, itemUrl, Asset.AssetType.Pdf) { asset ->
+                            // PDFディレクトリにコピーします
+                            val filesDir = activity.filesDir
+                            val pdfDir = File(filesDir, "pdfs")
+                            if (!pdfDir.exists()) {
+                                pdfDir.mkdirs()
+                            }
+                            val pdfFile = File(pdfDir, "manual.pdf")
+                            val out = FileOutputStream(pdfFile)
+                            val input = FileInputStream(File(asset.path))
+                            IOUtils.copy(input, out)
+                            out.closeQuietly()
+                            input.closeQuietly()
+
+                            val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".fileprovider", pdfFile)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
+                            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            activity.startActivity(intent)
                         }
-                        activity.startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     }
                     linearLayout.addView(imageView, layout)
                 } else {
