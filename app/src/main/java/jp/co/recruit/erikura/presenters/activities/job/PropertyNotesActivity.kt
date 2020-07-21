@@ -193,11 +193,8 @@ class PropertyNotesAdapter(
             for (i in 0 until files.size) {
                 if (files[i].file_name.endsWith(".pdf")){
                     val imageView = ImageView(activity)
-                    imageView.layoutParams.let { lp ->
-                        lp.width = LinearLayout.LayoutParams.MATCH_PARENT
-                        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT
-                        imageView.layoutParams = lp
-                    }
+                    val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    imageView.layoutParams = lp
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].thumbnail_url) { asset ->
                         Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
@@ -230,11 +227,8 @@ class PropertyNotesAdapter(
                     linearLayout.addView(imageView, layout)
                 } else {
                     val imageView = ImageView(activity)
-                    imageView.layoutParams.let { lp ->
-                        lp.width = LinearLayout.LayoutParams.MATCH_PARENT
-                        lp.height = LinearLayout.LayoutParams.WRAP_CONTENT
-                        imageView.layoutParams = lp
-                    }
+                    val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    imageView.layoutParams = lp
 
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].url) { asset ->
