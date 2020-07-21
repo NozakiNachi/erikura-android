@@ -36,6 +36,10 @@ class WebViewActivity : BaseActivity() {
                 javaScriptEnabled = true
                 // ズームを可能にします
                 builtInZoomControls = true
+                // ズームアウトした状態で表示します
+                loadWithOverviewMode = true
+                // ページ全体を表示
+                useWideViewPort = true
             }
             webView.webViewClient = object: WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
