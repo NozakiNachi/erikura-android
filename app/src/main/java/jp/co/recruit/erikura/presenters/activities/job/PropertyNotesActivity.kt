@@ -207,7 +207,7 @@ class PropertyNotesAdapter(
                             if (!pdfDir.exists()) {
                                 pdfDir.mkdirs()
                             }
-                            val pdfFile = File(pdfDir, "manual.pdf")
+                            val pdfFile = File(pdfDir, files[i].file_name)
                             val out = FileOutputStream(pdfFile)
                             val input = FileInputStream(File(asset.path))
                             IOUtils.copy(input, out)
@@ -231,7 +231,7 @@ class PropertyNotesAdapter(
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
                         val itemUrl: String = files[i].url
-                        assetsManager.downloadAsset(activity, itemUrl, Asset.AssetType.Other) { asset ->
+                        assetsManager.fetchAsset(activity, itemUrl, Asset.AssetType.Other) { asset ->
                             val intent = Intent(activity, WebViewActivity::class.java).apply {
                                 action = Intent.ACTION_VIEW
                                 data = Uri.parse("file://" + asset.path)
