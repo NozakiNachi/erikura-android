@@ -195,9 +195,11 @@ class PropertyNotesAdapter(
                     val imageView = ImageView(activity)
                     val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                     imageView.layoutParams = lp
+                    imageView.adjustViewBounds = true
+                    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].thumbnail_url) { asset ->
-                        Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
 
                     imageView.setOnClickListener {
@@ -229,10 +231,12 @@ class PropertyNotesAdapter(
                     val imageView = ImageView(activity)
                     val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
                     imageView.layoutParams = lp
+                    imageView.adjustViewBounds = true
+                    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
 
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].url) { asset ->
-                        Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
