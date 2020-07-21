@@ -231,12 +231,14 @@ class PropertyNotesAdapter(
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
                         val itemUrl: String = files[i].url
-                        val intent = Intent(activity, WebViewActivity::class.java).apply {
-                            action = Intent.ACTION_VIEW
-                            data = Uri.parse(itemUrl)
+                        assetsManager.downloadAsset(activity, itemUrl, Asset.AssetType.Other) { asset ->
+                            val intent = Intent(activity, WebViewActivity::class.java).apply {
+                                action = Intent.ACTION_VIEW
+                                data = Uri.parse("file://" + asset.path)
+                            }
+                            activity.startActivity(intent,
+                                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                         }
-                        activity.startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     }
                 }
             }
