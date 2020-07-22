@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://app.erikura.net">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportExampleFragmentViewModel" />
+
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportExamplesFragmentEventHandlers" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/titleLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="110dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:text="@string/property_notes_title" />
+
+        <TextView
+            style="@style/block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:text="@{viewModel.address}" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                style="@style/tertiaryButton"
+                android:layout_width="60dp"
+                android:layout_height="44dp"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="20dp"
+                android:text="前へ"
+                android:gravity="center" />
+<!--            android:visibility=""-->
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:text="タスク種別"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="14dp" />
+
+            <Button
+                style="@style/tertiaryButton"
+                android:layout_width="60dp"
+                android:layout_height="44dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="20dp"
+                android:text="次へ"
+                android:gravity="center"/>
+            <!--            android:visibility=""-->
+
+
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="このお手本の作業報告日：2020/10/10"
+            android:textColor="@color/black"
+            android:textSize="12dp"/>
+
+        <!-- 実施箇所 -->
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/report_confirm_report_summaries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            />
+    </LinearLayout>
+
+</layout>

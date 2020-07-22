@@ -115,6 +115,11 @@ interface IErikuraApiService {
     @GET("places/cautions")
     fun placeCautions(@Query("place_id") placeId: Int): ApiObservable<CautionResponse>
 
+    @GET("reports/good_examples")
+    fun goodExamples(@Query("place_id") placeID: Int,
+                     @Query("job_kind") jobKind: Int,
+                     @Query("detail") detail: Boolean): ApiObservable<GoodExamplesResponse>
+
     @POST("reports")
     fun createReport(@Body request: ReportRequest): ApiObservable<ReportIdResponse>
 
@@ -237,6 +242,10 @@ data class PostalCodeResponse(
 
 data class CautionResponse(
     var cautions: List<Caution>
+)
+
+data class GoodExamplesResponse(
+    var report_examples: List<ReportExample>
 )
 
 data class RegisterEmailRequest(
