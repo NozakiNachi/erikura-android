@@ -13,10 +13,13 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
+import androidx.core.view.marginTop
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -24,6 +27,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
@@ -33,10 +37,16 @@ import jp.co.recruit.erikura.business.models.CautionFile
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityPropertyNotesBinding
 import jp.co.recruit.erikura.databinding.FragmentPropertyNotesItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
+import okhttp3.internal.closeQuietly
+import org.apache.commons.io.IOUtils
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 
 class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     private val viewModel: PropertyNotesViewModel by lazy {
@@ -190,35 +200,62 @@ class PropertyNotesAdapter(
             for (i in 0 until files.size) {
                 if (files[i].file_name.endsWith(".pdf")){
                     val imageView = ImageView(activity)
+                    val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    imageView.layoutParams = lp
+                    imageView.adjustViewBounds = true
+                    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
                     val assetsManager = ErikuraApplication.assetsManager
-                    assetsManager.fetchImage(activity, files[i].thumbnail_url){
-                        imageView.setImageBitmap(it)
+                    assetsManager.fetchAsset(activity, files[i].thumbnail_url) { asset ->
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
+
                     imageView.setOnClickListener {
                         val itemUrl: String = files[i].url
-                        val intent = Intent(activity, WebViewActivity::class.java).apply {
-                            action = Intent.ACTION_VIEW
-                            data = Uri.parse(itemUrl)
+
+                        assetsManager.fetchAsset(activity, itemUrl, Asset.AssetType.Pdf) { asset ->
+                            // PDFディレクトリにコピーします
+                            val filesDir = activity.filesDir
+                            val pdfDir = File(filesDir, "pdfs")
+                            if (!pdfDir.exists()) {
+                                pdfDir.mkdirs()
+                            }
+                            val pdfFile = File(pdfDir, files[i].file_name)
+                            val out = FileOutputStream(pdfFile)
+                            val input = FileInputStream(File(asset.path))
+                            IOUtils.copy(input, out)
+                            out.closeQuietly()
+                            input.closeQuietly()
+
+                            val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".fileprovider", pdfFile)
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
+                            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            activity.startActivity(intent)
                         }
-                        activity.startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     }
                     linearLayout.addView(imageView, layout)
                 } else {
                     val imageView = ImageView(activity)
+                    val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    imageView.layoutParams = lp
+                    imageView.adjustViewBounds = true
+                    imageView.scaleType = ImageView.ScaleType.FIT_CENTER
+
                     val assetsManager = ErikuraApplication.assetsManager
-                    assetsManager.fetchImage(activity, files[i].url){
-                        imageView.setImageBitmap(it)
+                    assetsManager.fetchAsset(activity, files[i].url) { asset ->
+                        Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener{
                         val itemUrl: String = files[i].url
-                        val intent = Intent(activity, WebViewActivity::class.java).apply {
-                            action = Intent.ACTION_VIEW
-                            data = Uri.parse(itemUrl)
+                        assetsManager.fetchAsset(activity, itemUrl, Asset.AssetType.Other) { asset ->
+                            val intent = Intent(activity, WebViewActivity::class.java).apply {
+                                action = Intent.ACTION_VIEW
+                                data = Uri.parse("file://" + asset.path)
+                            }
+                            activity.startActivity(intent,
+                                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                         }
-                        activity.startActivity(intent,
-                            ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
                     }
                 }
             }
