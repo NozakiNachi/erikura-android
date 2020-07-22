@@ -5,7 +5,7 @@
     <data>
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.fragments.ReportSummaryItemViewModel" />
+            type="jp.co.recruit.erikura.presenters.fragments.ReportExampleSummaryItemViewModel" />
     </data>
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,7 +32,7 @@
 
             </LinearLayout>
             <ImageView
-                android:id="@+id/report_summary_item_image"
+                android:id="@+id/report_example_summary_item_image"
                 android:layout_width="match_parent"
                 android:layout_height="305dp"
                 android:layout_marginTop="20dp"

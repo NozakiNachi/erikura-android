@@ -17,21 +17,23 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.OutputSummary
+import jp.co.recruit.erikura.business.models.OutputSummaryExamplesAttributes
 import jp.co.recruit.erikura.business.models.ReportExample
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesBinding
-import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
+import jp.co.recruit.erikura.databinding.FragmentReportExamplesSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewModel
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
-class ReportExamplesFragment : Fragment(), ReportExamplesFragmentEventHandlers {
+class ReportExamplesFragment(reportExample: ReportExample) : Fragment(), ReportExamplesFragmentEventHandlers {
 
-    private lateinit var reportSummaryAdapter: ReportSummaryAdapter
+    private lateinit var reportSummaryAdapter: ReportExampleSummaryAdapter
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportExampleFragmentViewModel::class.java)
     }
+    private val reportExample: ReportExample = reportExample
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,8 +47,8 @@ class ReportExamplesFragment : Fragment(), ReportExamplesFragmentEventHandlers {
         binding.handlers = this
 
         //FIXME listOf()にList<OutputSummary>（実施箇所を渡す）
-        reportSummaryAdapter = ReportSummaryAdapter(activity!!, listOf()).also {
-        val reportSummaryView: RecyclerView = binding.root.findViewById(R.id.report_confirm_report_summaries)
+        reportSummaryAdapter = ReportExampleSummaryAdapter(activity!!, reportExample.output_summary_examples_attributes).also {
+        val reportSummaryView: RecyclerView = binding.root.findViewById(R.id.report_example_summaries)
         reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
 
@@ -55,33 +57,33 @@ class ReportExamplesFragment : Fragment(), ReportExamplesFragmentEventHandlers {
     }
 }
 
-class ReportSummaryViewHolder(val binding: FragmentReportSummaryItemBinding) :
+class ReportExampleSummaryViewHolder(val binding: FragmentReportExamplesSummaryItemBinding) :
     RecyclerView.ViewHolder(binding.root)
 
-class ReportSummaryAdapter(
+class ReportExampleSummaryAdapter(
     val activity: FragmentActivity,
-    var summaries: List<OutputSummary>,
+    var summaries: List<OutputSummaryExamplesAttributes>,
     val jobDetails: Boolean = false
-) : RecyclerView.Adapter<ReportSummaryViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportSummaryViewHolder {
-        val binding = DataBindingUtil.inflate<FragmentReportSummaryItemBinding>(
+) : RecyclerView.Adapter<ReportExampleSummaryViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportExampleSummaryViewHolder {
+        val binding = DataBindingUtil.inflate<FragmentReportExamplesSummaryItemBinding>(
             LayoutInflater.from(parent.context),
-            R.layout.fragment_report_summary_item,
+            R.layout.fragment_report_examples_summary_item,
             parent,
             false
         )
 
-        return ReportSummaryViewHolder(binding)
+        return ReportExampleSummaryViewHolder(binding)
     }
 
     override fun getItemCount(): Int {
         return summaries.count()
     }
 
-    override fun onBindViewHolder(holder: ReportSummaryViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ReportExampleSummaryViewHolder, position: Int) {
         val view = holder.binding.root
         holder.binding.lifecycleOwner = activity
-        holder.binding.viewModel = ReportSummaryItemViewModel(
+        holder.binding.viewModel = ReportExampleSummaryItemViewModel(
             activity,
             view,
             summaries[position],
@@ -93,25 +95,25 @@ class ReportSummaryAdapter(
 }
 
 // 実施箇所
-class ReportSummaryItemViewModel(
+class ReportExampleSummaryItemViewModel(
     activity: FragmentActivity,
     view: View,
-    val summary: OutputSummary,
+    val summary: OutputSummaryExamplesAttributes,
     summariesCount: Int,
     position: Int,
     jobDetails: Boolean
 ) : ViewModel() {
-    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
+    private val imageView: ImageView = view.findViewById(R.id.report_example_summary_item_image)
     val summaryName: MutableLiveData<String> = MutableLiveData()
     val summaryStatus: MutableLiveData<String> = MutableLiveData()
     val summaryComment: MutableLiveData<String> = MutableLiveData()
     init {
-        summary.photoAsset?.let {
-            if (summary.beforeCleaningPhotoUrl != null){
-                it.loadImageFromString(activity, imageView)
-            }else {
-                it.loadImage(activity, imageView)
-            }
+        if (summary.beforeCleaningPhotoUrl.isNullOrBlank()) {
+            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
+        }
+        else {
+            val assetsManager = ErikuraApplication.assetsManager
+            assetsManager.fetchImage(activity, summary.beforeCleaningPhotoUrl!!, imageView)
         }
         summaryName.value = summary.place
         val evaluateType = EvaluateType.valueOf(summary.evaluation?.toUpperCase()?: "UNSELECTED")
@@ -129,7 +131,7 @@ class ReportSummaryItemViewModel(
 
 
 class ReportExampleFragmentViewModel : ViewModel() {
-
+    // FIXME ボタンのvisibilityを用意　生成時のモデルの数とpositionを元に算出
 }
 
 interface ReportExamplesFragmentEventHandlers{
