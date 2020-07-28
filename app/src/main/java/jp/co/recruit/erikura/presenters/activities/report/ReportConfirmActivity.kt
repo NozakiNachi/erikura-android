@@ -610,6 +610,14 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
             viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
         }
+        //お手本報告件数が0件の場合非表示
+        job.jobKind?.id?.let { jobKindId ->
+            Api(this).goodExamples(job.placeId, jobKindId, false) {
+                if (it.count() == 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
+                }
+            }
+        }
     }
 
     private fun retry() {
@@ -657,6 +665,7 @@ class ReportConfirmViewModel : ViewModel() {
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun isValid(report: Report): Boolean {
         var valid = true

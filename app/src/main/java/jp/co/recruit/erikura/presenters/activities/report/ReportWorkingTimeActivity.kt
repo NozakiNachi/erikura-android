@@ -73,6 +73,14 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
             Tracking.logEvent(event= "view_edit_job_report_time", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/time/${job.id}", title= "作業報告編集画面（作業時間）", jobId= job.id)
         }
+        //お手本報告件数が0件の場合非表示
+        job.jobKind?.id?.let { jobKindId ->
+            Api(this).goodExamples(job.placeId, jobKindId, false) {
+                if (it.count() == 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
+                }
+            }
+        }
     }
 
     override fun onClickManual(view: View) {
@@ -137,6 +145,7 @@ class ReportWorkingTimeViewModel: ViewModel() {
     val timeItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
     val timeId: MutableLiveData<Int> = MutableLiveData()
     var timeSelectedItem: Int = 0
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 }
 
 interface ReportWorkingTimeEventHandlers {

@@ -502,6 +502,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job
@@ -532,6 +533,14 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
             if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
+                }
+            }
+            //お手本報告件数が0件の場合非表示
+            job.jobKind?.id?.let { jobKindId ->
+                Api(activity).goodExamples(job.placeId, jobKindId, false) {
+                    if (it.count() == 0) {
+                        reportExamplesButtonVisibility.value = View.GONE
+                    }
                 }
             }
         }

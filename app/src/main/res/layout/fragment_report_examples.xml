@@ -15,7 +15,6 @@
     </data>
 
         <!-- 実施箇所 -->
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/report_example_summaries"
             android:layout_width="match_parent"

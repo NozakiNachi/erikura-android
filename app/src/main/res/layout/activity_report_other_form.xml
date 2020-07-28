@@ -273,7 +273,8 @@
                 android:layout_weight="1"
                 app:onSafeClick="@{handlers::onClickReportExamples}"
                 android:text="@string/report_examples_button2"
-                android:textSize="14dp" />
+                android:textSize="14dp"
+                android:visibility="@{viewModel.reportExamplesButtonVisibility}"/>
         </LinearLayout>
     </FrameLayout>
 </layout>

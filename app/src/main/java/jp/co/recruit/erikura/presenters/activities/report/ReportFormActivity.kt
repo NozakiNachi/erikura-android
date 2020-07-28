@@ -265,6 +265,14 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             }
             viewModel.comment.value = summary.comment
         }
+        //お手本報告件数が0件の場合非表示
+        job.jobKind?.id?.let { jobKindId ->
+            Api(this).goodExamples(job.placeId, jobKindId, false) {
+                if (it.count() == 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
+                }
+            }
+        }
     }
 }
 
@@ -290,6 +298,7 @@ class ReportFormViewModel: ViewModel() {
         result.addSource(statusId) { result.value = isValid() }
         result.addSource(comment) { result.value = isValid()  }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     private fun isValid(): Boolean {
         var valid = true

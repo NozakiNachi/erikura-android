@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
@@ -63,7 +64,14 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
             Tracking.logEvent(event= "view_edit_job_report_rating", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/evaluation/${job.id}", title= "作業報告編集画面（案件評価）", jobId= job.id)
         }
-
+        //お手本報告件数が0件の場合非表示
+        job.jobKind?.id?.let { jobKindId ->
+            Api(this).goodExamples(job.placeId, jobKindId, false) {
+                if (it.count() == 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
+                }
+            }
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -150,7 +158,6 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         }
         viewModel.commentError.message.value = null
     }
-
 }
 
 class ReportEvaluationViewModel: ViewModel() {
@@ -164,6 +171,7 @@ class ReportEvaluationViewModel: ViewModel() {
             result.value = isValid()
         }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     private fun isValid(): Boolean {
         var valid = true

@@ -42,68 +42,78 @@ class ReportExamplesActivity : BaseActivity(), ReportExamplesEventHandlers {
         job = intent.getParcelableExtra<Job>("job")
         viewModel.jobKindName.value = job?.jobKind?.name
 
-        job.jobKind?.id?.let { jobKindId ->
-            val api = Api(this)
-            api.place(job.placeId) { place ->
-                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
-                    // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace + place.workingBuilding
-                } else {
-                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
-                    viewModel.address.value = place.workingPlaceShort
-                }
+
+        val api = Api(this)
+        api.place(job.placeId) { place ->
+            if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                // 現ユーザーが応募済の物件の場合　フル住所を表示
+                viewModel.address.value = place.workingPlace + place.workingBuilding
+            } else {
+                // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                viewModel.address.value = place.workingPlaceShort
             }
+        }
+
+        val adapter = object : FragmentPagerAdapter(
+            supportFragmentManager,
+            FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT
+        ) {
+            override fun getItem(position: Int): Fragment {
+                //指定されたお手本報告の実施箇所を元に生成したフラグメントを返す
+                viewModel.createdAt.value =
+                    reportExamples?.get(position)?.created_at?.let { created_at ->
+                        makeSentenceCreatedAt(
+                            created_at
+                        )
+                    }
+                return ReportExamplesFragment.newInstance(reportExamples?.get(position)?.output_summary_examples_attributes)
+            }
+
+            override fun getCount(): Int {
+                return reportExamples?.count() ?: 0
+            }
+        }
+
+
+        viewPager = findViewById(R.id.report_examples_view_pager)
+        /// ページ遷移のリスナーをセット
+        nextPageBtn.setOnClickListener {
+            // ページを1つ進める
+            viewPager.currentItem += 1
+        }
+        prevPageBtn.setOnClickListener {
+            // ページを1つ戻す
+            viewPager.currentItem -= 1
+        }
+        prevPageBtn.isVisible = false
+
+        /// スクロール中の変更処理
+        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            /// implementする
+            override fun onPageSelected(position: Int) {
+                /// btnの表示制御（端では表示しない）
+                prevPageBtn.isVisible = position != 0
+                nextPageBtn.isVisible = position != reportExampleCount ?: 0 - 1
+            }
+
+            override fun onPageScrollStateChanged(state: Int) {
+            }
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+            }
+        })
+        viewPager.adapter = adapter
+
+        job.jobKind?.id?.let { jobKindId ->
             //APIでお手本報告を取得する
             api.goodExamples(job.placeId, jobKindId, true) {
                 reportExamples = it
                 reportExampleCount = it.count()
-
-                val adapter = object: FragmentPagerAdapter(supportFragmentManager, FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-                    override fun getCount(): Int {
-                        return it.count()
-                    }
-
-                    override fun getItem(position: Int): Fragment {
-                        //指定されたお手本報告の実施箇所を元に生成したフラグメントを返す
-                        viewModel.createdAt.value = makeSentenceCreatedAt(it[position].created_at)
-                        return ReportExamplesFragment(it[position])
-                    }
-
-                    override fun getPageTitle(position: Int): CharSequence? {
-                        return super.getPageTitle(position)
-                    }
-                }
-                viewPager = findViewById(R.id.report_examples_view_pager)
-                viewPager.adapter = adapter
-
-                /// ページ遷移のリスナーをセット
-                nextPageBtn.setOnClickListener {
-                    // ページを1つ進める
-                    viewPager.currentItem += 1
-                }
-                prevPageBtn.setOnClickListener {
-                    // ページを1つ戻す
-                    viewPager.currentItem -= 1
-                }
-                prevPageBtn.isVisible = false
-
-                /// スクロール中の変更処理
-                viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-                    /// implementする
-                    override fun onPageSelected(position: Int) {
-                        /// btnの表示制御（端では表示しない）
-                        prevPageBtn.isVisible = position != 0
-                        nextPageBtn.isVisible = position != reportExampleCount?: 0 -1
-                    }
-                    override fun onPageScrollStateChanged(state: Int) {
-                    }
-
-                    override fun onPageScrolled(
-                        position: Int,
-                        positionOffset: Float,
-                        positionOffsetPixels: Int
-                    ) {}
-                })
+                adapter.notifyDataSetChanged()
             }
         }
     }

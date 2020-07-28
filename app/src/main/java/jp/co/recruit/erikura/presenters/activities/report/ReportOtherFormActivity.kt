@@ -25,6 +25,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -75,6 +76,14 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             // ページ参照のトラッキングの送出
             Tracking.logEvent(event= "view_edit_job_report_others", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/additional/${job.id}", title= "作業報告編集画面（マニュアル外）", jobId= job.id)
+        }
+        //お手本報告件数が0件の場合非表示
+        job.jobKind?.id?.let { jobKindId ->
+            Api(this).goodExamples(job.placeId, jobKindId, false) {
+                if (it.count() == 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
+                }
+            }
         }
     }
 
@@ -266,6 +275,7 @@ class ReportOtherFormViewModel: ViewModel() {
         result.addSource(addPhotoButtonVisibility) {result.value = isValid()}
         result.addSource(comment) { result.value = isValid()  }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     private fun isValid(): Boolean {
         var valid = true

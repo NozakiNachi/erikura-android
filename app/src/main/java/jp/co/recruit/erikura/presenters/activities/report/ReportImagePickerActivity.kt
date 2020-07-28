@@ -29,6 +29,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
@@ -107,7 +108,14 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             Tracking.logEvent(event= "view_edit_job_report_photo", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
         }
-
+        //お手本報告件数が0件の場合非表示
+        job.jobKind?.id?.let { jobKindId ->
+            Api(this).goodExamples(job.placeId, jobKindId, false) {
+                if (it.count() == 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
+                }
+            }
+        }
     }
 
     private fun displayImagePicker() {
@@ -246,6 +254,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 class ReportImagePickerViewModel: ViewModel() {
     val imageMap: MutableMap<Long, MediaItem> = HashMap()
     val isNextButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 }
 
 class ImagePickerCellViewModel: ViewModel() {
