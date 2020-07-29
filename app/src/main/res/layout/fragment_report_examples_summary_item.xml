@@ -67,12 +67,12 @@
                         android:textColor="@color/black"
                         android:text="@string/summary_status2" />
                     <TextView
+                        android:id="@+id/summary_status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:lineSpacingExtra="10dp"
                         android:textSize="14dp"
-                        android:textColor="@color/black"
                         android:text="@{viewModel.summaryStatus}" />
                 </LinearLayout>
                 <View

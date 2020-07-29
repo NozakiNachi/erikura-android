@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -124,6 +125,7 @@ class ReportExampleSummaryItemViewModel(
     position: Int
 ) : ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_example_summary_item_image)
+    private val textView: TextView = view.findViewById(R.id.summary_status)
     val summaryName: MutableLiveData<String> = MutableLiveData()
     val summaryStatus: MutableLiveData<String> = MutableLiveData()
     val summaryComment: MutableLiveData<String> = MutableLiveData()
@@ -141,8 +143,16 @@ class ReportExampleSummaryItemViewModel(
             EvaluateType.UNSELECTED -> {
                 summaryStatus.value = ""
             }
+            EvaluateType.GOOD -> {
+                summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
+                // 黒
+                textView.setTextColor(activity.resources.getColor(R.color.black))
+            }
+
             else -> {
                 summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
+                // 異常ありは赤
+                textView.setTextColor(activity.resources.getColor(R.color.coral))
             }
         }
         summaryComment.value = summary.comment
