@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -31,8 +32,8 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         fun newInstance(outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>?): ReportExamplesFragment {
             return ReportExamplesFragment().also {
                 it.arguments = Bundle().also { args ->
-                    args.putParcelableArray(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
-                        outputSummaryExamplesAttributes?.toTypedArray()
+                    args.putParcelableArrayList(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
+                        ArrayList(outputSummaryExamplesAttributes ?: listOf())
                     )
                 }
             }
@@ -53,7 +54,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         savedInstanceState: Bundle?
     ): View? {
         arguments?.let { args ->
-            output_summary_examples_attributes = Arrays.asList(args.getParcelable(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT))
+            output_summary_examples_attributes = args.getParcelableArrayList<OutputSummaryExamplesAttributes>(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT)?.toList() ?: listOf()
         }
 
         container?.removeAllViews()
@@ -64,9 +65,14 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         binding.handlers = this
 
         output_summary_examples_attributes?.let { summary ->
-            reportSummaryAdapter = ReportExampleSummaryAdapter(activity!!, summary)
             reportSummaryView = binding.root.findViewById(R.id.report_example_summaries)
             reportSummaryView.setHasFixedSize(true)
+            //レイアウトマネージャの設定
+            val manager = LinearLayoutManager(activity)
+            // 縦スクロールのリスト
+            manager.orientation = RecyclerView.VERTICAL
+            reportSummaryView.layoutManager = manager
+            reportSummaryAdapter = ReportExampleSummaryAdapter(activity!!, summary)
             reportSummaryView.adapter = reportSummaryAdapter
         }
 
