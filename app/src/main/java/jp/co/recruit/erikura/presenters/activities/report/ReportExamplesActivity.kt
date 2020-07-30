@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
@@ -129,6 +130,14 @@ class ReportExamplesActivity : BaseActivity(), ReportExamplesEventHandlers {
     fun makeSentenceCreatedAt(created_at: Date): String {
         val df = SimpleDateFormat("yyyy/MM/dd")
         return ("このお手本の作業報告日：".plus(df.format(created_at)))
+    }
+
+    fun onClickPrev() {
+        viewPager.currentItem -= 1
+    }
+
+    fun onClickNext() {
+        viewPager.currentItem += 1
     }
 }
 

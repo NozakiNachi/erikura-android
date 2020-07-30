@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesBinding
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesSummaryItemBinding
+import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewModel
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
@@ -112,6 +113,18 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         }
 
         return binding.root
+    }
+
+    override fun onClickPrev(view: View) {
+        // FIXME: viewPagerまたはReportExamplesActivityは作成済みのものを参照してメソッドを呼ぶ
+        val activity = ReportExamplesActivity()
+        activity.onClickPrev()
+    }
+
+    override fun onClickNext(view: View) {
+        // FIXME: viewPagerまたはReportExamplesActivityは作成済みのものを参照してメソッドを呼ぶ
+        val activity = ReportExamplesActivity()
+        activity.onClickNext()
     }
 }
 
@@ -223,6 +236,6 @@ class ReportExampleFragmentViewModel : ViewModel() {
 }
 
 interface ReportExamplesFragmentEventHandlers{
-//    fun onClickNext(view: View)
-//    fun onClickPrev(view: View)
+    fun onClickNext(view: View)
+    fun onClickPrev(view: View)
 }

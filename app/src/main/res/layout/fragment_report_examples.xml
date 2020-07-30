@@ -56,7 +56,8 @@
             android:layout_marginLeft="20dp"
             android:gravity="center"
             android:text="前へ"
-            android:visibility="@{viewModel.prevBtnVisibility}"/>
+            android:visibility="@{viewModel.prevBtnVisibility}"
+            app:onSafeClick="@{handlers::onClickPrev}"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -76,7 +77,8 @@
             android:layout_marginRight="20dp"
             android:gravity="center"
             android:text="次へ"
-            android:visibility="@{viewModel.nextBtnVisibility}"/>
+            android:visibility="@{viewModel.nextBtnVisibility}"
+            app:onSafeClick="@{handlers::onClickNext}"/>
 
 
     </RelativeLayout>
