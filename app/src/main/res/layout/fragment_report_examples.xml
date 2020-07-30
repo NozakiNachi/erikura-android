@@ -14,13 +14,91 @@
             type="jp.co.recruit.erikura.presenters.fragments.ReportExamplesFragmentEventHandlers" />
     </data>
 
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TextView
+        style="@style/titleLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="110dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:text="@string/report_examples_button" />
+
+    <TextView
+        style="@style/block"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginBottom="30dp"
+        android:text="@{viewModel.address}" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/nextPageBtn"
+            style="@style/tertiaryButton"
+            android:layout_width="60dp"
+            android:layout_height="44dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="20dp"
+            android:gravity="center"
+            android:text="前へ"
+            android:visibility="@{viewModel.prevBtnVisibility}"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="@{viewModel.jobKindName}"
+            android:textColor="@color/black"
+            android:textSize="14dp" />
+
+        <Button
+            android:id="@+id/prevPageBtn"
+            style="@style/tertiaryButton"
+            android:layout_width="60dp"
+            android:layout_height="44dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="20dp"
+            android:gravity="center"
+            android:text="次へ"
+            android:visibility="@{viewModel.nextBtnVisibility}"/>
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:text="@{viewModel.createdAt}"
+        android:textColor="@color/black"
+        android:textSize="12dp" />
+
         <!-- 実施箇所 -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/report_example_summaries"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:orientation="vertical"
-            />
-
+            android:orientation="vertical" />
+    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

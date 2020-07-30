@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -29,23 +30,36 @@ import java.util.*
 class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     companion object {
         const val OUTPUT_SUMMARY_EXAMPLES_ARGUMENT = "report_example_output_summary"
+        const val JOB = "job"
+        const val CREATED_AT = "created_at"
+        const val POSITION = "position"
+        const val REPORTEXAMPLECOUNT = "report_example_count"
 
-        fun newInstance(outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>?): ReportExamplesFragment {
+        fun newInstance(outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>?, job: Job, created_at: String?, position: Int, reportExampleCount: Int): ReportExamplesFragment {
             return ReportExamplesFragment().also {
                 it.arguments = Bundle().also { args ->
                     args.putParcelableArrayList(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
                         ArrayList(outputSummaryExamplesAttributes ?: listOf())
                     )
+                    args.putParcelable(JOB, job)
+                    args.putString(CREATED_AT, created_at)
+                    args.putInt(POSITION, position)
+                    args.putInt(REPORTEXAMPLECOUNT, reportExampleCount)
                 }
             }
         }
     }
+
     private val viewModel by lazy {
         ViewModelProvider(this).get(ReportExampleFragmentViewModel::class.java)
     }
     private lateinit var reportSummaryView: RecyclerView
     private lateinit var reportSummaryAdapter: ReportExampleSummaryAdapter
     private var output_summary_examples_attributes: List<OutputSummaryExamplesAttributes>? = null
+    private var job: Job? = null
+    private var created_at: String? = null
+    private var position: Int? = null
+    private var reportExampleCount: Int? = null
 
     constructor() : super()
 
@@ -56,15 +70,35 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     ): View? {
         arguments?.let { args ->
             output_summary_examples_attributes = args.getParcelableArrayList<OutputSummaryExamplesAttributes>(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT)?.toList() ?: listOf()
+            job = args.getParcelable(JOB)
+            created_at = args.getString(CREATED_AT)
+            position = args.getInt(POSITION)
+            reportExampleCount = args.getInt(REPORTEXAMPLECOUNT)
         }
 
-        container?.removeAllViews()
         val binding: FragmentReportExamplesBinding = DataBindingUtil.inflate(
             inflater, R.layout.fragment_report_examples, container, false)
         binding.lifecycleOwner = activity
         binding.viewModel = viewModel
         binding.handlers = this
 
+        viewModel.jobKindName.value = job?.jobKind?.name
+        job?.placeId?.let{place_id ->
+            Api(activity!!).place(place_id) { place ->
+                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                    // 現ユーザーが応募済の物件の場合　フル住所を表示
+                    viewModel.address.value = place.workingPlace + place.workingBuilding
+                } else {
+                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                    viewModel.address.value = place.workingPlaceShort
+                }
+            }
+        }
+        viewModel.createdAt.value = created_at
+        viewModel.btnVisible(position, reportExampleCount)
+
+
+        //報告箇所の画面生成
         output_summary_examples_attributes?.let { summary ->
             reportSummaryView = binding.root.findViewById(R.id.report_example_summaries)
             reportSummaryView.setHasFixedSize(true)
@@ -143,6 +177,9 @@ class ReportExampleSummaryItemViewModel(
             EvaluateType.UNSELECTED -> {
                 summaryStatus.value = ""
             }
+            EvaluateType.UNANSWERED -> {
+                summaryStatus.value = ""
+            }
             EvaluateType.GOOD -> {
                 summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
                 // 黒
@@ -161,7 +198,31 @@ class ReportExampleSummaryItemViewModel(
 
 
 class ReportExampleFragmentViewModel : ViewModel() {
+    val address: MutableLiveData<String> = MutableLiveData()
+    val jobKindName: MutableLiveData<String> = MutableLiveData()
+    val createdAt: MutableLiveData<String> = MutableLiveData()
+    val position = MutableLiveData<Int>()
+    val count = MutableLiveData<Int>()
+    var prevBtnVisibility: MediatorLiveData<Int> = MediatorLiveData()
+    var nextBtnVisibility: MediatorLiveData<Int> = MediatorLiveData()
+
+    fun btnVisible(position: Int?, count: Int?) {
+        if (position != 0) {
+            prevBtnVisibility.value = View.VISIBLE
+        }
+        else {
+            prevBtnVisibility.value = View.GONE
+        }
+        if (position != (count?.minus(1))) {
+            nextBtnVisibility.value = View.VISIBLE
+        }
+        else {
+            nextBtnVisibility.value = View.GONE
+        }
+    }
 }
 
 interface ReportExamplesFragmentEventHandlers{
+//    fun onClickNext(view: View)
+//    fun onClickPrev(view: View)
 }
