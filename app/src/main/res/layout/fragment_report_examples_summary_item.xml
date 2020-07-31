@@ -1,111 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
+
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.fragments.ReportExampleSummaryItemViewModel" />
     </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="20dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
+
                 <TextView
                     style="@style/titleLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="0dp"
-                    android:textSize="20dp"
-                    android:text="@{viewModel.summaryName}" />
+                    android:text="@{viewModel.summaryName}"
+                    android:textSize="20dp" />
 
             </LinearLayout>
+
             <ImageView
                 android:id="@+id/report_example_summary_item_image"
                 android:layout_width="match_parent"
                 android:layout_height="305dp"
                 android:layout_marginTop="20dp"
                 android:background="@color/white" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginTop="20dp">
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/silver"/>
+                    android:background="@color/silver" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/silver"/>
+                    android:background="@color/silver" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:gravity="center"
-                        android:textSize="14dp"
+                        android:text="@string/summary_status2"
                         android:textColor="@color/black"
-                        android:text="@string/summary_status2" />
+                        android:textSize="14dp" />
+
                     <TextView
                         android:id="@+id/summary_status"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:lineSpacingExtra="10dp"
-                        android:textSize="14dp"
-                        android:text="@{viewModel.summaryStatus}" />
+                        android:text="@{viewModel.summaryStatus}"
+                        android:textSize="14dp" />
+
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/silver"/>
+                    android:background="@color/silver" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
                     android:orientation="horizontal">
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="3"
                         android:gravity="center"
-                        android:textSize="14dp"
+                        android:text="@string/comment"
                         android:textColor="@color/black"
-                        android:text="@string/comment" />
+                        android:textSize="14dp" />
+
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:lineSpacingExtra="10dp"
-                        android:textSize="14dp"
+                        android:text="@{viewModel.summaryComment}"
                         android:textColor="@color/black"
-                        android:text="@{viewModel.summaryComment}" />
+                        android:textSize="14dp" />
+
                 </LinearLayout>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/silver"/>
+                    android:background="@color/silver" />
 
             </LinearLayout>
         </LinearLayout>

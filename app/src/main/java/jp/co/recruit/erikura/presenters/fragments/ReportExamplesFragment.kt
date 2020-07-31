@@ -18,14 +18,10 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
-import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesBinding
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
-import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryItemViewModel
-import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
-import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
 class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
@@ -34,18 +30,25 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         const val JOB = "job"
         const val CREATED_AT = "created_at"
         const val POSITION = "position"
-        const val REPORTEXAMPLECOUNT = "report_example_count"
+        const val REPORT_EXAMPLE_COUNT = "report_example_count"
 
-        fun newInstance(outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>?, job: Job, created_at: String?, position: Int, reportExampleCount: Int): ReportExamplesFragment {
+        fun newInstance(
+            outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>?,
+            job: Job,
+            created_at: String?,
+            position: Int,
+            reportExampleCount: Int
+        ): ReportExamplesFragment {
             return ReportExamplesFragment().also {
                 it.arguments = Bundle().also { args ->
-                    args.putParcelableArrayList(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
+                    args.putParcelableArrayList(
+                        OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
                         ArrayList(outputSummaryExamplesAttributes ?: listOf())
                     )
                     args.putParcelable(JOB, job)
                     args.putString(CREATED_AT, created_at)
                     args.putInt(POSITION, position)
-                    args.putInt(REPORTEXAMPLECOUNT, reportExampleCount)
+                    args.putInt(REPORT_EXAMPLE_COUNT, reportExampleCount)
                 }
             }
         }
@@ -56,9 +59,9 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     }
     private lateinit var reportSummaryView: RecyclerView
     private lateinit var reportSummaryAdapter: ReportExampleSummaryAdapter
-    private var output_summary_examples_attributes: List<OutputSummaryExamplesAttributes>? = null
+    private var outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>? = null
     private var job: Job? = null
-    private var created_at: String? = null
+    private var createdAt: String? = null
     private var position: Int? = null
     private var reportExampleCount: Int? = null
 
@@ -70,21 +73,25 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         savedInstanceState: Bundle?
     ): View? {
         arguments?.let { args ->
-            output_summary_examples_attributes = args.getParcelableArrayList<OutputSummaryExamplesAttributes>(OUTPUT_SUMMARY_EXAMPLES_ARGUMENT)?.toList() ?: listOf()
+            outputSummaryExamplesAttributes =
+                args.getParcelableArrayList<OutputSummaryExamplesAttributes>(
+                    OUTPUT_SUMMARY_EXAMPLES_ARGUMENT
+                )?.toList() ?: listOf()
             job = args.getParcelable(JOB)
-            created_at = args.getString(CREATED_AT)
+            createdAt = args.getString(CREATED_AT)
             position = args.getInt(POSITION)
-            reportExampleCount = args.getInt(REPORTEXAMPLECOUNT)
+            reportExampleCount = args.getInt(REPORT_EXAMPLE_COUNT)
         }
 
         val binding: FragmentReportExamplesBinding = DataBindingUtil.inflate(
-            inflater, R.layout.fragment_report_examples, container, false)
+            inflater, R.layout.fragment_report_examples, container, false
+        )
         binding.lifecycleOwner = activity
         binding.viewModel = viewModel
         binding.handlers = this
 
         viewModel.jobKindName.value = job?.jobKind?.name
-        job?.placeId?.let{place_id ->
+        job?.placeId?.let { place_id ->
             Api(activity!!).place(place_id) { place ->
                 if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                     // 現ユーザーが応募済の物件の場合　フル住所を表示
@@ -95,12 +102,12 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
                 }
             }
         }
-        viewModel.createdAt.value = created_at
+        viewModel.createdAt.value = createdAt
         viewModel.btnVisible(position, reportExampleCount)
 
 
         //報告箇所の画面生成
-        output_summary_examples_attributes?.let { summary ->
+        outputSummaryExamplesAttributes?.let { summary ->
             reportSummaryView = binding.root.findViewById(R.id.report_example_summaries)
             reportSummaryView.setHasFixedSize(true)
             //レイアウトマネージャの設定
@@ -111,19 +118,16 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
             reportSummaryAdapter = ReportExampleSummaryAdapter(activity!!, summary)
             reportSummaryView.adapter = reportSummaryAdapter
         }
-
         return binding.root
     }
 
     override fun onClickPrev(view: View) {
-        // FIXME: viewPagerまたはReportExamplesActivityは作成済みのものを参照してメソッドを呼ぶ
-        val activity = ReportExamplesActivity()
+        val activity: ReportExamplesActivity = activity as ReportExamplesActivity
         activity.onClickPrev()
     }
 
     override fun onClickNext(view: View) {
-        // FIXME: viewPagerまたはReportExamplesActivityは作成済みのものを参照してメソッドを呼ぶ
-        val activity = ReportExamplesActivity()
+        val activity: ReportExamplesActivity = activity as ReportExamplesActivity
         activity.onClickNext()
     }
 }
@@ -135,14 +139,17 @@ class ReportExampleSummaryAdapter(
     val activity: FragmentActivity,
     var summaries: List<OutputSummaryExamplesAttributes>
 ) : RecyclerView.Adapter<ReportExampleSummaryViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportExampleSummaryViewHolder {
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ReportExampleSummaryViewHolder {
         val binding = DataBindingUtil.inflate<FragmentReportExamplesSummaryItemBinding>(
             LayoutInflater.from(parent.context),
             R.layout.fragment_report_examples_summary_item,
             parent,
             false
         )
-
         return ReportExampleSummaryViewHolder(binding)
     }
 
@@ -156,37 +163,37 @@ class ReportExampleSummaryAdapter(
         holder.binding.viewModel = ReportExampleSummaryItemViewModel(
             activity,
             view,
-            summaries[position],
-            summaries.count(),
-            position
+            summaries[position]
         )
     }
 }
 
-// 実施箇所
 class ReportExampleSummaryItemViewModel(
     activity: FragmentActivity,
     view: View,
-    val summary: OutputSummaryExamplesAttributes,
-    summariesCount: Int,
-    position: Int
+    val summary: OutputSummaryExamplesAttributes
 ) : ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_example_summary_item_image)
     private val textView: TextView = view.findViewById(R.id.summary_status)
     val summaryName: MutableLiveData<String> = MutableLiveData()
     val summaryStatus: MutableLiveData<String> = MutableLiveData()
     val summaryComment: MutableLiveData<String> = MutableLiveData()
+
     init {
         if (summary.beforeCleaningPhotoUrl.isNullOrBlank()) {
-            imageView.setImageDrawable(ErikuraApplication.instance.applicationContext.resources.getDrawable(R.drawable.ic_noimage, null))
-        }
-        else {
+            imageView.setImageDrawable(
+                ErikuraApplication.instance.applicationContext.resources.getDrawable(
+                    R.drawable.ic_noimage,
+                    null
+                )
+            )
+        } else {
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchImage(activity, summary.beforeCleaningPhotoUrl!!, imageView)
         }
         summaryName.value = summary.place
-        val evaluateType = EvaluateType.valueOf(summary.evaluation?.toUpperCase()?: "UNSELECTED")
-        when(evaluateType) {
+        val evaluateType = EvaluateType.valueOf(summary.evaluation?.toUpperCase() ?: "UNSELECTED")
+        when (evaluateType) {
             EvaluateType.UNSELECTED -> {
                 summaryStatus.value = ""
             }
@@ -195,13 +202,12 @@ class ReportExampleSummaryItemViewModel(
             }
             EvaluateType.GOOD -> {
                 summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
-                // 黒
                 textView.setTextColor(activity.resources.getColor(R.color.black))
             }
 
             else -> {
                 summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
-                // 異常ありは赤
+                // 異常ありは文字色を赤
                 textView.setTextColor(activity.resources.getColor(R.color.coral))
             }
         }
@@ -222,20 +228,18 @@ class ReportExampleFragmentViewModel : ViewModel() {
     fun btnVisible(position: Int?, count: Int?) {
         if (position != 0) {
             prevBtnVisibility.value = View.VISIBLE
-        }
-        else {
+        } else {
             prevBtnVisibility.value = View.GONE
         }
         if (position != (count?.minus(1))) {
             nextBtnVisibility.value = View.VISIBLE
-        }
-        else {
+        } else {
             nextBtnVisibility.value = View.GONE
         }
     }
 }
 
-interface ReportExamplesFragmentEventHandlers{
+interface ReportExamplesFragmentEventHandlers {
     fun onClickNext(view: View)
     fun onClickPrev(view: View)
 }
