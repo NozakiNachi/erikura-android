@@ -174,7 +174,7 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
         fragment.show(supportFragmentManager, "rewordPicker")
     }
 
-    override fun onJobKindSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onJobKindSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.jobKindsItems.value?.let {
             val item = it[position]
             viewModel.jobKind.value = item?.value
@@ -295,7 +295,7 @@ interface SearchJobHandlers {
     fun onClickRewardSpinner(view: View)
     fun onClickWorkingTimeSpinner(view: View)
 
-    fun onJobKindSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onJobKindSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
 }
 
 sealed class SearchHistoryItem {

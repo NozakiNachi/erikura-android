@@ -280,7 +280,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         onQueryChanged()
     }
 
-    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val sortType = viewModel.sortTypes[position]
         viewModel.sortType.value = sortType
         onQueryChanged()
@@ -380,7 +380,7 @@ interface ListViewHandlers: TabEventHandlers {
     fun onClickSearchBar(view: View)
     fun onToggleActiveOnly(view: View)
     fun onClickMap(view: View)
-    fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
 
     fun onScrollChange(v: View, scrollX: Int, scrollY: Int, oldScrollX: Int, oldScrollY: Int)
 }

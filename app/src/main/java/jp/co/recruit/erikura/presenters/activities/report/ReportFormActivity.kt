@@ -1,26 +1,21 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import JobUtil
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.webkit.MimeTypeMap
 import android.widget.AdapterView
 import android.widget.FrameLayout
 import android.widget.ImageView
-import android.widget.LinearLayout
-import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -28,17 +23,9 @@ import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
-import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
-import okhttp3.internal.closeQuietly
-import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -147,13 +134,13 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
-    override fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.summaryItems.value?.let {
             if (position == 0) {
                 viewModel.summarySelectedItem = null
                 viewModel.summaryEditVisibility.value = View.GONE
             } else if (position == viewModel.summaryItems.value?.lastIndex) {
-                viewModel.summarySelectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.summarySelectedItem = parent?.getItemAtPosition(position).toString()
                 viewModel.summaryEditVisibility.value = View.VISIBLE
             }else {
                 viewModel.summarySelectedItem = job.summaryTitles[position-1]
@@ -162,7 +149,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
-    override fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val evaluateType = viewModel.evaluateTypes[position]
         viewModel.evaluationSelectedItem = evaluateType
     }
@@ -328,7 +315,7 @@ class ReportFormViewModel: ViewModel() {
 
 interface ReportFormEventHandlers {
     fun onClickNext(view: View)
-    fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
-    fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
+    fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
 }
