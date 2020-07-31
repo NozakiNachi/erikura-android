@@ -315,9 +315,9 @@ class ReportFormViewModel: ViewModel() {
         if (valid && comment.value.isNullOrBlank()) {
             valid = false
             commentError.message.value = null
-        }else if (valid && comment.value?.length?: 0 > ErikuraConst.maxCommentLength) {
+        }else if (valid && comment.value?.length?: 0 > ErikuraConst.maxOutputSummaryCommentLength) {
             valid = false
-            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error, ErikuraConst.maxCommentLength)
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error, ErikuraConst.maxOutputSummaryCommentLength)
         }else {
             valid = true
             commentError.message.value = null
