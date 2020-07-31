@@ -1,11 +1,13 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.ReportExample
 import jp.co.recruit.erikura.data.network.Api
@@ -75,6 +77,10 @@ class ReportExamplesActivity : BaseActivity() {
                 reportExampleCount = listReportExamples.count()
                 adapter.notifyDataSetChanged()
             }
+            //トラッキングの送出、お手本報告画面の表示
+            Tracking.logEvent(event= "view_good_examples", params= bundleOf())
+            Tracking.viewGoodExamples(name= "/places/good_examples", title= "お手本報告画面表示", jobId=job.id, jobKindId=jobKindId, placeId=job.placeId)
+
         }
     }
 
