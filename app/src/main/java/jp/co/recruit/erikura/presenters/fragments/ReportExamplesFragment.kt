@@ -91,7 +91,6 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        viewModel.jobKindName.value = job?.jobKind?.name
         job?.placeId?.let { place_id ->
             Api(activity!!).place(place_id) { place ->
                 if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
@@ -105,6 +104,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         }
         viewModel.createdAt.value = createdAt
         viewModel.btnVisible(position, reportExampleCount, binding.root)
+        viewModel.makeSentenceJobKindName(position, reportExampleCount, job?.jobKind?.name)
 
 
         //報告箇所の画面生成
@@ -238,6 +238,13 @@ class ReportExampleFragmentViewModel : ViewModel() {
         } else {
             val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
             nextBtn.isEnabled = false
+        }
+    }
+
+    fun makeSentenceJobKindName(position: Int?, count: Int?, jobKind: String?) {
+        position?.let { p ->
+            val outputSumPosition:Int = p.plus(1)
+            jobKindName.value = jobKind + " (${outputSumPosition}/${count})"
         }
     }
 }
