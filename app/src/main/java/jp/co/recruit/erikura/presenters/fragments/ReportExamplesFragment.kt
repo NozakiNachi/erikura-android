@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -103,7 +104,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
             }
         }
         viewModel.createdAt.value = createdAt
-        viewModel.btnVisible(position, reportExampleCount)
+        viewModel.btnVisible(position, reportExampleCount, binding.root)
 
 
         //報告箇所の画面生成
@@ -225,16 +226,18 @@ class ReportExampleFragmentViewModel : ViewModel() {
     var prevBtnVisibility: MediatorLiveData<Int> = MediatorLiveData()
     var nextBtnVisibility: MediatorLiveData<Int> = MediatorLiveData()
 
-    fun btnVisible(position: Int?, count: Int?) {
+    fun btnVisible(position: Int?, count: Int?, view: View) {
         if (position != 0) {
             prevBtnVisibility.value = View.VISIBLE
         } else {
-            prevBtnVisibility.value = View.GONE
+            val prevBtn = view.findViewById<Button>(R.id.prevPageBtn)
+            prevBtn.isEnabled = false
         }
         if (position != (count?.minus(1))) {
             nextBtnVisibility.value = View.VISIBLE
         } else {
-            nextBtnVisibility.value = View.GONE
+            val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
+            nextBtn.isEnabled = false
         }
     }
 }

@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content">
 
                 <Button
-                    android:id="@+id/nextPageBtn"
+                    android:id="@+id/prevPageBtn"
                     style="@style/tertiaryButton"
                     android:layout_width="60dp"
                     android:layout_height="44dp"
@@ -69,7 +69,7 @@
                     android:textSize="14dp" />
 
                 <Button
-                    android:id="@+id/prevPageBtn"
+                    android:id="@+id/nextPageBtn"
                     style="@style/tertiaryButton"
                     android:layout_width="60dp"
                     android:layout_height="44dp"
