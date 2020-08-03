@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -61,7 +60,7 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
         Tracking.view(name= "/mypage/payment_history", title= "お支払い情報画面")
     }
 
-    override fun onTargetYearSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onTargetYearSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val year = (viewModel.targetYears.value ?: listOf())[position]
         viewModel.targetYear.value = year
         fetchJobs()
@@ -146,7 +145,7 @@ class PaymentInformationViewModel: ViewModel() {
 }
 
 interface PaymentInformationHandlers {
-    fun onTargetYearSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onTargetYearSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickAccountSetting(view: View)
 }
 
