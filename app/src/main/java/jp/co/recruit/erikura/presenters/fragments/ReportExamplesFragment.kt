@@ -91,15 +91,13 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        job?.placeId?.let { place_id ->
-            Api(activity!!).place(place_id) { place ->
-                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
-                    // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace + place.workingBuilding
-                } else {
-                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
-                    viewModel.address.value = place.workingPlaceShort
-                }
+        job?.place?.let { place ->
+            if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                // 現ユーザーが応募済の物件の場合　フル住所を表示
+                viewModel.address.value = place.workingPlace + place.workingBuilding
+            } else {
+                // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                viewModel.address.value = place.workingPlaceShort
             }
         }
         viewModel.createdAt.value = createdAt
