@@ -108,7 +108,8 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         //報告箇所の画面生成
         outputSummaryExamples?.let { summary ->
             reportSummaryView = binding.root.findViewById(R.id.report_example_summaries)
-            reportSummaryView.setHasFixedSize(true)
+            //　画像やコメントの長さによる
+            reportSummaryView.setHasFixedSize(false)
             //レイアウトマネージャの設定
             val manager = LinearLayoutManager(activity)
             // 縦スクロールのリスト
