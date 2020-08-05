@@ -62,8 +62,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:gravity="center"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="100dp"
+                    android:layout_marginRight="100dp"
                     android:text="@{viewModel.jobKindName}"
                     android:textColor="@color/black"
                     android:textSize="14dp" />
