@@ -239,6 +239,10 @@ class ReportExampleFragmentViewModel : ViewModel() {
             val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
             nextBtn.isEnabled = false
         }
+        if (position == 0 && position == (count?.minus(1))) {
+            prevBtnVisibility.value = View.GONE
+            nextBtnVisibility.value = View.GONE
+        }
     }
 
     fun makeSentenceJobKindName(position: Int?, count: Int?, jobKind: String?) {
