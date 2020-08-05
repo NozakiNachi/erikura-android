@@ -70,10 +70,7 @@ class ReportExamplesActivity : BaseActivity() {
         job.jobKind?.id?.let { jobKindId ->
             //APIでお手本報告を取得する
             api.goodExamples(job.placeId, jobKindId, true) { listReportExamples ->
-                //報告日付の降順にソートします。
-                reportExamples = listReportExamples.sortedByDescending { reportExample ->
-                    reportExample.created_at
-                }
+                reportExamples = listReportExamples
                 reportExampleCount = listReportExamples.count()
                 adapter.notifyDataSetChanged()
             }
