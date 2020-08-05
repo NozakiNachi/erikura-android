@@ -25,7 +25,6 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -78,11 +77,9 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             Tracking.viewJobDetails(name= "/reports/edit/additional/${job.id}", title= "作業報告編集画面（マニュアル外）", jobId= job.id)
         }
         //お手本報告件数が0件の場合非表示
-        job.jobKind?.id?.let { jobKindId ->
-            Api(this).goodExamples(job.placeId, jobKindId, false) {
-                if (it.count() == 0) {
-                    viewModel.reportExamplesButtonVisibility.value = View.GONE
-                }
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
     }

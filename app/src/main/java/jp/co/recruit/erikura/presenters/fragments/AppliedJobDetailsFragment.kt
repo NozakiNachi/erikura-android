@@ -536,11 +536,9 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
                 }
             }
             //お手本報告件数が0件の場合非表示
-            job.jobKind?.id?.let { jobKindId ->
-                Api(activity).goodExamples(job.placeId, jobKindId, false) {
-                    if (it.count() == 0) {
-                        reportExamplesButtonVisibility.value = View.GONE
-                    }
+            job.goodExamplesCount?.let { reportExampleCount ->
+                if (reportExampleCount == 0) {
+                    reportExamplesButtonVisibility.value = View.GONE
                 }
             }
         }

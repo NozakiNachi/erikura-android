@@ -3,11 +3,9 @@ package jp.co.recruit.erikura.presenters.activities.report
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.ContentResolver
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.ExifInterface
-import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -15,11 +13,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.ImageView
-import androidx.core.content.FileProvider
-import androidx.core.database.getLongOrNull
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -32,28 +27,20 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import io.realm.Realm
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
-import okhttp3.internal.closeQuietly
-import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -606,11 +593,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
         }
         //お手本報告件数が0件の場合非表示
-        job.jobKind?.id?.let { jobKindId ->
-            Api(this).goodExamples(job.placeId, jobKindId, false) {
-                if (it.count() == 0) {
-                    viewModel.reportExamplesButtonVisibility.value = View.GONE
-                }
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
     }

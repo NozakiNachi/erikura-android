@@ -18,7 +18,6 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
@@ -188,11 +187,9 @@ class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
                 }
             }
             //お手本報告件数が0件の場合非表示
-            job.jobKind?.id?.let { jobKindId ->
-                Api(activity).goodExamples(job.placeId, jobKindId, false) {
-                    if (it.count() == 0) {
-                        reportExamplesButtonVisibility.value = View.GONE
-                    }
+            job.goodExamplesCount?.let { reportExampleCount ->
+                if (reportExampleCount == 0) {
+                    reportExamplesButtonVisibility.value = View.GONE
                 }
             }
         }

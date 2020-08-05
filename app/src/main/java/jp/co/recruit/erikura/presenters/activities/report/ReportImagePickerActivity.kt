@@ -29,7 +29,6 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.business.models.Report
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
@@ -109,11 +108,9 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
         }
         //お手本報告件数が0件の場合非表示
-        job.jobKind?.id?.let { jobKindId ->
-            Api(this).goodExamples(job.placeId, jobKindId, false) {
-                if (it.count() == 0) {
-                    viewModel.reportExamplesButtonVisibility.value = View.GONE
-                }
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
     }

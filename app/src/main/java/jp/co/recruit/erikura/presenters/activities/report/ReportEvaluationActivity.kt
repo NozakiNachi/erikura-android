@@ -19,7 +19,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
@@ -65,11 +64,9 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
             Tracking.viewJobDetails(name= "/reports/edit/evaluation/${job.id}", title= "作業報告編集画面（案件評価）", jobId= job.id)
         }
         //お手本報告件数が0件の場合非表示
-        job.jobKind?.id?.let { jobKindId ->
-            Api(this).goodExamples(job.placeId, jobKindId, false) {
-                if (it.count() == 0) {
-                    viewModel.reportExamplesButtonVisibility.value = View.GONE
-                }
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
     }

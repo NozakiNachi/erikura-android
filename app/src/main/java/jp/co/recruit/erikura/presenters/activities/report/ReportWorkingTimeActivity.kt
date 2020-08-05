@@ -1,34 +1,21 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.webkit.MimeTypeMap
 import android.widget.AdapterView
-import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityReportWorkingTimeBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
-import okhttp3.internal.closeQuietly
-import org.apache.commons.io.IOUtils
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 
 class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers {
     private val viewModel by lazy {
@@ -74,11 +61,9 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
             Tracking.viewJobDetails(name= "/reports/edit/time/${job.id}", title= "作業報告編集画面（作業時間）", jobId= job.id)
         }
         //お手本報告件数が0件の場合非表示
-        job.jobKind?.id?.let { jobKindId ->
-            Api(this).goodExamples(job.placeId, jobKindId, false) {
-                if (it.count() == 0) {
-                    viewModel.reportExamplesButtonVisibility.value = View.GONE
-                }
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
     }

@@ -350,6 +350,10 @@ data class FavoritePlacesResponse(
     var places: List<Place>
 )
 
+data class ReloadJobResponse(
+    var objects: Objects
+)
+
 sealed class ErikuraConfigValue {
     data class DoubleList(val values: List<Double>): ErikuraConfigValue()
     data class StringValue(val value: String?): ErikuraConfigValue()
