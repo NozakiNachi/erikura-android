@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class OutputSummaryExamplesAttributes(
+data class OutputSummaryExample(
     var place: String? = null,
     var beforeCleaningPhotoUrl: String? = null,
     var evaluation: String? = null,

@@ -34,7 +34,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         const val REPORT_EXAMPLE_COUNT = "report_example_count"
 
         fun newInstance(
-            outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>?,
+            outputSummaryExamples: List<OutputSummaryExample>?,
             job: Job,
             created_at: String?,
             position: Int,
@@ -44,7 +44,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
                 it.arguments = Bundle().also { args ->
                     args.putParcelableArrayList(
                         OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
-                        ArrayList(outputSummaryExamplesAttributes ?: listOf())
+                        ArrayList(outputSummaryExamples ?: listOf())
                     )
                     args.putParcelable(JOB, job)
                     args.putString(CREATED_AT, created_at)
@@ -60,7 +60,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     }
     private lateinit var reportSummaryView: RecyclerView
     private lateinit var reportSummaryAdapter: ReportExampleSummaryAdapter
-    private var outputSummaryExamplesAttributes: List<OutputSummaryExamplesAttributes>? = null
+    private var outputSummaryExamples: List<OutputSummaryExample>? = null
     private var job: Job? = null
     private var createdAt: String? = null
     private var position: Int? = null
@@ -74,8 +74,8 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         savedInstanceState: Bundle?
     ): View? {
         arguments?.let { args ->
-            outputSummaryExamplesAttributes =
-                args.getParcelableArrayList<OutputSummaryExamplesAttributes>(
+            outputSummaryExamples =
+                args.getParcelableArrayList<OutputSummaryExample>(
                     OUTPUT_SUMMARY_EXAMPLES_ARGUMENT
                 )?.toList() ?: listOf()
             job = args.getParcelable(JOB)
@@ -108,7 +108,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
 
 
         //報告箇所の画面生成
-        outputSummaryExamplesAttributes?.let { summary ->
+        outputSummaryExamples?.let { summary ->
             reportSummaryView = binding.root.findViewById(R.id.report_example_summaries)
             reportSummaryView.setHasFixedSize(true)
             //レイアウトマネージャの設定
@@ -138,7 +138,7 @@ class ReportExampleSummaryViewHolder(val binding: FragmentReportExamplesSummaryI
 
 class ReportExampleSummaryAdapter(
     val activity: FragmentActivity,
-    var summaries: List<OutputSummaryExamplesAttributes>
+    var summaries: List<OutputSummaryExample>
 ) : RecyclerView.Adapter<ReportExampleSummaryViewHolder>() {
 
     override fun onCreateViewHolder(
@@ -172,7 +172,7 @@ class ReportExampleSummaryAdapter(
 class ReportExampleSummaryItemViewModel(
     activity: FragmentActivity,
     view: View,
-    val summary: OutputSummaryExamplesAttributes
+    val summary: OutputSummaryExample
 ) : ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_example_summary_item_image)
     private val textView: TextView = view.findViewById(R.id.summary_status)
