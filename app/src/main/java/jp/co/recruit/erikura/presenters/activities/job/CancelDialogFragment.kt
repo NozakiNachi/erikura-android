@@ -55,7 +55,7 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
         return builder.create()
     }
 
-    override fun onReasonSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onReasonSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.reasonSelected = position
 
         viewModel.reasonsItems.value?.let { items ->
@@ -174,7 +174,7 @@ class CancelDialogFragmentViewModel: ViewModel() {
 }
 
 interface CancelDialogFragmentEventHandlers {
-    fun onReasonSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onReasonSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickCancel(view: View)
 }
 

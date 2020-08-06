@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import JobUtil
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -92,7 +93,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         }
     }
 
-    override fun onTimeSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onTimeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.timeSelectedItem = position
     }
 
@@ -130,7 +131,7 @@ class ReportWorkingTimeViewModel: ViewModel() {
 
 interface ReportWorkingTimeEventHandlers {
     fun onClickNext(view: View)
-    fun onTimeSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onTimeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
 }

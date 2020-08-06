@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import JobUtil
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
@@ -133,13 +134,13 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
-    override fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.summaryItems.value?.let {
             if (position == 0) {
                 viewModel.summarySelectedItem = null
                 viewModel.summaryEditVisibility.value = View.GONE
             } else if (position == viewModel.summaryItems.value?.lastIndex) {
-                viewModel.summarySelectedItem = parent.getItemAtPosition(position).toString()
+                viewModel.summarySelectedItem = parent?.getItemAtPosition(position).toString()
                 viewModel.summaryEditVisibility.value = View.VISIBLE
             }else {
                 viewModel.summarySelectedItem = job.summaryTitles[position-1]
@@ -148,7 +149,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
-    override fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val evaluateType = viewModel.evaluateTypes[position]
         viewModel.evaluationSelectedItem = evaluateType
     }
@@ -316,9 +317,9 @@ class ReportFormViewModel: ViewModel() {
         if (valid && comment.value.isNullOrBlank()) {
             valid = false
             commentError.message.value = null
-        }else if (valid && comment.value?.length?: 0 > ErikuraConst.maxCommentLength) {
+        }else if (valid && comment.value?.length?: 0 > ErikuraConst.maxOutputSummaryCommentLength) {
             valid = false
-            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error, ErikuraConst.maxCommentLength)
+            commentError.message.value = ErikuraApplication.instance.getString(R.string.comment_count_error, ErikuraConst.maxOutputSummaryCommentLength)
         }else {
             valid = true
             commentError.message.value = null
@@ -329,8 +330,8 @@ class ReportFormViewModel: ViewModel() {
 
 interface ReportFormEventHandlers {
     fun onClickNext(view: View)
-    fun onSummarySelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
-    fun onEvaluationSelected(parent: AdapterView<*>, view: View, position: Int, id: Long)
+    fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
+    fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
 }
