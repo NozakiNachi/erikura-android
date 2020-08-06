@@ -21,31 +21,26 @@ import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesBinding
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     companion object {
-        const val OUTPUT_SUMMARY_EXAMPLES_ARGUMENT = "report_example_output_summary"
+        const val REPORT_EXAMPLES_ARGUMENT = "report_example"
         const val JOB = "job"
-        const val CREATED_AT = "created_at"
         const val POSITION = "position"
         const val REPORT_EXAMPLE_COUNT = "report_example_count"
 
         fun newInstance(
-            outputSummaryExamples: List<OutputSummaryExample>?,
+            reportExample: ReportExample?,
             job: Job,
-            created_at: String?,
             position: Int,
             reportExampleCount: Int
         ): ReportExamplesFragment {
             return ReportExamplesFragment().also {
                 it.arguments = Bundle().also { args ->
-                    args.putParcelableArrayList(
-                        OUTPUT_SUMMARY_EXAMPLES_ARGUMENT,
-                        ArrayList(outputSummaryExamples ?: listOf())
-                    )
+                    args.putParcelable(REPORT_EXAMPLES_ARGUMENT, reportExample)
                     args.putParcelable(JOB, job)
-                    args.putString(CREATED_AT, created_at)
                     args.putInt(POSITION, position)
                     args.putInt(REPORT_EXAMPLE_COUNT, reportExampleCount)
                 }
@@ -58,6 +53,7 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     }
     private lateinit var reportSummaryView: RecyclerView
     private lateinit var reportSummaryAdapter: ReportExampleSummaryAdapter
+    private var reportExamples: ReportExample? = null
     private var outputSummaryExamples: List<OutputSummaryExample>? = null
     private var job: Job? = null
     private var createdAt: String? = null
@@ -72,12 +68,10 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
         savedInstanceState: Bundle?
     ): View? {
         arguments?.let { args ->
-            outputSummaryExamples =
-                args.getParcelableArrayList<OutputSummaryExample>(
-                    OUTPUT_SUMMARY_EXAMPLES_ARGUMENT
-                )?.toList() ?: listOf()
+            reportExamples = args.getParcelable(REPORT_EXAMPLES_ARGUMENT)
+            outputSummaryExamples = reportExamples?.output_summary_examples_attributes
             job = args.getParcelable(JOB)
-            createdAt = args.getString(CREATED_AT)
+            createdAt = makeSentenceCreatedAt(reportExamples?.created_at)
             position = args.getInt(POSITION)
             reportExampleCount = args.getInt(REPORT_EXAMPLE_COUNT)
         }
@@ -128,6 +122,11 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
     override fun onClickNext(view: View) {
         val activity: ReportExamplesActivity = activity as ReportExamplesActivity
         activity.onClickNext()
+    }
+
+    private fun makeSentenceCreatedAt(created_at: Date?): String {
+        val df = SimpleDateFormat("yyyy/MM/dd")
+        return ("このお手本の作業報告日：".plus(df.format(created_at)))
     }
 }
 
@@ -221,24 +220,24 @@ class ReportExampleFragmentViewModel : ViewModel() {
     val createdAt: MutableLiveData<String> = MutableLiveData()
     val position = MutableLiveData<Int>()
     val count = MutableLiveData<Int>()
-    var prevBtnVisibility = MediatorLiveData<Int>().also{ result ->
+    var prevBtnVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(position) { result.value = btnVisible() }
         result.addSource(count) { result.value = btnVisible() }
     }
-    var nextBtnVisibility = MediatorLiveData<Int>().also{ result ->
+    var nextBtnVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(position) { result.value = btnVisible() }
         result.addSource(count) { result.value = btnVisible() }
     }
-    var isPrevBtnEnabled = MediatorLiveData<Boolean>().also{ result ->
-        result.addSource(position) { result.value = prevBtnIsEnable () }
-        result.addSource(count) { result.value = prevBtnIsEnable () }
+    var isPrevBtnEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(position) { result.value = prevBtnIsEnable() }
+        result.addSource(count) { result.value = prevBtnIsEnable() }
     }
-    var isNextBtnEnabled = MediatorLiveData<Boolean>().also{ result ->
+    var isNextBtnEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(position) { result.value = nextBtnIsEnable() }
         result.addSource(count) { result.value = nextBtnIsEnable() }
     }
 
-    private fun prevBtnIsEnable (): Boolean {
+    private fun prevBtnIsEnable(): Boolean {
         var isEnable = true
         if (position.value == 0) {
             isEnable = false
@@ -246,16 +245,16 @@ class ReportExampleFragmentViewModel : ViewModel() {
         return isEnable
     }
 
-    private fun nextBtnIsEnable (): Boolean {
+    private fun nextBtnIsEnable(): Boolean {
         var isEnable = true
-        if ( position.value == (count.value?.minus(1))) {
+        if (position.value == (count.value?.minus(1))) {
             isEnable = false
         }
         return isEnable
     }
 
     private fun btnVisible(): Int {
-        var viewVisible =  View.VISIBLE
+        var viewVisible = View.VISIBLE
         if (position.value == 0 && position.value == (count.value?.minus(1))) {
             viewVisible = View.GONE
         }
@@ -265,7 +264,7 @@ class ReportExampleFragmentViewModel : ViewModel() {
 
     fun makeSentenceJobKindName(position: Int?, count: Int?, jobKind: String?) {
         position?.let { p ->
-            val outputSumPosition:Int = p.plus(1)
+            val outputSumPosition: Int = p.plus(1)
             jobKindName.value = jobKind + " (${outputSumPosition}/${count})"
         }
     }
