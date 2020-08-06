@@ -56,6 +56,7 @@
                     android:layout_marginLeft="20dp"
                     android:gravity="center"
                     android:text="前へ"
+                    android:enabled="@{viewModel.isPrevBtnEnabled}"
                     android:visibility="@{viewModel.prevBtnVisibility}"
                     app:onSafeClick="@{handlers::onClickPrev}" />
 
@@ -78,6 +79,7 @@
                     android:layout_marginRight="20dp"
                     android:gravity="center"
                     android:text="次へ"
+                    android:enabled="@{viewModel.isNextBtnEnabled}"
                     android:visibility="@{viewModel.nextBtnVisibility}"
                     app:onSafeClick="@{handlers::onClickNext}" />
 

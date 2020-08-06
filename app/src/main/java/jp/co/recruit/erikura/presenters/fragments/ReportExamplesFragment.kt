@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -19,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.*
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesBinding
 import jp.co.recruit.erikura.databinding.FragmentReportExamplesSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
@@ -101,7 +99,8 @@ class ReportExamplesFragment : Fragment, ReportExamplesFragmentEventHandlers {
             }
         }
         viewModel.createdAt.value = createdAt
-        viewModel.btnVisible(position, reportExampleCount, binding.root)
+        viewModel.position.value = position
+        viewModel.count.value = reportExampleCount
         viewModel.makeSentenceJobKindName(position, reportExampleCount, job?.jobKind?.name)
 
 
@@ -222,27 +221,47 @@ class ReportExampleFragmentViewModel : ViewModel() {
     val createdAt: MutableLiveData<String> = MutableLiveData()
     val position = MutableLiveData<Int>()
     val count = MutableLiveData<Int>()
-    var prevBtnVisibility: MediatorLiveData<Int> = MediatorLiveData()
-    var nextBtnVisibility: MediatorLiveData<Int> = MediatorLiveData()
-
-    fun btnVisible(position: Int?, count: Int?, view: View) {
-        if (position != 0) {
-            prevBtnVisibility.value = View.VISIBLE
-        } else {
-            val prevBtn = view.findViewById<Button>(R.id.prevPageBtn)
-            prevBtn.isEnabled = false
-        }
-        if (position != (count?.minus(1))) {
-            nextBtnVisibility.value = View.VISIBLE
-        } else {
-            val nextBtn = view.findViewById<Button>(R.id.nextPageBtn)
-            nextBtn.isEnabled = false
-        }
-        if (position == 0 && position == (count?.minus(1))) {
-            prevBtnVisibility.value = View.GONE
-            nextBtnVisibility.value = View.GONE
-        }
+    var prevBtnVisibility = MediatorLiveData<Int>().also{ result ->
+        result.addSource(position) { result.value = btnVisible() }
+        result.addSource(count) { result.value = btnVisible() }
     }
+    var nextBtnVisibility = MediatorLiveData<Int>().also{ result ->
+        result.addSource(position) { result.value = btnVisible() }
+        result.addSource(count) { result.value = btnVisible() }
+    }
+    var isPrevBtnEnabled = MediatorLiveData<Boolean>().also{ result ->
+        result.addSource(position) { result.value = prevBtnIsEnable () }
+        result.addSource(count) { result.value = prevBtnIsEnable () }
+    }
+    var isNextBtnEnabled = MediatorLiveData<Boolean>().also{ result ->
+        result.addSource(position) { result.value = nextBtnIsEnable() }
+        result.addSource(count) { result.value = nextBtnIsEnable() }
+    }
+
+    private fun prevBtnIsEnable (): Boolean {
+        var isEnable = true
+        if (position.value == 0) {
+            isEnable = false
+        }
+        return isEnable
+    }
+
+    private fun nextBtnIsEnable (): Boolean {
+        var isEnable = true
+        if ( position.value == (count.value?.minus(1))) {
+            isEnable = false
+        }
+        return isEnable
+    }
+
+    private fun btnVisible(): Int {
+        var viewVisible =  View.VISIBLE
+        if (position.value == 0 && position.value == (count.value?.minus(1))) {
+            viewVisible = View.GONE
+        }
+        return viewVisible
+    }
+
 
     fun makeSentenceJobKindName(position: Int?, count: Int?, jobKind: String?) {
         position?.let { p ->
