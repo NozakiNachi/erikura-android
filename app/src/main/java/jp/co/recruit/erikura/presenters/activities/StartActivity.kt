@@ -108,6 +108,7 @@ class StartActivity : BaseActivity(finishByBackButton = true), StartEventHandler
     override fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture?, width: Int, height: Int) {
         val surface: Surface = Surface(surfaceTexture)
 
+        mediaPlayer.reset()
         mediaPlayer.setSurface(surface)
         mediaPlayer.setDataSource(this, Uri.parse("android.resource://" + this.packageName + "/" + R.raw.movie), mapOf())
         mediaPlayer.prepareAsync()
