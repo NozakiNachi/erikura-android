@@ -162,9 +162,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
     override fun onClickReportExamples(view: View) {
         job?.let { job ->
-            val intent = Intent(this, jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity::class.java)
-            intent.putExtra("job", job)
-            startActivity(intent)
+            job.onClickButton(this)
         }
     }
 

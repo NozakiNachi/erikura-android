@@ -30,6 +30,7 @@ class ReportExamplesActivity : BaseActivity() {
         binding.lifecycleOwner = this
 
         job = intent.getParcelableExtra<Job>("job")
+        reportExamples = intent.getParcelableArrayListExtra<ReportExample>("reportExamples").toList() ?: listOf()
 
         val adapter = object : FragmentPagerAdapter(
             supportFragmentManager,
@@ -50,31 +51,11 @@ class ReportExamplesActivity : BaseActivity() {
 
         }
 
-
         viewPager = findViewById(R.id.report_examples_view_pager)
         viewPager.adapter = adapter
         //お手本報告画面はまず１ページ目を表示する
-        viewPager.setCurrentItem(1, true)
+        viewPager.setCurrentItem(0, true)
 
-        val api = Api(this)
-        job.jobKind?.id?.let { jobKindId ->
-            //APIでお手本報告を取得する
-            api.goodExamples(job.placeId, jobKindId, true) { listReportExamples ->
-                reportExamples = listReportExamples
-                reportExampleCount = listReportExamples.count()
-                adapter.notifyDataSetChanged()
-            }
-            //トラッキングの送出、お手本報告画面の表示
-            Tracking.logEvent(event = "view_good_examples", params = bundleOf())
-            Tracking.viewGoodExamples(
-                name = "/places/good_examples",
-                title = "お手本報告画面表示",
-                jobId = job.id,
-                jobKindId = jobKindId,
-                placeId = job.placeId
-            )
-
-        }
     }
 
     override fun onResume() {

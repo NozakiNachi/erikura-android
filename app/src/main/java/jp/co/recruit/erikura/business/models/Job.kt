@@ -1,9 +1,15 @@
 package jp.co.recruit.erikura.business.models
 
+import android.content.Intent
 import android.os.Parcelable
+import androidx.core.os.bundleOf
+import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.data.network.Api
+import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import kotlinx.android.parcel.Parcelize
 import java.util.*
@@ -198,4 +204,32 @@ data class Job(
         }
     }
      */
+
+
+    /**
+     * お手本報告画面へ遷移します
+     */
+    fun onClickButton(activity: FragmentActivity) {
+        val api = Api(activity)
+        var reportExamples: List<ReportExample>? = null
+        jobKind?.id?.let { jobKindId ->
+            //APIでお手本報告を取得する
+            api.goodExamples(placeId, jobKindId, true) { listReportExamples ->
+                reportExamples = listReportExamples
+                //トラッキングの送出、お手本報告画面の表示
+                Tracking.logEvent(event = "view_good_examples", params = bundleOf())
+                Tracking.viewGoodExamples(
+                    name = "/places/good_examples",
+                    title = "お手本報告画面表示",
+                    jobId = id,
+                    jobKindId = jobKindId,
+                    placeId = placeId
+                )
+                val intent = Intent(activity, ReportExamplesActivity::class.java)
+                intent.putExtra("job", this)
+                intent.putParcelableArrayListExtra( "reportExamples", ArrayList(reportExamples ?: listOf()))
+                activity.startActivity(intent)
+            }
+        }
+    }
 }
