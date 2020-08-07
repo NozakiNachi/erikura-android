@@ -99,7 +99,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
 
     override fun onClickReportExamples(view: View) {
         job?.let { job ->
-            job.onClickButton(this)
+            JobUtil.openReportExample(this, job)
         }
     }
 

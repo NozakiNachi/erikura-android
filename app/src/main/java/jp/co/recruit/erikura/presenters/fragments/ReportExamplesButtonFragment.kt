@@ -34,7 +34,7 @@ class ReportExamplesButtonFragment : BaseJobDetailFragment, ReportExamplesButton
 
     override fun onClickReportExamples(view: View) {
         job?.let { job ->
-            job.onClickButton(activity!!)
+            JobUtil.openReportExample(activity!!, job)
         }
     }
 }

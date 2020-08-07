@@ -15,7 +15,10 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
+import jp.co.recruit.erikura.business.models.ReportExample
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
+import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
 import okhttp3.internal.closeQuietly
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -167,6 +170,30 @@ object JobUtil {
             intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
             intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
             activity.startActivity(intent)
+        }
+    }
+
+    fun openReportExample(activity: FragmentActivity, job: Job) {
+        val api = Api(activity)
+        var reportExamples: List<ReportExample>? = null
+        job.jobKind?.id?.let { jobKindId ->
+            //APIでお手本報告を取得する
+            api.goodExamples(job.placeId, jobKindId, true) { listReportExamples ->
+                reportExamples = listReportExamples
+                //トラッキングの送出、お手本報告画面の表示
+                Tracking.logEvent(event = "view_good_examples", params = bundleOf())
+                Tracking.viewGoodExamples(
+                    name = "/places/good_examples",
+                    title = "お手本報告画面表示",
+                    jobId = job.id,
+                    jobKindId = jobKindId,
+                    placeId = job.placeId
+                )
+                val intent = Intent(activity, ReportExamplesActivity::class.java)
+                intent.putExtra("job", job)
+                intent.putParcelableArrayListExtra( "reportExamples", ArrayList(reportExamples ?: listOf()))
+                activity.startActivity(intent)
+            }
         }
     }
 
