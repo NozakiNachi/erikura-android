@@ -22,8 +22,6 @@ enum class ReportStatus {
 enum class EvaluateType(val value: String, val resourceId: Int) {
     // 選択してください
     UNSELECTED("unselected", R.string.please_select),
-    // 未選択
-    UNANSWERED("unanswered", R.string.please_select),
     // 異常あり、未対応
     BAD("bad", R.string.bad),
     // 異常あり、対応済み

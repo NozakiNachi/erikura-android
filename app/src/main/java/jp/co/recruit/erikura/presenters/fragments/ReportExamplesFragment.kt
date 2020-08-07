@@ -195,9 +195,6 @@ class ReportExampleSummaryItemViewModel(
             EvaluateType.UNSELECTED -> {
                 summaryStatus.value = ""
             }
-            EvaluateType.UNANSWERED -> {
-                summaryStatus.value = ""
-            }
             EvaluateType.GOOD -> {
                 summaryStatus.value = ErikuraApplication.instance.getString(evaluateType.resourceId)
                 textView.setTextColor(activity.resources.getColor(R.color.black))
