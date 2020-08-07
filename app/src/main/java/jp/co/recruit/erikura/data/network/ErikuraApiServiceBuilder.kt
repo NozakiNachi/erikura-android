@@ -16,7 +16,7 @@ import javax.net.ssl.*
 
 class ErikuraApiServiceBuilder {
     val apiBaseURL: String get() {
-        return BuildConfig.SERVER_BASE_URL + "api/v1/"
+        return BuildConfig.SERVER_BASE_URL + "app/api/v1/"
     }
 
     val httpBuilder: OkHttpClient.Builder get() {
