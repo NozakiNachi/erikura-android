@@ -26,7 +26,6 @@ import jp.co.recruit.erikura.presenters.activities.job.StopDialogFragment
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
-
 class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmentEventHandlers {
     companion object {
         fun newInstance(job: Job?, user: User?): WorkingJobDetailsFragment {
@@ -187,7 +186,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     }
 
     override fun onClickStop(view: View) {
-        val dialog = StopDialogFragment(job)
+        val dialog = StopDialogFragment.newInstance(job)
         dialog.show(childFragmentManager, "Stop")
 
         timer.cancel()

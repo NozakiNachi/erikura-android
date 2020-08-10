@@ -76,10 +76,10 @@ class ReportedJobRemoveButtonFragment : BaseJobDetailFragment, ReportedJobRemove
         job?.let { job ->
             if (job.isReportEditable) {
                 if (isExpiredAndRejected()) {
-                    val dialog = CancelDialogFragment(job)
+                    val dialog = CancelDialogFragment.newInstance(job)
                     dialog.show(childFragmentManager, "Cancel")
                 } else {
-                    val dialog = ReportedJobRemoveDialogFragment(job)
+                    val dialog = ReportedJobRemoveDialogFragment.newInstance(job)
                     dialog.show(childFragmentManager, "Remove")
                 }
             }

@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
@@ -13,8 +12,6 @@ import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.text.style.TextAppearanceSpan
 import android.util.Log
-import androidx.fragment.app.DialogFragment
-import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -22,23 +19,44 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogApplyBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 
-class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogFragmentEventHandlers {
+class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
+    companion object {
+        const val JOB_ARGUMENT = "job"
+
+        fun newInstance(job: Job?): ApplyDialogFragment {
+            return ApplyDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelable(JOB_ARGUMENT, job)
+                }
+            }
+        }
+    }
+
+    private var job: Job? = null
     private val viewModel: ApplyDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(ApplyDialogFragmentViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            job = args.getParcelable(JOB_ARGUMENT)
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -93,7 +111,7 @@ class ApplyDialogFragment(private val job: Job?): DialogFragment(), ApplyDialogF
 
     override fun onClickEntryButton(view: View) {
         if (Api.isLogin) {
-            if (job != null) {
+            job?.let { job ->
                 Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "", onError = {
                     Log.v("DEBUG", "応募失敗")
                     // 詳細画面のリロード

@@ -26,10 +26,30 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogCancelBinding
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 
-class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialogFragmentEventHandlers {
+class CancelDialogFragment: DialogFragment(), CancelDialogFragmentEventHandlers {
+    companion object {
+        const val JOB_ARGUMENT = "job"
+        fun newInstance(job: Job?): CancelDialogFragment {
+            return CancelDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelable(JOB_ARGUMENT, job)
+                }
+            }
+        }
+    }
+
+    private var job: Job? = null
     private val viewModel: CancelDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(CancelDialogFragmentViewModel::class.java)
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            job = args.getParcelable(JOB_ARGUMENT)
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogCancelBinding>(
             LayoutInflater.from(activity),
@@ -78,7 +98,7 @@ class CancelDialogFragment(private val job: Job?): DialogFragment(), CancelDialo
             else {
                 null
             }
-            job?.let {
+            job?.let { job ->
                 if (isCancellable()) {
                     Api(activity!!).cancel(job, reasonCode, comment) {
                         // ページ参照のトラッキングの送出
