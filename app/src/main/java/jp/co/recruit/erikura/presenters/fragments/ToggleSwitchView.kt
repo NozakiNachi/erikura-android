@@ -1,30 +1,20 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.content.Context
-import android.graphics.Rect
-import android.os.Bundle
 import android.util.AttributeSet
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
-import android.widget.NumberPicker
-import android.widget.RelativeLayout
 import android.widget.ToggleButton
-import androidx.databinding.*
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.recyclerview.widget.RecyclerView
+import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.InverseBindingAdapter
+import androidx.databinding.InverseBindingListener
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.JobQuery
-import jp.co.recruit.erikura.databinding.ActivityNotificationSettingBinding
-import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionItemBinding
-import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionLabelBinding
 import jp.co.recruit.erikura.databinding.FragmentToggleSwitchViewBinding
-import jp.co.recruit.erikura.presenters.activities.job.ItemPicker
-import jp.co.recruit.erikura.presenters.activities.job.PickerItem
 import kotlinx.android.synthetic.main.fragment_toggle_switch_view.view.*
-import okhttp3.internal.notifyAll
 
 class ToggleSwitchView : FrameLayout, ToggleSwitchHandlers {
     constructor(context: Context) : this(context, null)

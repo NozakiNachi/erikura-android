@@ -18,11 +18,30 @@ import jp.co.recruit.erikura.databinding.DialogMissingPlaceConfirmBinding
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
 
-class MissingPlaceConfirmDialogFragment(private val missingPlaces: List<String>): DialogFragment()  {
+class MissingPlaceConfirmDialogFragment: DialogFragment()  {
+    companion object {
+        private val MISSING_PLACES_ARGUMENTS = "missingPlaces"
+        fun newInstance(missingPlaces: List<String>): MissingPlaceConfirmDialogFragment {
+            return MissingPlaceConfirmDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putStringArrayList(MISSING_PLACES_ARGUMENTS, ArrayList(missingPlaces))
+                }
+            }
+        }
+    }
+
+    private var missingPlaces: List<String> = listOf()
     private val viewModel: MissingPlaceConfirmViewModel by lazy {
         ViewModelProvider(this).get(MissingPlaceConfirmViewModel::class.java)
     }
     var onClickListener: OnClickListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            missingPlaces = args.getStringArrayList(MISSING_PLACES_ARGUMENTS)?.toList() ?: listOf()
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogMissingPlaceConfirmBinding>(

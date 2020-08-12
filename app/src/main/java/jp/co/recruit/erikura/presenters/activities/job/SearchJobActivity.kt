@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,6 +22,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.databinding.InverseBindingAdapter
 import androidx.databinding.InverseBindingListener
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -39,9 +41,11 @@ import jp.co.recruit.erikura.databinding.FragmentMinMaxPickerBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
+import kotlinx.android.parcel.Parcelize
 import java.util.*
+import kotlin.collections.ArrayList
 
-class SearchJobActivity : BaseActivity(), SearchJobHandlers {
+class SearchJobActivity : BaseActivity(), SearchJobHandlers, MinMaxPickerDialogEventListener {
     companion object {
         val EXTRA_SEARCH_CONDITIONS = "jp.co.recruit.erikura.job.SearchJobActivity.SEARCH_CONDITIONS"
     }
@@ -148,29 +152,28 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
         }
     }
 
+    val workingTimeId = "WorkingTime"
+    val rewardId = "Reward"
+
     override fun onClickWorkingTimeSpinner(view: View) {
-        val fragment = MinMaxPickerDialogFragment(
+        val fragment = MinMaxPickerDialogFragment.newInstance(
+            workingTimeId,
             viewModel.minimumWorkingTimeItems.value ?: listOf(),
             viewModel.maximumWorkingTimeItems.value ?: listOf(),
             viewModel.minimumWorkingTime.value,
             viewModel.maximumWorkingTime.value
-        ) { min: Int, max: Int ->
-            viewModel.minimumWorkingTime.value = min
-            viewModel.maximumWorkingTime.value = max
-        }
+        )
         fragment.show(supportFragmentManager, "workingTimePicker")
     }
 
     override fun onClickRewardSpinner(view: View) {
-        val fragment = MinMaxPickerDialogFragment(
+        val fragment = MinMaxPickerDialogFragment.newInstance(
+            rewardId,
             viewModel.minimumRewardItems.value ?: listOf(),
             viewModel.maximumRewardItems.value ?: listOf(),
             viewModel.minimumReward.value,
             viewModel.maximumReward.value
-        ) { min: Int, max: Int ->
-            viewModel.minimumReward.value = min
-            viewModel.maximumReward.value = max
-        }
+        )
         fragment.show(supportFragmentManager, "rewordPicker")
     }
 
@@ -180,6 +183,28 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers {
             viewModel.jobKind.value = item?.value
         }
     }
+
+    override fun onAttachFragment(fragment: Fragment) {
+        super.onAttachFragment(fragment)
+
+        if (fragment is MinMaxPickerDialogFragment) {
+            val minMaxFragment = fragment as MinMaxPickerDialogFragment
+            minMaxFragment
+        }
+    }
+
+    override fun onItemPicked(picker: MinMaxPickerDialogFragment, id: String, min: Int, max: Int) {
+        when(id) {
+            workingTimeId -> {
+                viewModel.minimumWorkingTime.value = min
+                viewModel.maximumWorkingTime.value = max
+            }
+            rewardId -> {
+                viewModel.minimumReward.value = min
+                viewModel.maximumReward.value = max
+            }
+        }
+    }
 }
 
 class SearchJobViewModel: BaseJobQueryViewModel() {
@@ -187,10 +212,10 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
     val detailButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val detailConditionsVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
-    val minimumWorkingTimeItems: MutableLiveData<List<PickerItem<Int>>> = MutableLiveData()
-    val maximumWorkingTimeItems: MutableLiveData<List<PickerItem<Int>>> = MutableLiveData()
-    val minimumRewardItems: MutableLiveData<List<PickerItem<Int>>> = MutableLiveData()
-    val maximumRewardItems: MutableLiveData<List<PickerItem<Int>>> = MutableLiveData()
+    val minimumWorkingTimeItems: MutableLiveData<List<IntPickerItem>> = MutableLiveData()
+    val maximumWorkingTimeItems: MutableLiveData<List<IntPickerItem>> = MutableLiveData()
+    val minimumRewardItems: MutableLiveData<List<IntPickerItem>> = MutableLiveData()
+    val maximumRewardItems: MutableLiveData<List<IntPickerItem>> = MutableLiveData()
 
     val jobKindsItems = MediatorLiveData<List<JobKindItem>>().also { result ->
         result.addSource(jobKinds) {
@@ -219,18 +244,18 @@ class SearchJobViewModel: BaseJobQueryViewModel() {
             field = value
             minimumWorkingTimeItems.value = (listOf(JobQuery.MIN_WORKING_TIME) + value).filterNotNull().map {
                 Log.v("TEST", "${formatWorkingTime(it)}, ${it}")
-                PickerItem(formatWorkingTime(it), it)
+                IntPickerItem(formatWorkingTime(it), it)
             }
             maximumWorkingTimeItems.value = (value + listOf(JobQuery.MAX_WORKING_TIME)).filterNotNull().map {
                 Log.v("TEST", "${formatWorkingTime(it)}, ${it}")
-                PickerItem(formatWorkingTime(it), it)
+                IntPickerItem(formatWorkingTime(it), it)
             }
         }
     var rewards: List<Int> = listOf()
         set(value) {
             field = value
-            minimumRewardItems.value = (listOf(JobQuery.MIN_REWARD) + value).map { PickerItem(formatReward(it), it) }
-            maximumRewardItems.value = (value + listOf(JobQuery.MAX_REWARD)).map { PickerItem(formatReward(it), it) }
+            minimumRewardItems.value = (listOf(JobQuery.MIN_REWARD) + value).map { IntPickerItem(formatReward(it), it) }
+            maximumRewardItems.value = (value + listOf(JobQuery.MAX_REWARD)).map { IntPickerItem(formatReward(it), it) }
         }
 
     init {
@@ -347,13 +372,46 @@ sealed class JobKindItem(val label: String, val value: JobKind?) {
     }
 }
 
-class MinMaxPickerDialogFragment<T>(
-    val minValues: List<PickerItem<T>>,
-    val maxValues: List<PickerItem<T>>,
-    val min: T?,
-    val max: T?,
-    val onComplete: (min: T, max: T) -> Unit
-): DialogFragment(), MinMaxPickerDialogHandlers {
+class MinMaxPickerDialogFragment: DialogFragment(), MinMaxPickerDialogHandlers {
+    companion object {
+        const val ID_ARGUMENT = "id"
+        const val MIN_VALUES_ARGUMENT = "minValues"
+        const val MAX_VALUES_ARGUMENT = "maxValues"
+        const val MIN_ARGUMENT = "min"
+        const val MAX_ARGUMENT = "max"
+
+        fun newInstance(id: String, minValues: List<IntPickerItem>, maxValues: List<IntPickerItem>, min: Int?, max: Int?): MinMaxPickerDialogFragment {
+            return MinMaxPickerDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putString(ID_ARGUMENT, id)
+                    args.putParcelableArrayList(MIN_VALUES_ARGUMENT, ArrayList(minValues))
+                    args.putParcelableArrayList(MAX_VALUES_ARGUMENT, ArrayList(maxValues))
+                    args.putParcelable(MIN_ARGUMENT, OptionalInt(min))
+                    args.putParcelable(MAX_ARGUMENT, OptionalInt(max))
+                }
+            }
+        }
+
+    }
+
+    private var id: String = ""
+    private var minValues: List<IntPickerItem> = listOf()
+    private var maxValues: List<IntPickerItem> = listOf()
+    private var min: Int? = null
+    private var max: Int? = null
+    private var listener: MinMaxPickerDialogEventListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            id = args.getString(ID_ARGUMENT) ?: ""
+            minValues = args.getParcelableArrayList<IntPickerItem>(MIN_VALUES_ARGUMENT)?.toList() ?: listOf()
+            maxValues = args.getParcelableArrayList<IntPickerItem>(MAX_VALUES_ARGUMENT)?.toList() ?: listOf()
+            min = args.getParcelable<OptionalInt>(MIN_ARGUMENT)?.value
+            max = args.getParcelable<OptionalInt>(MAX_ARGUMENT)?.value
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(activity)
 
@@ -381,23 +439,34 @@ class MinMaxPickerDialogFragment<T>(
         builder
             .setView(binding.root)
             .setPositiveButton(getString(R.string.button_ok)) { dialog: DialogInterface, which: Int ->
-                val min: PickerItem<T> = viewModel.minItem as PickerItem<T>
-                val max: PickerItem<T> = viewModel.maxItem as PickerItem<T>
+                val min: IntPickerItem = viewModel.minItem
+                val max: IntPickerItem = viewModel.maxItem
 
                 Log.v("MIN-MAX:", "min: ${min.toString()}, max: ${max.toString()}")
-                onComplete(min.value, max.value)
+                listener?.onItemPicked(this, id, min.value, max.value)
             }
             .setNegativeButton(getString(R.string.button_cancel), null)
         return builder.create()
     }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            listener = context as? MinMaxPickerDialogEventListener
+        }
+        catch (e: ClassCastException) {
+            // The activity doesn't implement the interface, throw exception
+            throw ClassCastException((context.toString() + " must implement NoticeDialogListener"))
+        }
+    }
 }
 
-class MinMaxPickerDialogViewModel(val minValues: List<PickerItem<*>>, val maxValues: List<PickerItem<*>>): ViewModel() {
+class MinMaxPickerDialogViewModel(val minValues: List<IntPickerItem>, val maxValues: List<IntPickerItem>): ViewModel() {
     val minItemIndex: MutableLiveData<Int> = MutableLiveData()
     val maxItemIndex: MutableLiveData<Int> = MutableLiveData()
 
-    val minItem: PickerItem<*> get() = minValues[minItemIndex.value ?: 0]
-    val maxItem: PickerItem<*> get() = maxValues[maxItemIndex.value ?: 0]
+    val minItem: IntPickerItem get() = minValues[minItemIndex.value ?: 0]
+    val maxItem: IntPickerItem get() = maxValues[maxItemIndex.value ?: 0]
 
     init {
         minItemIndex.value = 0
@@ -406,6 +475,10 @@ class MinMaxPickerDialogViewModel(val minValues: List<PickerItem<*>>, val maxVal
 }
 
 interface MinMaxPickerDialogHandlers {
+}
+
+interface MinMaxPickerDialogEventListener {
+    fun onItemPicked(picker: MinMaxPickerDialogFragment, id: String, min: Int, max: Int)
 }
 
 class ItemPicker : NumberPicker {
@@ -419,12 +492,12 @@ class ItemPicker : NumberPicker {
         wrapSelectorWheel = false
     }
 
-    var items: List<PickerItem<*>> = listOf()
+    var items: List<IntPickerItem> = listOf()
 }
 
 object ItemPickerAdapter {
     @BindingAdapter("items")
-    @JvmStatic fun setItems(view: ItemPicker, items: List<PickerItem<*>>) {
+    @JvmStatic fun setItems(view: ItemPicker, items: List<IntPickerItem>) {
         view.items = items
         view.displayedValues = null
         view.minValue = 0
@@ -452,4 +525,8 @@ object ItemPickerAdapter {
     }
 }
 
-class PickerItem<T>(val label: String, val value: T) {}
+@Parcelize
+class IntPickerItem(val label: String, val value: Int): Parcelable {}
+
+@Parcelize
+data class OptionalInt(val value: Int?): Parcelable {}

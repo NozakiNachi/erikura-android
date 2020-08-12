@@ -30,12 +30,31 @@ import jp.co.recruit.erikura.databinding.DialogStopBinding
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import java.util.*
 
-class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFragmentEventHandlers  {
+class StopDialogFragment : DialogFragment(), StopDialogFragmentEventHandlers  {
+    companion object {
+        const val JOB_ARGUMENT = "job"
+
+        fun newInstance(job: Job?): StopDialogFragment {
+            return StopDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelable(JOB_ARGUMENT, job)
+                }
+            }
+        }
+    }
+
+    private var job: Job? = null
     private val viewModel by lazy {
         ViewModelProvider(this).get(StopDialogFragmentViewModel::class.java)
     }
-
     private val locationManager: LocationManager = ErikuraApplication.locationManager
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let {
+            job = it.getParcelable(JOB_ARGUMENT)
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogStopBinding>(
@@ -56,7 +75,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
 
     override fun onClikStop(view: View) {
         // stopJobの呼び出し
-        job?.let {
+        job?.let { job ->
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
                 locationManager.latLng
             } else {
@@ -85,7 +104,7 @@ class StopDialogFragment(private val job: Job?) : DialogFragment(), StopDialogFr
 
     private fun onClickConfirmation(view: View) {
         //入力された理由をリクエストをパラメーターに加え、再度実行する
-        job?.let {
+        job?.let { job ->
             val latLng: LatLng? = if (locationManager.checkPermission(this)) {
                 locationManager.latLng
             } else {

@@ -87,7 +87,7 @@ class JobDetailsActivity : BaseActivity() {
             dialog.show(supportFragmentManager, "CancelWorking")
             fromWorkingJobDetailsFragment = false
         } else if (fromAppliedJobDetailsFragment) {
-            val dialog = StartDialogFragment(job, message)
+            val dialog = StartDialogFragment.newInstance(job, message)
             dialog.show(supportFragmentManager, "Start")
             fromAppliedJobDetailsFragment = false
         }

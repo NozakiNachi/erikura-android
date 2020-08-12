@@ -35,7 +35,7 @@ class CancelButtonFragment : BaseJobDetailFragment, CancelButtonFragmentEventHan
     }
 
     override fun onClickCancel(view: View) {
-        val dialog = CancelDialogFragment(job)
+        val dialog = CancelDialogFragment.newInstance(job)
         dialog.show(childFragmentManager, "Cancel")
     }
 }

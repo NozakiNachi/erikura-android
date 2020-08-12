@@ -12,7 +12,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
-import jp.co.recruit.erikura.presenters.activities.job.CancelWorkingDialogFragment
 import jp.co.recruit.erikura.presenters.activities.job.CanceledDialogFragment
 import jp.co.recruit.erikura.presenters.activities.report.ReportCompletedDialogFragment
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment

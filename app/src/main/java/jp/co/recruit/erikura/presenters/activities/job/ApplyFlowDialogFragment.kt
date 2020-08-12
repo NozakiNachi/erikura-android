@@ -12,6 +12,15 @@ import jp.co.recruit.erikura.databinding.DialogApplyFlowBinding
 
 
 class ApplyFlowDialogFragment: DialogFragment(), ApplyFlowDialogFragmentEventHandlers {
+    companion object {
+        fun newInstance(): ApplyFlowDialogFragment {
+            return ApplyFlowDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    // 引数があれば args に設定する
+                }
+            }
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogApplyFlowBinding>(

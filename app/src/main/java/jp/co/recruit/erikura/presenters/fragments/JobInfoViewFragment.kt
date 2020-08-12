@@ -55,7 +55,7 @@ class JobInfoViewFragment : BaseJobDetailFragment, JobInfoViewFragmentEventHandl
     }
 
     override fun onClickTitle(view: View) {
-        val dialog = JobTitleDialogFragment(job?.title ?: "")
+        val dialog = JobTitleDialogFragment.newInstance(job?.title ?: "")
         dialog.show(childFragmentManager, "JobTitle")
     }
 }
