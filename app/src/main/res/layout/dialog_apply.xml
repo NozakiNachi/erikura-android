@@ -33,14 +33,18 @@
                 android:textSize="22dp" />
 
             <TextView
+                style="@style/errorField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                style="@style/label_w2"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:padding="10dp"
                 android:textColor="@color/coral"
-                android:textSize="22dp"
+                android:textSize="14dp"
+                android:lineSpacingMultiplier="1.5"
                 android:text="物件注意事項があります。\n必ずご確認ください。"
-                android:gravity="center_horizontal"
+                android:visibility="@{viewModel.faqCautionVisibility}"
                 />
 
             <TextView
