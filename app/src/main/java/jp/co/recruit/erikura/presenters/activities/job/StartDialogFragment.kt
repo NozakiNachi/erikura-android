@@ -3,23 +3,47 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.DialogStartBinding
 
+class StartDialogFragment() : DialogFragment() {
+    companion object {
+        const val JOB_ARGUMENT = "job"
+        const val MESSAGE_ARGUMENT = "message"
 
-class StartDialogFragment(private val job: Job?, val message: String?) : DialogFragment() {
+        fun newInstance(job: Job?, message: String?): StartDialogFragment {
+            return StartDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelable(JOB_ARGUMENT, job)
+                    args.putString(MESSAGE_ARGUMENT, message)
+                }
+            }
+        }
+    }
+
+    private var job: Job? = null
+    private var message: String? = null
     private val viewModel: StartDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(StartDialogFragmentViewModel::class.java)
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            job = args.getParcelable(JOB_ARGUMENT)
+            message = args.getString(MESSAGE_ARGUMENT)
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogStartBinding>(
             LayoutInflater.from(activity),

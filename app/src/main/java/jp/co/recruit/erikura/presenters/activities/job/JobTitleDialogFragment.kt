@@ -1,22 +1,40 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import jp.co.recruit.erikura.R
 import android.app.Dialog
-import androidx.fragment.app.DialogFragment
-import android.view.WindowManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Window
+import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.DialogJobTitleBinding
 
+class JobTitleDialogFragment: DialogFragment() {
+    companion object {
+        const val TITLE_ARGUMENT = "title"
+        fun newInstance(title: String): JobTitleDialogFragment {
+            return JobTitleDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putString(TITLE_ARGUMENT, title)
+                }
+            }
+        }
+    }
 
-class JobTitleDialogFragment(val title: String): DialogFragment() {
+    private var title: String = ""
     private val viewModel: JobTitleDialogFragmentViewModel by lazy {
         ViewModelProvider(this).get(JobTitleDialogFragmentViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            title = args.getString(TITLE_ARGUMENT) ?: ""
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

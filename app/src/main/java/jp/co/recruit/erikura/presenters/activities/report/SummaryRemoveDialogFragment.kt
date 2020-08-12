@@ -15,11 +15,30 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.DialogSummaryRemoveBinding
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
-class SummaryRemoveDialogFragment(private val index: Int): DialogFragment() {
+class SummaryRemoveDialogFragment: DialogFragment() {
+    companion object {
+        const val INDEX_ARGUMENT = "index"
+        fun newInstance(index: Int): SummaryRemoveDialogFragment {
+            return SummaryRemoveDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putInt(INDEX_ARGUMENT, index)
+                }
+            }
+        }
+    }
+
+    private var index: Int = 0
     private val viewModel: SummaryRemoveViewModel by lazy {
         ViewModelProvider(this).get(SummaryRemoveViewModel::class.java)
     }
     var onClickListener: OnClickListener? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            index = args.getInt(INDEX_ARGUMENT, 0)
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogSummaryRemoveBinding>(

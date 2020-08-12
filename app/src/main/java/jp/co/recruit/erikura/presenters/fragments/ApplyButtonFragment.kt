@@ -87,7 +87,7 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
 
     override fun onClickApply(view: View) {
         if (Api.isLogin) {
-            val dialog = ApplyDialogFragment(job)
+            val dialog = ApplyDialogFragment.newInstance(job)
             dialog.show(childFragmentManager, "Apply")
         }else {
             val intent= Intent(activity, LoginRequiredActivity::class.java)

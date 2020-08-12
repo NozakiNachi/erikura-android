@@ -33,7 +33,31 @@ import jp.co.recruit.erikura.presenters.view_models.JobListItemViewModel
 import java.io.File
 import java.util.concurrent.Executors
 
-class JobSelectDialogFragment(val jobs: List<Job>, val position: LatLng?): DialogFragment(), JobSelectDialogHandler {
+class JobSelectDialogFragment: DialogFragment(), JobSelectDialogHandler {
+    companion object {
+        const val JOBS_ARGUMENTS = "jobs"
+        const val POSITION_ARGUMENTS = "position"
+        fun newInstance(jobs: List<Job>, position: LatLng?): JobSelectDialogFragment {
+            return JobSelectDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelableArrayList(JOBS_ARGUMENTS, ArrayList(jobs ?: listOf()))
+                    args.putParcelable(POSITION_ARGUMENTS, position)
+                }
+            }
+        }
+    }
+
+    private var jobs: List<Job> = listOf()
+    private var position: LatLng? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            jobs = args.getParcelableArrayList<Job>(JOBS_ARGUMENTS)?.toList() ?: listOf()
+            position = args.getParcelable(POSITION_ARGUMENTS)
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return Dialog(activity!!)?.also { dialog ->
 

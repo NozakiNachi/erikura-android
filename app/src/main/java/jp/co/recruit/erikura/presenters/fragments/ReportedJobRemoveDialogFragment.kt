@@ -14,7 +14,19 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogReportedJobRemoveBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 
-class ReportedJobRemoveDialogFragment(private val job: Job?) : DialogFragment() , ReportedJobRemoveEventHandlers {
+class ReportedJobRemoveDialogFragment : DialogFragment() , ReportedJobRemoveEventHandlers {
+    companion object {
+        const val JOB_ARGUMENT = "job"
+        fun newInstance(job: Job?): ReportedJobRemoveDialogFragment {
+            return ReportedJobRemoveDialogFragment().also {
+                it.arguments = Bundle().also { args ->
+                    args.putParcelable(JOB_ARGUMENT, job)
+                }
+            }
+        }
+    }
+
+    private var job: Job? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogReportedJobRemoveBinding>(
@@ -31,12 +43,14 @@ class ReportedJobRemoveDialogFragment(private val job: Job?) : DialogFragment() 
         return builder.create()
     }
     override fun onClickRemoveButton(view: View) {
-        job?.report?.let {
-            Api(activity!!).deleteReport(job.id) {
-                job.report?.deleted = true
-                val intent= Intent(activity, JobDetailsActivity::class.java)
-                intent.putExtra("job", job)
-                startActivity(intent)
+        job?.let { job ->
+            job.report?.let { report ->
+                Api(activity!!).deleteReport(job.id) {
+                    report.deleted = true
+                    val intent= Intent(activity, JobDetailsActivity::class.java)
+                    intent.putExtra("job", job)
+                    startActivity(intent)
+                }
             }
         }
     }

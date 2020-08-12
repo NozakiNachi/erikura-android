@@ -579,7 +579,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         val jobsOnLocation = viewModel.jobsByLocation.value?.get(job.latLng) ?: listOf()
         if (jobsOnLocation.size > 1) {
             // 案件選択モーダルを表示する
-            val dialog = JobSelectDialogFragment(JobUtils.sortJobs(jobsOnLocation), viewModel.latLng.value)
+            val dialog = JobSelectDialogFragment.newInstance(JobUtils.sortJobs(jobsOnLocation), viewModel.latLng.value)
             dialog.show(supportFragmentManager, "JobSelector")
         }
         else {
