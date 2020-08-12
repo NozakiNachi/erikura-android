@@ -185,6 +185,8 @@ class ApplyDialogFragmentViewModel: ViewModel() {
         result.addSource(entryQuestionAnswer) { result.value = isValid() }
     }
 
+    val faqCautionVisibility = MutableLiveData<Int>(View.GONE)
+
     fun setup(job: Job?) {
         if (job != null) {
             if(!job.entryQuestion.isNullOrBlank()) {
@@ -205,6 +207,13 @@ class ApplyDialogFragmentViewModel: ViewModel() {
             }else {
                 caption.value = ErikuraApplication.instance.getString(R.string.applyDialog_caption2Pattern2)
                 reportPlacesVisibility.value = View.GONE
+            }
+
+            if ((job.cautionsCount ?: 0) > 0) {
+                faqCautionVisibility.value = View.VISIBLE
+            }
+            else {
+                faqCautionVisibility.value = View.GONE
             }
         }
     }
