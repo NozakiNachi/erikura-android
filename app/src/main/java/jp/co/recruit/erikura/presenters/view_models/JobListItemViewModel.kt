@@ -7,6 +7,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.view.View
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -47,6 +48,13 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
 
     val boostVisibility: Int get() { return if (job.boost) { View.VISIBLE } else { View.GONE} }
     val wantedVisibility: Int get() { return if (job.wanted) { View.VISIBLE } else { View.GONE} }
+
+    val rejectedLabelVisibility: Int get() {
+        if (timeLabelType == JobUtil.TimeLabelType.OWNED && job.isRejected)
+            return View.VISIBLE
+        else
+            return View.GONE
+    }
 
     init {
         val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType)

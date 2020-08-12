@@ -1,22 +1,21 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.app.ActivityOptions
+import JobUtil
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
-
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -91,7 +90,17 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
         val endDate = DateUtils.endOfMonth(targetMonth)
 
         Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED, reportedFrom = startDate, reportedTo = endDate)) { jobs ->
-            viewModel.reportedJobs.value = jobs
+            val rejectedJobs = mutableListOf<Job>()
+            val otherJobs = mutableListOf<Job>()
+            jobs.forEach { job ->
+                if (job.isRejected) {
+                    rejectedJobs.add(job)
+                }
+                else {
+                    otherJobs.add(job)
+                }
+            }
+            viewModel.reportedJobs.value = rejectedJobs + otherJobs
             jobListAdapter.jobs = viewModel.reportedJobs.value ?: listOf()
             jobListAdapter.notifyDataSetChanged()
 
