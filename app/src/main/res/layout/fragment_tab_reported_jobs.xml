@@ -1,20 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-    <TextView
-        android:id="@+id/label1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="40dp"
-        style="@style/label_w2"
-        android:textSize="16dp"
-        android:textColor="@color/blackTwo"
-        android:text="報告済み"
-        android:gravity="center_horizontal"
-        />
-</RelativeLayout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.OwnJobsViewModel" />
+    </data>
+    <RelativeLayout
+        android:orientation="vertical" android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <TextView
+            android:id="@+id/label1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            style="@style/label_w2"
+            android:textSize="16dp"
+            android:textColor="@color/blackTwo"
+            android:text="報告済み"
+            android:gravity="center_horizontal"
+            />
+        <View
+            android:layout_width="8dp"
+            android:layout_height="8dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@id/label1"
+            android:layout_marginTop="36dp"
+            android:layout_marginLeft="0dp"
+            android:background="@drawable/background_coral_circle"
+            android:visibility="@{viewModel.rejectedBadgeVisibility}"
+            />
+    </RelativeLayout>
+</layout>

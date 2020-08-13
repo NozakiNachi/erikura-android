@@ -1,17 +1,24 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.os.Bundle
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.OwnJobQuery
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityOwnJobsBinding
+import jp.co.recruit.erikura.databinding.FragmentTabAppliedJobsBinding
+import jp.co.recruit.erikura.databinding.FragmentTabReportedJobsBinding
+import jp.co.recruit.erikura.databinding.FragmentTabWorkingJobsBinding
 import jp.co.recruit.erikura.presenters.activities.job.CanceledDialogFragment
 import jp.co.recruit.erikura.presenters.activities.report.ReportCompletedDialogFragment
 import jp.co.recruit.erikura.presenters.fragments.AppliedJobsFragment
@@ -19,6 +26,7 @@ import jp.co.recruit.erikura.presenters.fragments.FinishedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.ReportedJobsFragment
 import jp.co.recruit.erikura.presenters.fragments.WorkingTimeCircleFragment
 import kotlinx.android.synthetic.main.activity_own_jobs.*
+import java.util.*
 
 class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsHandlers {
     companion object {
@@ -76,14 +84,24 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
         val tabLayout: TabLayout = findViewById(R.id.owned_jobs_tab_layout)
         tabLayout.setupWithViewPager(viewPager)
 
+
         tabLayout.getTabAt(PAGE_APPLIED_JOBS)?.let {
-            it.setCustomView(R.layout.fragment_tab_applied_jobs)
+            val binding = FragmentTabAppliedJobsBinding.inflate(layoutInflater, it.view, false)
+            binding.lifecycleOwner = this
+            binding.viewModel = viewModel
+            it.setCustomView(binding.root)
         }
         tabLayout.getTabAt(PAGE_FINISHED_JOBS)?.let {
-            it.setCustomView(R.layout.fragment_tab_working_jobs)
+            val binding = FragmentTabWorkingJobsBinding.inflate(layoutInflater, it.view, false)
+            binding.lifecycleOwner = this
+            binding.viewModel = viewModel
+            it.setCustomView(binding.root)
         }
         tabLayout.getTabAt(PAGE_REPORTED_JOBS)?.let {
-            it.setCustomView(R.layout.fragment_tab_reported_jobs)
+            val binding = FragmentTabReportedJobsBinding.inflate(layoutInflater, it.view, false)
+            binding.lifecycleOwner = this
+            binding.viewModel = viewModel
+            it.setCustomView(binding.root)
         }
     }
 
@@ -126,20 +144,36 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
             fromMypageJobCommentGoodButton = false
         }
 
-        Api(this).ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
-            val transaction = supportFragmentManager.beginTransaction()
-            if (!jobs.isNullOrEmpty()) {
-                val sortedJobs = jobs.sortedBy{
-                    it.entry?.limitAt
-                }.first()
-                val timerCircle = WorkingTimeCircleFragment.newInstance(sortedJobs)
-                transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
-                transaction.commitAllowingStateLoss()
-            }else {
-                val fragment = supportFragmentManager.findFragmentByTag("timerCircle")
-                fragment?.let {
-                    transaction.remove(fragment)
+        Api(this).also { api ->
+            api.ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED)) { jobs ->
+                val transaction = supportFragmentManager.beginTransaction()
+                if (!jobs.isNullOrEmpty()) {
+                    val sortedJobs = jobs.sortedBy{
+                        it.entry?.limitAt
+                    }.first()
+                    val timerCircle = WorkingTimeCircleFragment.newInstance(sortedJobs)
+                    transaction.replace(R.id.own_jobs_timer_circle, timerCircle, "timerCircle")
                     transaction.commitAllowingStateLoss()
+                }else {
+                    val fragment = supportFragmentManager.findFragmentByTag("timerCircle")
+                    fragment?.let {
+                        transaction.remove(fragment)
+                        transaction.commitAllowingStateLoss()
+                    }
+                }
+            }
+
+            // 差戻しから48時間以上経過した案件は自動キャンセルされる
+            //   => 念の為、当日から 30日前まで取得する
+            val today = Date()
+            val endDate = DateUtils.endOfMonth(today)
+            val startDate = DateUtils.addDays(today, -30)
+            api.ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED, reportedFrom = startDate, reportedTo = endDate)) { jobs ->
+                viewModel.hasRejected.value = false
+                jobs.forEach { job ->
+                    if (job.isRejected) {
+                        viewModel.hasRejected.value = true
+                    }
                 }
             }
         }
@@ -151,7 +185,14 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
     }
 }
 
-class OwnJobsViewModel: ViewModel() {}
+class OwnJobsViewModel: ViewModel() {
+    val hasRejected = MutableLiveData<Boolean>(false)
+    val rejectedBadgeVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(hasRejected) { rejected ->
+            result.value = if (rejected) { View.VISIBLE } else { View.GONE }
+        }
+    }
+}
 
 interface OwnJobsHandlers: TabEventHandlers {
 }
