@@ -99,6 +99,7 @@ class RegisterWishWorkActivity : BaseActivity(),
                 // 登録完了画面へ遷移
                 val intent: Intent = Intent(this, RegisterFinishedActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                intent.putExtra("user", it.user)
                 startActivity(intent)
                 finish()
 

@@ -58,14 +58,31 @@
                     android:layout_height="30dp"
                     android:background="@drawable/background_triangle" />
 
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:textSize="18dp"
+                    android:textColor="@color/black"
+                    android:text="@string/registerFinished_recommend"/>
 
                 <Button
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="30dp"
-                    android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
-                    android:text="@string/go"
+                    android:text="@string/first_confirm_identification"
+                    app:onSafeClick="@{handlers::onClickIdVerifyInfo}" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="40dp"
+                    style="@style/secondaryButton"
+                    android:text="@string/first_search_job"
                     app:onSafeClick="@{handlers::onClickGo}" />
 
             </LinearLayout>

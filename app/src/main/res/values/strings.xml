@@ -71,6 +71,7 @@
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
+    <string name="registerFinished_recommend">お仕事への応募までに身分証のご提出をお願いしております。完了まで最長数日かかるため、事前の身分証確認をおすすめします。</string>
 
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を更新しました</string>
@@ -354,6 +355,8 @@
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>
     <string name="authenticate">認証</string>
+    <string name="first_search_job">先に仕事を探す</string>
+    <string name="first_confirm_identification">先に身分証確認を行う</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
