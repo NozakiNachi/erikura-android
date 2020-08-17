@@ -28,6 +28,13 @@ class ReportedJobRemoveDialogFragment : DialogFragment() , ReportedJobRemoveEven
 
     private var job: Job? = null
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            job = args.getParcelable(JOB_ARGUMENT)
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val binding = DataBindingUtil.inflate<DialogReportedJobRemoveBinding>(
             LayoutInflater.from(activity),

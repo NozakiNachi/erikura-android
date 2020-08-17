@@ -3,11 +3,11 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import jp.co.recruit.erikura.R
 import android.view.LayoutInflater
 import android.view.View
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.DialogFragment
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.databinding.DialogApplyFlowBinding
 
 
