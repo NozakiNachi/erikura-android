@@ -87,8 +87,18 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
 
     override fun onClickApply(view: View) {
         if (Api.isLogin) {
-            val dialog = ApplyDialogFragment.newInstance(job)
-            dialog.show(childFragmentManager, "Apply")
+            // FIXME APIの呼び出しと本人確認情報入力画面の表示
+            // 身元確認状況取得APIを実施
+            //val identifyStatus = Api(this).
+            if (true) {
+                // 身分証確認中or確認済みの場合
+                val dialog = ApplyDialogFragment.newInstance(job)
+                dialog.show(childFragmentManager, "Apply")
+            } else {
+                // 身分証未確認の場合
+                //　本人確認情報画面へ遷移
+                // 仕事詳細fromApplyJobから遷移したこととユーザー情報を渡す
+                }
         }else {
             val intent= Intent(activity, LoginRequiredActivity::class.java)
             startActivity(intent)
