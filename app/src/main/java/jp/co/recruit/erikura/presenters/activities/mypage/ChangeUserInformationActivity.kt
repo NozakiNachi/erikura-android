@@ -95,8 +95,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         // 変更するユーザーの現在の登録値を取得
         Api(this).user() {
             user = it
-            // FIXME API身分証状況を取得し変数に代入　
+            // FIXME API身分証状況を取得し変数に代入
+            //Api(this).showVerifications(user.id, true) { response
+            // identifyStatus = response.status
+            // userName = response.lastName + reponse.firstName .......
             loadData()
+            //  }
         }
     }
 
@@ -302,6 +306,14 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
     }
 
+    override fun onClickUpdateIdentity(view: View) {
+        //FIXME 本人確認情報入力画面へ遷移
+        // ユーザー情報と会員情報から遷移してきたフラグを渡す
+        intent.putExtra("user", user)
+        intent.putExtra("fromChangeUser", true)
+        TODO("Not yet implemented")
+    }
+
     // データの読み込み
     private fun loadData() {
         viewModel.email.value = user.email
@@ -340,6 +352,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.female.value = true
             }
         }
+
+        // 身元確認状況を取得
+//        Api(this).{ response
+        // identifyStatus = reponse.status
+        // userName = response.firstName + response.lastName
+        viewModel.identifyStatus.value = identifyStatus
 
         // 身分証の確認状況によって初期化を分岐する
         when (identifyStatus) {
@@ -474,6 +492,59 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    val confirmingVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.CONFIRMING_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val confirmedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.CONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val changeVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            if (isUnConfirmed(status)) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
+            }
+        }
+    }
+
+    val inputIdentityInfoEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            result.value = isUnConfirmed(status)
+        }
+    }
+
+    // 未確認の場合 true
+    private fun isUnConfirmed(status: Int) : Boolean{
+        var isNotUnConfirm = false
+        when (status) {
+            ErikuraApplication.UNCONFIRMED_CODE -> {
+                isNotUnConfirm = true
+            }
+        }
+        return isNotUnConfirm
     }
 
     // バリデーションルール
@@ -681,4 +752,5 @@ interface ChangeUserInformationEventHandlers {
     fun onClickRegister(view: View)
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
+    fun onClickUpdateIdentity(view: View)
 }

@@ -58,7 +58,7 @@ class RegisterFinishedActivity : BaseActivity(),
         }
     }
 
-    override fun onClickIdVerifyInfo(view: View) {
+    override fun onClickUpdateIdentity(view: View) {
         //本人確認情報入力画面へ遷移します
         // FIXME Intentの作成本人確認情報入力画面　
         //  FIXME 身分確認完了後に地図画面へ遷移させるために本登録から遷移したことを次の画面へ知らせる
@@ -70,5 +70,5 @@ class RegisterFinishedActivity : BaseActivity(),
 
 interface RegisterFinishedEventHandlers {
     fun onClickGo(view: View)
-    fun onClickIdVerifyInfo(view: View)
+    fun onClickUpdateIdentity(view: View)
 }

@@ -74,7 +74,7 @@
                     android:layout_marginTop="30dp"
                     style="@style/primaryButton"
                     android:text="@string/first_confirm_identification"
-                    app:onSafeClick="@{handlers::onClickIdVerifyInfo}" />
+                    app:onSafeClick="@{handlers::onClickUpdateIdentity}" />
 
                 <Button
                     android:layout_width="match_parent"
