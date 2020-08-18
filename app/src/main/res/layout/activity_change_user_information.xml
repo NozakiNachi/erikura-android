@@ -48,6 +48,47 @@
                         android:text="会員情報変更" />
                 </LinearLayout>
 
+            <!--身分証未確認の場合表示-->
+                <!-- FIXME ボタンの制御を未実装-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/background_round_topaz"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:visibility="@{viewModel.unconfirmedExplainVisibility}">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textSize="22dp"
+                    android:textColor="@color/coral"
+                    android:text="@string/unconfirmed_identification_explain"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:textSize="14dp"
+                    android:textColor="@color/black"
+                    android:text="@string/recommend_identification"/>
+
+                <Button
+                    style="@style/secondaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:text="@string/confirm_identification"
+                    app:onSafeClick=""/>
+
+            </LinearLayout>
+
 
                 <!--ログインID(登録メールアドレスを表示する。)-->
                 <TextView
@@ -134,15 +175,65 @@
                     android:text="@={viewModel.verificationPasswordError.message}"
                     />
 
-                <!--氏名-->
-                <TextView
-                    style="@style/fieldLabel"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/icon_required_18"
-                    android:drawablePadding="10dp"
                     android:layout_marginTop="40dp"
-                    android:text="氏名 （姓・名）" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
+
+                    <!--氏名-->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="氏名 （姓・名）" />
+
+                    <!-- 身分証の確認状況を表示-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="12dp"
+                        android:textColor="@color/coral"
+                        android:text="@string/unconfirmed_identification"
+                        android:visibility=""/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="12dp"
+                        android:textColor="@color/coral"
+                        android:text="@{viewModel.}"
+                        android:visibility=""/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/verified_1x"
+                        android:textSize="12dp"
+                        android:textColor="@color/warmGrey"
+                        android:text="@string/confirmed_identification"
+                        android:visibility=""/>
+
+                    <TextView
+                        style="@style/linkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:layout_gravity="right"
+                        android:text="@string/change"
+                        app:onSafeClick=""
+                        android:visibility=""/>
+                </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

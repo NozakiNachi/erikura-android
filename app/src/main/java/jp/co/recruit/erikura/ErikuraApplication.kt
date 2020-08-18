@@ -78,6 +78,11 @@ class ErikuraApplication : Application() {
 
         // 再認証画面の遷移元の定数
         const val REQUEST_RESIGHIN = 4
+
+        // 身分証の実施状況の定数
+        const val UNCONFIRMED_CODE = 1
+        const val CONFIRMING_CODE = 2
+        const val CONFIRMED_CODE = 3
     }
 
     //    var userSession: UserSession? = null

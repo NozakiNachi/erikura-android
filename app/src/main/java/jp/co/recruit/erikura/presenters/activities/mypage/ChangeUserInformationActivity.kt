@@ -35,6 +35,10 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     var previousPostalCode: String? = null
     var requestCode: Int? = null
     var fromSms: Boolean = false
+    var identifyStatus: Int? = null
+    var userName: String? = null
+    var birthDay: String? = null
+    var cityName: String? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -91,6 +95,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         // 変更するユーザーの現在の登録値を取得
         Api(this).user() {
             user = it
+            // FIXME API身分証状況を取得し変数に代入　
             loadData()
         }
     }
@@ -335,6 +340,22 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.female.value = true
             }
         }
+
+        // 身分証の確認状況によって初期化を分岐する
+        when (identifyStatus) {
+            ErikuraApplication.UNCONFIRMED_CODE -> {
+
+            }
+            ErikuraApplication.CONFIRMING_CODE -> {
+                // 確認中の場合表示する氏名、生年月日、住所を取得
+                viewModel.confirmingUserName.value = getString(R.string.confirming_identification) + userName
+                viewModel.confirmingCityName.value = getString(R.string.confirming_identification) + cityName
+                viewModel.confirmingBirthDay.value = getString(R.string.confirming_identification) + birthDay
+            }
+            ErikuraApplication.CONFIRMED_CODE -> {
+
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -433,6 +454,26 @@ class ChangeUserInformationViewModel : ViewModel() {
         result.addSource(interestedWalk) { result.value = isValid() }
         result.addSource(interestedBicycle) { result.value = isValid() }
         result.addSource(interestedCar) { result.value = isValid() }
+    }
+
+    // FIXME
+    // 身分確認
+    val identifyStatus: MutableLiveData<Int> = MutableLiveData()
+    val confirmingUserName: MutableLiveData<String> = MutableLiveData()
+    val confirmingBirthDay: MutableLiveData<String> = MutableLiveData()
+    val confirmingCityName: MutableLiveData<String> = MutableLiveData()
+
+    val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.UNCONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
     }
 
     // バリデーションルール

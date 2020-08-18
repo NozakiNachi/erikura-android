@@ -21,7 +21,7 @@
 
     <!-- 仮登録画面 -->
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
-    <string name="registerEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
+    <string name="プライバシregisterEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
     <string name="registerEmail_terms_of_service"><a href="">利用規約</a></string>
     <string name="registerEmail_comma">、</string>
     <string name="registerEmail_privacy_policy"><a href="">プライバシーポリシー</a></string>
@@ -77,6 +77,14 @@
     <string name="change_user_information_success">会員情報を更新しました</string>
     <string name="change_user_information_other_than_phone_success">会員情報を更新しました\n※電話番号は携帯電話番号認証後に更新します</string>
     <string name="change_user_information_only_phone_success">電話番号を更新しました</string>
+
+    <!-- 会員情報変更画面-->
+    <string name="unconfirmed_identification_explain">身分証未確認の項目あり</string>
+    <string name="recommend_identification">お仕事への応募までに身分証のご提出をお願いしております。完了まで最長数日かかるため、事前の身分証確認をおすすめします。</string>
+    <string name="change">変更</string>
+    <string name="confirmed_identification">身分証確認済み</string>
+    <string name="confirming_identification">※身分証確認中：</string>
+    <string name="unconfirmed_identification">※身分証未確認</string>
 
     <!-- 口座情報登録成功モーダル -->
     <string name="register_account_success">口座情報を登録しました</string>
@@ -357,6 +365,7 @@
     <string name="authenticate">認証</string>
     <string name="first_search_job">先に仕事を探す</string>
     <string name="first_confirm_identification">先に身分証確認を行う</string>
+    <string name="confirm_identification">身分証確認を行う</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
