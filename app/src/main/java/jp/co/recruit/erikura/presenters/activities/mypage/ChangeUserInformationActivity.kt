@@ -93,14 +93,22 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
 
         // 変更するユーザーの現在の登録値を取得
-        Api(this).user() {
+        val api = Api(this)
+        api.user() {
             user = it
             // FIXME API身分証状況を取得し変数に代入
-            //Api(this).showVerifications(user.id, true) { response
-            // identifyStatus = response.status
-            // userName = response.lastName + reponse.firstName .......
-            loadData()
-            //  }
+            user.id?.let { userId ->
+                api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, comparingData ->
+                    // 身分確認状況を取得
+                    identifyStatus = status
+                    if (identifyStatus == ErikuraApplication.CONFIRMING_CODE){
+                        userName = comparingData.lastName + comparingData + comparingData.firstName
+                        birthDay = comparingData.dateOfBirth.toString()
+                        cityName = comparingData.city
+                    }
+                    loadData()
+                }
+            }
         }
     }
 
@@ -310,7 +318,15 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         //FIXME 本人確認情報入力画面へ遷移
         // ユーザー情報と会員情報から遷移してきたフラグを渡す
         intent.putExtra("user", user)
-        intent.putExtra("fromChangeUser", true)
+        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_CHANGE_USER)
+        TODO("Not yet implemented")
+    }
+
+    override fun onClickUpdateIdentityForChangeInfo(view: View) {
+        //FIXME 本人確認情報入力画面へ遷移
+        // ユーザー情報と会員情報(変更リンク)から遷移してきたフラグを渡す
+        intent.putExtra("user", user)
+        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO)
         TODO("Not yet implemented")
     }
 
@@ -353,26 +369,14 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             }
         }
 
-        // 身元確認状況を取得
-//        Api(this).{ response
-        // identifyStatus = reponse.status
-        // userName = response.firstName + response.lastName
         viewModel.identifyStatus.value = identifyStatus
 
-        // 身分証の確認状況によって初期化を分岐する
-        when (identifyStatus) {
-            ErikuraApplication.UNCONFIRMED_CODE -> {
-
-            }
-            ErikuraApplication.CONFIRMING_CODE -> {
+        //確認中の場合比較データを表示する
+        if(identifyStatus == ErikuraApplication.CONFIRMING_CODE) {
                 // 確認中の場合表示する氏名、生年月日、住所を取得
                 viewModel.confirmingUserName.value = getString(R.string.confirming_identification) + userName
                 viewModel.confirmingCityName.value = getString(R.string.confirming_identification) + cityName
                 viewModel.confirmingBirthDay.value = getString(R.string.confirming_identification) + birthDay
-            }
-            ErikuraApplication.CONFIRMED_CODE -> {
-
-            }
         }
     }
 
@@ -753,4 +757,5 @@ interface ChangeUserInformationEventHandlers {
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
     fun onClickUpdateIdentity(view: View)
+    fun onClickUpdateIdentityForChangeInfo(view: View)
 }

@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
@@ -88,19 +89,23 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
     override fun onClickApply(view: View) {
         if (Api.isLogin) {
             // FIXME APIの呼び出しと本人確認情報入力画面の表示
-            // 身元確認状況取得APIを実施
-            //val identifyStatus = Api(this).
-            if (true) {
-                // 身分証確認中or確認済みの場合
-                val dialog = ApplyDialogFragment.newInstance(job)
-                dialog.show(childFragmentManager, "Apply")
-            } else {
-                // 身分証未確認の場合
-                //　本人確認情報画面へ遷移
-                // 仕事詳細fromApplyJobから遷移したこととユーザー情報を渡す
+            user?.id?.let { userId ->
+                Api(activity!!).showIdVerifyStatus(userId, ErikuraApplication.NOT_GET_COMPARING_DATA) { status, comparingData ->
+                    // 身分確認状況を取得
+                    if (status == ErikuraApplication.CONFIRMING_CODE || status == ErikuraApplication.CONFIRMED_CODE) {
+                        // 身分証確認中、済の場合
+                        val dialog = ApplyDialogFragment.newInstance(job)
+                        dialog.show(childFragmentManager, "Apply")
+                    } else {
+                        // 身分証未確認の場合
+                        //　本人確認情報画面へ遷移
+//                        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_ENTRY)
+                        // 仕事詳細fromApplyJobから遷移したこととユーザー情報を渡す
+                    }
                 }
-        }else {
-            val intent= Intent(activity, LoginRequiredActivity::class.java)
+            }
+        } else {
+            val intent = Intent(activity, LoginRequiredActivity::class.java)
             startActivity(intent)
         }
     }

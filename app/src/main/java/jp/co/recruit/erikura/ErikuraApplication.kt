@@ -83,6 +83,17 @@ class ErikuraApplication : Application() {
         const val UNCONFIRMED_CODE = 1
         const val CONFIRMING_CODE = 2
         const val CONFIRMED_CODE = 3
+
+        // 身分証比較データの定数
+        const val GET_COMPARING_DATA = true
+        const val NOT_GET_COMPARING_DATA = false
+
+        // 身分証遷移元の定数
+        const val FROM = "from"
+        const val FROM_REGISTER = 1
+        const val FROM_CHANGE_USER = 2
+        const val FROM_CHANGE_USER_FOR_CHANGE_INFO = 3
+        const val FROM_ENTRY = 4
     }
 
     //    var userSession: UserSession? = null

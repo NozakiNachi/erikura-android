@@ -60,9 +60,9 @@ class RegisterFinishedActivity : BaseActivity(),
 
     override fun onClickUpdateIdentity(view: View) {
         //本人確認情報入力画面へ遷移します
-        // FIXME Intentの作成本人確認情報入力画面　
+        // FIXME Intentの作成本人確認情報入力画面
         //  FIXME 身分確認完了後に地図画面へ遷移させるために本登録から遷移したことを次の画面へ知らせる
-        intent.putExtra("fromResister", true)
+        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_REGISTER)
         intent.putExtra("user", user)
         startActivity(intent)
     }
