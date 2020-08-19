@@ -4,6 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityViewModel"/>
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityEventHandlers"/>
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/change_user_information_constraintLayout"
         android:layout_width="match_parent"
@@ -70,7 +79,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="18dp"
                             android:textColor="@color/black"
-                            android:text="@{viewModel.}"
+                            android:text="@{viewModel.updateIdentityCaption1}"
                             android:visibility="" />
 
                         <TextView
@@ -276,7 +285,7 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="40dp"
                     style="@style/primaryButton"
-                    android:text="@string/send_identify"
+                    android:text="@string/send_identity"
                     app:onSafeClick="@{handlers::onClickRegister}"
                     android:enabled="@{viewModel.isChangeButtonEnabled}"
                     />

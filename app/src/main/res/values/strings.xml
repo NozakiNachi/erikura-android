@@ -388,7 +388,7 @@
     <string name="first_search_job">先に仕事を探す</string>
     <string name="first_confirm_identification">先に身分証確認を行う</string>
     <string name="confirm_identification">身分証確認を行う</string>
-    <string name="send_identify">入力内容を送る</string>
+    <string name="send_identity">入力内容を送る</string>
     <string name="after_identify">あとで行う</string>
     <string name="send_id_image">写真を送る</string>
 

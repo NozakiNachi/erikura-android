@@ -90,6 +90,7 @@ class ErikuraApplication : Application() {
 
         // 身分証遷移元の定数
         const val FROM = "from"
+        const val FROM_NOT_FOUND = 0
         const val FROM_REGISTER = 1
         const val FROM_CHANGE_USER = 2
         const val FROM_CHANGE_USER_FOR_CHANGE_INFO = 3
