@@ -173,6 +173,26 @@ class Api(var context: Context) {
         }
     }
 
+    fun showIdVerifyStatus(userId: Int, detail: Boolean, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (status: Int, comparingData: ComparingData) -> Unit){
+        executeObservable(
+            erikuraApiService.showIdVerifyStatus(userId, detail),
+            onError = onError
+        ) { body ->
+            val status = body.status
+            val comparingData = body.comparingData
+            onComplete(status, comparingData)
+        }
+    }
+
+    fun idVerify(userId: Int, idDocument: IdDocument, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
+        executeObservable(
+            erikuraApiService.idVerify(IdVerifyRequest(userId, idDocument)),
+            onError = onError
+        ) { body ->
+            onComplete()
+        }
+    }
+
     fun notificationSetting(onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (notificationSetting: NotificationSetting) -> Unit) {
         executeObservable(
             erikuraApiService.notificationSetting(),
