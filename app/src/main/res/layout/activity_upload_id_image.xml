@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:background="#00000000"
+                    android:src="@drawable/cross_3x"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:onSafeClick="" />
+
+                <TextView
+                    style="@style/label_w2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginRight="20dp"
+                    android:text="@string/upload_id_image"
+                    android:textColor="@color/black"
+                    android:textSize="22dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="20dp"
+                    android:text="@string/upload_id_image_caption"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+
+
+                <!-- 身分証の種別 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:text="@string/upload_id_image_kind" />
+
+                <Spinner
+                    android:id="@+id/registerAddress_prefecture"
+                    style="@style/spinnerField"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="10dp"
+                    android:entries="@array/id_image_list"
+                    android:selectedItemPosition="@={viewModel.prefectureId}"
+                    android:spinnerMode="dialog" />
+
+                <!-- 運転免許証-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="">
+
+                    <!-- 表面 -->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/upload_id_image_front" />
+
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/driver_licence_image_front"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+                    <!-- 裏面-->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:text="@string/upload_id_image_back" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="20dp"
+                        android:text="@string/upload_id_image_driver_licence_back_caption"
+                        android:textColor="@color/black"
+                        android:textSize="12dp"
+
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/driver_licence_image_back"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+
+                </LinearLayout>
+
+                <!-- パスポート-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="">
+
+                    <!-- 顔写真記載ページ -->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/upload_id_image_passport_face_page" />
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/driver_licence_image_passport_face_page"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+                    <!-- 所持人記入欄ページ -->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/upload_id_image_passport_writing_page" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="20dp"
+                        android:text="@string/upload_id_image_passport_writing_page_caption"
+                        android:textColor="@color/black"
+                        android:textSize="12dp" />
+
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/driver_licence_image_passport_writing_page"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- マイナンバーカード-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="">
+
+                    <!-- 表面ページ -->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/upload_id_image_my_number_front" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="25dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="20dp"
+                        android:text="@string/upload_id_image_my_number_caption"
+                        android:textColor="@color/black"
+                        android:textSize="12dp" />
+
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/driver_licence_image_my_number"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <!-- 上記以外の場合（運転免許証、パスポート、マイナンバーカード）-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="">
+
+                    <!-- 表面 -->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/upload_id_image_front" />
+
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/image_front"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+                    <!-- 裏面-->
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp"
+                        android:text="@string/upload_id_image_back" />
+
+                    <!-- 写真追加ボタン -->
+                    <Button
+                        style="?android:attr/borderlessButtonStyle"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="10dp"
+                        android:background="@drawable/add_photo_button"
+                        android:paddingTop="40dp"
+                        android:text="@string/add_photo"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.addPhotoButtonVisibility}"
+                        app:onSafeClick="@{handlers::onClickAddPhotoButton}" />
+
+                    <!-- 選択画像 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{viewModel.removePhotoButtonVisibility}">
+
+                        <ImageView
+                            android:id="@+id/image_back"
+                            android:layout_width="match_parent"
+                            android:layout_height="305dp"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="10dp"
+                            android:background="@color/white" />
+
+                        <!-- 写真削除ボタン -->
+                        <Button
+                            style="@style/tertiaryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/remove_photo"
+                            app:onSafeClick="@{handlers::onClickRemovePhoto}" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <Button
+                    android:id="@+id/change_button"
+                    style="@style/primaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="40dp"
+                    android:enabled="@{viewModel.isChangeButtonEnabled}"
+                    android:text="@string/send_id_image"
+                    app:onSafeClick="@{handlers::onClickRegister}" />
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="60dp"
+                    android:onClick="@{handlers::onClickSkip}"
+                    android:text="@string/after_identify"
+                    android:textSize="14dp" />
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

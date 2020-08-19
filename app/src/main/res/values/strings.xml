@@ -91,6 +91,19 @@
     <string name="update_identity_caption1_from_change">こちらの項目を更新する際には身分証の確認の実施をお願いしております。</string>
     <string name="update_identity_caption2">身分証確認にあたり、下記が身分証の内容と異なる場合は身分証と一致する情報を入力してください。</string>
 
+    <!-- 身分証確認画面-->
+    <string name="upload_id_image">身分証確認</string>
+    <string name="upload_id_image_caption">身分証確認にあたり、身分証のご提出をお願いしております。\n\n下記のいずれかの写真をお送りください。\n運転免許証／運転経歴証明書／健康保険証／パスポート／マイナンバーカード／住民基本台帳カード／在留カード／特別永住者証明書</string>
+    <string name="upload_id_image_kind">身分証の種別</string>
+    <string name="upload_id_image_front">表面</string>
+    <string name="upload_id_image_back">裏面</string>
+    <string name="upload_id_image_driver_licence_back_caption">※裏面に最新の住所が記載されている方は裏面の写真も必要です。</string>
+    <string name="upload_id_image_passport_face_page">顔写真記載ページ</string>
+    <string name="upload_id_image_passport_writing_page">所持人記入欄ページ（最終ページ）</string>
+    <string name="upload_id_image_passport_writing_page_caption">※氏名・現住所を記入の上、撮影してください。</string>
+    <string name="upload_id_image_my_number_front">表面（顔写真の面）</string>
+    <string name="upload_id_image_my_number_caption">※通知カードは不可です。</string>
+
     <!-- 身分証確認完了画面-->
     <string name="uploaded_id_image">身分証を送信しました！</string>
     <string name="uploaded_id_image_caption">内容の確認完了まで数分〜数日をいただいております。確認が完了しましたらメールにてご連絡いたします。\n\n確認が完了すると、ご入力いただいた内容がプロフィールに反映されます。</string>
@@ -377,6 +390,7 @@
     <string name="confirm_identification">身分証確認を行う</string>
     <string name="send_identify">入力内容を送る</string>
     <string name="after_identify">あとで行う</string>
+    <string name="send_id_image">写真を送る</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -479,6 +493,19 @@
         <item>employee</item>
         <item>self_employed</item>
         <item>other_job</item>
+    </string-array>
+
+    <!-- 都道府県 -->
+    <string-array name="id_image_list">
+        <item>@string/please_select</item>
+        <item>運転免許証</item>
+        <item>運転経歴証明書</item>
+        <item>健康保険証</item>
+        <item>パスポート</item>
+        <item>マイナンバーカード</item>
+        <item>住民基本台帳カード</item>
+        <item>在留カード</item>
+        <item>特別永住者証明書</item>
     </string-array>
 
     <!-- 作業後の状態 -->
