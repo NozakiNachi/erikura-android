@@ -1,6 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,18 +12,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.ComparingData
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUpdateIdentityBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 
 class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     var user = User()
+    var comparingData = ComparingData()
     var from: Int? = null
     private val viewModel: UpdateIdentityViewModel by lazy {
         ViewModelProvider(this).get(UpdateIdentityViewModel::class.java)
     }
+
+    // 都道府県のリスト
+    val prefectureList =
+        ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +50,89 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         if(errorMessages != null){
             Api(this).displayErrorAlert(errorMessages.asList())
         }
-
+        loadData()
 
     }
 
     // 表示する画面の初期化
     private fun loadData() {
-        //FIXME viewModelの初期化
         viewModel.from.value = from
+        viewModel.lastName.value = user.lastName
+        viewModel.firstName.value = user.firstName
+        viewModel.dateOfBirth.value = user.dateOfBirth
+        viewModel.postalCode.value = user.postcode
+        viewModel.city.value = user.city
+        viewModel.street.value = user.street
+        // 都道府県のプルダウン初期表示
+        val id = getPrefectureId(user.prefecture ?: "")
+        viewModel.prefectureId.value = id
+
+    }
+
+    private fun getPrefectureId(prefecture: String): Int {
+        for (i in 0..47) {
+            if (prefectureList.getString(i).equals(prefecture)) {
+                return i
+            }
+        }
+        return 0
+    }
+
+    // 生年月日
+    override fun onClickBirthdayEditView(view: View) {
+        Log.v("EditView", "EditTextTapped!")
+
+        var onDateSetListener: DatePickerDialog.OnDateSetListener =
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                val calendar = Calendar.getInstance()
+
+                calendar.set(Calendar.YEAR, year)
+                calendar.set(Calendar.MONTH, monthOfYear)
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
+
+                var birthday = Date(arrayOf(calendar.timeInMillis, view.maxDate).min()!!)
+
+                val sdf = SimpleDateFormat("yyyy/MM/dd")
+                viewModel.dateOfBirth.value = sdf.format(birthday)
+            }
+
+        val calendar = Calendar.getInstance()
+        val dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        calendar.time = dateOfBirth
+        val dpd = DatePickerDialog(
+            this, onDateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+
+        dpd.setButton(DatePickerDialog.BUTTON_POSITIVE, getString(R.string.button_ok), dpd);
+        dpd.setButton(DatePickerDialog.BUTTON_NEGATIVE, getString(R.string.button_cancel), dpd);
+
+        val dp = dpd.datePicker
+        val maxDate: Calendar = Calendar.getInstance()
+        maxDate.add(Calendar.YEAR, -18)
+        dp.maxDate = maxDate.timeInMillis
+
+        dpd.show()
+        // 初期状態で年選択を表示した状態にします
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            dpd.datePicker.touchables[0].performClick()
+        }
+    }
+
+    override fun onClickRegister(view: View) {
+        // 入力された本人確認情報を保存するか未定
+        comparingData.lastName = viewModel.lastName.value
+        comparingData.firstName = viewModel.firstName.value
+        comparingData.dateOfBirth = viewModel.dateOfBirth.value
+        comparingData.postCode = viewModel.postalCode.value
+        comparingData.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
+        comparingData.city = viewModel.city.value
+        comparingData.street = viewModel.street.value
+        intent.putExtra("comparingData", comparingData)
+        intent.putExtra("userId", user.id)
+        //FIXME 身元確認画面へ遷移する
     }
 
 }
@@ -92,7 +180,25 @@ class UpdateIdentityViewModel: ViewModel() {
         }
     }
     // 各visibility
-    // FIXME 遷移もとによってvisibilityを制御
+    var captionBlockVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(from) { from ->
+            if (from == ErikuraApplication.FROM_REGISTER) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
+            }
+        }
+    }
+
+    var caption1Visibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(from) { from ->
+            if (from == ErikuraApplication.FROM_CHANGE_USER || from == ErikuraApplication.FROM_REGISTER) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
+            }
+        }
+    }
 
     fun isValidPostalCode(): Boolean {
         var valid = true
@@ -209,5 +315,6 @@ class UpdateIdentityViewModel: ViewModel() {
 }
 
 interface UpdateIdentityEventHandlers {
-
+    fun onClickBirthdayEditView(view: View)
+    fun onClickRegister(view: View)
 }

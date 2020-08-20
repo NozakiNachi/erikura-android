@@ -8,7 +8,7 @@ import java.util.*
 data class ComparingData(
     var firstName: String? = null,
     var lastName: String? = null,
-    var dateOfBirth: Date? = null,
+    var dateOfBirth: String? = null,
     var postCode: String? = null,
     var prefecture: String? = null,
     var city: String? = null,

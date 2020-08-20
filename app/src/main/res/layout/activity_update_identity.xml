@@ -70,7 +70,7 @@
                         android:layout_marginTop="30dp"
                         android:layout_marginLeft="20dp"
                         android:layout_marginRight="20dp"
-                        android:visibility=""
+                        android:visibility="@{viewModel.captionBlockVisibility}"
                         android:orientation="vertical">
 
                         <!-- 会員情報変更の(身分確認経由)の場合非表示 変更リンクからだと表示-->
@@ -80,7 +80,7 @@
                             android:textSize="18dp"
                             android:textColor="@color/black"
                             android:text="@{viewModel.updateIdentityCaption1}"
-                            android:visibility="" />
+                            android:visibility="@{viewModel.caption1Visibility}" />
 
                         <TextView
                             android:layout_width="wrap_content"

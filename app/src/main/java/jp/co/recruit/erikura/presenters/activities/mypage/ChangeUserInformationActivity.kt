@@ -103,7 +103,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     identifyStatus = status
                     if (identifyStatus == ErikuraApplication.CONFIRMING_CODE){
                         userName = comparingData.lastName + comparingData + comparingData.firstName
-                        birthDay = comparingData.dateOfBirth.toString()
+                        birthDay = comparingData.dateOfBirth
                         cityName = comparingData.city
                     }
                     loadData()
