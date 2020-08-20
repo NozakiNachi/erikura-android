@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobsBinding
+import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
@@ -85,6 +86,8 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
 
 
     private fun fetchReportedJobs() {
+        val today = Date()
+        val rejectCheckStartDate = DateUtils.addDays(today, -30)
         val targetMonth = viewModel.targetMonth.value ?: Date()
         val startDate = DateUtils.beginningOfMonth(targetMonth)
         val endDate = DateUtils.endOfMonth(targetMonth)
@@ -103,6 +106,18 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
             viewModel.reportedJobs.value = rejectedJobs + otherJobs
             jobListAdapter.jobs = viewModel.reportedJobs.value ?: listOf()
             jobListAdapter.notifyDataSetChanged()
+
+            (activity as? OwnJobsActivity)?.let { ownJobsActivity ->
+                if (endDate > rejectCheckStartDate) {
+                    if (rejectedJobs.size > 0 && !ownJobsActivity.hasRejected) {
+                        // 差し戻しがあり、かつ ownJobs側で差し戻しがない場合はリフレッシュします
+                        ownJobsActivity.refreshHasRejected(Api(ownJobsActivity))
+                    } else if (rejectedJobs.size < 1 && ownJobsActivity.hasRejected) {
+                        // 差し戻しがなく、かつ ownJobs側は差し戻し蟻になっている場合はリフレッシュします
+                        ownJobsActivity.refreshHasRejected(Api(ownJobsActivity))
+                    }
+                }
+            }
 
             // ページ参照のトラッキングの送出
             Tracking.logEvent(event= "view_entried_job_list_reported", params= bundleOf())
