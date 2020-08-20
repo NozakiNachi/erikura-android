@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ToggleButton
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -101,7 +100,7 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
                         // 身分証未確認の場合
                         //　本人確認情報画面へ遷移
                         val intent = Intent(activity, UpdateIdentityActivity::class.java)
-                        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_ENTRY)
+                        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_ENTRY)
                         intent.putExtra("user", user)
                         startActivity(intent)
                     }

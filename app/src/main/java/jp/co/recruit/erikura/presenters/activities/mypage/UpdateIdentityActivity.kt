@@ -26,7 +26,7 @@ import java.util.regex.Pattern
 class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     var user = User()
     var comparingData = ComparingData()
-    var from: Int? = null
+    var fromWhere: Int? = null
     private val viewModel: UpdateIdentityViewModel by lazy {
         ViewModelProvider(this).get(UpdateIdentityViewModel::class.java)
     }
@@ -38,7 +38,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         user = intent.getParcelableExtra("user")
-        from = intent.getIntExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_NOT_FOUND)
+        fromWhere = intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
         val binding: ActivityUpdateIdentityBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_update_identity)
@@ -57,7 +57,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
     // 表示する画面の初期化
     private fun loadData() {
-        viewModel.from.value = from
+        viewModel.fromWhere.value = fromWhere
         viewModel.lastName.value = user.lastName
         viewModel.firstName.value = user.firstName
         viewModel.dateOfBirth.value = user.dateOfBirth
@@ -133,7 +133,9 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     }
 
     override fun onClickRegister(view: View) {
-        // 入力された本人確認情報を保存するか未定
+        // 身元確認画面へ遷移する
+        val intent = Intent(this, UploadIdImageActivity::class.java)
+        // 入力された本人確認情報
         comparingData.lastName = viewModel.lastName.value
         comparingData.firstName = viewModel.firstName.value
         comparingData.dateOfBirth = viewModel.dateOfBirth.value
@@ -143,8 +145,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         comparingData.street = viewModel.street.value
         intent.putExtra("comparingData", comparingData)
         intent.putExtra("userId", user.id)
-        intent.putExtra(ErikuraApplication.FROM, from)
-        //FIXME 身元確認画面へ遷移する
+        intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
         startActivity(intent)
         finish()
     }
@@ -153,7 +154,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
 class UpdateIdentityViewModel: ViewModel() {
     // 遷移元
-    val from: MutableLiveData<Int> = MutableLiveData()
+    val fromWhere: MutableLiveData<Int> = MutableLiveData()
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
     val lastNameError: ErrorMessageViewModel = ErrorMessageViewModel()
@@ -181,7 +182,7 @@ class UpdateIdentityViewModel: ViewModel() {
     }
     // テキスト
     var updateIdentityCaption1 = MediatorLiveData<String>().also { result ->
-        result.addSource(from) { from ->
+        result.addSource(fromWhere) { from ->
             //応募経由の場合、会員情報変更から入力値の変更経由の場合
             when(from) {
                 ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
@@ -195,7 +196,7 @@ class UpdateIdentityViewModel: ViewModel() {
     }
     // 各visibility
     var captionBlockVisibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(from) { from ->
+        result.addSource(fromWhere) { from ->
             if (from == ErikuraApplication.FROM_REGISTER) {
                 result.value = View.GONE
             } else {
@@ -205,7 +206,7 @@ class UpdateIdentityViewModel: ViewModel() {
     }
 
     var caption1Visibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(from) { from ->
+        result.addSource(fromWhere) { from ->
             if (from == ErikuraApplication.FROM_CHANGE_USER || from == ErikuraApplication.FROM_REGISTER) {
                 result.value = View.GONE
             } else {

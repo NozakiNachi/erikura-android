@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -10,7 +9,6 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterFinishedBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -62,7 +60,7 @@ class RegisterFinishedActivity : BaseActivity(),
     override fun onClickUpdateIdentity(view: View) {
         //本人確認情報入力画面へ遷移します
         val intent = Intent(this, UpdateIdentityActivity::class.java)
-        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_REGISTER)
+        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_REGISTER)
         intent.putExtra("user", user)
         startActivity(intent)
     }

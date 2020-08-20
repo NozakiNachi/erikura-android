@@ -319,7 +319,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra("user", user)
         // 会員情報から遷移
-        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_CHANGE_USER)
+        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_CHANGE_USER)
         startActivity(intent)
     }
 
@@ -328,7 +328,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra("user", user)
         // 会員情報(変更リンク)から遷移
-        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO)
+        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO)
         startActivity(intent)
     }
 
