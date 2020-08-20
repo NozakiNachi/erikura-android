@@ -315,19 +315,21 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     }
 
     override fun onClickUpdateIdentity(view: View) {
-        //FIXME 本人確認情報入力画面へ遷移
-        // ユーザー情報と会員情報から遷移してきたフラグを渡す
+        // 本人確認情報入力画面へ遷移
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra("user", user)
+        // 会員情報から遷移
         intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_CHANGE_USER)
-        TODO("Not yet implemented")
+        startActivity(intent)
     }
 
     override fun onClickUpdateIdentityForChangeInfo(view: View) {
-        //FIXME 本人確認情報入力画面へ遷移
-        // ユーザー情報と会員情報(変更リンク)から遷移してきたフラグを渡す
+        //本人確認情報入力画面へ遷移
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra("user", user)
+        // 会員情報(変更リンク)から遷移
         intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO)
-        TODO("Not yet implemented")
+        startActivity(intent)
     }
 
     // データの読み込み

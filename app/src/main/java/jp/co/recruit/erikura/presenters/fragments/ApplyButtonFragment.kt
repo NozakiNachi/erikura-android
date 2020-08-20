@@ -19,6 +19,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentApplyButtonBinding
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
+import jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityActivity
 
 class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandlers {
     companion object {
@@ -99,8 +100,10 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
                     } else {
                         // 身分証未確認の場合
                         //　本人確認情報画面へ遷移
-//                        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_ENTRY)
-                        // 仕事詳細fromApplyJobから遷移したこととユーザー情報を渡す
+                        val intent = Intent(activity, UpdateIdentityActivity::class.java)
+                        intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_ENTRY)
+                        intent.putExtra("user", user)
+                        startActivity(intent)
                     }
                 }
             }

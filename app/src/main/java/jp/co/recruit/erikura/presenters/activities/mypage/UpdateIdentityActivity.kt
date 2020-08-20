@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -78,6 +79,16 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         return 0
     }
 
+    // 戻るボタンの制御
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
+    }
+
+    override fun onClickClose(view: View) {
+        finish()
+    }
+
     // 生年月日
     override fun onClickBirthdayEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
@@ -132,7 +143,10 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         comparingData.street = viewModel.street.value
         intent.putExtra("comparingData", comparingData)
         intent.putExtra("userId", user.id)
+        intent.putExtra(ErikuraApplication.FROM, from)
         //FIXME 身元確認画面へ遷移する
+        startActivity(intent)
+        finish()
     }
 
 }
@@ -315,6 +329,7 @@ class UpdateIdentityViewModel: ViewModel() {
 }
 
 interface UpdateIdentityEventHandlers {
+    fun onClickClose(view:View)
     fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
 }

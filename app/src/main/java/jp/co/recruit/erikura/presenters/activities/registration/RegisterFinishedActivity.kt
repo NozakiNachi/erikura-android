@@ -14,6 +14,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterFinishedBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
 class RegisterFinishedActivity : BaseActivity(),
@@ -60,8 +61,7 @@ class RegisterFinishedActivity : BaseActivity(),
 
     override fun onClickUpdateIdentity(view: View) {
         //本人確認情報入力画面へ遷移します
-        // FIXME Intentの作成本人確認情報入力画面
-        //  FIXME 身分確認完了後に地図画面へ遷移させるために本登録から遷移したことを次の画面へ知らせる
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra(ErikuraApplication.FROM, ErikuraApplication.FROM_REGISTER)
         intent.putExtra("user", user)
         startActivity(intent)
