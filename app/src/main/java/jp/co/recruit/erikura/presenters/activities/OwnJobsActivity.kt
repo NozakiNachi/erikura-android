@@ -48,6 +48,9 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
     var fromMypageJobCommentGoodButton = false
     lateinit var viewPager: ViewPager
 
+    // 差し戻しマークが表示されているか?
+    val hasRejected: Boolean get() = viewModel.hasRejected.value ?: false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityOwnJobsBinding = DataBindingUtil.setContentView(this, R.layout.activity_own_jobs)
@@ -163,25 +166,29 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
                 }
             }
 
-            // 差戻しから48時間以上経過した案件は自動キャンセルされる
-            //   => 念の為、当日から 30日前まで取得する
-            val today = Date()
-            val endDate = DateUtils.endOfMonth(today)
-            val startDate = DateUtils.addDays(today, -30)
-            api.ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED, reportedFrom = startDate, reportedTo = endDate)) { jobs ->
-                viewModel.hasRejected.value = false
-                jobs.forEach { job ->
-                    if (job.isRejected) {
-                        viewModel.hasRejected.value = true
-                    }
-                }
-            }
+            refreshHasRejected(api)
         }
     }
 
     override fun onPause() {
         super.onPause()
         savedTabPosition = owned_jobs_tab_layout.selectedTabPosition
+    }
+
+    fun refreshHasRejected(api: Api) {
+        // 差戻しから48時間以上経過した案件は自動キャンセルされる
+        //   => 念の為、当日から 30日前まで取得する
+        val today = Date()
+        val endDate = DateUtils.endOfMonth(today)
+        val startDate = DateUtils.addDays(today, -30)
+        api.ownJob(OwnJobQuery(status = OwnJobQuery.Status.REPORTED, reportedFrom = startDate, reportedTo = endDate)) { jobs ->
+            viewModel.hasRejected.value = false
+            jobs.forEach { job ->
+                if (job.isRejected) {
+                    viewModel.hasRejected.value = true
+                }
+            }
+        }
     }
 }
 
