@@ -495,8 +495,10 @@
         <item>other_job</item>
     </string-array>
 
-    <!-- 都道府県 -->
-    <string-array name="type_of_id_list">
+    <!-- 身分証種別 -->
+    <!-- MEMO 身分証のitemの要素の数や順番を操作する場合はuploadIdImageも修正必須 -->
+    <!-- 現在の要素番号を判定値として流用しているため -->
+    <string-array name="identity_type_of_list">
         <item>@string/please_select</item>
         <item>運転免許証</item>
         <item>運転経歴証明書</item>
@@ -507,6 +509,7 @@
         <item>在留カード</item>
         <item>特別永住者証明書</item>
     </string-array>
+
 
     <!-- 作業後の状態 -->
     <string name="bad">異常あり、未対応</string>

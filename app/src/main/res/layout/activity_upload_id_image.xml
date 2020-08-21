@@ -82,16 +82,16 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="10dp"
-                    android:entries="@array/type_of_id_list"
+                    android:entries="@array/identity_type_of_list"
                     android:selectedItemPosition="@={viewModel.typeOfId}"
                     android:spinnerMode="dialog" />
 
-                <!-- 運転免許証-->
+                <!-- パスポート、マイナンバーカード以外-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:visibility="">
+                    android:visibility="@{viewModel.normalImageSelectionField}">
 
                     <!-- 表面 -->
                     <TextView
