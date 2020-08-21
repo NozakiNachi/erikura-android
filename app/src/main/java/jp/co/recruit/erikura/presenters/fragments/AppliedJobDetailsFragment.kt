@@ -445,7 +445,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             Entry.CheckStatus.REASON_REQUIRED -> {
                 //警告ダイアログ理由入力
                 viewModel.message.value = message.plus("\nこのまま作業を開始する場合は理由を記入ください。\n" +
-                        "（理由によっては、作業報告が差し戻しとなる場合があります）")
+                        "（理由によっては、作業報告の差し戻しや、今後のお仕事配信の対象外となる場合があります）")
 
                 val binding: DialogInputReasonAbleStartBinding = DataBindingUtil.inflate(
                     LayoutInflater.from(activity), R.layout.dialog_input_reason_able_start, null, false)
