@@ -97,7 +97,7 @@
     <string name="upload_id_image_kind">身分証の種別</string>
     <string name="upload_id_image_front">表面</string>
     <string name="upload_id_image_back">裏面</string>
-    <string name="upload_id_image_driver_licence_back_caption">※裏面に最新の住所が記載されている方は裏面の写真も必要です。</string>
+    <string name="upload_id_image_back_caption">※住所変更や氏名変更などにより、裏面記載事項がある場合は、裏面の写真も必要です。</string>
     <string name="upload_id_image_passport_face_page">顔写真記載ページ</string>
     <string name="upload_id_image_passport_writing_page">所持人記入欄ページ（最終ページ）</string>
     <string name="upload_id_image_passport_writing_page_caption">※氏名・現住所を記入の上、撮影してください。</string>
@@ -496,7 +496,7 @@
     </string-array>
 
     <!-- 都道府県 -->
-    <string-array name="id_image_list">
+    <string-array name="type_of_id_list">
         <item>@string/please_select</item>
         <item>運転免許証</item>
         <item>運転経歴証明書</item>

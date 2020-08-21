@@ -20,6 +20,7 @@ class JobDetailsActivity : BaseActivity() {
     var fragment: BaseJobDetailFragment? = null
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
+    var fromIdentify: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -39,6 +40,7 @@ class JobDetailsActivity : BaseActivity() {
         // アラート表示
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
+        fromIdentify = intent.getBooleanExtra("fromIdentify", false)
 
         // 現時点での案件情報をもとに画面を構築します
         if (jobRestored) {
@@ -133,7 +135,7 @@ class JobDetailsActivity : BaseActivity() {
             // jobのステータスで挿しこむフラグメントを変更します
             when (job.status) {
                 JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user, fromIdentify)
                 }
                 JobStatus.Applied -> {
                     fragment = AppliedJobDetailsFragment.newInstance(job, user)
@@ -148,7 +150,7 @@ class JobDetailsActivity : BaseActivity() {
                     fragment = ReportedJobDetailsFragment.newInstance(job, user)
                 }
                 else -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user, fromIdentify)
                 }
             }
             // fragmentの更新

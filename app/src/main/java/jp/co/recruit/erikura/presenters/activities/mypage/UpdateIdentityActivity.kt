@@ -14,17 +14,23 @@ import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.ComparingData
+import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUpdateIdentityBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
 class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     var user = User()
+    var job = Job()
     var comparingData = ComparingData()
     var fromWhere: Int? = null
     private val viewModel: UpdateIdentityViewModel by lazy {
@@ -39,6 +45,10 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         super.onCreate(savedInstanceState)
         user = intent.getParcelableExtra("user")
         fromWhere = intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
+        // 応募経由の場合、スキップ、または認証後にjobが必要
+        if (fromWhere == ErikuraApplication.FROM_ENTRY) {
+            job = intent.getParcelableExtra("job")
+        }
 
         val binding: ActivityUpdateIdentityBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_update_identity)
@@ -145,9 +155,52 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         comparingData.street = viewModel.street.value
         intent.putExtra("comparingData", comparingData)
         intent.putExtra("userId", user.id)
+        if (fromWhere == ErikuraApplication.FROM_ENTRY) {
+            intent.putExtra("job", job)
+        }
         intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
         startActivity(intent)
         finish()
+    }
+
+    override fun onClickSkip(view: View) {
+        //遷移元によって遷移先を切り分ける
+        when(fromWhere) {
+            ErikuraApplication.FROM_REGISTER -> {
+                // 地図画面へ
+                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                    // 地図画面へ遷移
+                    val intent = Intent(this, MapViewActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                }
+                else {
+                    // 位置情報の許諾、オンボーディングを表示します
+                    Intent(this, PermitLocationActivity::class.java).let { intent ->
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+            ErikuraApplication.FROM_CHANGE_USER -> {
+                // 元の画面へ
+                finish()
+            }
+            ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+                // 元の画面へ
+                finish()
+            }
+            ErikuraApplication.FROM_ENTRY -> {
+                // 仕事詳細へ遷移し応募確認ダイアログへ
+                val intent= Intent(this, JobDetailsActivity::class.java)
+                intent.putExtra("fromIdentify", true)
+                intent.putExtra("job", job)
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 
 }
@@ -333,4 +386,5 @@ interface UpdateIdentityEventHandlers {
     fun onClickClose(view:View)
     fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
+    fun onClickSkip(view: View)
 }

@@ -4,14 +4,11 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 
-// FIXME 写真データの配列の内容が未確定
 @Parcelize
 data class IdDocument (
     var type: String? = null,
-    var format: String? = null,
-//    var data: List<>,
-//    var front: List<>,
-//    var back: List<>,
+    var format: String = "image",
+    var data: Data? = null,
     var comparingData: List<ComparingData> = listOf()
 ): Parcelable {
 

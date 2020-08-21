@@ -102,6 +102,7 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
                         val intent = Intent(activity, UpdateIdentityActivity::class.java)
                         intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_ENTRY)
                         intent.putExtra("user", user)
+                        intent.putExtra("job", job)
                         startActivity(intent)
                     }
                 }

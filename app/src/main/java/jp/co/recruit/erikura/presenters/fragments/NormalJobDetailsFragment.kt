@@ -19,12 +19,16 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
+import kotlinx.android.synthetic.main.activity_upload_id_image.*
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?): NormalJobDetailsFragment {
+        const val FROM_IDENTIFY = "fromIdentify"
+        fun newInstance(job: Job?, user: User?, fromIdentify: Boolean): NormalJobDetailsFragment {
             val args = Bundle()
+            args.putBoolean(FROM_IDENTIFY, fromIdentify)
             fillArguments(args, job, user)
 
             return NormalJobDetailsFragment().also {
@@ -46,8 +50,16 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var applyFlowView: ApplyFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var fromIdentify: Boolean = false
 
     constructor() : super()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.let { args ->
+            this.fromIdentify = args.getBoolean(FROM_IDENTIFY)
+        }
+    }
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -115,6 +127,11 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_job_detail", params= bundleOf())
         Tracking.viewJobDetails(name= "/jobs/${job?.id?.toString() ?: ""}", title= "タスク詳細画面", jobId= job?.id ?: 0)
+        // 身分確認経由の場合応募確認ダイアログを表示する
+        if (fromIdentify) {
+            val dialog = ApplyDialogFragment.newInstance(job)
+            dialog.show(childFragmentManager, "Apply")
+        }
     }
 }
 
