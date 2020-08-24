@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://app.erikura.net">
+    <data>
+        <variable
+            name="handler"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportExamplesButtonFragmentEventHandlers" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".presenters.fragments.ReportExamplesButtonFragment">
+
+        <!-- ボタンのテキストの色を動的にするため、スタイルはコード上で指定してます -->
+        <Button
+            style="@style/tertiaryButton"
+            android:id="@+id/report_examples_button"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:text="@string/report_examples_button"
+            android:textAllCaps="false"
+            app:onSafeClick="@{handler::onClickReportExamples}"/>
+
+    </FrameLayout>
+</layout>

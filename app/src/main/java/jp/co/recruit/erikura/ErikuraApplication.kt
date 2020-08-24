@@ -371,6 +371,16 @@ object Tracking {
 
     }
 
+    fun viewGoodExamples(name: String, title: String, jobId: Int, jobKindId: Int, placeId: Int) {
+        Log.v("ERIKURA", "Sending view tracking: ${name} (${title})")
+        Tracker.getInstance().view(name, title, bundleOf(
+            Pair("job_id", jobId),
+            Pair("job_kind_id", jobKindId),
+            Pair("place_id", placeId)
+        ))
+
+    }
+
     fun trackJobs(name: String, jobId: List<Int>) {
         Log.v("ERIKURA", "Sending view tracking: ${name}")
         Tracker.getInstance().view(name, bundleOf(
