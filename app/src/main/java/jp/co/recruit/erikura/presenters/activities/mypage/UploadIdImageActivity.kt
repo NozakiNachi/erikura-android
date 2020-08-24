@@ -326,13 +326,22 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         // FIXME 画面遷移を実装中
         when(fromWhere) {
             ErikuraApplication.FROM_REGISTER -> {
-
+                //　身分証確認完了画面へ
+                intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+                startActivity(intent)
+                finish()
             }
             ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
-
+                //　会員情報変更画面へ遷移し、身分証確認完了モーダルを表示
+                intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+                startActivity(intent)
+                finish()
             }
             ErikuraApplication.FROM_ENTRY -> {
-
+                //　身分証確認完了画面へ
+                intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+                startActivity(intent)
+                finish()
             }
         }
     }
