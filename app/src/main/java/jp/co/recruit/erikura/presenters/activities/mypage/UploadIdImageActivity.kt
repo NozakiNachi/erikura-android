@@ -2,9 +2,13 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.util.Base64
 import android.view.View
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
@@ -18,11 +22,14 @@ import jp.co.recruit.erikura.business.models.ComparingData
 import jp.co.recruit.erikura.business.models.IdDocument
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUploadIdImageBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
+import java.io.ByteArrayOutputStream
+import java.lang.NullPointerException
 
 class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     // 身分証種別の要素番号
@@ -130,11 +137,11 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                     "_id=?", arrayOf(id.split(":")[1]), null
                 )
                 cursor?.moveToFirst()
-                // FIXME 下記は各ボタンのイベントごとに分けて画像のラベルを切り分ける
                 cursor?.let {
                     // val item = MediaItem.from(cursor)
                     // MEMO: cursorを渡すとIDの値が0になるので手動で値を入れています
                     val item = MediaItem.from(cursor)
+
                     // requestCodeによって画像フィールドを切り分ける
                     when (requestCode) {
                         frontRequestCode -> {
@@ -145,16 +152,32 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                             viewModel.otherPhotoFront = item
                         }
                         backRequestCode -> {
-
+                            viewModel.addBackPhotoButtonVisibility.value = View.GONE
+                            viewModel.removeBackPhotoButtonVisibility.value = View.VISIBLE
+                            val imageView: ImageView = findViewById(R.id.image_back)
+                            item.loadImage(this, imageView)
+                            viewModel.otherPhotoBack = item
                         }
                         passportFrontRequestCode -> {
-
+                            viewModel.addPassportFrontPhotoButtonVisibility.value = View.GONE
+                            viewModel.removePassportFrontPhotoButtonVisibility.value = View.VISIBLE
+                            val imageView: ImageView = findViewById(R.id.passport_front_image)
+                            item.loadImage(this, imageView)
+                            viewModel.otherPhotoPassportFront = item
                         }
                         passportBackRequestCode -> {
-
+                            viewModel.addPassportBackPhotoButtonVisibility.value = View.GONE
+                            viewModel.removePassportBackPhotoButtonVisibility.value = View.VISIBLE
+                            val imageView: ImageView = findViewById(R.id.passport_back_image)
+                            item.loadImage(this, imageView)
+                            viewModel.otherPhotoPassportBack = item
                         }
                         myNumberRequestCode -> {
-
+                            viewModel.addMyNumberPhotoButtonVisibility.value = View.GONE
+                            viewModel.removeMyNumberPhotoButtonVisibility.value = View.VISIBLE
+                            val imageView: ImageView = findViewById(R.id.my_number_image)
+                            item.loadImage(this, imageView)
+                            viewModel.otherPhotoMyNumber = item
                         }
                     }
                 }
@@ -198,11 +221,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                     }
                 }
             }
-            ErikuraApplication.FROM_CHANGE_USER -> {
-                // 元の画面へ
-                finish()
-            }
-            ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
                 // 元の画面へ
                 finish()
             }
@@ -261,9 +280,61 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickUploadIdImage(view: View) {
-        // FIXME 選択した内容を代入
-        // FIXME 画像はリサイズしてBase64にエンコードする
+        // 身分証種別によってエンコードしてデータをセット
+        // 各contentUriはバリデーションチェック済
+        when(viewModel.typeOfId.value) {
+            passportElementNum -> {
+                idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!))
+                idDocument.data?.back?.plus(encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!))
+            }
+            myNumberElementNum -> {
+                idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoMyNumber.contentUri!!))
+            }
+            else -> {
+                idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoFront.contentUri!!))
+                if (viewModel.addBackPhotoButtonVisibility.value == View.GONE) {
+                    // 裏面もある場合
+                    idDocument.data?.back?.plus(encodeBase64FromImage(viewModel.otherPhotoBack.contentUri!!))
+                }
+            }
+        }
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
+        idDocument.comparingData = comparingData
+
+        userId?.let{ userId ->
+            Api(this).idVerify(userId, idDocument) {
+                // 遷移元に応じて身分証確認完了を表示
+                moveUploadedIdImage()
+            }
+        }
+    }
+
+    private fun encodeBase64FromImage(uri: Uri): String {
+        // uriから読み込み用InputStreamを生成
+        val inputStream = contentResolver?.openInputStream(uri)
+        // inputStreamからbitmap生成
+        val imageBitmap = BitmapFactory.decodeStream(inputStream)
+        // bitmapからバイト配列を生成
+        val stream = ByteArrayOutputStream()
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val imageByteArray = stream.toByteArray()
+        // バイト配列からBase64文字列を生成
+        return Base64.encodeToString(imageByteArray, Base64.DEFAULT)
+    }
+
+    private fun moveUploadedIdImage() {
+        // FIXME 画面遷移を実装中
+        when(fromWhere) {
+            ErikuraApplication.FROM_REGISTER -> {
+
+            }
+            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+
+            }
+            ErikuraApplication.FROM_ENTRY -> {
+
+            }
+        }
     }
 }
 

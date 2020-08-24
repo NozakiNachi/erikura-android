@@ -9,7 +9,7 @@ data class IdDocument (
     var type: String? = null,
     var format: String = "image",
     var data: Data? = null,
-    var comparingData: List<ComparingData> = listOf()
+    var comparingData: ComparingData? = null
 ): Parcelable {
 
 }
