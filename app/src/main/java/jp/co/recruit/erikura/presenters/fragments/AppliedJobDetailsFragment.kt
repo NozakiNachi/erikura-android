@@ -79,6 +79,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var reportExamplesButton: ReportExamplesButtonFragment? = null
 
     constructor(): super()
 
@@ -94,6 +95,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             jobDetailsView?.refresh(job, user)
             mapView?.refresh(job, user)
             propertyNotesButton?.refresh(job, user)
+            reportExamplesButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -128,6 +130,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
         mapView = MapViewFragment.newInstance(job, user)
         propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.appliedJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
@@ -137,6 +140,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         transaction.add(R.id.appliedJobDetails_jobDetailsViewFragment, jobDetailsView!!,"jobDetailsView")
         transaction.add(R.id.appliedJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")
         transaction.commitAllowingStateLoss()
     }
 
@@ -498,6 +502,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job
@@ -528,6 +533,12 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
             if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
+                }
+            }
+            //お手本報告件数が0件の場合非表示
+            job.goodExamplesCount?.let { reportExampleCount ->
+                if (reportExampleCount == 0) {
+                    reportExamplesButtonVisibility.value = View.GONE
                 }
             }
         }

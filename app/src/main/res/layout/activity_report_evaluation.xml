@@ -238,16 +238,36 @@
             app:onSafeClick="@{handlers::onClickNext}"
             android:enabled="@{viewModel.isNextButtonEnabled}"/>
 
-        <!-- マニュアルボタン -->
-        <Button
-            style="@style/secondaryButton"
-            android:layout_width="110dp"
+        <LinearLayout
+            android:layout_width="wrap_content"
             android:layout_height="70dp"
-            android:layout_gravity="bottom|right"
-            android:layout_marginBottom="30dp"
-            app:onSafeClick="@{handlers::onClickManual}"
-            android:text="@string/manual"
-            android:textSize="14dp" />
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal"
+            android:layout_gravity="bottom|right">
 
+            <!-- マニュアルボタン -->
+            <Button
+                style="@style/secondaryButton"
+                android:layout_width="110dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="10dp"
+                android:layout_weight="1"
+                app:onSafeClick="@{handlers::onClickManual}"
+                android:text="@string/manual"
+                android:textSize="14dp" />
+
+            <!-- お手本報告ボタン -->
+            <Button
+                android:id="@+id/report_examples_button"
+                style="@style/tertiaryButton"
+                android:layout_width="110dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="0dp"
+                android:layout_weight="1"
+                app:onSafeClick="@{handlers::onClickReportExamples}"
+                android:text="@string/report_examples_button2"
+                android:textSize="14dp"
+                android:visibility="@{viewModel.reportExamplesButtonVisibility}"/>
+        </LinearLayout>
     </FrameLayout>
 </layout>

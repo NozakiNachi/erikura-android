@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://app.erikura.net"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportExampleFragmentViewModel" />
+
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.fragments.ReportExamplesFragmentEventHandlers" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                style="@style/titleLabel"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="110dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center"
+                android:text="@string/report_examples_button" />
+
+            <TextView
+                style="@style/block"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="30dp"
+                android:text="@{viewModel.address}" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/prevPageBtn"
+                    style="@style/tertiaryButton"
+                    android:layout_width="60dp"
+                    android:layout_height="44dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="0dp"
+                    android:gravity="center"
+                    android:text="前へ"
+                    android:enabled="@{viewModel.isPrevBtnEnabled}"
+                    android:visibility="@{viewModel.prevBtnVisibility}"
+                    app:onSafeClick="@{handlers::onClickPrev}" />
+
+                <TextView
+                    android:id="@+id/jobKind"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toRightOf="@+id/prevPageBtn"
+                    android:layout_toLeftOf="@+id/nextPageBtn"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    android:gravity="center_horizontal"
+                    android:text="@{viewModel.jobKindName}"
+                    android:textColor="@color/black"
+                    android:textSize="14dp" />
+
+                <Button
+                    android:id="@+id/nextPageBtn"
+                    style="@style/tertiaryButton"
+                    android:layout_width="60dp"
+                    android:layout_height="44dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="0dp"
+                    android:gravity="center"
+                    android:text="次へ"
+                    android:enabled="@{viewModel.isNextBtnEnabled}"
+                    android:visibility="@{viewModel.nextBtnVisibility}"
+                    app:onSafeClick="@{handlers::onClickNext}" />
+
+
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="20dp"
+                android:text="@{viewModel.createdAt}"
+                android:textColor="@color/black"
+                android:textSize="12dp" />
+
+            <!-- 報告箇所 -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/report_example_summaries"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:orientation="vertical"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

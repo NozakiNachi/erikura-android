@@ -63,7 +63,12 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
             Tracking.logEvent(event= "view_edit_job_report_rating", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/evaluation/${job.id}", title= "作業報告編集画面（案件評価）", jobId= job.id)
         }
-
+        //お手本報告件数が0件の場合非表示
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
+            }
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -116,6 +121,12 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         }
     }
 
+    override fun onClickReportExamples(view: View) {
+        job?.let { job ->
+            JobUtil.openReportExample(this, job)
+        }
+    }
+
     private fun loadData() {
         job.report?.let {
             val evaluation = it.evaluation
@@ -137,7 +148,6 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         }
         viewModel.commentError.message.value = null
     }
-
 }
 
 class ReportEvaluationViewModel: ViewModel() {
@@ -151,6 +161,7 @@ class ReportEvaluationViewModel: ViewModel() {
             result.value = isValid()
         }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     private fun isValid(): Boolean {
         var valid = true
@@ -170,4 +181,5 @@ interface ReportEvaluationEventHandler {
     fun onClickGood(view: View)
     fun onClickBad(view: View)
     fun onClickManual(view: View)
+    fun onClickReportExamples(view: View)
 }

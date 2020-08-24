@@ -152,6 +152,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp" />
 
+                <!-- お手本報告表示ボタン -->
+                <FrameLayout
+                    android:id="@+id/jobDetails_reportExamplesButtonFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.reportExamplesButtonVisibility}"/>
+
                 <!-- 応募者への連絡事項 -->
                 <FrameLayout
                     android:id="@+id/appliedJobDetails_entryInformationFragment"

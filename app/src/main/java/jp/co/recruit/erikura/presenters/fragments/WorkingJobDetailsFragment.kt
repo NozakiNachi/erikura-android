@@ -53,6 +53,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
     private var mapView: MapViewFragment? = null
     private var entryInformationFragment: EntryInformationFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var reportExamplesButton: ReportExamplesButtonFragment? = null
 
     constructor(): super()
 
@@ -67,6 +68,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
             mapView?.refresh(job, user)
             entryInformationFragment?.refresh(job, user)
             propertyNotesButton?.refresh(job, user)
+            reportExamplesButton?.refresh(job, user)
 
             activity?.let {
                 viewModel.setup(it, job, user)
@@ -99,6 +101,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         mapView = MapViewFragment.newInstance(job, user)
         entryInformationFragment = EntryInformationFragment.newInstance(job, user)
         propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
         transaction.add(R.id.workingJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.workingJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.workingJobDetails_manualButtonFragment, manualButton!!, "manualButton")
@@ -107,6 +110,7 @@ class WorkingJobDetailsFragment: BaseJobDetailFragment, WorkingJobDetailsFragmen
         transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.add(R.id.workingJobDetails_mapViewFragment, mapView!!, "mapView")
         transaction.add(R.id.workingJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")
+        transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")
         transaction.commitAllowingStateLoss()
     }
 
@@ -209,6 +213,8 @@ class WorkingJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val timeCount: MutableLiveData<String> = MutableLiveData()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val stopButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job
@@ -244,6 +250,12 @@ class WorkingJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
             if (Api.isLogin) {
                 Api(activity).placeFavoriteShow(job.place?.id ?: 0) {
                     favorited.value = it
+                }
+            }
+            //お手本報告件数が0件の場合非表示
+            job.goodExamplesCount?.let { reportExampleCount ->
+                if (reportExampleCount == 0) {
+                    reportExamplesButtonVisibility.value = View.GONE
                 }
             }
         }
