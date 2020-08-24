@@ -335,9 +335,22 @@ class UploadIdImageViewModel : ViewModel() {
 
     //　送信ボタンの活性、非活性
     val isUploadIdImageButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        // FIXME バリデーションチェックを行う
+        result.addSource(typeOfId) { result.value = isValid() }
+        result.addSource(addFrontPhotoButtonVisibility) { result.value = isValid() }
+        result.addSource(addBackPhotoButtonVisibility) { result.value = isValid() }
+        result.addSource(addPassportFrontPhotoButtonVisibility) { result.value = isValid() }
+        result.addSource(addPassportBackPhotoButtonVisibility) { result.value = isValid() }
+        result.addSource(addMyNumberPhotoButtonVisibility) { result.value = isValid() }
     }
 
+    private fun isValid(): Boolean {
+        var valid = false
+        valid = isValidTypeOfId()
+        if (valid) {
+            valid = isValidPhoto()
+        }
+        return valid
+    }
 
     // 身分証種別によって画像の数をバリデーション、画像サイズ
     private fun isValidTypeOfId(): Boolean {
@@ -345,20 +358,21 @@ class UploadIdImageViewModel : ViewModel() {
     }
 
     private fun isValidPhoto(): Boolean {
-        // 身分証種別によって切り分けする
+        // 身分証種別ごと画像選択済みでかつ画像URLを取得できているか
         when (typeOfId) {
             passportElementNum -> {
-                return ((otherPhotoPassportFront.contentUri != null) && (otherPhotoPassportBack.contentUri != null))
+                return ((addPassportFrontPhotoButtonVisibility.value == View.GONE) && (addPassportBackPhotoButtonVisibility.value == View.GONE)
+                        && (otherPhotoPassportFront.contentUri != null) && (otherPhotoPassportBack.contentUri != null))
             }
             myNumberElementNum -> {
-                return otherPhotoMyNumber.contentUri != null
+                return ((addMyNumberPhotoButtonVisibility.value == View.GONE) && (otherPhotoMyNumber.contentUri != null))
             }
             else -> {
-                if (removeBackPhotoButtonVisibility.value == View.VISIBLE) {
+                if (addBackPhotoButtonVisibility.value == View.GONE) {
                     //　裏面も選択されている場合
-                    return ((otherPhotoBack.contentUri != null) && (otherPhotoFront.contentUri != null))
+                    return ((otherPhotoBack.contentUri != null) && ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null)))
                 } else {
-                    return otherPhotoFront.contentUri != null
+                    return ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null))
                 }
             }
         }
@@ -377,21 +391,18 @@ class UploadIdImageViewModel : ViewModel() {
 interface UploadIdImageEventHandlers {
     fun onClickClose(view: View)
     fun onClickSkip(view: View)
-
     //　画像選択イベント
     fun onClickAddFrontPhotoButton(view: View)
     fun onClickAddBackPhotoButton(view: View)
     fun onCLickAddPassportFrontPhotoButton(view: View)
     fun onCLickAddPassportBackPhotoButton(view: View)
     fun onCLickAddMyNumberPhotoButton(view: View)
-
     // 画像削除イベント
     fun onClickRemoveFrontPhoto(view: View)
     fun onClickRemoveBackPhoto(view: View)
     fun onCLickRemovePassportFrontPhoto(view: View)
     fun onClickRemovePassportBackPhoto(view: View)
     fun onClickRemoveMyNumberPhoto(view: View)
-
-
+    // 送信イベント
     fun onClickUploadIdImage(view: View)
 }
