@@ -443,12 +443,12 @@ class UploadIdImageViewModel : ViewModel() {
 
     private fun isValidPhoto(): Boolean {
         // 身分証種別ごと画像選択済みでかつ画像URLを取得できているか
-        when (typeOfId) {
-            passportElementNum -> {
+        when (typeOfId.value) {
+            passportElementNum.value -> {
                 return ((addPassportFrontPhotoButtonVisibility.value == View.GONE) && (addPassportBackPhotoButtonVisibility.value == View.GONE)
                         && (otherPhotoPassportFront.contentUri != null) && (otherPhotoPassportBack.contentUri != null))
             }
-            myNumberElementNum -> {
+            myNumberElementNum.value -> {
                 return ((addMyNumberPhotoButtonVisibility.value == View.GONE) && (otherPhotoMyNumber.contentUri != null))
             }
             else -> {
