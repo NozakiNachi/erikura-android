@@ -48,7 +48,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     var comparingData = ComparingData()
     var userId: Int? = null
     var fromGallery = false
-    var fromWhere: Int? = null
+    var fromWhere: Int = ErikuraApplication.FROM_NOT_FOUND
     var job = Job()
     private val viewModel: UploadIdImageViewModel by lazy {
         ViewModelProvider(this).get(UploadIdImageViewModel::class.java)
