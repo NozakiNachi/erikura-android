@@ -485,7 +485,7 @@
                     android:layout_marginRight="0dp"
                     android:text="@string/change"
                     android:visibility="@{viewModel.changeVisibility}"
-                    app:onSafeClick="" />
+                    app:onSafeClick="@{handlers.onClickUpdateIdentity}" />
 
             </LinearLayout>
 
