@@ -202,7 +202,7 @@
                         android:layout_marginRight="10dp"
                         android:drawableLeft="@drawable/icon_required_18"
                         android:drawablePadding="10dp"
-                        android:text="氏名 （姓・名）" />
+                        android:text="氏名（姓・名）" />
 
                     <!-- 身分証の確認状況を表示-->
                     <TextView
