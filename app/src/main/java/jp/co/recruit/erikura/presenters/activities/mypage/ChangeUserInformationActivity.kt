@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
@@ -39,6 +40,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     var userName: String? = null
     var birthDay: String? = null
     var cityName: String? = null
+    var fromWhere: Int? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -71,6 +73,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         fromSms = intent.getBooleanExtra("fromSms", false)
+        fromWhere = intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -109,6 +112,14 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     loadData()
                 }
             }
+        }
+        // 身分証送信経由の場合、完了ダイアログを表示
+        if (fromWhere == ErikuraApplication.FROM_CHANGE_USER || fromWhere == ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO) {
+            val dialog = AlertDialog.Builder(this)
+                .setView(R.layout.dialog_upload_failed)
+                .setCancelable(false)
+                .create()
+            dialog.show()
         }
     }
 

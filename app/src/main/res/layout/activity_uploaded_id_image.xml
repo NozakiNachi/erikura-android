@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.UploadedIdImageEventHandlers" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -50,7 +56,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
                     android:text="@string/go"
-                    app:onSafeClick=""/>
+                    app:onSafeClick="@{handlers.onClickNext}"/>
 
 
             </LinearLayout>

@@ -282,7 +282,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     override fun onClickUploadIdImage(view: View) {
         // 身分証種別によってエンコードしてデータをセット
         // 各contentUriはバリデーションチェック済
-        when(viewModel.typeOfId.value) {
+        when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!))
                 idDocument.data?.back?.plus(encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!))
@@ -301,7 +301,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
 
-        userId?.let{ userId ->
+        userId?.let { userId ->
             Api(this).idVerify(userId, idDocument) {
                 // 遷移元に応じて身分証確認完了を表示
                 moveUploadedIdImage()
@@ -323,23 +323,27 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     private fun moveUploadedIdImage() {
-        // FIXME 画面遷移を実装中
-        when(fromWhere) {
+        when (fromWhere) {
             ErikuraApplication.FROM_REGISTER -> {
                 //　身分証確認完了画面へ
+                val intent = Intent(this, UploadedIdImageActivity::class.java)
                 intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
                 startActivity(intent)
                 finish()
             }
             ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
                 //　会員情報変更画面へ遷移し、身分証確認完了モーダルを表示
+                // FIXME 会員情報画面が２重になるかもしれない　戻るボタンを押下して要動作検証
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
                 startActivity(intent)
                 finish()
             }
             ErikuraApplication.FROM_ENTRY -> {
                 //　身分証確認完了画面へ
+                val intent = Intent(this, UploadedIdImageActivity::class.java)
                 intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+                intent.putExtra("job", job)
                 startActivity(intent)
                 finish()
             }
@@ -471,18 +475,21 @@ class UploadIdImageViewModel : ViewModel() {
 interface UploadIdImageEventHandlers {
     fun onClickClose(view: View)
     fun onClickSkip(view: View)
+
     //　画像選択イベント
     fun onClickAddFrontPhotoButton(view: View)
     fun onClickAddBackPhotoButton(view: View)
     fun onCLickAddPassportFrontPhotoButton(view: View)
     fun onCLickAddPassportBackPhotoButton(view: View)
     fun onCLickAddMyNumberPhotoButton(view: View)
+
     // 画像削除イベント
     fun onClickRemoveFrontPhoto(view: View)
     fun onClickRemoveBackPhoto(view: View)
     fun onCLickRemovePassportFrontPhoto(view: View)
     fun onClickRemovePassportBackPhoto(view: View)
     fun onClickRemoveMyNumberPhoto(view: View)
+
     // 送信イベント
     fun onClickUploadIdImage(view: View)
 }
