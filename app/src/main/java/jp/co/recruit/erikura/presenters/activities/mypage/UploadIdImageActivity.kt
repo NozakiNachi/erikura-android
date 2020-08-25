@@ -387,7 +387,7 @@ class UploadIdImageViewModel : ViewModel() {
 
     // 各画像フィールド表示のvisibility
     var normalImageSelectionVisibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(typeOfId) {
+        result.addSource(typeOfId) { id->
             // パスポート、マイナンバー以外の場合表示
             if (isNotPassportOrMyNumber()) {
                 result.value = View.VISIBLE
@@ -465,7 +465,7 @@ class UploadIdImageViewModel : ViewModel() {
     // パスポート、マイナンバー以外の場合
     private fun isNotPassportOrMyNumber(): Boolean {
         var isNotPassportOrMyNumber = false
-        if (!((typeOfId == passportElementNum) || (typeOfId == myNumberElementNum))) {
+        if (!((typeOfId.value == passportElementNum.value) || (typeOfId.value == myNumberElementNum.value))) {
             isNotPassportOrMyNumber = true
         }
         return isNotPassportOrMyNumber
