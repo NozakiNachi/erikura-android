@@ -28,7 +28,8 @@
                 android:layout_marginRight="0dp"
                 android:layout_weight="20"
                 style="@style/primaryButton"
-                android:text="@string/entry"
+                android:text="@{viewModel.applyButtonText}"
+                android:enabled="@{viewModel.applyButtonEnabled}"
                 android:visibility="@{viewModel.applyButtonVisibility}"
                 app:onSafeClick="@{handlers::onClickApply}" />
             <ToggleButton

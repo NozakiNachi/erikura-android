@@ -64,7 +64,9 @@ data class Job(
     var banned: Boolean = false,
     val createdAt: Date? = null,
     var cautionsCount: Int? = null,
-    var goodExamplesCount: Int? = null
+    var goodExamplesCount: Int? = null,
+    var inAdvanceEntryPeriod: Boolean = false,
+    var closeToHome: Boolean = false
 ): Parcelable {
     var uninitialized: Boolean = false
     val reportId: Int? get() = report?.id

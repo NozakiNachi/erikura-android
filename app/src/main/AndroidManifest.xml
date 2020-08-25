@@ -222,7 +222,7 @@
                 <data
                     android:host="${erikura_host}"
                     android:scheme="${erikura_protocol}"
-                    android:pathPrefix="/api/v1/utils/open_android_app" />
+                    android:pathPrefix="/app/api/v1/utils/open_android_app" />
             </intent-filter>
         </activity>
         <activity

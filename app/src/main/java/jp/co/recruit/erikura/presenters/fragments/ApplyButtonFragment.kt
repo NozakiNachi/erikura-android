@@ -7,10 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ToggleButton
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
@@ -98,10 +99,24 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
 }
 
 class ApplyButtonFragmentViewModel: ViewModel() {
+    val job = MutableLiveData<Job>()
+    val user = MutableLiveData<User>()
+
+    val inAdvancePeriod: Boolean get() = job.value?.inAdvanceEntryPeriod ?: false
+    val closeToHome: Boolean get() = job.value?.closeToHome ?: false
+
     val applyButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val applyButtonText = MutableLiveData<String>(ErikuraApplication.instance.getString(R.string.entry))
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
+    val applyButtonEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(job) { updateApplyButtonStatus() }
+    }
+
     fun setup(activity: Activity, job: Job?, user: User?){
+        this.job.value = job
+        this.user.value = user
+
         if (job != null) {
             // 案件受付期間外の判定
             if (Api.isLogin && user == null) {
@@ -122,6 +137,17 @@ class ApplyButtonFragmentViewModel: ViewModel() {
                     favorited.value = it
                 }
             }
+        }
+    }
+
+    private fun updateApplyButtonStatus() {
+        if (inAdvancePeriod && !closeToHome) {
+            applyButtonEnabled.value = false
+            applyButtonText.value = ErikuraApplication.instance.getString(R.string.advanceEntry)
+        }
+        else {
+            applyButtonEnabled.value = true
+            applyButtonText.value = ErikuraApplication.instance.getString(R.string.entry)
         }
     }
 }
