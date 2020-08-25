@@ -503,6 +503,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun goodExamples(placeId: Int, jobKind: Int, detail: Boolean = false, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<ReportExample>) -> Unit){
+        executeObservable(
+            erikuraApiService.goodExamples(placeId, jobKind, detail),
+            onError = onError
+        ) { body ->
+            val reportExamples = body.report_examples
+            onComplete(reportExamples)
+        }
+    }
+
     fun report(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (reportId: Int) -> Unit) {
         job.report?.let { report ->
             val outputSummaries = report.outputSummaries.filter{ it.needsToSendAPI }.map { outputSummary ->

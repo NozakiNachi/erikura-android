@@ -50,6 +50,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var applyFlowView: ApplyFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var reportExamplesButton: ReportExamplesButtonFragment? = null
     private var fromIdentify: Boolean = false
 
     constructor() : super()
@@ -76,6 +77,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
                 applyFlowView?.refresh(job, user)
                 applyButton?.refresh(job, user)
                 propertyNotesButton?.refresh(job, user)
+                reportExamplesButton?.refresh(job, user)
             }
         }
     }
@@ -109,6 +111,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
         applyButton = ApplyButtonFragment.newInstance(job, user)
         propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
@@ -119,6 +122,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
         transaction.add(R.id.jobDetails_applyButtonFragment, applyButton!!, "applyButton")
         transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")
         transaction.commitAllowingStateLoss()
     }
 
@@ -173,6 +177,7 @@ class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
             result.value = if (it.isNullOrBlank()) { View.GONE } else { View.VISIBLE }
         }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job
@@ -196,6 +201,12 @@ class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
                         bitmapDraw.alpha = 150
                         bitmapDrawable.value = bitmapDraw
                     }
+                }
+            }
+            //お手本報告件数が0件の場合非表示
+            job.goodExamplesCount?.let { reportExampleCount ->
+                if (reportExampleCount == 0) {
+                    reportExamplesButtonVisibility.value = View.GONE
                 }
             }
         }

@@ -46,6 +46,11 @@ class PropertyNotesButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFr
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        createPropertyNotesButtonText(job?.cautionsCount ?: 0)
+    }
+
     override fun onClickPropertyNotes(view: View) {
         // ページ参照のトラッキングの送出
         job?.let { job ->

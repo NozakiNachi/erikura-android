@@ -107,7 +107,12 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             Tracking.logEvent(event= "view_edit_job_report_photo", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
         }
-
+        //お手本報告件数が0件の場合非表示
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
+            }
+        }
     }
 
     private fun displayImagePicker() {
@@ -227,11 +232,19 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         intent.putExtra("pictureIndex", 0)
         startActivity(intent)
     }
+
+    override fun onClickReportExamples(view: View) {
+        job?.let { job ->
+            JobUtil.openReportExample(this, job)
+        }
+    }
+
 }
 
 class ReportImagePickerViewModel: ViewModel() {
     val imageMap: MutableMap<Long, MediaItem> = HashMap()
     val isNextButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 }
 
 class ImagePickerCellViewModel: ViewModel() {
@@ -327,4 +340,5 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
 interface ReportImagePickerEventHandler {
     fun onClickManual(view: View)
     fun onClickNext(view: View)
+    fun onClickReportExamples(view: View)
 }

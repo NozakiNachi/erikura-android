@@ -549,4 +549,8 @@
     <string name="pedometer_accepted_button">同意する</string>
     <string name="pedometer_not_accepted_button">同意しない</string>
 
+    <!--お手本報告画面-->
+    <string name="report_examples_button">このお仕事のお手本報告</string>
+    <string name="report_examples_button2">このお仕事の\nお手本報告</string>
+
 </resources>

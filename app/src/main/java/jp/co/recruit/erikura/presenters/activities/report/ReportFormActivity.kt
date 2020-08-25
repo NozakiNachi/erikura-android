@@ -160,6 +160,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         }
     }
 
+    override fun onClickReportExamples(view: View) {
+        job?.let { job ->
+            JobUtil.openReportExample(this, job)
+        }
+    }
+
     private fun setup() {
         var max = 0
         var pictureIndexNotDeleted = pictureIndex
@@ -239,6 +245,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             }
             viewModel.comment.value = summary.comment
         }
+        //お手本報告件数が0件の場合非表示
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
+            }
+        }
     }
 }
 
@@ -264,6 +276,7 @@ class ReportFormViewModel: ViewModel() {
         result.addSource(statusId) { result.value = isValid() }
         result.addSource(comment) { result.value = isValid()  }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     private fun isValid(): Boolean {
         var valid = true
@@ -318,4 +331,5 @@ interface ReportFormEventHandlers {
     fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
+    fun onClickReportExamples(view: View)
 }

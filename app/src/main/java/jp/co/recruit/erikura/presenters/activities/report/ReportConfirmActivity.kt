@@ -252,6 +252,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         }
     }
 
+    override fun onClickReportExamples(view: View) {
+        job?.let { job ->
+            JobUtil.openReportExample(this, job)
+        }
+    }
+
     @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -584,6 +590,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
             viewModel.isCompleteButtonEnabled.value = viewModel.isValid(it)
         }
+        //お手本報告件数が0件の場合非表示
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
+            }
+        }
     }
 
     private fun retry() {
@@ -631,6 +643,7 @@ class ReportConfirmViewModel : ViewModel() {
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     fun isValid(report: Report): Boolean {
         var valid = true
@@ -657,6 +670,7 @@ interface ReportConfirmEventHandlers {
     fun onClickEditWorkingTime(view: View)
     fun onClickEditEvaluation(view: View)
     fun onClickManual(view: View)
+    fun onClickReportExamples(view: View)
 }
 
 // 実施箇所の一覧

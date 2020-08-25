@@ -76,6 +76,12 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             Tracking.logEvent(event= "view_edit_job_report_others", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/additional/${job.id}", title= "作業報告編集画面（マニュアル外）", jobId= job.id)
         }
+        //お手本報告件数が0件の場合非表示
+        job.goodExamplesCount?.let { reportExampleCount ->
+            if (reportExampleCount == 0) {
+                viewModel.reportExamplesButtonVisibility.value = View.GONE
+            }
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -235,8 +241,14 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                 startActivity(intent)
             }
         }
-
     }
+
+    override fun onClickReportExamples(view: View) {
+        job?.let { job ->
+            JobUtil.openReportExample(this, job)
+        }
+    }
+
 }
 
 class ReportOtherFormViewModel: ViewModel() {
@@ -253,6 +265,7 @@ class ReportOtherFormViewModel: ViewModel() {
         result.addSource(addPhotoButtonVisibility) {result.value = isValid()}
         result.addSource(comment) { result.value = isValid()  }
     }
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
     private fun isValid(): Boolean {
         var valid = true
@@ -290,4 +303,5 @@ interface ReportOtherFormEventHandlers {
     fun onClickAddPhotoButton(view: View)
     fun onClickRemovePhoto(view: View)
     fun onClickManual(view: View)
+    fun onClickReportExamples(view: View)
 }

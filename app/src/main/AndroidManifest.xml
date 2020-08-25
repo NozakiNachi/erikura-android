@@ -64,6 +64,7 @@
         <activity android:name=".presenters.activities.report.ReportFormActivity" android:screenOrientation="portrait"/>
         <activity android:name=".presenters.activities.errors.LoginRequiredActivity" android:screenOrientation="portrait"/>
         <activity android:name=".presenters.activities.report.ReportImagePickerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".presenters.activities.report.ReportExamplesActivity" android:screenOrientation="portrait"/>
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
