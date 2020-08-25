@@ -81,7 +81,7 @@
     <!-- 会員情報変更画面-->
     <string name="unconfirmed_identification_explain">身分証未確認の項目あり</string>
     <string name="recommend_identification">お仕事への応募までに身分証のご提出をお願いしております。完了まで最長数日かかるため、事前の身分証確認をおすすめします。</string>
-    <string name="change">変更</string>
+    <string name="change"><a href="">変更</a></string>
     <string name="confirmed_identification">身分証確認済み</string>
     <string name="confirming_identification">※身分証確認中：</string>
     <string name="unconfirmed_identification">※身分証未確認</string>
@@ -389,7 +389,7 @@
     <string name="first_confirm_identification">先に身分証確認を行う</string>
     <string name="confirm_identification">身分証確認を行う</string>
     <string name="send_identity">入力内容を送る</string>
-    <string name="after_identify">あとで行う</string>
+    <string name="after_identify"><a href="">あとで行う</a></string>
     <string name="send_id_image">写真を送る</string>
 
     <!-- プレースホルダ -->
