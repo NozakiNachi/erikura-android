@@ -28,8 +28,8 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         const val FROM_IDENTIFY = "fromIdentify"
         fun newInstance(job: Job?, user: User?, fromIdentify: Boolean): NormalJobDetailsFragment {
             val args = Bundle()
-            args.putBoolean(FROM_IDENTIFY, fromIdentify)
             fillArguments(args, job, user)
+            args.putBoolean(FROM_IDENTIFY, fromIdentify)
 
             return NormalJobDetailsFragment().also {
                 it.arguments = args
@@ -86,6 +86,9 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        arguments?.let { args ->
+            this.fromIdentify = args.getBoolean(FROM_IDENTIFY)
+        }
         super.onCreateView(inflater, container, savedInstanceState)
 
         container?.removeAllViews()
@@ -132,9 +135,13 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         Tracking.logEvent(event= "view_job_detail", params= bundleOf())
         Tracking.viewJobDetails(name= "/jobs/${job?.id?.toString() ?: ""}", title= "タスク詳細画面", jobId= job?.id ?: 0)
         // 身分確認経由の場合応募確認ダイアログを表示する
+        arguments?.let { args ->
+            this.fromIdentify = args.getBoolean(FROM_IDENTIFY)
+        }
         if (fromIdentify) {
             val dialog = ApplyDialogFragment.newInstance(job)
             dialog.show(childFragmentManager, "Apply")
+            fromIdentify = false
         }
     }
 }

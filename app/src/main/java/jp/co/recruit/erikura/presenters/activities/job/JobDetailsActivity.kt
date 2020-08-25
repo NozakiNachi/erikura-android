@@ -63,6 +63,8 @@ class JobDetailsActivity : BaseActivity() {
             }
             Log.v("DEBUG", job.toString())
 
+            // 身分確認からの場合
+            fromIdentify = intent.getBooleanExtra("fromIdentify", false)
             // アラート表示
             fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
             fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
@@ -128,6 +130,11 @@ class JobDetailsActivity : BaseActivity() {
         }
         else if (job.id == renderedJobId && job.status == renderedJobStatus) {
             fragment?.refresh(job, user)
+            // intentを受け取ってfromIdentifyが更新されている可能性があるので身分確認のフラグも更新する
+            fragment?.arguments?.let { args ->
+                args.putBoolean("fromIdentify", fromIdentify)
+                fromIdentify = false
+            }
         }
         else {
             val transaction = supportFragmentManager.beginTransaction()
