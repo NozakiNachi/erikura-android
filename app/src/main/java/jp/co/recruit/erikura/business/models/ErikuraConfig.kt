@@ -10,6 +10,8 @@ object ErikuraConfig {
     const val INQUIRY_URL_KEY = "inquiry_url"
     const val FAQ_URL_KEY = "faq_url"
     const val RECOMMENDED_URL_KEY = "recommended_environment_url"
+    const val JOB_REPORT_FIXED_PHRASE_A = "job_report_fixed_phrase_a"
+    const val JOB_REPORT_FIXED_PHRASE_B = "job_report_fixed_phrase_b"
 
     var rewardRange: List<Int> = listOf(1,5,10,50,100,500,1000,1500,2000,2500,3000,3500,4000,4500,5000)
     var workingTimeRange: List<Int> = listOf(1,5,10,15,30,45,60,75,90,105,120,180,240,300,360,420,480)
@@ -17,6 +19,8 @@ object ErikuraConfig {
     var frequentlyQuestionsURLString: String = "https://faq.erikura.net/hc/ja/sections/360003690953-FAQ"
     var recommendedEnvironmentURLString: String =
         "https://faq.erikura.net/hc/ja/articles/360020286793-%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E6%8E%A8%E5%A5%A8%E7%92%B0%E5%A2%83%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"
+    var jobReportFixedPhraseA: List<String> = listOf()
+    var jobReportFixedPhraseB: List<String> = listOf()
 
     fun load(context: Context) {
         Api(context).erikuraConfig { result ->
@@ -39,6 +43,16 @@ object ErikuraConfig {
             result[RECOMMENDED_URL_KEY]?.let { v ->
                 (v as? ErikuraConfigValue.StringValue)?.let {
                     recommendedEnvironmentURLString = it.value ?: recommendedEnvironmentURLString
+                }
+            }
+            result[JOB_REPORT_FIXED_PHRASE_A]?.let { v ->
+                (v as? ErikuraConfigValue.StringList)?.let {
+                    jobReportFixedPhraseA = it.values ?: jobReportFixedPhraseA
+                }
+            }
+            result[JOB_REPORT_FIXED_PHRASE_B]?.let { v ->
+                (v as? ErikuraConfigValue.StringList)?.let {
+                    jobReportFixedPhraseB = it.values ?: jobReportFixedPhraseB
                 }
             }
         }

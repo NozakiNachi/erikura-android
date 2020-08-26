@@ -280,12 +280,12 @@
                     android:selectedItemPosition="@={viewModel.statusId}"
                     android:spinnerMode="dialog" />
 
-                <!-- コメント記入 -->
+                <!-- コメント選択選択 -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginTop="30dp"
                     android:layout_marginRight="20dp"
                     android:orientation="horizontal">
 
@@ -300,7 +300,42 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="8dp"
-                        android:text="@string/comment" />
+                        android:text="@string/comment_select" />
+                </LinearLayout>
+
+                <Spinner
+                    style="@style/spinnerField"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginTop="10dp"
+                    android:entries="@{viewModel.commentItems}"
+                    android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onCommentSelected(parent, view, position, id)}}"
+                    android:selectedItemPosition="@={viewModel.commentId}"
+                    android:spinnerMode="dialog" />
+
+                <!-- コメント記入 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.commentEditVisibility}" >
+
+                    <ImageView
+                        android:layout_width="38dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/required_2x" />
+
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="8dp"
+                        android:text="@string/comment_input" />
                 </LinearLayout>
 
                 <EditText
@@ -309,7 +344,8 @@
                     android:layout_height="140dp"
                     android:layout_marginTop="10dp"
                     android:hint="@string/comment_hint"
-                    android:text="@={viewModel.comment}" />
+                    android:text="@={viewModel.comment}"
+                    android:visibility="@{viewModel.commentEditVisibility}" />
 
                 <TextView
                     style="@style/errorField"

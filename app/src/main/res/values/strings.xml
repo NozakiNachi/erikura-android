@@ -249,6 +249,8 @@
     <string name="summary_status">作業後の状態</string>
     <string name="summary_status2">作業後の\n状態</string>
     <string name="comment">コメント</string>
+    <string name="comment_select">コメント</string>
+    <string name="comment_input">コメント（自由記述）</string>
 
     <!-- 会員情報入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
