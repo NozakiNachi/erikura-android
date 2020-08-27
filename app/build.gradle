@@ -54,6 +54,9 @@ android {
         debug {
             def properties = new Properties()
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
+            properties.setProperty("erikura_host", "localhost")
+            properties.setProperty("erikura_protocol", "http")
+            properties.setProperty("erikura_relative_url_root", "/app")
 
             buildConfigField("String", "SERVER_BASE_URL", '"' + properties.getProperty("server.base_url") + '"')
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"' + properties.getProperty("google.map_api_key") + '"')
@@ -67,9 +70,21 @@ android {
             resValue "string", "fb_login_protocol_scheme", "fb633836627103645"
             addManifestPlaceholders([facebook_app_id: "633836627103645"])
 
-            addManifestPlaceholders([erikura_host: "localhost", erikura_protocol: "http"])
+            buildConfigField("String", "ERIKURA_HOST", '"' + properties.getProperty("erikura_host") + '"')
+            buildConfigField("String", "ERIKURA_PROTOCOL", '"' + properties.getProperty("erikura_protocol") + '"')
+            buildConfigField("String", "ERIKURA_RELATIVE_URL_ROOT", '"' + properties.getProperty("erikura_relative_url_root") + '"')
+            addManifestPlaceholders([
+                    erikura_host: properties.getProperty("erikura_host"),
+                    erikura_protocol:  properties.getProperty("erikura_protocol"),
+                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root")
+            ])
         }
         staging {
+            def properties = new Properties()
+            properties.setProperty("erikura_host", "dev.erikura.net")
+            properties.setProperty("erikura_protocol", "https")
+            properties.setProperty("erikura_relative_url_root", "/app")
+
             buildConfigField("String", "SERVER_BASE_URL", "\"https://dev.erikura.net/app/\"")
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
@@ -82,9 +97,21 @@ android {
             resValue "string", "fb_login_protocol_scheme", "fb633836627103645"
             addManifestPlaceholders([facebook_app_id: "633836627103645"])
 
-            addManifestPlaceholders([erikura_host: "dev-app.erikura.net", erikura_protocol: "https"])
+            buildConfigField("String", "ERIKURA_HOST", '"' + properties.getProperty("erikura_host") + '"')
+            buildConfigField("String", "ERIKURA_PROTOCOL", '"' + properties.getProperty("erikura_protocol") + '"')
+            buildConfigField("String", "ERIKURA_RELATIVE_URL_ROOT", '"' + properties.getProperty("erikura_relative_url_root") + '"')
+            addManifestPlaceholders([
+                    erikura_host: properties.getProperty("erikura_host"),
+                    erikura_protocol:  properties.getProperty("erikura_protocol"),
+                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root")
+            ])
         }
         release {
+            def properties = new Properties()
+            properties.setProperty("erikura_host", "erikura.net")
+            properties.setProperty("erikura_protocol", "https")
+            properties.setProperty("erikura_relative_url_root", "/app")
+
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField("String", "SERVER_BASE_URL", "\"https://erikura.net/app/\"")
@@ -99,7 +126,14 @@ android {
             resValue "string", "fb_login_protocol_scheme", "fb196990194298653"
             addManifestPlaceholders([facebook_app_id: "196990194298653"])
 
-            addManifestPlaceholders([erikura_host: "app.erikura.net", erikura_protocol: "https"])
+            buildConfigField("String", "ERIKURA_HOST", '"' + properties.getProperty("erikura_host") + '"')
+            buildConfigField("String", "ERIKURA_PROTOCOL", '"' + properties.getProperty("erikura_protocol") + '"')
+            buildConfigField("String", "ERIKURA_RELATIVE_URL_ROOT", '"' + properties.getProperty("erikura_relative_url_root") + '"')
+            addManifestPlaceholders([
+                    erikura_host: properties.getProperty("erikura_host"),
+                    erikura_protocol:  properties.getProperty("erikura_protocol"),
+                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root")
+            ])
         }
     }
     dataBinding {
