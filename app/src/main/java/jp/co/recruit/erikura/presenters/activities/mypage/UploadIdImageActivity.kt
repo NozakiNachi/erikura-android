@@ -18,10 +18,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.ComparingData
-import jp.co.recruit.erikura.business.models.IdDocument
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUploadIdImageBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -284,17 +281,17 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         // 各contentUriはバリデーションチェック済
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
-                idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!))
-                idDocument.data?.back?.plus(encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!))
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!)),
+                    back = listOf(encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!)))
             }
             myNumberElementNum -> {
-                idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoMyNumber.contentUri!!))
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoMyNumber.contentUri!!)))
             }
             else -> {
-                idDocument.data?.front?.plus(encodeBase64FromImage(viewModel.otherPhotoFront.contentUri!!))
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoFront.contentUri!!)))
                 if (viewModel.addBackPhotoButtonVisibility.value == View.GONE) {
                     // 裏面もある場合
-                    idDocument.data?.back?.plus(encodeBase64FromImage(viewModel.otherPhotoBack.contentUri!!))
+                    idDocument.data = Data(back = listOf(encodeBase64FromImage(viewModel.otherPhotoBack.contentUri!!)))
                 }
             }
         }

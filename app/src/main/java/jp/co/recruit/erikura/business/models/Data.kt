@@ -5,6 +5,6 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Data(
-    var front: List<String>,
-    var back: List<String>
+    var front: List<String>? = null,
+    var back: List<String>? = null
 ) : Parcelable
