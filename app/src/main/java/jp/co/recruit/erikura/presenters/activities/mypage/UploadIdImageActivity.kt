@@ -281,8 +281,9 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         // 各contentUriはバリデーションチェック済
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!)),
-                    back = listOf(encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!)))
+                //パスポートは２枚とも表面扱い
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!),
+                    encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!)))
             }
             myNumberElementNum -> {
                 idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoMyNumber.contentUri!!)))
