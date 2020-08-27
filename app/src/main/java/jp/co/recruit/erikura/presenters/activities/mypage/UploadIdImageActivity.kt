@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -302,9 +303,20 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
         userId?.let { userId ->
-            api.idVerify(userId, idDocument) {
+            api.idVerify(userId, idDocument) { result ->
+                if (result) {
                 // 遷移元に応じて身分証確認完了を表示
                 moveUploadedIdImage()
+                } else {
+                    // 身分確認API失敗の場合 ダイアログを表示
+                    val dialog = AlertDialog.Builder(this)
+                        .setView(R.layout.dialog_failed_upload_id_image)
+                        .setCancelable(true)
+                        .setOnDismissListener {
+                            finish()
+                        }
+                    dialog.show()
+                }
             }
         }
     }
