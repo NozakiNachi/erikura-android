@@ -116,8 +116,8 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         // 身分証送信経由の場合、完了ダイアログを表示
         if (fromWhere == ErikuraApplication.FROM_CHANGE_USER || fromWhere == ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO) {
             val dialog = AlertDialog.Builder(this)
-                .setView(R.layout.dialog_upload_failed)
-                .setCancelable(false)
+                .setView(R.layout.dialog_uploaded_id_image)
+                .setCancelable(true)
                 .create()
             dialog.show()
         }
