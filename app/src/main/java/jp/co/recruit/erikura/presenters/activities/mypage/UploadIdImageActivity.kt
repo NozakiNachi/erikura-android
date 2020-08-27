@@ -279,6 +279,9 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     override fun onClickUploadIdImage(view: View) {
         // 身分証種別によってエンコードしてデータをセット
         // 各contentUriはバリデーションチェック済
+        val api = Api(this)
+        // スピナー表示
+        api.showProgressAlert()
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 //パスポートは２枚とも表面扱い
@@ -298,9 +301,8 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
-
         userId?.let { userId ->
-            Api(this).idVerify(userId, idDocument) {
+            api.idVerify(userId, idDocument) {
                 // 遷移元に応じて身分証確認完了を表示
                 moveUploadedIdImage()
             }
