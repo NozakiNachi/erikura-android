@@ -98,6 +98,7 @@
     <string name="jobDetails_entryFinished">受付が終了いたしました</string>
     <string name="jobDetails_cantEntry">キャンセル後一定時間は再応募できません</string>
     <string name="jobDetails_maxEntry">未報告のお仕事が%1$d件以上あるため応募できません</string>
+    <string name="jobDetails_advanceEntry">このお仕事は近隣在住の方のみ応募可能です</string>
     <string name="jobDetails_goWorking">に現地で作業後、\n作業報告しましょう！</string>
     <string name="jobDetails_overLimit">納期を超過しています</string>
     <string name="jobDetails_pressButton">※現地に着いて、作業開始する時に「作業を開始」ボタンを押してください。</string>
@@ -325,6 +326,7 @@
     <string name="showManual">マニュアルを表示</string>
     <string name="openMap">　地図アプリで開く</string>
     <string name="entry">このお仕事に応募</string>
+    <string name="advanceEntry">近隣在住の方のみ応募可能</string>
     <string name="jobDetail">このお仕事の詳細</string>
     <string name="searchOtherJobs">他のお仕事を探す</string>
     <string name="cancel">このお仕事をキャンセル</string>

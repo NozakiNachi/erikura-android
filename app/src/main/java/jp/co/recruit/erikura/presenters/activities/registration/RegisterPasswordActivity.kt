@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +14,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -49,7 +49,7 @@ class RegisterPasswordActivity : BaseActivity(),
 
         // 仮登録トークン取得
         var uri: Uri? = intent.data
-        if (uri?.path == "/api/v1/utils/open_android_app") {
+        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_app") {
             val path = uri?.getQueryParameter("path")
             uri = Uri.parse("erikura://${path}")
         }
