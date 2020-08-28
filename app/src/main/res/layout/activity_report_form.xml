@@ -309,9 +309,9 @@
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="10dp"
-                    android:entries="@{viewModel.commentItems}"
-                    android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onCommentSelected(parent, view, position, id)}}"
-                    android:selectedItemPosition="@={viewModel.commentId}"
+                    android:entries="@{viewModel.fixedPhraseItems}"
+                    android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onFixedPhraseSelected(parent, view, position, id)}}"
+                    android:selectedItemPosition="@={viewModel.fixedPhraseId}"
                     android:spinnerMode="dialog" />
 
                 <!-- コメント記入 -->
