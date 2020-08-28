@@ -130,6 +130,7 @@
                             android:layout_height="305dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
+                            android:adjustViewBounds="true"
                             android:background="@color/white" />
 
                         <!-- 写真削除ボタン -->
@@ -189,6 +190,7 @@
                             android:layout_height="305dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
+                            android:adjustViewBounds="true"
                             android:background="@color/white" />
 
                         <!-- 写真削除ボタン -->
@@ -248,6 +250,7 @@
                             android:layout_height="305dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
+                            android:adjustViewBounds="true"
                             android:background="@color/white" />
 
                         <!-- 写真削除ボタン -->
@@ -308,6 +311,7 @@
                             android:layout_height="305dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
+                            android:adjustViewBounds="true"
                             android:background="@color/white" />
 
                         <!-- 写真削除ボタン -->
@@ -377,6 +381,7 @@
                             android:layout_height="305dp"
                             android:layout_gravity="center"
                             android:layout_marginTop="10dp"
+                            android:adjustViewBounds="true"
                             android:background="@color/white" />
 
                         <!-- 写真削除ボタン -->

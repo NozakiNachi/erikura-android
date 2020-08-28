@@ -108,6 +108,10 @@
     <string name="uploaded_id_image">身分証を送信しました！</string>
     <string name="uploaded_id_image_caption">内容の確認完了まで数分〜数日をいただいております。確認が完了しましたらメールにてご連絡いたします。\n\n確認が完了すると、ご入力いただいた内容がプロフィールに反映されます。</string>
 
+    <!-- 身分証確認エラーモーダル-->
+    <string name="failed_upload_id_image_title">身分証確認の実施に失敗しました</string>
+    <string name="failed_upload_id_image_sentence">時間をおいて再実施をお願いいたします。</string>
+
     <!-- 口座情報登録成功モーダル -->
     <string name="register_account_success">口座情報を登録しました</string>
     <string name="change_account_success">口座情報を更新しました</string>

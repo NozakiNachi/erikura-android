@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -27,7 +26,6 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.io.ByteArrayOutputStream
-import java.lang.NullPointerException
 
 class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     // 身分証種別の要素番号
@@ -286,23 +284,24 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 //パスポートは２枚とも表面扱い
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoPassportFront.contentUri!!),
-                    encodeBase64FromImage(viewModel.otherPhotoPassportBack.contentUri!!)))
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportFront)),
+                    encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportBack))))
             }
             myNumberElementNum -> {
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoMyNumber.contentUri!!)))
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoMyNumber))))
             }
             else -> {
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(viewModel.otherPhotoFront.contentUri!!)))
+                idDocument.data = Data(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoFront))))
                 if (viewModel.addBackPhotoButtonVisibility.value == View.GONE) {
                     // 裏面もある場合
-                    idDocument.data = Data(back = listOf(encodeBase64FromImage(viewModel.otherPhotoBack.contentUri!!)))
+                    idDocument.data = Data(back = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoBack))))
                 }
             }
         }
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
         userId?.let { userId ->
+            var result = true
             api.idVerify(userId, idDocument) { result ->
                 if (result) {
                 // 遷移元に応じて身分証確認完了を表示
@@ -321,16 +320,42 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
     }
 
-    private fun encodeBase64FromImage(uri: Uri): String {
+    private fun resizeImage(item: MediaItem): ByteArray {
+        var imageByteArray: ByteArray? = null
         // uriから読み込み用InputStreamを生成
-        val inputStream = contentResolver?.openInputStream(uri)
+        val inputStream = contentResolver?.openInputStream(item.contentUri!!)
         // inputStreamからbitmap生成
         val imageBitmap = BitmapFactory.decodeStream(inputStream)
-        // bitmapからバイト配列を生成
+        // bitmapをjpeg形式に圧縮しバイト配列を生成
         val stream = ByteArrayOutputStream()
         imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val imageByteArray = stream.toByteArray()
-        // バイト配列からBase64文字列を生成
+        imageByteArray = stream.toByteArray()
+        // ファイルサイズをMBに置き換えます
+        val itemMbSize = imageByteArray.size /  1024.0 / 1024.0
+        // 4MB超えている場合はリサイズします
+        if (itemMbSize > 4) {
+            var height = imageBitmap.height
+            var width = imageBitmap.width
+            val maxPx = ErikuraApplication.MAX_PX
+            if (height > width) {
+                // 縦幅が長辺の場合
+                val ratio = width.toDouble() / height
+                height = maxPx
+                width = (ratio * maxPx).toInt()
+            } else {
+                // 横幅が長辺の場合
+                val ratio = height.toDouble() / width
+                height = (ratio * maxPx).toInt()
+                width = maxPx
+            }
+            item.resizeIdentifyImage(this, height, width) { bytes ->
+                imageByteArray = bytes
+            }
+        }
+        return imageByteArray!!
+    }
+
+    private fun encodeBase64FromImage(imageByteArray: ByteArray): String {
         return Base64.encodeToString(imageByteArray, Base64.DEFAULT)
     }
 
@@ -448,7 +473,7 @@ class UploadIdImageViewModel : ViewModel() {
         return valid
     }
 
-    // 身分証種別によって画像の数をバリデーション、画像サイズ
+    // 身分証種別によって画像の数をバリデーション
     private fun isValidTypeOfId(): Boolean {
         return !(typeOfId.value == 0 || typeOfId.value == null)
     }

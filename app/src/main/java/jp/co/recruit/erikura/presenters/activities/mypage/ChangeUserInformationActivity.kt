@@ -102,8 +102,8 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             // FIXME API身分証状況を取得し変数に代入
             user.id?.let { userId ->
                 api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, comparingData ->
+                var status = ErikuraApplication.UNCONFIRMED_CODE
                     // 身分確認状況を取得
-                    identifyStatus = status
                     if (identifyStatus == ErikuraApplication.CONFIRMING_CODE){
                         userName = comparingData.lastName + comparingData + comparingData.firstName
                         birthDay = comparingData.dateOfBirth

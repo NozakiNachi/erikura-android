@@ -95,6 +95,11 @@ class ErikuraApplication : Application() {
         const val FROM_CHANGE_USER = 2
         const val FROM_CHANGE_USER_FOR_CHANGE_INFO = 3
         const val FROM_ENTRY = 4
+
+        // 身分証確認の長辺の幅
+        const val MAX_PX = 2592
+        // 身分証確認圧縮する画像のquality
+        const val IMAGE_QUALITY = 100
     }
 
     //    var userSession: UserSession? = null

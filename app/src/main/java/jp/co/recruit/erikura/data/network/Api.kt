@@ -184,12 +184,13 @@ class Api(var context: Context) {
         }
     }
 
-    fun idVerify(userId: Int, idDocument: IdDocument, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: () -> Unit) {
+    fun idVerify(userId: Int, idDocument: IdDocument, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
         executeObservable(
             erikuraApiService.idVerify(IdVerifyRequest(userId, idDocument)),
             onError = onError
         ) { body ->
-            onComplete()
+            val result = body.result
+            onComplete(result)
         }
     }
 
