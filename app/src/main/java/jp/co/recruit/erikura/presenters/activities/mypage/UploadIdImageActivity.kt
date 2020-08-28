@@ -301,7 +301,6 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
         userId?.let { userId ->
-            var result = true
             api.idVerify(userId, idDocument) { result ->
                 if (result) {
                 // 遷移元に応じて身分証確認完了を表示
