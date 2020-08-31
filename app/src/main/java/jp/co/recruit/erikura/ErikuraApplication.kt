@@ -78,6 +78,8 @@ class ErikuraApplication : Application() {
 
         // 再認証画面の遷移元の定数
         const val REQUEST_RESIGHIN = 4
+
+        var versionAlertModal: AlertDialog? = null
     }
 
     //    var userSession: UserSession? = null
@@ -199,12 +201,20 @@ class ErikuraApplication : Application() {
             // 最新バージョンになっているか確認します
             if (!requiredClientVersion.isCurrentSatisfied(versionName)) {
                 // 最新バージョンになっていない場合 => アップデートを促すモーダルを表示
+                versionAlertModal?.dismiss()
+                versionAlertModal = null
+
                 Log.v("DEBUG", BaseActivity.currentActivity.toString())
                 BaseActivity.currentActivity?.let { activity ->
                     val dialog = AlertDialog.Builder(activity)
                         .setView(R.layout.dialog_update)
+                        .setOnDismissListener {
+                            ErikuraApplication.versionAlertModal = null
+                        }
                         .create()
                     dialog.show()
+
+                    versionAlertModal = dialog
 
                     val button: Button = dialog.findViewById(R.id.update_button)
                     button.setOnSafeClickListener {
