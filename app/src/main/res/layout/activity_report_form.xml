@@ -304,12 +304,12 @@
                 </LinearLayout>
 
                 <Spinner
+                    android:id="@+id/report_form_fixed_phrases"
                     style="@style/spinnerField"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="10dp"
-                    android:entries="@{viewModel.fixedPhraseItems}"
                     android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onFixedPhraseSelected(parent, view, position, id)}}"
                     android:selectedItemPosition="@={viewModel.fixedPhraseId}"
                     android:spinnerMode="dialog" />

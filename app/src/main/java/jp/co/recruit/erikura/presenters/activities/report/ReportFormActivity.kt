@@ -7,15 +7,10 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.FrameLayout
-import android.widget.ImageView
+import android.widget.*
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -23,6 +18,7 @@ import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import kotlinx.android.synthetic.main.activity_report_form.*
 
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -43,6 +39,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        viewModel.fixedPhraseItems.observe(this, Observer{ items ->
+            val adapter = ArrayAdapter<String>(this@ReportFormActivity, R.layout.custom_dropdown_item, items.toTypedArray())
+            adapter.setDropDownViewResource(R.layout.custom_dropdown_item)
+            report_form_fixed_phrases.adapter = adapter
+        })
 
         job = intent.getParcelableExtra<Job>("job")
         ErikuraApplication.instance.reportingJob = job
@@ -317,8 +319,12 @@ class ReportFormViewModel: ViewModel() {
     val fixedPhraseSelectedItem = MutableLiveData<String>()
 
     val fixedPhraseItems = MediatorLiveData<List<String>>().also { result ->
-        result.addSource(job) { result.value = buildFixedPhraseItems() }
-        result.addSource(evaluationSelectedItem) { result.value = buildFixedPhraseItems() }
+        result.addSource(job) {
+            result.value = buildFixedPhraseItems()
+        }
+        result.addSource(evaluationSelectedItem) {
+            result.value = buildFixedPhraseItems()
+        }
     }
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
