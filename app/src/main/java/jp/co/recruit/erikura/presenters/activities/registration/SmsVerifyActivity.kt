@@ -115,7 +115,9 @@ class SmsVerifyActivity : BaseActivity(),
         Tracking.logEvent(event= "view_sms_verify", params= bundleOf())
         Tracking.view(name= "/user/view_sms_verify", title= "SMS認証画面")
 
-        ErikuraApplication.instance.checkVersion()
+        if (ErikuraApplication.versionAlertModal != null) {
+            ErikuraApplication.instance.checkVersion()
+        }
     }
 
     override fun onClickAuthenticate(view: View) {
