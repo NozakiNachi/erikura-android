@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -115,6 +114,10 @@ class SmsVerifyActivity : BaseActivity(),
         //SMS認証画面表示のトラッキングの送出
         Tracking.logEvent(event= "view_sms_verify", params= bundleOf())
         Tracking.view(name= "/user/view_sms_verify", title= "SMS認証画面")
+
+        if (ErikuraApplication.versionAlertModal != null) {
+            ErikuraApplication.instance.checkVersion()
+        }
     }
 
     override fun onClickAuthenticate(view: View) {
