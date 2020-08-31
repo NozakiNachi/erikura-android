@@ -99,7 +99,7 @@ class ErikuraApplication : Application() {
         // 身分証確認の長辺の幅
         const val MAX_PX = 2592
         // 身分証確認圧縮する画像のquality
-        const val IMAGE_QUALITY = 85
+        const val IMAGE_QUALITY = 90
     }
 
     //    var userSession: UserSession? = null
