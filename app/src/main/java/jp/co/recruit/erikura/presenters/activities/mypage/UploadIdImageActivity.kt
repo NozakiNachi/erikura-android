@@ -26,6 +26,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     // 身分証種別の要素番号
@@ -301,6 +302,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
         userId?.let { userId ->
+            var result = true
             api.idVerify(userId, idDocument) { result ->
                 if (result) {
                 // 遷移元に応じて身分証確認完了を表示
@@ -327,7 +329,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         val imageBitmap = BitmapFactory.decodeStream(inputStream)
         // bitmapをjpeg形式に圧縮しバイト配列を生成
         val stream = ByteArrayOutputStream()
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, ErikuraApplication.IMAGE_QUALITY, stream)
         imageByteArray = stream.toByteArray()
         // ファイルサイズをMBに置き換えます
         val itemMbSize = imageByteArray.size /  1024.0 / 1024.0
@@ -369,7 +371,6 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
             }
             ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
                 //　会員情報変更画面へ遷移し、身分証確認完了モーダルを表示
-                // FIXME 会員情報画面が２重になるかもしれない　戻るボタンを押下して要動作検証
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
                 startActivity(intent)
