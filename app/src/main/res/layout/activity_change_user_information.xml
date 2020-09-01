@@ -5,7 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.mypage.ChangeUserInformationViewModel" />
@@ -55,7 +54,6 @@
                 </LinearLayout>
 
                 <!--身分証未確認の場合表示-->
-                <!-- FIXME ボタンの制御を未実装-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

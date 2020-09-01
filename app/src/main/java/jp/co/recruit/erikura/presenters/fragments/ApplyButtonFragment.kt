@@ -89,7 +89,6 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
 
     override fun onClickApply(view: View) {
         if (Api.isLogin) {
-            // FIXME APIの呼び出しと本人確認情報入力画面の表示
             user?.id?.let { userId ->
                 Api(activity!!).showIdVerifyStatus(userId, ErikuraApplication.NOT_GET_COMPARING_DATA) { status, comparingData ->
                     // 身分確認状況を取得

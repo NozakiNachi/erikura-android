@@ -321,7 +321,6 @@ class UpdateIdentityViewModel: ViewModel() {
         return valid
     }
 
-    // FIXME: 足りないバリデーションルールがないか確認
     private fun isValidLastName(): Boolean {
         var valid = true
 

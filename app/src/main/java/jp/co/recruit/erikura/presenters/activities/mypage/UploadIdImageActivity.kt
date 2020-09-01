@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -26,7 +27,6 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.io.ByteArrayOutputStream
-import java.io.File
 
 class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     // 身分証種別の要素番号
@@ -114,12 +114,25 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         startActivityForResult(intent, requestCode)
     }
 
+    fun isExternalStorageDocument(uri: Uri): Boolean {
+        return "com.Android.externalstorage.documents" == uri.getAuthority()
+    }
+
+    fun isDownloadsDocument(uri: Uri): Boolean {
+        return "com.Android.providers.downloads.documents" == uri.getAuthority()
+    }
+
+    fun isMediaDocument(uri: Uri): Boolean {
+        return "com.Android.providers.media.documents" == uri.getAuthority()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (resultCode == Activity.RESULT_OK) {
             val uri = data?.data
             uri?.let {
+
                 val id = DocumentsContract.getDocumentId(uri)
                 val cursor = contentResolver.query(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -302,7 +315,6 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.comparingData = comparingData
         userId?.let { userId ->
-            var result = true
             api.idVerify(userId, idDocument) { result ->
                 if (result) {
                 // 遷移元に応じて身分証確認完了を表示
