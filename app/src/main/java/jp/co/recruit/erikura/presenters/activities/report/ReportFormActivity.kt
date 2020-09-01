@@ -7,14 +7,20 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.FrameLayout
+import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
-import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.models.ErikuraConst
+import jp.co.recruit.erikura.business.models.EvaluateType
+import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
@@ -41,9 +47,15 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         binding.handlers = this
 
         viewModel.fixedPhraseItems.observe(this, Observer{ items ->
+            val currentPhrase = viewModel.fixedPhraseSelectedItem.value
+
             val adapter = ArrayAdapter<String>(this@ReportFormActivity, R.layout.custom_dropdown_item, items.toTypedArray())
             adapter.setDropDownViewResource(R.layout.custom_dropdown_item)
             report_form_fixed_phrases.adapter = adapter
+
+            if (items.contains(currentPhrase)) {
+                viewModel.fixedPhraseId.value = items.indexOf(currentPhrase)
+            }
         })
 
         job = intent.getParcelableExtra<Job>("job")
