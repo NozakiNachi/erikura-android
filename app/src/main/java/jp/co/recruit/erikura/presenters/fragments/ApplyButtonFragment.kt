@@ -92,7 +92,7 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
             user?.id?.let { userId ->
                 Api(activity!!).showIdVerifyStatus(userId, ErikuraApplication.NOT_GET_COMPARING_DATA) { status, comparingData ->
                     // 身分確認状況を取得
-                    if (status == ErikuraApplication.CONFIRMING_CODE || status == ErikuraApplication.CONFIRMED_CODE) {
+                    if (status == ErikuraApplication.ID_CONFIRMING_CODE || status == ErikuraApplication.ID_CONFIRMED_CODE) {
                         // 身分証確認中、済の場合
                         val dialog = ApplyDialogFragment.newInstance(job)
                         dialog.show(childFragmentManager, "Apply")

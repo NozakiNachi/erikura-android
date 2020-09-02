@@ -113,7 +113,7 @@ data class MediaItem(
                     transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
                 ) {
                     val outputStream = ByteArrayOutputStream()
-                    resource.compress(Bitmap.CompressFormat.JPEG, ErikuraApplication.IMAGE_QUALITY, outputStream)
+                    resource.compress(Bitmap.CompressFormat.JPEG, ErikuraApplication.ID_IMAGE_QUALITY, outputStream)
                     outputStream.close()
                     val bytes: ByteArray = outputStream.toByteArray()
                     onComplete(bytes)

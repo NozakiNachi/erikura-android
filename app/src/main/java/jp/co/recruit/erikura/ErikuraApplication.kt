@@ -80,9 +80,9 @@ class ErikuraApplication : Application() {
         const val REQUEST_RESIGHIN = 4
 
         // 身分証の実施状況の定数
-        const val UNCONFIRMED_CODE = 1
-        const val CONFIRMING_CODE = 2
-        const val CONFIRMED_CODE = 3
+        const val ID_UNCONFIRMED_CODE = 1
+        const val ID_CONFIRMING_CODE = 2
+        const val ID_CONFIRMED_CODE = 3
 
         // 身分証比較データの定数
         const val GET_COMPARING_DATA = true
@@ -96,10 +96,10 @@ class ErikuraApplication : Application() {
         const val FROM_CHANGE_USER_FOR_CHANGE_INFO = 3
         const val FROM_ENTRY = 4
 
-        // 身分証確認の長辺の幅
-        const val MAX_PX = 2592
+        // 身分証確認の長辺の幅px
+        const val ID_IMAGE_MAX_SIZE = 2592
         // 身分証確認圧縮する画像のquality
-        const val IMAGE_QUALITY = 90
+        const val ID_IMAGE_QUALITY = 90
     }
 
     //    var userSession: UserSession? = null

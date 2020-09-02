@@ -341,7 +341,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         val imageBitmap = BitmapFactory.decodeStream(inputStream)
         // bitmapをjpeg形式に圧縮しバイト配列を生成
         val stream = ByteArrayOutputStream()
-        imageBitmap.compress(Bitmap.CompressFormat.JPEG, ErikuraApplication.IMAGE_QUALITY, stream)
+        imageBitmap.compress(Bitmap.CompressFormat.JPEG, ErikuraApplication.ID_IMAGE_QUALITY, stream)
         imageByteArray = stream.toByteArray()
         // ファイルサイズをMBに置き換えます
         val itemMbSize = imageByteArray.size /  1024.0 / 1024.0
@@ -349,7 +349,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         if (itemMbSize > 4) {
             var height = imageBitmap.height
             var width = imageBitmap.width
-            val maxPx = ErikuraApplication.MAX_PX
+            val maxPx = ErikuraApplication.ID_IMAGE_MAX_SIZE
             if (height > width) {
                 // 縦幅が長辺の場合
                 val ratio = width.toDouble() / height
