@@ -100,12 +100,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         api.user() {
             user = it
             user.id?.let { userId ->
-                api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, comparingData ->
+                api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, identifyComparingData ->
                     // 身分確認状況を取得
                     if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE){
-                        userName = comparingData.lastName + comparingData + comparingData.firstName
-                        birthDay = comparingData.dateOfBirth
-                        cityName = comparingData.city
+                        userName = identifyComparingData.lastName + identifyComparingData.firstName
+                        birthDay = identifyComparingData.dateOfBirth
+                        cityName = identifyComparingData.city
                     }
                     loadData()
                 }

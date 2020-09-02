@@ -13,14 +13,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.business.models.ComparingData
+import jp.co.recruit.erikura.business.models.IdentifyComparingData
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUpdateIdentityBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
@@ -31,7 +30,7 @@ import java.util.regex.Pattern
 class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     var user = User()
     var job = Job()
-    var comparingData = ComparingData()
+    var identifyComparingData = IdentifyComparingData()
     var fromWhere: Int? = null
     private val viewModel: UpdateIdentityViewModel by lazy {
         ViewModelProvider(this).get(UpdateIdentityViewModel::class.java)
@@ -146,14 +145,14 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         // 身元確認画面へ遷移する
         val intent = Intent(this, UploadIdImageActivity::class.java)
         // 入力された本人確認情報
-        comparingData.lastName = viewModel.lastName.value
-        comparingData.firstName = viewModel.firstName.value
-        comparingData.dateOfBirth = viewModel.dateOfBirth.value
-        comparingData.postCode = viewModel.postalCode.value
-        comparingData.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
-        comparingData.city = viewModel.city.value
-        comparingData.street = viewModel.street.value
-        intent.putExtra("comparingData", comparingData)
+        identifyComparingData.lastName = viewModel.lastName.value
+        identifyComparingData.firstName = viewModel.firstName.value
+        identifyComparingData.dateOfBirth = viewModel.dateOfBirth.value
+        identifyComparingData.postCode = viewModel.postalCode.value
+        identifyComparingData.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
+        identifyComparingData.city = viewModel.city.value
+        identifyComparingData.street = viewModel.street.value
+        intent.putExtra("identifyComparingData", identifyComparingData)
         intent.putExtra("userId", user.id)
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             intent.putExtra("job", job)

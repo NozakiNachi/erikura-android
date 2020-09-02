@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class Data(
+data class IdentifyImageData(
     var front: List<String>? = null,
     var back: List<String>? = null
 ) : Parcelable

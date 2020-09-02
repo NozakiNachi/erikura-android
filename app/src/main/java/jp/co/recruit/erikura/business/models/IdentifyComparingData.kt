@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 import java.util.*
 
 @Parcelize
-data class ComparingData(
+data class IdentifyComparingData(
     var firstName: String? = null,
     var lastName: String? = null,
     var dateOfBirth: String? = null,

@@ -42,7 +42,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     private val myNumberRequestCode = 5
 
     var idDocument = IdDocument()
-    var comparingData = ComparingData()
+    var identifyComparingData = IdentifyComparingData()
     var userId: Int? = null
     var fromGallery = false
     var fromWhere: Int = ErikuraApplication.FROM_NOT_FOUND
@@ -57,7 +57,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        comparingData = intent.getParcelableExtra("comparingData")
+        identifyComparingData = intent.getParcelableExtra("identifyComparingData")
         userId = intent.getIntExtra("userId", 0)
         fromWhere =
             intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
@@ -298,22 +298,22 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 //パスポートは２枚とも表面扱い
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportFront)),
+                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportFront)),
                     encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportBack))))
             }
             myNumberElementNum -> {
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoMyNumber))))
+                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoMyNumber))))
             }
             else -> {
-                idDocument.data = Data(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoFront))))
+                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoFront))))
                 if (viewModel.addBackPhotoButtonVisibility.value == View.GONE) {
                     // 裏面もある場合
-                    idDocument.data = Data(back = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoBack))))
+                    idDocument.identifyImageData = IdentifyImageData(back = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoBack))))
                 }
             }
         }
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
-        idDocument.comparingData = comparingData
+        idDocument.identifyComparingData = identifyComparingData
         userId?.let { userId ->
             api.idVerify(userId, idDocument) { result ->
                 if (result) {

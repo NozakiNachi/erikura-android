@@ -364,7 +364,8 @@ data class FavoritePlacesResponse(
 
 data class ShowIdVerifyResponse(
     var status: Int,
-    var comparingData: ComparingData
+    @SerializedName("comparing_data")
+    var identifyComparingData: IdentifyComparingData
 )
 
 data class ReloadJobResponse(
