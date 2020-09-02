@@ -80,11 +80,10 @@ data class MediaItem(
         Glide.with(context).load(s).into(imageView)
     }
 
-    fun resizeImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit) {
+    fun resizeReportImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit) {
         Glide.with(context)
             .asBitmap()
             .load(contentUri)
-            .override(ErikuraApplication.MAX_PX)
             .into(object : CustomTarget<Bitmap>(imageWidth, imageHeight){
                 override fun onLoadCleared(placeholder: Drawable?) {}
 

@@ -130,7 +130,7 @@ data class Report (
             // 画像リサイズ処理
             item?.let {
                 item.uploading = true
-                item.resizeImage(activity, 640, 640) { bytes ->
+                item.resizeReportImage(activity, 640, 640) { bytes ->
                     // 画像アップロード処理
                     Api(activity).imageUpload(item, bytes, onError = {
                         Log.e("Error in waiting upload", it.toString())
