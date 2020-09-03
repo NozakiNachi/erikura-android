@@ -57,6 +57,7 @@ android {
             properties.setProperty("erikura_host", "localhost")
             properties.setProperty("erikura_protocol", "http")
             properties.setProperty("erikura_relative_url_root", "/app")
+            properties.setProperty("old_erikura_host", "dev-app.erikura.net")
 
             buildConfigField("String", "SERVER_BASE_URL", '"' + properties.getProperty("server.base_url") + '"')
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"' + properties.getProperty("google.map_api_key") + '"')
@@ -76,7 +77,8 @@ android {
             addManifestPlaceholders([
                     erikura_host: properties.getProperty("erikura_host"),
                     erikura_protocol:  properties.getProperty("erikura_protocol"),
-                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root")
+                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root"),
+                    old_erikura_host: properties.getProperty("old_erikura_host"),
             ])
         }
         staging {
@@ -84,6 +86,7 @@ android {
             properties.setProperty("erikura_host", "dev.erikura.net")
             properties.setProperty("erikura_protocol", "https")
             properties.setProperty("erikura_relative_url_root", "/app")
+            properties.setProperty("old_erikura_host", "dev-app.erikura.net")
 
             buildConfigField("String", "SERVER_BASE_URL", "\"https://dev.erikura.net/app/\"")
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
@@ -103,7 +106,8 @@ android {
             addManifestPlaceholders([
                     erikura_host: properties.getProperty("erikura_host"),
                     erikura_protocol:  properties.getProperty("erikura_protocol"),
-                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root")
+                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root"),
+                    old_erikura_host: properties.getProperty("old_erikura_host"),
             ])
         }
         release {
@@ -111,6 +115,7 @@ android {
             properties.setProperty("erikura_host", "erikura.net")
             properties.setProperty("erikura_protocol", "https")
             properties.setProperty("erikura_relative_url_root", "/app")
+            properties.setProperty("old_erikura_host", "app.erikura.net")
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -132,7 +137,8 @@ android {
             addManifestPlaceholders([
                     erikura_host: properties.getProperty("erikura_host"),
                     erikura_protocol:  properties.getProperty("erikura_protocol"),
-                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root")
+                    erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root"),
+                    old_erikura_host: properties.getProperty("old_erikura_host"),
             ])
         }
     }
