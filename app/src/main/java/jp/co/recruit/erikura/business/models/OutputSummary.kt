@@ -1,8 +1,15 @@
 package jp.co.recruit.erikura.business.models
 
+import android.media.ExifInterface
+import android.net.Uri
 import android.os.Parcelable
+import androidx.fragment.app.FragmentActivity
+import com.crashlytics.android.Crashlytics
+import com.google.firebase.analytics.FirebaseAnalytics
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
+import java.io.IOException
+import java.text.SimpleDateFormat
 import java.util.*
 
 @Parcelize
@@ -21,10 +28,6 @@ data class OutputSummary(
     var willDelete: Boolean = false,
     var photoAsset: MediaItem? = null
 ) : Parcelable {
-    // photoAsset
-    // isUploadCompleted
-    // validate
-
     /**
      * 画像を選択して変更したかを返却します
      */
@@ -69,5 +72,54 @@ data class OutputSummary(
 
     fun isUploading(): Boolean {
         return if (isPhotoChanged) { photoAsset?.uploading ?: false } else { false }
+    }
+
+    /**
+     * EXIF情報から撮影日時、緯度/経度などの情報を取得します
+     */
+    fun retrieveImageProperties(activity: FragmentActivity) {
+        // 写真が選択されていない場合は抜ける
+        if (photoAsset == null) { return }
+        // 写真が変更されていない場合は抜ける
+        if (!isPhotoChanged) { return }
+
+        try {
+            val input = activity.contentResolver.openInputStream(photoAsset?.contentUri ?: Uri.EMPTY)
+            val exifInterface = ExifInterface(input)
+            val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
+            val takenAt = takenAtString?.let {
+                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
+            } ?: photoAsset?.dateTaken?.let {
+                Date(it)
+            } ?: photoAsset?.dateAdded?.let {
+                Date(it * 1000) // 秒単位のための、x1000してミリ秒単位とする
+            }
+            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
+
+            this.photoTakedAt = takenAt
+            this.latitude = latitude?.let { lat ->
+                latitudeRef?.let { ref ->
+                    MediaItem.exifLatitudeToDegrees(ref, lat)
+                }
+            }
+            this.longitude = longitude?.let { lon ->
+                longitudeRef?.let { ref ->
+                    MediaItem.exifLongitudeToDegrees(ref, lon)
+                }
+            }
+        }
+        catch (e: IOException) {
+            // 例外によって取得できない場合
+            this.photoTakedAt = photoAsset?.dateTaken?.let {
+                Date(it)
+            } ?: photoAsset?.dateAdded?.let {
+                Date(it * 1000) // 秒単位のための、x1000してミリ秒単位とする
+            }
+            // Crashlytics に例外を通知しておきます
+            Crashlytics.logException(e)
+        }
     }
 }

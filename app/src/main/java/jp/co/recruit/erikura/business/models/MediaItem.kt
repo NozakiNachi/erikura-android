@@ -10,11 +10,18 @@ import android.os.Parcelable
 import android.provider.MediaStore
 import android.widget.ImageView
 import androidx.core.database.getLongOrNull
+import androidx.fragment.app.FragmentActivity
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target
+import com.crashlytics.android.Crashlytics
 import jp.co.recruit.erikura.business.util.UrlUtils
 import kotlinx.android.parcel.Parcelize
 import java.io.ByteArrayOutputStream
+import java.lang.RuntimeException
 
 
 @Parcelize
@@ -40,17 +47,6 @@ data class MediaItem(
             return MediaItem(id = id, mimeType = mimeType, size = size, contentUri = uri, dateAdded = dateAdded, dateTaken = dateTaken)
         }
 
-        fun parseExifHourMinSrcToDegrees(hourMinSec: String): Double {
-            val (hourStr, minStr, secStr) = hourMinSec.split(",")
-            val (hourN, hourD) = hourStr.split("/").map { it.toInt() }
-            val (minN,  minD)  = minStr.split("/").map { it.toInt() }
-            val (secN,  secD)  = secStr.split("/").map { it.toInt() }
-            val hour = hourN.toDouble() / hourD.toDouble()
-            val min  = minN.toDouble() / minD.toDouble()
-            val sec  = secN.toDouble() / secD.toDouble()
-            return hour + (min / 60.0) + (sec / 3600.0)
-        }
-
         fun exifLatitudeToDegrees(ref: String, latitude: String): Double {
             return if (ref == "S") {
                 -1.0 * parseExifHourMinSrcToDegrees(latitude)
@@ -68,6 +64,17 @@ data class MediaItem(
                 1.0  * parseExifHourMinSrcToDegrees(longitude)
             }
         }
+
+        private fun parseExifHourMinSrcToDegrees(hourMinSec: String): Double {
+            val (hourStr, minStr, secStr) = hourMinSec.split(",")
+            val (hourN, hourD) = hourStr.split("/").map { it.toInt() }
+            val (minN,  minD)  = minStr.split("/").map { it.toInt() }
+            val (secN,  secD)  = secStr.split("/").map { it.toInt() }
+            val hour = hourN.toDouble() / hourD.toDouble()
+            val min  = minN.toDouble() / minD.toDouble()
+            val sec  = secN.toDouble() / secD.toDouble()
+            return hour + (min / 60.0) + (sec / 3600.0)
+        }
     }
 
     fun loadImage(context: Context, imageView: ImageView) {
@@ -79,11 +86,29 @@ data class MediaItem(
         Glide.with(context).load(s).into(imageView)
     }
 
-    fun resizeImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit) {
+    fun resizeImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit, onError: (e: Exception?) -> Unit) {
         Glide.with(context)
             .asBitmap()
             .load(contentUri)
+            .listener(object: RequestListener<Bitmap> {
+                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Bitmap>?, isFirstResource: Boolean): Boolean {
+                    // ロードに失敗している場合
+                    onError(e)
+                    return true
+                }
+
+                override fun onResourceReady(resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                    // ロードに成功している場合
+                    return false    // false を返すと以降のメソッドチェーンが実行される
+                }
+            })
             .into(object : CustomTarget<Bitmap>(imageWidth, imageHeight){
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    super.onLoadFailed(errorDrawable)
+                    // リサイズに失敗している場合
+                    onError(RuntimeException("画像のリサイズ処理に失敗しました"))
+                }
+
                 override fun onLoadCleared(placeholder: Drawable?) {}
 
                 override fun onResourceReady(

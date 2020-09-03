@@ -184,31 +184,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         viewModel.imageMap.forEach { (k, v) ->
             val summary = OutputSummary()
             summary.photoAsset = v
-            val cr = getContentResolver().openInputStream(v.contentUri?: Uri.EMPTY)
-            val exifInterface = ExifInterface(cr)
-            val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-            val takenAt = takenAtString?.let {
-                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
-            } ?: v.dateTaken?.let {
-                Date(v.dateTaken)
-            } ?: v.dateAdded?.let {
-                Date(v.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
-            }
-            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-            summary.photoTakedAt = takenAt
-            summary.latitude = latitude?.let { lat ->
-                latitudeRef?.let { ref ->
-                    MediaItem.exifLatitudeToDegrees(ref, lat)
-                }
-            }
-            summary.longitude = longitude?.let { lon ->
-                longitudeRef?.let { ref ->
-                    MediaItem.exifLongitudeToDegrees(ref, lon)
-                }
-            }
+            summary.retrieveImageProperties(this)
             outputSummaryList.add(summary)
         }
         // 撮影日時昇順でソートを行います

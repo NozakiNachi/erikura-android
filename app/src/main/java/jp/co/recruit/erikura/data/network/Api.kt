@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -550,7 +551,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun imageUpload(item: MediaItem, bytes: ByteArray, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
+    fun imageUpload(item: MediaItem, bytes: ByteArray, scheduler: Scheduler = Schedulers.io(), onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
         val photo = RequestBody.create(item.mimeType.toMediaTypeOrNull(), bytes)
         val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
             "photo",
@@ -560,7 +561,8 @@ class Api(var context: Context) {
 
         executeObservable(
             erikuraApiService.imageUpload(requestBody),false,
-            onError = onError
+            onError = onError,
+            scheduler = scheduler
         ) { body ->
             onComplete(body.photoToken)
         }
@@ -709,6 +711,7 @@ class Api(var context: Context) {
                                       defaultError: String? = null,
                                       runCompleteOnUIThread: Boolean = true,
                                       ignoreUnauthorizedError: Boolean = false,
+                                      scheduler: Scheduler = Schedulers.io(),
                                       onError: ((messages: List<String>?) -> Unit)?,
                                       onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
@@ -720,7 +723,7 @@ class Api(var context: Context) {
         }
         activeObservables.add(observable)
         observable
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(scheduler)
             .subscribeBy(
                 onNext = { response: Response<ApiResponse<T>> ->
                     complete.invoke()
