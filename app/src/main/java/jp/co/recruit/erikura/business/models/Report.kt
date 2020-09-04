@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
+import java.util.concurrent.Executors
 
 enum class ReportStatus {
     Unconfirmed,
@@ -61,7 +62,8 @@ data class Report (
     var deleted: Boolean = false
 ): Parcelable {
     companion object {
-        val scheduler = Schedulers.single()
+        val executor = Executors.newFixedThreadPool(5)
+        val scheduler = Schedulers.from(executor)
     }
 
     // photoAsset
