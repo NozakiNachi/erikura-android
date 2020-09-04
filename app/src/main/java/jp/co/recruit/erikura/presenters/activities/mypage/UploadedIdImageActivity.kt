@@ -3,9 +3,11 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityUploadedIdImageBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -29,6 +31,14 @@ class UploadedIdImageActivity : BaseActivity(), UploadedIdImageEventHandlers {
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             job = intent.getParcelableExtra("job")
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_user_verifications_completed", params= bundleOf())
+        Tracking.view( "/user/verifications/completed",  "身分証確認完了画面")
+
     }
 
     override fun onClickNext(view: View) {

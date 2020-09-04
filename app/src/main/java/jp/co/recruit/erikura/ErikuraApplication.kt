@@ -516,6 +516,30 @@ object Tracking {
             Log.e("ERIKURA", "Karte identify error", e)
         }
     }
+
+    fun pushEntryThroughIdentityVerification(name: String, user_id: Int) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user_id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
+
+    fun trackUserId(name: String, user: User) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user.id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
 }
 
 class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {

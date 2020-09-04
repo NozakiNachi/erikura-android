@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ToggleButton
+import androidx.core.os.bundleOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -98,6 +100,9 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
                         dialog.show(childFragmentManager, "Apply")
                     } else {
                         // 身分証未確認の場合
+                        // ページ参照のトラッキングの送出
+                        Tracking.logEvent(event= "push_entry_through_identity_verification", params= bundleOf())
+                        Tracking.pushEntryThroughIdentityVerification( "push_entry_through_identity_verification",  userId)
                         //　本人確認情報画面へ遷移
                         val intent = Intent(activity, UpdateIdentityActivity::class.java)
                         intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_ENTRY)

@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.IdentifyComparingData
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
@@ -62,6 +64,13 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         }
         loadData()
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_user_comparing_data", params= bundleOf())
+        Tracking.view( "/user/verifications/comparing_data",  "本人確認情報入力画面")
     }
 
     // 表示する画面の初期化
@@ -142,6 +151,9 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     }
 
     override fun onClickRegister(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "send_comparing_data", params= bundleOf())
+        Tracking.trackUserId( "send_comparing_data",  user)
         // 身元確認画面へ遷移する
         val intent = Intent(this, UploadIdImageActivity::class.java)
         // 入力された本人確認情報
@@ -153,7 +165,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         identifyComparingData.city = viewModel.city.value
         identifyComparingData.street = viewModel.street.value
         intent.putExtra("identifyComparingData", identifyComparingData)
-        intent.putExtra("userId", user.id)
+        intent.putExtra("user", user)
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             intent.putExtra("job", job)
         }
@@ -163,6 +175,9 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     }
 
     override fun onClickSkip(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "skip_user_verifications_comparing_data", params= bundleOf())
+        Tracking.trackUserId( "skip_user_verifications_comparing_data",  user)
         //遷移元によって遷移先を切り分ける
         when(fromWhere) {
             ErikuraApplication.FROM_REGISTER -> {

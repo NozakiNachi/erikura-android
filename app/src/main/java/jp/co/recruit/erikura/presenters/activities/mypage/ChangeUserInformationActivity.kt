@@ -324,6 +324,9 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     }
 
     override fun onClickUpdateIdentity(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_identity_verification_edit_profile", params= bundleOf())
+        Tracking.trackUserId( "push_identity_verification_edit_profile",  user)
         // 本人確認情報入力画面へ遷移
         val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra("user", user)
@@ -333,6 +336,10 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     }
 
     override fun onClickUpdateIdentityForChangeInfo(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_identity_verification_edit_link", params= bundleOf())
+        Tracking.trackUserId( "push_identity_verification_edit_link",  user)
+
         //本人確認情報入力画面へ遷移
         val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra("user", user)

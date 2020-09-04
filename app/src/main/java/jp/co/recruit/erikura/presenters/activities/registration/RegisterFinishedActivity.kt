@@ -58,6 +58,9 @@ class RegisterFinishedActivity : BaseActivity(),
     }
 
     override fun onClickUpdateIdentity(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_identity_verification_register", params= bundleOf())
+        Tracking.trackUserId( "push_identity_verification_register",  user)
         //本人確認情報入力画面へ遷移します
         val intent = Intent(this, UpdateIdentityActivity::class.java)
         intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_REGISTER)

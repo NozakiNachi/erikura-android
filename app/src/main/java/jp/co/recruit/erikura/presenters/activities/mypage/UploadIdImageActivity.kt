@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.util.Base64
 import android.view.View
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -19,6 +20,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUploadIdImageBinding
@@ -43,7 +45,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
 
     var idDocument = IdDocument()
     var identifyComparingData = IdentifyComparingData()
-    var userId: Int? = null
+    var user = User()
     var fromGallery = false
     var fromWhere: Int = ErikuraApplication.FROM_NOT_FOUND
     var job = Job()
@@ -58,7 +60,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         identifyComparingData = intent.getParcelableExtra("identifyComparingData")
-        userId = intent.getIntExtra("userId", 0)
+        user = intent.getParcelableExtra("user")
         fromWhere =
             intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
@@ -75,6 +77,14 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         viewModel.driverLicenceElementNum.value = driverLicenceElementNum
         viewModel.passportElementNum.value = passportElementNum
         viewModel.myNumberElementNum.value = myNumberElementNum
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_user_verifications_id_document", params= bundleOf())
+        Tracking.view( "/user/verifications/id_document",  "身分証確認画面")
+
     }
 
     // 画像選択イベント
@@ -211,6 +221,9 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickSkip(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "skip_user_verifications_id_document", params= bundleOf())
+        Tracking.trackUserId( "skip_user_verifications_id_document",  user)
         //遷移元によって遷移先を切り分ける
         when (fromWhere) {
             ErikuraApplication.FROM_REGISTER -> {
@@ -290,6 +303,9 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickUploadIdImage(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "send_id_document", params= bundleOf())
+        Tracking.trackUserId( "send_id_document",  user)
         // 身分証種別によってエンコードしてデータをセット
         // 各contentUriはバリデーションチェック済
         val api = Api(this)
@@ -314,7 +330,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
         idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
-        userId?.let { userId ->
+        user.id?.let { userId ->
             api.idVerify(userId, idDocument) { result ->
                 if (result) {
                 // 遷移元に応じて身分証確認完了を表示
