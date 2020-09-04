@@ -53,6 +53,10 @@ class RegisterPasswordActivity : BaseActivity(),
             val path = uri?.getQueryParameter("path")
             uri = Uri.parse("erikura://${path}")
         }
+        else if (uri?.path == "/api/v1/utils/open_android_app") {
+            val path = uri?.getQueryParameter("path")
+            uri = Uri.parse("erikura://${path}")
+        }
         val confirmationToken: String? = uri?.getQueryParameter("confirmation_token")
         // ワーカ仮登録の確認
         Api(this).registerConfirm(confirmationToken ?:"", onError = {

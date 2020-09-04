@@ -215,6 +215,7 @@
                 <data android:path="/user/register/mail_auth" />
             </intent-filter>
 
+            <!-- ドメイン統合後の登録用URL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -223,6 +224,17 @@
                     android:host="${erikura_host}"
                     android:scheme="${erikura_protocol}"
                     android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_app" />
+            </intent-filter>
+
+            <!-- 旧ドメインでの登録用URL -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${old_erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="/api/v1/utils/open_android_app" />
             </intent-filter>
         </activity>
         <activity
