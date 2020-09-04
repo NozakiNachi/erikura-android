@@ -298,8 +298,8 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 //パスポートは２枚とも表面扱い
-                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportFront)),
-                    encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportBack))))
+                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportFront))),
+                    back = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoPassportBack))))
             }
             myNumberElementNum -> {
                 idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoMyNumber))))
