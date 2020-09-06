@@ -70,6 +70,11 @@
         <item name="android:textColorLink">@color/topaz</item>
     </style>
 
+    <style name="linkText_w2" parent="linkText">
+        <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
     <style name="smallCaption">
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginRight">20dp</item>

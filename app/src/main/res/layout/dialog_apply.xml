@@ -28,23 +28,164 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                style="@style/label_w2"
                 android:text="@string/applyFlowDialog_caption"
                 android:textColor="@color/coral"
                 android:textSize="22dp" />
-
+            
             <TextView
-                style="@style/errorField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginLeft="0dp"
-                android:layout_marginRight="0dp"
-                android:padding="10dp"
-                android:textColor="@color/coral"
+                style="@style/label_w2"
                 android:textSize="14dp"
-                android:lineSpacingMultiplier="1.5"
-                android:text="この物件には注意事項があります。\n必ずご確認ください。"
-                android:visibility="@{viewModel.faqCautionVisibility}"
+                android:textColor="@color/black"
+                android:text="@string/applyDialog_warning"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                style="@style/label_w2"
+                android:textSize="14dp"
+                android:textColor="@color/black"
+                android:text="@string/applyDialog_checkCaption"
+                />
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:background="@color/silver"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:divider="@color/silver"
+                android:showDividers="beginning|middle|end"
+                >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.checkManualVisibility}">
+
+                    <CheckBox
+                        android:theme="@style/erikuraCheckbox"
+                        android:button="@drawable/erikura_checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/blackTwo"
+                        android:textSize="13dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="0dp"
+                        android:paddingLeft="0dp"
+                        android:checked="@={viewModel.checkManual}"
+                        />
+
+                    <TextView
+                        android:id="@+id/apply_manualLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        style="@style/label_w2"
+                        android:textSize="18dp"
+                        android:text="@{viewModel.checkManualLabel}"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.checkCautionsVisibility}">
+
+                    <CheckBox
+                        android:theme="@style/erikuraCheckbox"
+                        android:button="@drawable/erikura_checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/blackTwo"
+                        android:textSize="13dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="0dp"
+                        android:paddingLeft="0dp"
+                        android:checked="@={viewModel.checkCautions}"
+                        />
+
+                    <TextView
+                        android:id="@+id/apply_cautionsLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        style="@style/label_w2"
+                        android:textSize="18dp"
+                        android:text="@{viewModel.checkCautionsLabel}"
+                        />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="top"
+                    android:gravity="top"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.checkSummaryTitlesVisibility}">
+
+                    <CheckBox
+                        android:theme="@style/erikuraCheckbox"
+                        android:button="@drawable/erikura_checkbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="@color/blackTwo"
+                        android:textSize="13dp"
+                        android:layout_gravity="top"
+                        android:layout_marginTop="0dp"
+                        android:paddingLeft="0dp"
+                        android:checked="@={viewModel.checkSummaryTitles}"
+                        />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/label_w2"
+                            android:textSize="18dp"
+                            android:text="下記の作業箇所を確認した"
+                            />
+                        
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            style="@style/label_w2"
+                            android:textSize="14dp"
+                            android:text="@{viewModel.summaryTitlesLabel}"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <View
+                android:layout_height="1dp"
+                android:layout_width="match_parent"
+                android:layout_marginTop="0dp"
+                android:background="@color/silver"
                 />
 
             <TextView
@@ -68,34 +209,6 @@
                 />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/blackTwo"
-                android:lineSpacingExtra="10dp"
-                android:gravity="center"
-                android:text="@string/applyDialog_caption1" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/blackTwo"
-                android:lineSpacingExtra="10dp"
-                android:gravity="center"
-                android:text="@{viewModel.caption}" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/blackTwo"
-                android:lineSpacingExtra="10dp"
-                android:text="@{viewModel.reportPlaces}"
-                android:visibility="@{viewModel.reportPlacesVisibility}"/>
-
-            <TextView
                 android:id="@+id/apply_agreementLink"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -103,7 +216,8 @@
                 android:lineSpacingExtra="10dp"
                 android:textSize="14dp"
                 android:textColor="@color/black"
-                android:textColorLink="@color/topaz" />
+                android:textColorLink="@color/topaz"
+                android:text="@{viewModel.agreementText}" />
 
             <Button
                 android:layout_width="match_parent"
@@ -116,7 +230,6 @@
                 android:enabled="@{viewModel.isEntryButtonEnabled()}"
                 app:onSafeClick="@{handlers::onClickEntryButton}"
                 />
-
         </LinearLayout>
     </ScrollView>
 </layout>
