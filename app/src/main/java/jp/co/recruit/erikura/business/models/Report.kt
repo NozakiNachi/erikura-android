@@ -1,8 +1,10 @@
 package jp.co.recruit.erikura.business.models
 
 import android.app.Activity
+import android.net.Uri
 import android.os.Parcelable
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
@@ -11,7 +13,11 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
+import org.apache.commons.io.IOUtils
+import java.io.ByteArrayOutputStream
+import java.io.IOException
 import java.util.*
+import java.util.concurrent.Executors
 
 enum class ReportStatus {
     Unconfirmed,
@@ -55,6 +61,11 @@ data class Report (
     var outputSummaries: List<OutputSummary> = listOf(),
     var deleted: Boolean = false
 ): Parcelable {
+    companion object {
+        val executor = Executors.newFixedThreadPool(5)
+        val scheduler = Schedulers.from(executor)
+    }
+
     // photoAsset
     // isUploadCompleted
     // activeOutputSummaryCount
@@ -129,21 +140,56 @@ data class Report (
         val completable = Completable.fromAction {
             // 画像リサイズ処理
             item?.let {
-                item.uploading = true
-                item.resizeImage(activity, 640, 640) { bytes ->
-                    // 画像アップロード処理
-                    Api(activity).imageUpload(item, bytes, onError = {
-                        Log.e("Error in waiting upload", it.toString())
-                        item.uploading = false
-                        ErikuraApplication.instance.notifyUpload()
-                    }) { token ->
-                        item.uploading = false
-                        onComplete(token)
-                        ErikuraApplication.instance.notifyUpload()
-                    }
+                try {
+                    item.uploading = true
+                    item.resizeImage(activity, 640, 640, onComplete = { bytes ->
+                        // 画像アップロード処理
+                        Api(activity).imageUpload(item, bytes, scheduler = Report.scheduler, onError = {
+                            Log.e("Error in waiting upload", it.toString())
+                            item.uploading = false
+                            ErikuraApplication.instance.notifyUpload()
+                        }) { token ->
+                            item.uploading = false
+                            onComplete(token)
+                            ErikuraApplication.instance.notifyUpload()
+                        }
+                    }, onError = { e ->
+                        if (e != null) {
+                            Crashlytics.logException(e)
+                        }
+
+                        // エラーが発生した場合には、そのままの形でアップロードを行います
+                        try {
+                            val baos = ByteArrayOutputStream()
+                            val input = activity.contentResolver.openInputStream(
+                                item.contentUri ?: Uri.EMPTY
+                            )
+                            IOUtils.copy(input, baos)
+
+                            // 画像アップロード処理
+                            Api(activity).imageUpload(item, baos.toByteArray(), onError = {
+                                Log.e("Error in waiting upload", it.toString())
+                                item.uploading = false
+                                ErikuraApplication.instance.notifyUpload()
+                            }) { token ->
+                                item.uploading = false
+                                onComplete(token)
+                                ErikuraApplication.instance.notifyUpload()
+                            }
+                        }
+                        catch(e: IOException) {
+                            Crashlytics.logException(e)
+                            item.uploading = false
+                            ErikuraApplication.instance.notifyUpload()
+                        }
+                    })
+                }
+                finally {
+                    item.uploading = false
+                    ErikuraApplication.instance.notifyUpload()
                 }
             }
         }
-        completable.subscribeOn(Schedulers.single()).subscribe()
+        completable.subscribeOn(Report.scheduler).subscribe()
     }
 }
