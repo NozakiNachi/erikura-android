@@ -1,8 +1,12 @@
 import android.content.Context
 import android.content.Intent
+import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.style.ClickableSpan
 import android.text.style.RelativeSizeSpan
+import android.text.style.TextAppearanceSpan
+import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -230,5 +234,18 @@ object JobUtil {
         val start = sb.length
         sb.append(str)
         sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+
+    fun appendLinkSpan(spannableString: SpannableStringBuilder, string: String, style: Int, handler: (view: View) -> Unit) {
+        val start = spannableString.length
+        spannableString.append(string)
+        val end = spannableString.length
+        val linkTextAppearanceSpan = TextAppearanceSpan(ErikuraApplication.instance.applicationContext, style)
+        spannableString.setSpan(linkTextAppearanceSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        spannableString.setSpan(object: ClickableSpan() {
+            override fun onClick(widget: View) {
+                handler(widget)
+            }
+        }, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 }
