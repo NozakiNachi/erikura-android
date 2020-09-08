@@ -8,5 +8,6 @@ data class OutputSummaryExample(
     var place: String? = null,
     var beforeCleaningPhotoUrl: String? = null,
     var evaluation: String? = null,
-    var comment: String? = null
+    var comment: String? = null,
+    var clientComment: String? = null
 ): Parcelable

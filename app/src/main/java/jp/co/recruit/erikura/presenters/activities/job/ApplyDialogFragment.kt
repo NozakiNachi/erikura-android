@@ -5,12 +5,8 @@ import android.app.Dialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.Spannable
 import android.text.SpannableStringBuilder
-import android.text.Spanned
 import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.text.style.TextAppearanceSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -67,7 +63,7 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
             false
         )
         binding.lifecycleOwner = activity
-        viewModel.setup(job)
+        viewModel.setup(job, this)
         binding.viewModel = viewModel
         binding.handlers = this
 
@@ -86,9 +82,10 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
 
     override fun onStart() {
         super.onStart()
-        var tv = dialog!!.findViewById<TextView>(R.id.apply_agreementLink)
-        tv.text = makeLink()
-        tv.movementMethod = LinkMovementMethod.getInstance()
+
+        dialog?.findViewById<TextView>(R.id.apply_manualLink)?.movementMethod = LinkMovementMethod.getInstance()
+        dialog?.findViewById<TextView>(R.id.apply_cautionsLink)?.movementMethod = LinkMovementMethod.getInstance()
+        dialog?.findViewById<TextView>(R.id.apply_agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
     }
 
     override fun onClickTermsOfService(view: View) {
@@ -141,85 +138,126 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
         }
     }
 
-    private fun makeLink(): SpannableStringBuilder {
-        var str = SpannableStringBuilder()
-
-        var start = 0
-        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service))
-        var end = str.length
-        val linkTextAppearanceSpan = TextAppearanceSpan(ErikuraApplication.instance.applicationContext, R.style.linkText)
-        str.setSpan(linkTextAppearanceSpan, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        str.setSpan(object : ClickableSpan() {
-            override fun onClick(view: View) {
-                onClickTermsOfService(view)
+    override fun onClickManual(view: View) {
+        job?.let { job ->
+            job.manualUrl?.let { manualUrl ->
+                activity?.let { activity ->
+                    JobUtil.openManual(activity, job)
+                }
             }
-        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+        }
+    }
 
-        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
-        start = str.length
-        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy))
-        end = str.length
-        val linkTextAppearanceSpan2 = TextAppearanceSpan(ErikuraApplication.instance.applicationContext, R.style.linkText)
-        str.setSpan(linkTextAppearanceSpan2, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        str.setSpan(object : ClickableSpan() {
-            override fun onClick(view: View) {
-                onClickPrivacyPolicy(view)
-            }
-        }, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    override fun onClickCautions(view: View) {
+        // ページ参照のトラッキングの送出
+        job?.let { job ->
+            Tracking.logEvent(event= "view_cautions", params= bundleOf())
+            Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
 
-        str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
-        return str
+            val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity::class.java)
+            intent.putExtra("place_id", job.placeId)
+            startActivity(intent)
+        }
     }
 }
 
 class ApplyDialogFragmentViewModel: ViewModel() {
+    var handler: ApplyDialogFragmentEventHandlers? = null
+    val job: MutableLiveData<Job> = MutableLiveData()
+
     val entryQuestion: MutableLiveData<String> = MutableLiveData()
     val entryQuestionVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val entryQuestionAnswer: MutableLiveData<String> = MutableLiveData()
-    val caption: MutableLiveData<String> = MutableLiveData()
-    val reportPlaces: MutableLiveData<String> = MutableLiveData()
-    val reportPlacesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val checkManual = MutableLiveData<Boolean>()
+    val checkCautions = MutableLiveData<Boolean>()
+    val checkSummaryTitles = MutableLiveData<Boolean>()
+    val checkManualVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val checkCautionsVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val checkSummaryTitlesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     val isEntryButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(entryQuestionVisibility) { result.value = isValid() }
         result.addSource(entryQuestionAnswer) { result.value = isValid() }
+        result.addSource(checkManualVisibility) { result.value = isValid() }
+        result.addSource(checkManual) { result.value = isValid() }
+        result.addSource(checkCautionsVisibility) { result.value = isValid() }
+        result.addSource(checkCautions) { result.value = isValid() }
+        result.addSource(checkSummaryTitlesVisibility) { result.value = isValid() }
+        result.addSource(checkSummaryTitles) { result.value = isValid() }
     }
 
-    val faqCautionVisibility = MutableLiveData<Int>(View.GONE)
+    val checkManualLabel = MediatorLiveData<SpannableStringBuilder>().also { result ->
+        result.addSource(job) {
+            result.value = SpannableStringBuilder().also { str ->
+                JobUtil.appendLinkSpan(str, "マニュアル", R.style.linkText_w2) { view ->
+                    handler?.onClickManual(view)
+                }
+                str.append("を確認した")
+            }
+        }
+    }
+    val checkCautionsLabel = MediatorLiveData<SpannableStringBuilder>().also { result ->
+        result.addSource(job) {
+            result.value = SpannableStringBuilder()?.also { str ->
+                JobUtil.appendLinkSpan(str, "注意事項(${job.value?.cautionsCount ?: 0}件)", R.style.linkText_w2) { view ->
+                    handler?.onClickCautions(view)
+                }
+                str.append("を確認した")
+            }
+        }
+    }
+    val summaryTitlesLabel = MediatorLiveData<String>().also { result ->
+        result.addSource(job) {
+            result.value = (job.value?.summaryTitles ?: listOf()).mapIndexed { i, title ->
+                "(${i + 1}) ${title}"
+            }.joinToString(" / ")
+        }
+    }
 
-    fun setup(job: Job?) {
-        if (job != null) {
-            if(!job.entryQuestion.isNullOrBlank()) {
-                entryQuestion.value = job.entryQuestion
-                entryQuestionVisibility.value = View.VISIBLE
-            }else {
+    val agreementText = MutableLiveData<SpannableStringBuilder>(
+        SpannableStringBuilder().also { str ->
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service), R.style.linkText) {
+                handler?.onClickTermsOfService(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy), R.style.linkText) {
+                handler?.onClickPrivacyPolicy(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        }
+    )
+
+    fun setup(job: Job?, handler: ApplyDialogFragmentEventHandlers?) {
+        this.handler = handler
+        this.job.value = job
+
+        job?.let { job ->
+            entryQuestion.value = job.entryQuestion
+            if (job.entryQuestion.isNullOrBlank()) {
                 entryQuestionVisibility.value = View.GONE
             }
-            
-            if(!job.summaryTitles.isNullOrEmpty()) {
-                caption.value = ErikuraApplication.instance.getString(R.string.applyDialog_caption2Pattern1)
-                var summaryTitleStr = ""
-                job.summaryTitles.forEachIndexed { index, s ->
-                    summaryTitleStr += "(${index+1}) ${s}　"
-                }
-                reportPlaces.value = summaryTitleStr
-                reportPlacesVisibility.value = View.VISIBLE
-            }else {
-                caption.value = ErikuraApplication.instance.getString(R.string.applyDialog_caption2Pattern2)
-                reportPlacesVisibility.value = View.GONE
+            else {
+                entryQuestionVisibility.value = View.VISIBLE
             }
 
-            if ((job.cautionsCount ?: 0) > 0) {
-                faqCautionVisibility.value = View.VISIBLE
-            }
-            else {
-                faqCautionVisibility.value = View.GONE
-            }
+            checkManualVisibility.value = View.VISIBLE
+            checkCautionsVisibility.value = if ((job.cautionsCount ?: 0) > 0) { View.VISIBLE } else { View.GONE }
+            checkSummaryTitlesVisibility.value = if ((job.summaryTitles ?: listOf()).isEmpty()) { View.GONE } else { View.VISIBLE }
         }
     }
 
     private fun isValid(): Boolean {
         var valid = true
+
+        if (checkManualVisibility.value == View.VISIBLE) {
+            valid = (checkManual.value ?: false) && valid
+        }
+        if (checkCautionsVisibility.value == View.VISIBLE) {
+            valid = (checkCautions.value ?: false) && valid
+        }
+        if (checkSummaryTitlesVisibility.value == View.VISIBLE) {
+            valid = (checkSummaryTitles.value ?: false) && valid
+        }
 
         // 応募時の質問がある場合のみバリデーションを行います
         if (entryQuestionVisibility.value == View.VISIBLE) {
@@ -241,4 +279,6 @@ interface ApplyDialogFragmentEventHandlers {
     fun onClickTermsOfService(view: View)
     fun onClickPrivacyPolicy(view: View)
     fun onClickEntryButton(view: View)
+    fun onClickManual(view: View)
+    fun onClickCautions(view: View)
 }

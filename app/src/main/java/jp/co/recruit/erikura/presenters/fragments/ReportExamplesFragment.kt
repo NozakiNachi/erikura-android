@@ -176,6 +176,8 @@ class ReportExampleSummaryItemViewModel(
     val summaryName: MutableLiveData<String> = MutableLiveData()
     val summaryStatus: MutableLiveData<String> = MutableLiveData()
     val summaryComment: MutableLiveData<String> = MutableLiveData()
+    val clientCommentVisible = MutableLiveData<Int>(View.GONE)
+    val clientComment = MutableLiveData<String>()
 
     init {
         if (summary.beforeCleaningPhotoUrl.isNullOrBlank()) {
@@ -207,6 +209,8 @@ class ReportExampleSummaryItemViewModel(
             }
         }
         summaryComment.value = summary.comment
+        clientCommentVisible.value = if (summary.clientComment.isNullOrBlank()) { View.GONE } else { View.VISIBLE }
+        clientComment.value = summary.clientComment
     }
 }
 
