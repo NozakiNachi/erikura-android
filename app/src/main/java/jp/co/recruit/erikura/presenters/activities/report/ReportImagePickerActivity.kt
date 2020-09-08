@@ -113,6 +113,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
+
+        
     }
 
     private fun displayImagePicker() {

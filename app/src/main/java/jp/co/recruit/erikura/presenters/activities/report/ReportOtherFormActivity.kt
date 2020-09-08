@@ -177,32 +177,13 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         if (resultCode == Activity.RESULT_OK) {
             val uri = data?.data
             uri?.let {
-                val id = DocumentsContract.getDocumentId(uri)
-                val cursor = contentResolver.query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    arrayOf(
-                        MediaStore.Files.FileColumns._ID,
-                        MediaStore.MediaColumns.DISPLAY_NAME,
-                        MediaStore.MediaColumns.MIME_TYPE,
-                        MediaStore.MediaColumns.SIZE,
-                        MediaStore.Files.FileColumns.DATE_ADDED,
-                        MediaStore.MediaColumns.DATE_TAKEN
-                    ),
-                    "_id=?", arrayOf(id.split(":")[1]), null
-                )
-                cursor?.moveToFirst()
-                cursor?.let {
-                    // val item = MediaItem.from(cursor)
-                    // MEMO: cursorを渡すとIDの値が0になるので手動で値を入れています
-                    val item = MediaItem.from(cursor)
+                MediaItem.createFrom(this, uri)?.let { item ->
                     viewModel.addPhotoButtonVisibility.value = View.GONE
                     viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                     val imageView: ImageView = findViewById(R.id.report_other_image)
                     item.loadImage(this, imageView)
                     viewModel.otherPhoto = item
                 }
-
-                cursor?.close()
             }
         }
 

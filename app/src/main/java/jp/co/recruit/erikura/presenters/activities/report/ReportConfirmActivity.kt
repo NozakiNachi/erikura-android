@@ -4,9 +4,13 @@ import JobUtil
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.Cursor
 import android.media.ExifInterface
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -273,22 +277,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             GET_FILE -> {
                 val uri = data?.data
                 uri?.let {
-                    val id = DocumentsContract.getDocumentId(uri)
-                    val cursor = contentResolver.query(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                        arrayOf(
-                            MediaStore.Files.FileColumns._ID,
-                            MediaStore.MediaColumns.DISPLAY_NAME,
-                            MediaStore.MediaColumns.MIME_TYPE,
-                            MediaStore.MediaColumns.SIZE,
-                            MediaStore.Files.FileColumns.DATE_ADDED,
-                            MediaStore.MediaColumns.DATE_TAKEN
-                        ),
-                        "_id=?", arrayOf(id.split(":")[1]), null
-                    )
-                    cursor?.moveToFirst()
-                    cursor?.let {
-                        val item = MediaItem.from(cursor)
+                    MediaItem.createFrom(this, uri)?.let { item ->
                         val summary = OutputSummary()
                         summary.photoAsset = item
 
@@ -329,8 +318,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             }
                         }
                     }
-
-                    cursor?.close()
                 }
             }
 
