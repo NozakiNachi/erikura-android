@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.os.Parcelable
 import android.provider.DocumentsContract
 import android.provider.MediaStore
@@ -23,10 +22,6 @@ import jp.co.recruit.erikura.business.util.UrlUtils
 import kotlinx.android.parcel.Parcelize
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.lang.IllegalArgumentException
-import java.nio.file.FileStore
-import java.nio.file.Files
-import java.nio.file.attribute.BasicFileAttributes
 
 
 @Parcelize

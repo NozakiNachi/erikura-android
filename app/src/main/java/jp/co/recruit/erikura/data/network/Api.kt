@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.data.network
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -24,23 +25,21 @@ import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.Request as HttpRequest
-import okhttp3.Response as HttpResponse
+import okio.BufferedSink
+import okio.source
 import org.apache.commons.io.IOUtils
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okio.BufferedSink
-import okio.source
-import java.io.InputStream
 import java.util.*
 import java.util.concurrent.Executors
-import java.util.concurrent.ThreadPoolExecutor
+import okhttp3.Request as HttpRequest
+import okhttp3.Response as HttpResponse
 
 
 class Api(var context: Context) {
@@ -576,12 +575,14 @@ class Api(var context: Context) {
         }
     }
 
-    fun imageUpload(item: MediaItem, input: InputStream, scheduler: Scheduler = Api.scheduler, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit) {
+    fun imageUpload(item: MediaItem, activity: Activity, scheduler: Scheduler = Api.scheduler, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit) {
         val photoBody = object : RequestBody() {
             override fun contentType() = item.mimeType.toMediaTypeOrNull()
             override fun contentLength() = item.size
             override fun writeTo(sink: BufferedSink) {
-                input.source().use { source -> sink.writeAll(source) }
+                activity.contentResolver.openInputStream(item.contentUri ?: Uri.EMPTY)?.also { input ->
+                    input.source().use { source -> sink.writeAll(source) }
+                }
             }
         }
         val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
