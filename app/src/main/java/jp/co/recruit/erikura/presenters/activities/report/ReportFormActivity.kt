@@ -236,14 +236,16 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
     private fun createImage() {
         val imageView: ImageView = findViewById(R.id.report_form_image)
+        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]
             val item = summary.photoAsset
             item?.let {
                 if (summary.beforeCleaningPhotoUrl != null ) {
-                    item.loadImageFromString(this, imageView)
+                    item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
                 }else {
-                    item.loadImage(this, imageView)
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
             }
         }

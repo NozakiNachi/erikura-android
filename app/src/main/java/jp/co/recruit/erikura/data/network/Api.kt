@@ -35,6 +35,9 @@ import java.io.IOException
 import java.net.URL
 import java.text.SimpleDateFormat
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okio.BufferedSink
+import okio.source
+import java.io.InputStream
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ThreadPoolExecutor
@@ -562,6 +565,29 @@ class Api(var context: Context) {
             "photo",
             "photo.jpg",
             photo
+        ).build()
+
+        executeObservable(
+            erikuraApiService.imageUpload(requestBody),false,
+            onError = onError,
+            scheduler = scheduler
+        ) { body ->
+            onComplete(body.photoToken)
+        }
+    }
+
+    fun imageUpload(item: MediaItem, input: InputStream, scheduler: Scheduler = Api.scheduler, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit) {
+        val photoBody = object : RequestBody() {
+            override fun contentType() = item.mimeType.toMediaTypeOrNull()
+            override fun contentLength() = item.size
+            override fun writeTo(sink: BufferedSink) {
+                input.source().use { source -> sink.writeAll(source) }
+            }
+        }
+        val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+            "photo",
+            "photo.jpg",
+            photoBody
         ).build()
 
         executeObservable(

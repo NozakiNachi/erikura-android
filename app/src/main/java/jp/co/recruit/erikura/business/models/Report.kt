@@ -160,20 +160,20 @@ data class Report (
 
                         // エラーが発生した場合には、そのままの形でアップロードを行います
                         try {
-                            val baos = ByteArrayOutputStream()
-                            val input = activity.contentResolver.openInputStream(
-                                item.contentUri ?: Uri.EMPTY
-                            )
-                            IOUtils.copy(input, baos)
-
                             // 画像アップロード処理
-                            Api(activity).imageUpload(item, baos.toByteArray(), onError = {
-                                Log.e("Error in waiting upload", it.toString())
+                            activity.contentResolver.openInputStream(item.contentUri ?: Uri.EMPTY)?.also { input ->
+                                Api(activity).imageUpload(item, input, onError = {
+                                    Log.e("Error in waiting upload", it.toString())
+                                    item.uploading = false
+                                    ErikuraApplication.instance.notifyUpload()
+                                }) { token ->
+                                    item.uploading = false
+                                    onComplete(token)
+                                    ErikuraApplication.instance.notifyUpload()
+                                }
+                            } ?: run {
+                                // InputStream も取れないのでアップロード失敗
                                 item.uploading = false
-                                ErikuraApplication.instance.notifyUpload()
-                            }) { token ->
-                                item.uploading = false
-                                onComplete(token)
                                 ErikuraApplication.instance.notifyUpload()
                             }
                         }

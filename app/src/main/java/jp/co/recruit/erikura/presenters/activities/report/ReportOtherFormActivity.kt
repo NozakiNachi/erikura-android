@@ -153,10 +153,12 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                 viewModel.addPhotoButtonVisibility.value = View.GONE
                 viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                 val imageView: ImageView = findViewById(R.id.report_other_image)
+                val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
                 if (it.additionalReportPhotoUrl != null ) {
-                    item.loadImageFromString(this, imageView)
+                    item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
                 }else {
-                    item.loadImage(this, imageView)
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
                 viewModel.otherPhoto = item
                 viewModel.comment.value = comment
@@ -179,7 +181,9 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                     viewModel.addPhotoButtonVisibility.value = View.GONE
                     viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                     val imageView: ImageView = findViewById(R.id.report_other_image)
-                    item.loadImage(this, imageView)
+                    val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                    val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                     viewModel.otherPhoto = item
                 }
             }

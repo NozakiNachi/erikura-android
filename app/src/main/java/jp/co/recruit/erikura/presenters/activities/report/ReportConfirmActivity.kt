@@ -548,10 +548,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             val item = it.additionalPhotoAsset ?: MediaItem()
             if (item.contentUri != null) {
                 val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
+                val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
                 if (it.additionalReportPhotoUrl!= null) {
-                    item.loadImageFromString(this, imageView)
+                    item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
                 }else {
-                    item.loadImage(this, imageView)
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
                 viewModel.otherFormImageVisibility.value = View.VISIBLE
             } else {
@@ -661,7 +663,7 @@ interface ReportConfirmEventHandlers {
 }
 
 // 実施箇所の一覧
-class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?, isUrlExist: Boolean) :
+class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?, isUrlExist: Boolean, width: Int, height: Int) :
     ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_image_item)
     val imageVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
@@ -670,9 +672,9 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
     init {
         if (mediaItem != null) {
             if(isUrlExist) {
-                mediaItem.loadImageFromString(activity, imageView)
+                mediaItem.loadImageFromString(activity, imageView, width, height)
             }else {
-                mediaItem.loadImage(activity, imageView)
+                mediaItem.loadImage(activity, imageView, width, height)
             }
         } else {
             imageVisibility.value = View.GONE
@@ -681,11 +683,10 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
     }
 }
 
-class ReportImageViewHolder(val binding: FragmentReportImageItemBinding) :
+class ReportImageViewHolder(val binding: FragmentReportImageItemBinding, val width: Int, val height: Int) :
     RecyclerView.ViewHolder(binding.root)
 
-class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>) :
-    RecyclerView.Adapter<ReportImageViewHolder>() {
+class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>) : RecyclerView.Adapter<ReportImageViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportImageViewHolder {
@@ -703,7 +704,7 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
             view.layoutParams = layoutParams
         }
 
-        return ReportImageViewHolder(binding)
+        return ReportImageViewHolder(binding, height, height)
     }
 
     override fun getItemCount(): Int {
@@ -715,9 +716,9 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         holder.binding.lifecycleOwner = activity
         if (position < summaries.count()) {
             holder.binding.viewModel =
-                ReportImageItemViewModel(activity, view, summaries[position].photoAsset, !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank())
+                ReportImageItemViewModel(activity, view, summaries[position].photoAsset, !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank(), holder.width, holder.height)
         } else {
-            holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false)
+            holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false, holder.width, holder.height)
             val button =
                 holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
             button.setOnSafeClickListener {
@@ -762,10 +763,12 @@ class ReportSummaryItemViewModel(
 
     init {
         summary.photoAsset?.let {
+            val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+            val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
             if (summary.beforeCleaningPhotoUrl != null){
-                it.loadImageFromString(activity, imageView)
+                it.loadImageFromString(activity, imageView, width.toInt(), height.toInt())
             }else {
-                it.loadImage(activity, imageView)
+                it.loadImage(activity, imageView, width.toInt(), height.toInt())
             }
         }
 
@@ -824,7 +827,6 @@ class ReportSummaryAdapter(
             parent,
             false
         )
-
         return ReportSummaryViewHolder(binding)
     }
 

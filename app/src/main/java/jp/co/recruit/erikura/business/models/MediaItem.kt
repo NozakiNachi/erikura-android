@@ -241,9 +241,18 @@ data class MediaItem(
         Glide.with(context).load(contentUri).into(imageView)
     }
 
+    fun loadImage(context: Context, imageView: ImageView, width: Int, height: Int) {
+        Glide.with(context).load(contentUri).override(height).into(imageView)
+    }
+
     fun loadImageFromString(context: Context, imageView: ImageView) {
         val s = UrlUtils.parse(contentUri.toString()).toString()
         Glide.with(context).load(s).into(imageView)
+    }
+
+    fun loadImageFromString(context: Context, imageView: ImageView, width: Int, height: Int) {
+        val s = UrlUtils.parse(contentUri.toString()).toString()
+        Glide.with(context).load(s).override(height).into(imageView)
     }
 
     fun resizeImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit, onError: (e: Exception?) -> Unit) {
