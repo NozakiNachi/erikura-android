@@ -517,12 +517,14 @@ class UploadIdImageViewModel : ViewModel() {
                 return ((addMyNumberPhotoButtonVisibility.value == View.GONE) && (otherPhotoMyNumber.contentUri != null))
             }
             else -> {
-                if (addBackPhotoButtonVisibility.value == View.GONE) {
-                    //　裏面も選択されている場合
-                    return ((otherPhotoBack.contentUri != null) && ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null)))
-                } else {
-                    return ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null))
-                }
+                return ((addBackPhotoButtonVisibility.value == View.GONE) && (otherPhotoBack.contentUri != null)
+                        && (addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null))
+//                if (addBackPhotoButtonVisibility.value == View.GONE) {
+//                    //　裏面も選択されている場合
+//                    return ((otherPhotoBack.contentUri != null) && ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null)))
+//                } else {
+//                    return ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null))
+//                }
             }
         }
     }

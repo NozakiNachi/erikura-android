@@ -143,24 +143,34 @@
                             app:onSafeClick="@{handlers::onClickRemoveFrontPhoto}" />
                     </LinearLayout>
 
-                    <!-- 裏面-->
+<!--                    &lt;!&ndash; 裏面&ndash;&gt;-->
+<!--                    <TextView-->
+<!--                        style="@style/fieldLabel"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="40dp"-->
+<!--                        android:text="@string/upload_id_image_back" />-->
+
+<!--                    &lt;!&ndash; パスポートとマイナンバー以外は表示&ndash;&gt;-->
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginLeft="25dp"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:layout_marginRight="20dp"-->
+<!--                        android:text="@string/upload_id_image_back_caption"-->
+<!--                        android:textColor="@color/black"-->
+<!--                        android:textSize="12dp" />-->
+
+                    <!-- 裏面必須-->
                     <TextView
                         style="@style/fieldLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="40dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
                         android:text="@string/upload_id_image_back" />
-
-                    <!-- パスポートとマイナンバー以外は表示-->
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="25dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginRight="20dp"
-                        android:text="@string/upload_id_image_back_caption"
-                        android:textColor="@color/black"
-                        android:textSize="12dp"/>
 
 
                     <!-- 写真追加ボタン -->
