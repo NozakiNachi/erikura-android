@@ -173,7 +173,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun showIdVerifyStatus(userId: Int, detail: Boolean, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (status: Int, identifyComparingData: IdentifyComparingData) -> Unit){
+    fun showIdVerifyStatus(userId: Int, detail: Boolean, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (status: Int, identifyComparingData: IdentifyComparingData?) -> Unit){
         executeObservable(
             erikuraApiService.showIdVerifyStatus(userId, detail),
             onError = onError

@@ -104,9 +104,9 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                     identifyStatus = status
                     // 身分確認状況を取得
                     if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE){
-                        userName = identifyComparingData.lastName + identifyComparingData.firstName
-                        birthDay = identifyComparingData.dateOfBirth
-                        cityName = identifyComparingData.city
+                        userName = identifyComparingData?.lastName + identifyComparingData?.firstName
+                        birthDay = identifyComparingData?.dateOfBirth
+                        cityName = identifyComparingData?.city
                     }
                     loadData()
                 }

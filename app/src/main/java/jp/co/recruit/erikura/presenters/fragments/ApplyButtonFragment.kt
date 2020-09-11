@@ -92,7 +92,7 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
     override fun onClickApply(view: View) {
         if (Api.isLogin) {
             user?.id?.let { userId ->
-                Api(activity!!).showIdVerifyStatus(userId, ErikuraApplication.NOT_GET_COMPARING_DATA) { status, comparingData ->
+                Api(activity!!).showIdVerifyStatus(userId, ErikuraApplication.NOT_GET_COMPARING_DATA) { status, _ ->
                     // 身分確認状況を取得
                     if (status == ErikuraApplication.ID_CONFIRMING_CODE || status == ErikuraApplication.ID_CONFIRMED_CODE) {
                         // 身分証確認中、済の場合
