@@ -53,9 +53,12 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         ViewModelProvider(this).get(UploadIdImageViewModel::class.java)
     }
 
-    // 身分証の種別リスト
+    // 身分証の種別リスト(日本語)
     val identityTypeOfList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.identity_type_of_list)
+    // 身分証の種別リスト（英語）
+    val identityTypeOfIdList =
+        ErikuraApplication.instance.resources.obtainTypedArray(R.array.identity_type_of_id_list)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -321,14 +324,11 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                 idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoMyNumber))))
             }
             else -> {
-                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoFront))))
-                if (viewModel.addBackPhotoButtonVisibility.value == View.GONE) {
-                    // 裏面もある場合
-                    idDocument.identifyImageData = IdentifyImageData(back = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoBack))))
-                }
+                idDocument.identifyImageData = IdentifyImageData(front = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoFront))),
+                    back = listOf(encodeBase64FromImage(resizeImage(viewModel.otherPhotoBack))))
             }
         }
-        idDocument.type = identityTypeOfList.getString(viewModel.typeOfId.value ?: 0)
+        idDocument.type = identityTypeOfIdList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
         user.id?.let { userId ->
             api.idVerify(userId, idDocument) { result ->

@@ -160,7 +160,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         identifyComparingData.lastName = viewModel.lastName.value
         identifyComparingData.firstName = viewModel.firstName.value
         identifyComparingData.dateOfBirth = viewModel.dateOfBirth.value
-        identifyComparingData.postCode = viewModel.postalCode.value
+        identifyComparingData.postcode = viewModel.postalCode.value
         identifyComparingData.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
         identifyComparingData.city = viewModel.city.value
         identifyComparingData.street = viewModel.street.value
