@@ -101,6 +101,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             user = it
             user.id?.let { userId ->
                 api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, identifyComparingData ->
+                    identifyStatus = status
                     // 身分確認状況を取得
                     if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE){
                         userName = identifyComparingData.lastName + identifyComparingData.firstName
@@ -387,8 +388,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             }
         }
 
-        viewModel.identifyStatus.value = identifyStatus
-
+        // SMS経由の場合身分確認の表示を行わない
+        if (fromSms) {
+            viewModel.identifyStatus.value = ErikuraApplication.ID_DISABLE_DISPLAY_CODE
+        } else {
+            viewModel.identifyStatus.value = identifyStatus
+        }
         //確認中の場合比較データを表示する
         if(identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE) {
                 // 確認中の場合表示する氏名、生年月日、住所を取得
@@ -496,7 +501,6 @@ class ChangeUserInformationViewModel : ViewModel() {
         result.addSource(interestedCar) { result.value = isValid() }
     }
 
-    // FIXME
     // 身分確認
     val identifyStatus: MutableLiveData<Int> = MutableLiveData()
     val confirmingUserName: MutableLiveData<String> = MutableLiveData()
@@ -506,7 +510,7 @@ class ChangeUserInformationViewModel : ViewModel() {
     val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
             when (status) {
-                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
+                ErikuraApplication.ID_UNCONFIRM_CODE -> {
                     result.value = View.VISIBLE
                 }
                 else -> {
@@ -544,29 +548,32 @@ class ChangeUserInformationViewModel : ViewModel() {
 
     val changeVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
-            if (isUnConfirmed(status)) {
-                result.value = View.GONE
-            } else {
+            if (isConfirmingOrConfirmed(status)) {
                 result.value = View.VISIBLE
+            } else {
+                result.value = View.GONE
             }
         }
     }
 
     val inputIdentityInfoEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(identifyStatus) { status ->
-            result.value = isUnConfirmed(status)
+            result.value = !(isConfirmingOrConfirmed(status))
         }
     }
 
-    // 未確認の場合 true
-    private fun isUnConfirmed(status: Int) : Boolean{
-        var isNotUnConfirm = false
+    //確認中と確認済の場合 true
+    private fun isConfirmingOrConfirmed(status: Int) : Boolean{
+        var isConfirmingOrConfirmed = false
         when (status) {
-            ErikuraApplication.ID_UNCONFIRMED_CODE -> {
-                isNotUnConfirm = true
+            ErikuraApplication.ID_CONFIRMING_CODE -> {
+                isConfirmingOrConfirmed = true
+            }
+            ErikuraApplication.ID_CONFIRMED_CODE -> {
+                isConfirmingOrConfirmed = true
             }
         }
-        return isNotUnConfirm
+        return isConfirmingOrConfirmed
     }
 
     // バリデーションルール

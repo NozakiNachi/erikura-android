@@ -79,10 +79,11 @@ class ErikuraApplication : Application() {
         // 再認証画面の遷移元の定数
         const val REQUEST_RESIGHIN = 4
 
-        // 身分証の実施状況の定数
-        const val ID_UNCONFIRMED_CODE = 1
+        // 身分証の実施状況(4は非表示)の定数
+        const val ID_UNCONFIRM_CODE = 1
         const val ID_CONFIRMING_CODE = 2
         const val ID_CONFIRMED_CODE = 3
+        const val ID_DISABLE_DISPLAY_CODE = 4
 
         // 身分証比較データの定数
         const val GET_COMPARING_DATA = true
