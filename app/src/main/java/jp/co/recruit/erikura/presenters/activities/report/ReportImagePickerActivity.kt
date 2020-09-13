@@ -5,8 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
-import android.media.ExifInterface
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -36,8 +34,6 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
@@ -56,7 +52,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
         job = intent.getParcelableExtra<Job>("job")
         Log.v("DEBUG", job.toString())
-        ErikuraApplication.instance.reportingJob = job
+        ErikuraApplication.instance.currentJob = job
 
         val binding: ActivityReportImagePickerBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
         binding.lifecycleOwner = this
@@ -86,7 +82,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
 

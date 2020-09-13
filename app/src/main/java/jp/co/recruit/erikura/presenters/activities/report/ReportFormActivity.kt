@@ -58,15 +58,17 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             }
         })
 
-        job = intent.getParcelableExtra<Job>("job")
-        ErikuraApplication.instance.reportingJob = job
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        // ReportingJob は常に存在しているはずなので、!! を用いる
+        job = ErikuraApplication.instance.currentJob!!
         pictureIndex = intent.getIntExtra("pictureIndex", 0)
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()

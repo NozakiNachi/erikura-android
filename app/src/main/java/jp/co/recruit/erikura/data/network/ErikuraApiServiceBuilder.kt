@@ -52,7 +52,7 @@ class ErikuraApiServiceBuilder {
             // リクエストのログを有効にします
             addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             // タイムアウトを設定します
-            readTimeout(30, TimeUnit.SECONDS)
+            readTimeout(300, TimeUnit.SECONDS)
             connectTimeout(30, TimeUnit.SECONDS)
             // FIXME: キャッシュが無効になっていることを確認
             // FIXME: cookie が無効になっていることを書くに

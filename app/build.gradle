@@ -231,6 +231,8 @@ dependencies {
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.1'
 //    implementation "com.zhihu.android:matisse:0.5.2"
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.2.0'
+
+    implementation 'com.gu.android:toolargetool:0.2.1@aar'
 }
 
 androidExtensions {

@@ -4,16 +4,10 @@ import JobUtil
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.database.Cursor
 import android.media.ExifInterface
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -72,8 +66,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        job = intent.getParcelableExtra<Job>("job")
-        ErikuraApplication.instance.reportingJob = job
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        job = ErikuraApplication.instance.currentJob!!
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
             it.onClickListener = object : ReportImageAdapter.OnClickListener {
@@ -103,7 +98,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
 
@@ -270,7 +265,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             // 編集画面から戻ってきたとき
             EDIT_DATA -> {
                 data?.let {
-                    job = data.getParcelableExtra<Job>("job")
+//                    job = data.getParcelableExtra<Job>("job")
                 }
             }
             // ギャラリーから戻ってきたとき

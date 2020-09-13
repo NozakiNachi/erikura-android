@@ -47,14 +47,15 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        job = intent.getParcelableExtra<Job>("job")
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        job = ErikuraApplication.instance.currentJob!!
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
-        ErikuraApplication.instance.reportingJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         if (editCompleted) {

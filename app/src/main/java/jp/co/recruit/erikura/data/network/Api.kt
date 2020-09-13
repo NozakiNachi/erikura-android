@@ -31,10 +31,14 @@ import okhttp3.RequestBody
 import okio.BufferedSink
 import okio.source
 import org.apache.commons.io.IOUtils
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
@@ -834,12 +838,50 @@ class Api(var context: Context) {
                                     }
                                 }
                                 500 -> {
-                                    Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                    processError(listOf(defaultErrorMessage), onError)
+                                    val errorBody = response.errorBody()?.byteString()?.string(StandardCharsets.UTF_8)
+                                    Log.v("ERROR RESPONSE", errorBody)
+                                    try {
+                                        val json = JSONObject(errorBody)
+                                        val messages = mutableListOf<String>()
+                                        val errors = json.getJSONArray("errors")
+                                        var i = 0
+                                        while (i < errors.length()) {
+                                            val msg = errors.getString(i)
+                                            messages.add(msg)
+                                            i++
+                                        }
+                                        if (messages.isEmpty()) {
+                                            processError(listOf(defaultErrorMessage), onError)
+                                        } else {
+                                            processError(messages, onError)
+                                        }
+                                    }
+                                    catch (e: JSONException) {
+                                        processError(listOf(defaultErrorMessage), onError)
+                                    }
                                 }
                                 else -> {
-                                    Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                    processError(listOf(defaultErrorMessage), onError)
+                                    val errorBody = response.errorBody()?.byteString()?.string(StandardCharsets.UTF_8)
+                                    Log.v("ERROR RESPONSE", errorBody)
+                                    try {
+                                        val json = JSONObject(errorBody)
+                                        val messages = mutableListOf<String>()
+                                        val errors = json.getJSONArray("errors")
+                                        var i = 0
+                                        while (i < errors.length()) {
+                                            val msg = errors.getString(i)
+                                            messages.add(msg)
+                                            i++
+                                        }
+                                        if (messages.isEmpty()) {
+                                            processError(listOf(defaultErrorMessage), onError)
+                                        } else {
+                                            processError(messages, onError)
+                                        }
+                                    }
+                                    catch (e: JSONException) {
+                                        processError(listOf(defaultErrorMessage), onError)
+                                    }
                                 }
                             }
                         }
