@@ -28,7 +28,7 @@ import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
-import com.gu.toolargetool.TooLargeTool
+//import com.gu.toolargetool.TooLargeTool
 import io.fabric.sdk.android.Fabric
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
@@ -96,7 +96,7 @@ class ErikuraApplication : Application() {
 
         instance = this
 
-        TooLargeTool.startLogging(this);
+//        TooLargeTool.startLogging(this);
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycle())
 
