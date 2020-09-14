@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 
@@ -11,16 +12,10 @@ abstract class BaseJobDetailFragment : Fragment {
         const val USER_ARGUMENT = "user"
 
         fun fillArguments(bundle: Bundle, job: Job?, user: User?) {
-            bundle.putParcelable(JOB_ARGUMENT, job)
+            ErikuraApplication.instance.currentJob = job
             bundle.putParcelable(USER_ARGUMENT, user)
         }
     }
-
-//    constructor(job: Job?, user: User?): super() {
-//        arguments = Bundle().also { args ->
-//            fillArguments(args, job, user)
-//        }
-//    }
 
     constructor() : super()
 
@@ -31,7 +26,7 @@ abstract class BaseJobDetailFragment : Fragment {
         super.onCreate(savedInstanceState)
 
         arguments?.let { args ->
-            this.job = args.getParcelable(JOB_ARGUMENT)
+            this.job = ErikuraApplication.instance.currentJob
             this.user = args.getParcelable(USER_ARGUMENT)
         }
     }
@@ -42,6 +37,7 @@ abstract class BaseJobDetailFragment : Fragment {
         }
         this.job = job
         this.user = user
+        ErikuraApplication.instance.currentJob = job
         // MEMO: viewModel の更新はサブクラスで実施します
     }
 }

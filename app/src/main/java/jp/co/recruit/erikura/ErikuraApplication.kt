@@ -28,6 +28,7 @@ import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
+//import com.gu.toolargetool.TooLargeTool
 import io.fabric.sdk.android.Fabric
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
@@ -85,14 +86,17 @@ class ErikuraApplication : Application() {
     //    var userSession: UserSession? = null
     val erikuraComponent: ErikuraComponent = DaggerErikuraComponent.create()
 
-    var reportingJob: Job? = null
+    var currentJob: Job? = null
 
     // プッシュ通知のURL
     var pushUri: Uri? = null
 
     override fun onCreate() {
         super.onCreate()
+
         instance = this
+
+//        TooLargeTool.startLogging(this);
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycle())
 

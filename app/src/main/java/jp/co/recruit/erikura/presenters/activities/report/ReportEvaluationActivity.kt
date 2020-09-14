@@ -39,14 +39,15 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        job = intent.getParcelableExtra<Job>("job")
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
-        ErikuraApplication.instance.reportingJob = job
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        job = ErikuraApplication.instance.currentJob!!
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         if (editCompleted) {

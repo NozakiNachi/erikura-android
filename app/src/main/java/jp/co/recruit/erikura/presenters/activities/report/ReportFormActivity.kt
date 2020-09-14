@@ -58,15 +58,17 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             }
         })
 
-        job = intent.getParcelableExtra<Job>("job")
-        ErikuraApplication.instance.reportingJob = job
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        // ReportingJob は常に存在しているはずなので、!! を用いる
+        job = ErikuraApplication.instance.currentJob!!
         pictureIndex = intent.getIntExtra("pictureIndex", 0)
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
@@ -236,14 +238,16 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
     private fun createImage() {
         val imageView: ImageView = findViewById(R.id.report_form_image)
+        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]
             val item = summary.photoAsset
             item?.let {
                 if (summary.beforeCleaningPhotoUrl != null ) {
-                    item.loadImageFromString(this, imageView)
+                    item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
                 }else {
-                    item.loadImage(this, imageView)
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
             }
         }

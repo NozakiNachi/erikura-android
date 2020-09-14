@@ -5,8 +5,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
-import android.media.ExifInterface
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -36,8 +34,6 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
-import java.text.SimpleDateFormat
-import java.util.*
 import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
@@ -56,7 +52,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
         job = intent.getParcelableExtra<Job>("job")
         Log.v("DEBUG", job.toString())
-        ErikuraApplication.instance.reportingJob = job
+        ErikuraApplication.instance.currentJob = job
 
         val binding: ActivityReportImagePickerBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
         binding.lifecycleOwner = this
@@ -86,7 +82,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
 
@@ -113,6 +109,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
+
+        
     }
 
     private fun displayImagePicker() {
@@ -144,7 +142,9 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     fun onImageSelected(item: MediaItem, isChecked: Boolean) {
         val imageView: ImageView = findViewById(R.id.report_image_picker_preview)
-        item.loadImage(this, imageView)
+        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+        item.loadImage(this, imageView, width.toInt(), height.toInt())
 
         if (isChecked) {
             viewModel.imageMap.put(item.id, item)
@@ -231,7 +231,7 @@ class ImagePickerCellViewModel: ViewModel() {
     }
 }
 
-class ImagePickerViewHolder(val binding: FragmentReportImagePickerCellBinding): RecyclerView.ViewHolder(binding.root)
+class ImagePickerViewHolder(val binding: FragmentReportImagePickerCellBinding, val width: Int, val height: Int): RecyclerView.ViewHolder(binding.root)
 
 class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewModel: ReportImagePickerViewModel): RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
 
@@ -284,7 +284,7 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
             view.layoutParams = layoutParams
         }
 
-        return ImagePickerViewHolder(binding)
+        return ImagePickerViewHolder(binding, height, height)
     }
 
     override fun onBindViewHolder(viewHolder: ImagePickerViewHolder, position: Int, cursor: Cursor) {
@@ -304,7 +304,7 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                 }
             }
         }
-        item.loadImage(activity, cellView.imageView)
+        item.loadImage(activity, cellView.imageView, viewHolder.width, viewHolder.height)
         binding.viewModel!!.loadData(job, item, viewModel)
     }
 

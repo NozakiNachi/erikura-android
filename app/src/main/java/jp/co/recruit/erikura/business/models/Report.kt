@@ -1,7 +1,6 @@
 package jp.co.recruit.erikura.business.models
 
 import android.app.Activity
-import android.net.Uri
 import android.os.Parcelable
 import android.util.Log
 import com.crashlytics.android.Crashlytics
@@ -13,8 +12,6 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
-import org.apache.commons.io.IOUtils
-import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
@@ -160,14 +157,8 @@ data class Report (
 
                         // エラーが発生した場合には、そのままの形でアップロードを行います
                         try {
-                            val baos = ByteArrayOutputStream()
-                            val input = activity.contentResolver.openInputStream(
-                                item.contentUri ?: Uri.EMPTY
-                            )
-                            IOUtils.copy(input, baos)
-
                             // 画像アップロード処理
-                            Api(activity).imageUpload(item, baos.toByteArray(), onError = {
+                            Api(activity).imageUpload(item, activity, onError = {
                                 Log.e("Error in waiting upload", it.toString())
                                 item.uploading = false
                                 ErikuraApplication.instance.notifyUpload()
@@ -176,6 +167,8 @@ data class Report (
                                 onComplete(token)
                                 ErikuraApplication.instance.notifyUpload()
                             }
+                            item.uploading = false
+                            ErikuraApplication.instance.notifyUpload()
                         }
                         catch(e: IOException) {
                             Crashlytics.logException(e)
