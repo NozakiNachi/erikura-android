@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.core.os.bundleOf
@@ -29,6 +30,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.io.ByteArrayOutputStream
+import java.net.SocketTimeoutException
 
 class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     // 身分証種別の要素番号
@@ -86,8 +88,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         super.onStart()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_user_verifications_id_document", params= bundleOf())
-        Tracking.view( "/user/verifications/id_document",  "身分証確認画面")
-
+        Tracking.view("/user/verifications/id_document",  "身分証確認画面")
     }
 
     // 画像選択イベント
@@ -312,8 +313,6 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         // 身分証種別によってエンコードしてデータをセット
         // 各contentUriはバリデーションチェック済
         val api = Api(this)
-        // スピナー表示
-        api.showProgressAlert()
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 //パスポートは２枚とも表面扱い
@@ -331,22 +330,26 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.type = identityTypeOfIdList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
         user.id?.let { userId ->
-            api.idVerify(userId, idDocument) { result ->
-                api.hideProgressAlert()
-                if (result) {
-                // 遷移元に応じて身分証確認完了を表示
-                moveUploadedIdImage()
-                } else {
-                    // 身分確認API失敗の場合 ダイアログを表示
-                    val dialog = AlertDialog.Builder(this)
-                        .setView(R.layout.dialog_failed_upload_id_image)
-                        .setCancelable(true)
-                        .setOnDismissListener {
-                            it.dismiss()
-                            finish()
-                        }
-                    dialog.show()
+            try {
+                api.idVerify(userId, idDocument) { result ->
+                    if (result) {
+                        // 遷移元に応じて身分証確認完了を表示
+                        moveUploadedIdImage()
+                    } else {
+                        // 身分確認API失敗の場合 ダイアログを表示
+                        val dialog = AlertDialog.Builder(this)
+                            .setView(R.layout.dialog_failed_upload_id_image)
+                            .setCancelable(true)
+                            .setOnDismissListener {
+                                it.dismiss()
+                                finish()
+                            }
+                        dialog.show()
+                    }
                 }
+            } catch(e: SocketTimeoutException) {
+                api.hideProgressAlert()
+                Log.e("ERROR", e.message, e)
             }
         }
     }
