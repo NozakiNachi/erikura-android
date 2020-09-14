@@ -341,6 +341,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                         .setView(R.layout.dialog_failed_upload_id_image)
                         .setCancelable(true)
                         .setOnDismissListener {
+                            it.dismiss()
                             finish()
                         }
                     dialog.show()
