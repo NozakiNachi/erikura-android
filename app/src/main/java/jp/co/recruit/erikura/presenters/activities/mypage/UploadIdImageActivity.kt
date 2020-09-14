@@ -332,6 +332,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.identifyComparingData = identifyComparingData
         user.id?.let { userId ->
             api.idVerify(userId, idDocument) { result ->
+                api.hideProgressAlert()
                 if (result) {
                 // 遷移元に応じて身分証確認完了を表示
                 moveUploadedIdImage()
