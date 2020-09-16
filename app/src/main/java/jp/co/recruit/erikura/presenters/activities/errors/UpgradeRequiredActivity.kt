@@ -3,9 +3,11 @@ package jp.co.recruit.erikura.presenters.activities.errors
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.ActivityUpgradeRequiredBinding
@@ -25,6 +27,11 @@ class UpgradeRequiredActivity : BaseActivity(), UpgradeRequiredHandlers {
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_app_update", params= bundleOf())
         Tracking.view(name= "/common/update", title= "強制アップデート画面")
+    }
+
+    override fun onBackPressed() {
+        // 戻るボタンを無効化します
+        Log.v(ErikuraApplication.LOG_TAG, "Upgrade Required: BackButton")
     }
 
     override fun onClickUpate(view: View) {

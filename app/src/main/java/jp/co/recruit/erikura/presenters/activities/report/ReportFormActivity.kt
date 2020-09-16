@@ -8,14 +8,12 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.MediatorLiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -26,6 +24,7 @@ import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import kotlinx.android.synthetic.main.activity_report_form.*
 
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -47,15 +46,29 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        job = intent.getParcelableExtra<Job>("job")
-        ErikuraApplication.instance.reportingJob = job
+        viewModel.fixedPhraseItems.observe(this, Observer{ items ->
+            val currentPhrase = viewModel.fixedPhraseSelectedItem.value
+
+            val adapter = ArrayAdapter<String>(this@ReportFormActivity, R.layout.custom_dropdown_item, items.toTypedArray())
+            adapter.setDropDownViewResource(R.layout.custom_dropdown_item)
+            report_form_fixed_phrases.adapter = adapter
+
+            if (items.contains(currentPhrase)) {
+                viewModel.fixedPhraseId.value = items.indexOf(currentPhrase)
+            }
+        })
+
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        // ReportingJob は常に存在しているはずなので、!! を用いる
+        job = ErikuraApplication.instance.currentJob!!
         pictureIndex = intent.getIntExtra("pictureIndex", 0)
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
@@ -100,13 +113,19 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             val summaries = it.outputSummaries
 
             val summary = summaries[pictureIndex]
-            if (viewModel.summarySelectedItem == ErikuraApplication.instance.getString(R.string.other_hint)) {
+            if (viewModel.summarySelectedItem.value == ErikuraApplication.instance.getString(R.string.other_hint)) {
                 summary.place = viewModel.summary.value
             }else {
-                summary.place = viewModel.summarySelectedItem
+                summary.place = viewModel.summarySelectedItem.value
             }
-            summary.evaluation = viewModel.evaluationSelectedItem.toString().toLowerCase()
-            summary.comment = viewModel.comment.value
+            summary.evaluation = viewModel.evaluationSelectedItem.value.toString().toLowerCase()
+
+            if (viewModel.fixedPhraseSelectedItem.value == ErikuraApplication.instance.getString(R.string.other_hint)) {
+                summary.comment = viewModel.comment.value
+            }
+            else {
+                summary.comment = viewModel.fixedPhraseSelectedItem.value
+            }
             editCompleted = true
 
             var nextIndex = pictureIndex + 1
@@ -137,13 +156,13 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     override fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.summaryItems.value?.let {
             if (position == 0) {
-                viewModel.summarySelectedItem = null
+                viewModel.summarySelectedItem.value = null
                 viewModel.summaryEditVisibility.value = View.GONE
             } else if (position == viewModel.summaryItems.value?.lastIndex) {
-                viewModel.summarySelectedItem = parent?.getItemAtPosition(position).toString()
+                viewModel.summarySelectedItem.value = parent?.getItemAtPosition(position).toString()
                 viewModel.summaryEditVisibility.value = View.VISIBLE
             }else {
-                viewModel.summarySelectedItem = job.summaryTitles[position-1]
+                viewModel.summarySelectedItem.value = job.summaryTitles[position-1]
                 viewModel.summaryEditVisibility.value = View.GONE
             }
         }
@@ -151,7 +170,28 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
     override fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         val evaluateType = viewModel.evaluateTypes[position]
-        viewModel.evaluationSelectedItem = evaluateType
+        if (viewModel.evaluationSelectedItem.value != evaluateType) {
+            viewModel.fixedPhraseId.value = 0
+            viewModel.fixedPhraseSelectedItem.value = null
+            viewModel.evaluationSelectedItem.value = evaluateType
+        }
+    }
+
+    override fun onFixedPhraseSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        viewModel.fixedPhraseItems.value?.let { phrases ->
+            if (position == 0) {
+                viewModel.fixedPhraseSelectedItem.value = null
+                viewModel.commentEditVisibility.value = View.GONE
+            }
+            else if (position == phrases.lastIndex) {
+                viewModel.fixedPhraseSelectedItem.value = parent?.getItemAtPosition(position).toString()
+                viewModel.commentEditVisibility.value = View.VISIBLE
+            }
+            else {
+                viewModel.fixedPhraseSelectedItem.value = phrases[position]
+                viewModel.commentEditVisibility.value = View.GONE
+            }
+        }
     }
 
     override fun onClickManual(view: View) {
@@ -198,37 +238,41 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
     private fun createImage() {
         val imageView: ImageView = findViewById(R.id.report_form_image)
+        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]
             val item = summary.photoAsset
             item?.let {
                 if (summary.beforeCleaningPhotoUrl != null ) {
-                    item.loadImageFromString(this, imageView)
+                    item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
                 }else {
-                    item.loadImage(this, imageView)
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
             }
         }
     }
 
     private fun loadData() {
+        viewModel.job.value = job
         var summaryIndex = job.summaryTitles.count() + 1
         job.report?.let {
             val summary = it.outputSummaries[pictureIndex]
-            viewModel.summarySelectedItem = null
+            viewModel.summarySelectedItem.value = null
             job.summaryTitles.forEachIndexed { index, s ->
                 if (s == summary.place) {
                     summaryIndex = index + 1
-                    viewModel.summarySelectedItem = s
+                    viewModel.summarySelectedItem.value = s
                 }
             }
             viewModel.summaryId.value = if (summary.place.isNullOrEmpty()){0} else {summaryIndex}
             if (summaryIndex == job.summaryTitles.count() + 1) {
                 viewModel.summary.value = summary.place
-                viewModel.summarySelectedItem = ErikuraApplication.instance.getString(R.string.other_hint)
+                viewModel.summarySelectedItem.value = ErikuraApplication.instance.getString(R.string.other_hint)
                 viewModel.summaryEditVisibility.value = View.VISIBLE
             }
             val evaluate = EvaluateType.valueOf(summary.evaluation?.toUpperCase()?: "UNSELECTED")
+            viewModel.evaluationSelectedItem.value = evaluate
             when(evaluate) {
                 EvaluateType.BAD -> {
                     viewModel.statusId.value = viewModel.evaluateTypes.indexOf(EvaluateType.BAD)
@@ -243,6 +287,21 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                     viewModel.statusId.value = viewModel.evaluateTypes.indexOf(EvaluateType.UNSELECTED)
                 }
             }
+
+            viewModel.fixedPhraseSelectedItem.value = null
+            val phrases = viewModel.retrieveReportFixedPhrases()
+            var phraseIndex = phrases.count() + 1
+            phrases.forEachIndexed { index, phrase ->
+                if (phrase == summary.comment) {
+                    phraseIndex = index + 1
+                    viewModel.fixedPhraseSelectedItem.value = phrase
+                }
+            }
+            viewModel.fixedPhraseId.value = if(summary.comment.isNullOrEmpty()) { 0 } else { phraseIndex }
+            if (phraseIndex == phrases.count() + 1) {
+                viewModel.fixedPhraseSelectedItem.value = ErikuraApplication.instance.getString(R.string.other_hint)
+                viewModel.commentEditVisibility.value = View.VISIBLE
+            }
             viewModel.comment.value = summary.comment
         }
         //お手本報告件数が0件の場合非表示
@@ -255,6 +314,8 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 }
 
 class ReportFormViewModel: ViewModel() {
+    val job: MutableLiveData<Job> = MutableLiveData()
+
     val title: MutableLiveData<String> = MutableLiveData()
     val summaryItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
     val summaryId: MutableLiveData<Int> = MutableLiveData()
@@ -262,19 +323,32 @@ class ReportFormViewModel: ViewModel() {
     val summary: MutableLiveData<String> = MutableLiveData()
     val summaryError: ErrorMessageViewModel = ErrorMessageViewModel()
     val statusId: MutableLiveData<Int> = MutableLiveData()
+    val fixedPhraseId = MutableLiveData<Int>()
     val comment: MutableLiveData<String> = MutableLiveData()
     val commentError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val commentEditVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val evaluateTypes = EvaluateType.values()
     val evaluateLabels: List<String> = evaluateTypes.map { ErikuraApplication.applicationContext.getString(it.resourceId) }
 
-    var summarySelectedItem: String? = null
-    var evaluationSelectedItem: EvaluateType = EvaluateType.UNSELECTED
+    val summarySelectedItem = MutableLiveData<String>()
+    val evaluationSelectedItem = MutableLiveData<EvaluateType>(EvaluateType.UNSELECTED)
+    val fixedPhraseSelectedItem = MutableLiveData<String>()
+
+    val fixedPhraseItems = MediatorLiveData<List<String>>().also { result ->
+        result.addSource(job) {
+            result.value = buildFixedPhraseItems()
+        }
+        result.addSource(evaluationSelectedItem) {
+            result.value = buildFixedPhraseItems()
+        }
+    }
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(summaryEditVisibility) {result.value = isValid()}
+        result.addSource(summaryEditVisibility) {result.value = isValid() }
         result.addSource(summary) { result.value = isValid() }
         result.addSource(statusId) { result.value = isValid() }
-        result.addSource(comment) { result.value = isValid()  }
+        result.addSource(commentEditVisibility) { result.value = isValid() }
+        result.addSource(comment) { result.value = isValid() }
     }
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
@@ -286,8 +360,15 @@ class ReportFormViewModel: ViewModel() {
             summaryError.message.value = null
         }
         valid = isValidStatusId() && valid
-        valid = isValidComment() && valid
-        valid = summarySelectedItem != null && evaluationSelectedItem != null && valid
+        if (commentEditVisibility.value == View.VISIBLE) {
+            valid = isValidComment() && valid
+        }
+        else {
+            commentError.message.value = null
+        }
+        valid = summarySelectedItem.value != null && valid
+        valid = evaluationSelectedItem.value != null && valid
+        valid = fixedPhraseSelectedItem.value != null && valid
         return valid
     }
 
@@ -324,12 +405,36 @@ class ReportFormViewModel: ViewModel() {
         }
         return valid
     }
+
+    private fun buildFixedPhraseItems(): List<String> {
+        val items: MutableList<String> = mutableListOf()
+        items.add(ErikuraApplication.instance.getString(R.string.please_select))
+        items.addAll(retrieveReportFixedPhrases())
+        if (evaluationSelectedItem?.value != EvaluateType.UNSELECTED) {
+            items.add(ErikuraApplication.instance.getString(R.string.other_hint))
+        }
+        return items
+    }
+
+    fun retrieveReportFixedPhrases(): List<String> {
+        return job.value?.jobKind?.let { jobKind ->
+            evaluationSelectedItem.value?.let { evaluation ->
+                when (evaluation) {
+                    EvaluateType.UNSELECTED -> listOf()
+                    EvaluateType.BAD -> jobKind.reportFixedPhrasesC
+                    EvaluateType.ORDINARY -> jobKind.reportFixedPhrasesB
+                    EvaluateType.GOOD -> jobKind.reportFixedPhrasesA
+                }
+            }
+        } ?: listOf()
+    }
 }
 
 interface ReportFormEventHandlers {
     fun onClickNext(view: View)
     fun onSummarySelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onEvaluationSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
+    fun onFixedPhraseSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
 }

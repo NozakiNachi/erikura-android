@@ -28,6 +28,7 @@ import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
+//import com.gu.toolargetool.TooLargeTool
 import io.fabric.sdk.android.Fabric
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
@@ -79,6 +80,8 @@ class ErikuraApplication : Application() {
         // 再認証画面の遷移元の定数
         const val REQUEST_RESIGHIN = 4
 
+        var versionAlertModal: AlertDialog? = null
+
         // 身分証の実施状況(4は非表示)の定数
         const val ID_UNCONFIRM_CODE = 1
         const val ID_CONFIRMING_CODE = 2
@@ -106,14 +109,17 @@ class ErikuraApplication : Application() {
     //    var userSession: UserSession? = null
     val erikuraComponent: ErikuraComponent = DaggerErikuraComponent.create()
 
-    var reportingJob: Job? = null
+    var currentJob: Job? = null
 
     // プッシュ通知のURL
     var pushUri: Uri? = null
 
     override fun onCreate() {
         super.onCreate()
+
         instance = this
+
+//        TooLargeTool.startLogging(this);
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(AppLifecycle())
 
@@ -222,12 +228,20 @@ class ErikuraApplication : Application() {
             // 最新バージョンになっているか確認します
             if (!requiredClientVersion.isCurrentSatisfied(versionName)) {
                 // 最新バージョンになっていない場合 => アップデートを促すモーダルを表示
+                versionAlertModal?.dismiss()
+                versionAlertModal = null
+
                 Log.v("DEBUG", BaseActivity.currentActivity.toString())
                 BaseActivity.currentActivity?.let { activity ->
                     val dialog = AlertDialog.Builder(activity)
                         .setView(R.layout.dialog_update)
+                        .setOnDismissListener {
+                            ErikuraApplication.versionAlertModal = null
+                        }
                         .create()
                     dialog.show()
+
+                    versionAlertModal = dialog
 
                     val button: Button = dialog.findViewById(R.id.update_button)
                     button.setOnSafeClickListener {

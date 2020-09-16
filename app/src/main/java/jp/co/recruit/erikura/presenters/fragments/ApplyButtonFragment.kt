@@ -163,7 +163,7 @@ class ApplyButtonFragmentViewModel: ViewModel() {
     }
 
     private fun updateApplyButtonStatus() {
-        if (inAdvancePeriod && !closeToHome) {
+        if (Api.isLogin && inAdvancePeriod && !closeToHome) {
             applyButtonEnabled.value = false
             applyButtonText.value = ErikuraApplication.instance.getString(R.string.advanceEntry)
         }

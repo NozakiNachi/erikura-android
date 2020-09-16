@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.data.network
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.model.LatLng
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
@@ -23,22 +25,32 @@ import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import okhttp3.Request as HttpRequest
-import okhttp3.Response as HttpResponse
+import okio.BufferedSink
+import okio.source
 import org.apache.commons.io.IOUtils
+import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.Response
 import java.io.File
 import java.io.IOException
 import java.net.URL
+import java.nio.charset.StandardCharsets
 import java.text.SimpleDateFormat
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.util.*
+import java.util.concurrent.Executors
+import okhttp3.Request as HttpRequest
+import okhttp3.Response as HttpResponse
 
 
 class Api(var context: Context) {
     companion object {
+        // API接続用に 10スレッドのプールを作成
+        val executorService = Executors.newFixedThreadPool(10)
+        val scheduler = Schedulers.from(executorService)
         var userSession: UserSession? = null
 
         val erikuraApiService: IErikuraApiService get() {
@@ -571,7 +583,7 @@ class Api(var context: Context) {
         }
     }
 
-    fun imageUpload(item: MediaItem, bytes: ByteArray, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
+    fun imageUpload(item: MediaItem, bytes: ByteArray, scheduler: Scheduler = Api.scheduler, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit){
         val photo = RequestBody.create(item.mimeType.toMediaTypeOrNull(), bytes)
         val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
             "photo",
@@ -581,7 +593,33 @@ class Api(var context: Context) {
 
         executeObservable(
             erikuraApiService.imageUpload(requestBody),false,
-            onError = onError
+            onError = onError,
+            scheduler = scheduler
+        ) { body ->
+            onComplete(body.photoToken)
+        }
+    }
+
+    fun imageUpload(item: MediaItem, activity: Activity, scheduler: Scheduler = Api.scheduler, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit) {
+        val photoBody = object : RequestBody() {
+            override fun contentType() = item.mimeType.toMediaTypeOrNull()
+            override fun contentLength() = item.size
+            override fun writeTo(sink: BufferedSink) {
+                activity.contentResolver.openInputStream(item.contentUri ?: Uri.EMPTY)?.also { input ->
+                    input.source().use { source -> sink.writeAll(source) }
+                }
+            }
+        }
+        val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+            "photo",
+            "photo.jpg",
+            photoBody
+        ).build()
+
+        executeObservable(
+            erikuraApiService.imageUpload(requestBody),false,
+            onError = onError,
+            scheduler = scheduler
         ) { body ->
             onComplete(body.photoToken)
         }
@@ -730,6 +768,7 @@ class Api(var context: Context) {
                                       defaultError: String? = null,
                                       runCompleteOnUIThread: Boolean = true,
                                       ignoreUnauthorizedError: Boolean = false,
+                                      scheduler: Scheduler = Api.scheduler,
                                       onError: ((messages: List<String>?) -> Unit)?,
                                       onComplete: (response: T) -> Unit) {
         val defaultErrorMessage = defaultError ?: context.getString(R.string.common_messages_apiError)
@@ -741,7 +780,7 @@ class Api(var context: Context) {
         }
         activeObservables.add(observable)
         observable
-            .subscribeOn(Schedulers.io())
+            .subscribeOn(scheduler)
             .subscribeBy(
                 onNext = { response: Response<ApiResponse<T>> ->
                     complete.invoke()
@@ -820,12 +859,50 @@ class Api(var context: Context) {
                                     }
                                 }
                                 500 -> {
-                                    Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                    processError(listOf(defaultErrorMessage), onError)
+                                    val errorBody = response.errorBody()?.byteString()?.string(StandardCharsets.UTF_8)
+                                    Log.v("ERROR RESPONSE", errorBody)
+                                    try {
+                                        val json = JSONObject(errorBody)
+                                        val messages = mutableListOf<String>()
+                                        val errors = json.getJSONArray("errors")
+                                        var i = 0
+                                        while (i < errors.length()) {
+                                            val msg = errors.getString(i)
+                                            messages.add(msg)
+                                            i++
+                                        }
+                                        if (messages.isEmpty()) {
+                                            processError(listOf(defaultErrorMessage), onError)
+                                        } else {
+                                            processError(messages, onError)
+                                        }
+                                    }
+                                    catch (e: JSONException) {
+                                        processError(listOf(defaultErrorMessage), onError)
+                                    }
                                 }
                                 else -> {
-                                    Log.v("ERROR RESPONSE", response.errorBody().toString())
-                                    processError(listOf(defaultErrorMessage), onError)
+                                    val errorBody = response.errorBody()?.byteString()?.string(StandardCharsets.UTF_8)
+                                    Log.v("ERROR RESPONSE", errorBody)
+                                    try {
+                                        val json = JSONObject(errorBody)
+                                        val messages = mutableListOf<String>()
+                                        val errors = json.getJSONArray("errors")
+                                        var i = 0
+                                        while (i < errors.length()) {
+                                            val msg = errors.getString(i)
+                                            messages.add(msg)
+                                            i++
+                                        }
+                                        if (messages.isEmpty()) {
+                                            processError(listOf(defaultErrorMessage), onError)
+                                        } else {
+                                            processError(messages, onError)
+                                        }
+                                    }
+                                    catch (e: JSONException) {
+                                        processError(listOf(defaultErrorMessage), onError)
+                                    }
                                 }
                             }
                         }

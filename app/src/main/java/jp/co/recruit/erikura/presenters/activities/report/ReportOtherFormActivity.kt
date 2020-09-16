@@ -5,8 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.provider.DocumentsContract
-import android.provider.MediaStore
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -49,14 +47,15 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
-        job = intent.getParcelableExtra<Job>("job")
+//        job = intent.getParcelableExtra<Job>("job")
+//        ErikuraApplication.instance.reportingJob = job
+        job = ErikuraApplication.instance.currentJob!!
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
-        ErikuraApplication.instance.reportingJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         if (editCompleted) {
@@ -155,10 +154,12 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                 viewModel.addPhotoButtonVisibility.value = View.GONE
                 viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                 val imageView: ImageView = findViewById(R.id.report_other_image)
+                val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
                 if (it.additionalReportPhotoUrl != null ) {
-                    item.loadImageFromString(this, imageView)
+                    item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
                 }else {
-                    item.loadImage(this, imageView)
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
                 viewModel.otherPhoto = item
                 viewModel.comment.value = comment
@@ -177,32 +178,15 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         if (resultCode == Activity.RESULT_OK) {
             val uri = data?.data
             uri?.let {
-                val id = DocumentsContract.getDocumentId(uri)
-                val cursor = contentResolver.query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    arrayOf(
-                        MediaStore.Files.FileColumns._ID,
-                        MediaStore.MediaColumns.DISPLAY_NAME,
-                        MediaStore.MediaColumns.MIME_TYPE,
-                        MediaStore.MediaColumns.SIZE,
-                        MediaStore.Files.FileColumns.DATE_ADDED,
-                        MediaStore.MediaColumns.DATE_TAKEN
-                    ),
-                    "_id=?", arrayOf(id.split(":")[1]), null
-                )
-                cursor?.moveToFirst()
-                cursor?.let {
-                    // val item = MediaItem.from(cursor)
-                    // MEMO: cursorを渡すとIDの値が0になるので手動で値を入れています
-                    val item = MediaItem.from(cursor)
+                MediaItem.createFrom(this, uri)?.let { item ->
                     viewModel.addPhotoButtonVisibility.value = View.GONE
                     viewModel.removePhotoButtonVisibility.value = View.VISIBLE
                     val imageView: ImageView = findViewById(R.id.report_other_image)
-                    item.loadImage(this, imageView)
+                    val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                    val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+                    item.loadImage(this, imageView, width.toInt(), height.toInt())
                     viewModel.otherPhoto = item
                 }
-
-                cursor?.close()
             }
         }
 

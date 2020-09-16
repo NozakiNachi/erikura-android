@@ -12,7 +12,10 @@ data class JobKind(
     var name: String? = null,
     var iconUrl: String? = null,
     var refine: Boolean = false,
-    var summaryTitles: List<String> = listOf()
+    var summaryTitles: List<String> = listOf(),
+    var reportFixedPhrasesA: List<String> = listOf(),
+    var reportFixedPhrasesB: List<String> = listOf(),
+    var reportFixedPhrasesC: List<String> = listOf()
 ): Parcelable {
     val activeIconUrl: URL? get() {
         return iconUrl?.let { UrlUtils.parse(it) }

@@ -36,14 +36,15 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         binding.viewModel = viewModel
         binding.handlers = this
 
-        job = intent.getParcelableExtra<Job>("job")
+        //job = intent.getParcelableExtra<Job>("job")
+        job = ErikuraApplication.instance.currentJob!!
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
-        ErikuraApplication.instance.reportingJob = job
+        ErikuraApplication.instance.currentJob = job
     }
 
     override fun onStart() {
         super.onStart()
-        ErikuraApplication.instance.reportingJob?.let {
+        ErikuraApplication.instance.currentJob?.let {
             job = it
         }
         createTimeItems()

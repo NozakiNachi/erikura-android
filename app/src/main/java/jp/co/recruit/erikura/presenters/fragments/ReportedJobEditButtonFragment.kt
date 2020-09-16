@@ -1,9 +1,7 @@
 package jp.co.recruit.erikura.presenters.fragments
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,7 +70,8 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
     override fun onClickReportedJobEditButton(view: View) {
         if(job?.isReportEditable?: false) {
             val intent = Intent(activity,ReportConfirmActivity::class.java)
-            intent.putExtra("job",job)
+//            intent.putExtra("job",job)
+            ErikuraApplication.instance.currentJob = job
             startActivity(intent)
         }
         else {

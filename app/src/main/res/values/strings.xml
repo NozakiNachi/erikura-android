@@ -163,6 +163,9 @@
     <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
 
     <!-- 応募確認モーダル -->
+    <string name="applyDialog_warning">※作業報告締切は、応募後24時間以内となります。\n24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
+    <string name="applyDialog_checkCaption">応募前にすべてチェックしてください</string>
+
     <string name="applyDialog_caption1">※作業報告締切は、応募後24時間以内となります。24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
     <string name="applyDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルと注意事項を必ずご覧ください。</string>
     <string name="applyDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルと注意事項を必ずご確認ください。</string>
@@ -285,6 +288,8 @@
     <string name="summary_status">作業後の状態</string>
     <string name="summary_status2">作業後の\n状態</string>
     <string name="comment">コメント</string>
+    <string name="comment_select">コメント</string>
+    <string name="comment_input">コメント（自由記述）</string>
 
     <!-- 会員情報入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
