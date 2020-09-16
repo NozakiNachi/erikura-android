@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.data.network
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.util.TypedValue
@@ -28,6 +29,7 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okio.BufferedSink
 import okio.source
 import org.apache.commons.io.IOUtils
@@ -589,6 +591,23 @@ class Api(var context: Context) {
                 }
             }
         }
+        val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
+            "photo",
+            "photo.jpg",
+            photoBody
+        ).build()
+
+        executeObservable(
+            erikuraApiService.imageUpload(requestBody),false,
+            onError = onError,
+            scheduler = scheduler
+        ) { body ->
+            onComplete(body.photoToken)
+        }
+    }
+
+    fun imageUpload(item: MediaItem, file: File, scheduler: Scheduler = Api.scheduler, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (token: String) -> Unit) {
+        val photoBody = file.asRequestBody(item.mimeType.toMediaTypeOrNull())
         val requestBody: RequestBody = MultipartBody.Builder().setType(MultipartBody.FORM).addFormDataPart(
             "photo",
             "photo.jpg",
