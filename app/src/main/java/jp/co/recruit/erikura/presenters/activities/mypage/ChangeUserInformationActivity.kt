@@ -394,12 +394,18 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         } else {
             viewModel.identifyStatus.value = identifyStatus
         }
-        //確認中の場合比較データを表示する
+        //確認中、否認の場合比較データを表示する
         if(identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE) {
                 // 確認中の場合表示する氏名、生年月日、住所を取得
                 viewModel.confirmingUserName.value = getString(R.string.confirming_identification) + userName
                 viewModel.confirmingCityName.value = getString(R.string.confirming_identification) + cityName
                 viewModel.confirmingBirthDay.value = getString(R.string.confirming_identification) + birthDay
+        }
+        if(identifyStatus == ErikuraApplication.ID_DENIED_UNCONFIRMED || identifyStatus == ErikuraApplication.ID_DENIED_BEFORE_COMFIRMED) {
+            // 失敗した氏名、生年月日、住所を取得
+            viewModel.deniedUserName.value = getString(R.string.denied_identification) + userName
+            viewModel.deniedCityName.value = getString(R.string.denied_identification) + cityName
+            viewModel.deniedBirthDay.value = getString(R.string.denied_identification) + birthDay
         }
     }
 
@@ -506,11 +512,18 @@ class ChangeUserInformationViewModel : ViewModel() {
     val confirmingUserName: MutableLiveData<String> = MutableLiveData()
     val confirmingBirthDay: MutableLiveData<String> = MutableLiveData()
     val confirmingCityName: MutableLiveData<String> = MutableLiveData()
+    val deniedUserName: MutableLiveData<String> = MutableLiveData()
+    val deniedBirthDay: MutableLiveData<String> = MutableLiveData()
+    val deniedCityName: MutableLiveData<String> = MutableLiveData()
+
 
     val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
             when (status) {
                 ErikuraApplication.ID_UNCONFIRM_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                ErikuraApplication.ID_DENIED_UNCONFIRMED -> {
                     result.value = View.VISIBLE
                 }
                 else -> {
@@ -546,6 +559,23 @@ class ChangeUserInformationViewModel : ViewModel() {
         }
     }
 
+    val deniedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_DENIED_UNCONFIRMED -> {
+                    result.value = View.VISIBLE
+                }
+                ErikuraApplication.ID_DENIED_BEFORE_COMFIRMED -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+
     val changeVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
             if (isConfirmingOrConfirmed(status)) {
@@ -562,7 +592,7 @@ class ChangeUserInformationViewModel : ViewModel() {
         }
     }
 
-    //確認中と確認済の場合 true
+    //確認中と確認済と否認（確認済）の場合 true
     private fun isConfirmingOrConfirmed(status: Int) : Boolean{
         var isConfirmingOrConfirmed = false
         when (status) {
@@ -570,6 +600,9 @@ class ChangeUserInformationViewModel : ViewModel() {
                 isConfirmingOrConfirmed = true
             }
             ErikuraApplication.ID_CONFIRMED_CODE -> {
+                isConfirmingOrConfirmed = true
+            }
+            ErikuraApplication.ID_DENIED_BEFORE_COMFIRMED -> {
                 isConfirmingOrConfirmed = true
             }
         }

@@ -234,6 +234,17 @@
                         android:visibility="@{viewModel.confirmedVisibility}" />
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.deniedUserName}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.deniedVisibility}" />
+
+                    <TextView
                         style="@style/linkText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -345,6 +356,17 @@
                         android:textColor="@color/warmGrey"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.confirmedVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.deniedBirthDay}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.deniedVisibility}" />
 
                     <TextView
                         style="@style/linkText"
@@ -475,6 +497,17 @@
                     android:textColor="@color/warmGrey"
                     android:textSize="12dp"
                     android:visibility="@{viewModel.confirmedVisibility}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@{viewModel.deniedCityName}"
+                    android:textColor="@color/coral"
+                    android:textSize="12dp"
+                    android:visibility="@{viewModel.deniedVisibility}" />
 
                 <TextView
                     style="@style/linkText"

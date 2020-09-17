@@ -85,6 +85,7 @@
     <string name="confirmed_identification">身分証確認済み</string>
     <string name="confirming_identification">※身分証確認中：</string>
     <string name="unconfirmed_identification">※身分証未確認</string>
+    <string name="denied_identification">※身分証確認失敗：</string>
     
     <!-- 本人確認情報入力画面-->
     <string name="update_identity_caption1_from_entry">お仕事への応募にあたり、身分証の確認の実施をお願いしております。</string>
