@@ -9,8 +9,10 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationOnlyPhoneFragment
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 
@@ -24,9 +26,27 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
         super.onCreate(savedInstanceState)
         Log.v("ERIKURA", "${this.javaClass.name}: onCreate")
         this.intent = intent
+
+        var fromPush = false
         intent?.dataString?.let { uriString ->
             ErikuraApplication.instance.pushUri = uriString.toUri()
+            fromPush = true
         }
+
+        ErikuraConfig.load(this, onError = { messages ->
+            // 案件詳細画面で、通信ができていない場合は、何も表示できないのでスタート画面に遷移させます
+            if(fromPush && this is JobDetailsActivity) {
+                Intent(this, StartActivity::class.java).let { intent ->
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                    finish()
+                }
+            }
+            else {
+                Api(this).displayErrorAlert(messages)
+            }
+        })
     }
 
     override fun onStart() {
