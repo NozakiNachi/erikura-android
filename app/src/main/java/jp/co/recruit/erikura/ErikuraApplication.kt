@@ -82,11 +82,13 @@ class ErikuraApplication : Application() {
 
         var versionAlertModal: AlertDialog? = null
 
-        // 身分証の実施状況(4は非表示)の定数
+        // 身分証の実施状況(0は非表示)の定数
+        const val ID_DISABLE_DISPLAY_CODE = 0
         const val ID_UNCONFIRM_CODE = 1
         const val ID_CONFIRMING_CODE = 2
         const val ID_CONFIRMED_CODE = 3
-        const val ID_DISABLE_DISPLAY_CODE = 4
+        const val ID_DENIED_UNCONFIRMED = 4
+        const val ID_DENIED_BEFORE_COMFIRMED= 5
 
         // 身分証比較データの定数
         const val GET_COMPARING_DATA = true
