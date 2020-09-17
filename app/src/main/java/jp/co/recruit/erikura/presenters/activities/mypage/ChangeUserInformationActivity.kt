@@ -401,7 +401,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.confirmingCityName.value = getString(R.string.confirming_identification) + cityName
                 viewModel.confirmingBirthDay.value = getString(R.string.confirming_identification) + birthDay
         }
-        if(identifyStatus == ErikuraApplication.ID_DENIED_UNCONFIRMED || identifyStatus == ErikuraApplication.ID_DENIED_BEFORE_COMFIRMED) {
+        if(identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED) {
             // 失敗した氏名、生年月日、住所を取得
             viewModel.deniedUserName.value = getString(R.string.denied_identification) + userName
             viewModel.deniedCityName.value = getString(R.string.denied_identification) + cityName
@@ -520,10 +520,10 @@ class ChangeUserInformationViewModel : ViewModel() {
     val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
             when (status) {
-                ErikuraApplication.ID_UNCONFIRM_CODE -> {
+                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
                     result.value = View.VISIBLE
                 }
-                ErikuraApplication.ID_DENIED_UNCONFIRMED -> {
+                ErikuraApplication.FAILED_NEVER_APPROVED -> {
                     result.value = View.VISIBLE
                 }
                 else -> {
@@ -562,10 +562,10 @@ class ChangeUserInformationViewModel : ViewModel() {
     val deniedVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
             when (status) {
-                ErikuraApplication.ID_DENIED_UNCONFIRMED -> {
+                ErikuraApplication.FAILED_NEVER_APPROVED -> {
                     result.value = View.VISIBLE
                 }
-                ErikuraApplication.ID_DENIED_BEFORE_COMFIRMED -> {
+                ErikuraApplication.FAILED_ONCE_APPROVED -> {
                     result.value = View.VISIBLE
                 }
                 else -> {
@@ -602,7 +602,7 @@ class ChangeUserInformationViewModel : ViewModel() {
             ErikuraApplication.ID_CONFIRMED_CODE -> {
                 isConfirmingOrConfirmed = true
             }
-            ErikuraApplication.ID_DENIED_BEFORE_COMFIRMED -> {
+            ErikuraApplication.FAILED_ONCE_APPROVED -> {
                 isConfirmingOrConfirmed = true
             }
         }

@@ -84,11 +84,11 @@ class ErikuraApplication : Application() {
 
         // 身分証の実施状況(0は非表示)の定数
         const val ID_DISABLE_DISPLAY_CODE = 0
-        const val ID_UNCONFIRM_CODE = 1
+        const val ID_UNCONFIRMED_CODE = 1
         const val ID_CONFIRMING_CODE = 2
         const val ID_CONFIRMED_CODE = 3
-        const val ID_DENIED_UNCONFIRMED = 4
-        const val ID_DENIED_BEFORE_COMFIRMED= 5
+        const val FAILED_NEVER_APPROVED = 4
+        const val FAILED_ONCE_APPROVED= 5
 
         // 身分証比較データの定数
         const val GET_COMPARING_DATA = true
