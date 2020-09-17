@@ -388,12 +388,9 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             }
         }
 
-        // SMS経由の場合身分確認の表示を行わない
-        if (fromSms) {
-            viewModel.identifyStatus.value = ErikuraApplication.ID_DISABLE_DISPLAY_CODE
-        } else {
             viewModel.identifyStatus.value = identifyStatus
-        }
+            viewModel.fromSms.value = fromSms
+
         //確認中、否認の場合比較データを表示する
         if(identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE) {
                 // 確認中の場合表示する氏名、生年月日、住所を取得
@@ -509,6 +506,7 @@ class ChangeUserInformationViewModel : ViewModel() {
 
     // 身分確認
     val identifyStatus: MutableLiveData<Int> = MutableLiveData()
+    val fromSms: MutableLiveData<Boolean> = MutableLiveData()
     val confirmingUserName: MutableLiveData<String> = MutableLiveData()
     val confirmingBirthDay: MutableLiveData<String> = MutableLiveData()
     val confirmingCityName: MutableLiveData<String> = MutableLiveData()
@@ -528,6 +526,11 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
     }
 
     val unconfirmedVisibility = MediatorLiveData<Int>().also { result ->
@@ -544,6 +547,11 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
     }
 
     val confirmingVisibility = MediatorLiveData<Int>().also { result ->
@@ -557,6 +565,11 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
     }
 
     val confirmedVisibility = MediatorLiveData<Int>().also { result ->
@@ -568,6 +581,11 @@ class ChangeUserInformationViewModel : ViewModel() {
                 else -> {
                     result.value = View.GONE
                 }
+            }
+        }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
             }
         }
     }
@@ -586,6 +604,11 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
     }
 
 
@@ -594,6 +617,11 @@ class ChangeUserInformationViewModel : ViewModel() {
             if (isConfirmingOrConfirmed(status)) {
                 result.value = View.VISIBLE
             } else {
+                result.value = View.GONE
+            }
+        }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
                 result.value = View.GONE
             }
         }
