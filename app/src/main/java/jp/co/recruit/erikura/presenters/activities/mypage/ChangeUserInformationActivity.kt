@@ -103,7 +103,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, identifyComparingData ->
                     identifyStatus = status
                     // 身分確認状況を取得
-                    if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE){
+                    if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE || identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED){
                         userName = identifyComparingData?.lastName + identifyComparingData?.firstName
                         birthDay = identifyComparingData?.dateOfBirth
                         cityName = identifyComparingData?.city
@@ -518,6 +518,19 @@ class ChangeUserInformationViewModel : ViewModel() {
 
 
     val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val unconfirmedVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(identifyStatus) { status ->
             when (status) {
                 ErikuraApplication.ID_UNCONFIRMED_CODE -> {

@@ -63,7 +63,7 @@
                     android:background="@drawable/background_round_topaz"
                     android:orientation="vertical"
                     android:padding="20dp"
-                    android:visibility="@{viewModel.unconfirmedExplainVisibility}">
+                    android:visibility="@{viewModel.unconfirmedVisibility}">
 
                     <TextView
                         android:layout_width="match_parent"
