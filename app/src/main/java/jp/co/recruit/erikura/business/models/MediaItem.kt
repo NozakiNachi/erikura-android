@@ -251,7 +251,7 @@ data class MediaItem(
         Glide.with(context).load(s).override(height).into(imageView)
     }
 
-    fun resizeImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit, onError: (e: Exception?) -> Unit) {
+    fun resizeImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (resource: Bitmap) -> Unit, onError: (e: Exception?) -> Unit) {
         Glide.with(context)
             .asBitmap()
             .load(contentUri)
@@ -280,11 +280,7 @@ data class MediaItem(
                     resource: Bitmap,
                     transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
                 ) {
-                    val outputStream = ByteArrayOutputStream()
-                    resource.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
-                    outputStream.close()
-                    val bytes: ByteArray = outputStream.toByteArray()
-                    onComplete(bytes)
+                    onComplete(resource)
                 }
             })
     }

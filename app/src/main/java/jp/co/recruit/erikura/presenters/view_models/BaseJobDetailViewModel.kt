@@ -12,13 +12,13 @@ open class BaseJobDetailViewModel : ViewModel() {
     val user = MutableLiveData<User>()
 
     val boostVisibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(job) { job ->
-            result.value = if (job.boost) { View.VISIBLE } else { View.GONE }
+        result.addSource(job) { job: Job? ->
+            result.value = if (job?.boost ?: false) { View.VISIBLE } else { View.GONE }
         }
     }
     val wantedVisibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(job) { job ->
-            result.value = if (job.wanted) { View.VISIBLE } else { View.GONE }
+        result.addSource(job) { job: Job? ->
+            result.value = if (job?.wanted ?: false) { View.VISIBLE } else { View.GONE }
         }
     }
 }

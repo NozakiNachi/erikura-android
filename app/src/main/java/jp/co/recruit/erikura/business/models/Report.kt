@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.business.models
 
 import android.app.Activity
+import android.graphics.Bitmap
 import android.os.Parcelable
 import android.util.Log
 import com.crashlytics.android.Crashlytics
@@ -12,6 +13,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
+import okhttp3.internal.closeQuietly
+import java.io.File
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.Executors
@@ -139,13 +142,29 @@ data class Report (
             item?.let {
                 try {
                     item.uploading = true
-                    item.resizeImage(activity, 640, 640, onComplete = { bytes ->
+                    item.resizeImage(activity, 640, 640, onComplete = { resource: Bitmap ->
+                        // リサイズしたものをファイルに書き出しておきます
+                        val temp = File.createTempFile("resizedImage", "jpg", activity.cacheDir)
+                        val os = temp.outputStream()
+                        try {
+                            resource.compress(Bitmap.CompressFormat.JPEG, 90, os)
+                        }
+                        finally {
+                            os.closeQuietly()
+                        }
+
                         // 画像アップロード処理
-                        Api(activity).imageUpload(item, bytes, scheduler = Report.scheduler, onError = {
+                        Api(activity).imageUpload(item, temp, scheduler = Report.scheduler, onError = {
+                            if (temp.exists()) {
+                                temp.delete()
+                            }
                             Log.e("Error in waiting upload", it.toString())
                             item.uploading = false
                             ErikuraApplication.instance.notifyUpload()
                         }) { token ->
+                            if (temp.exists()) {
+                                temp.delete()
+                            }
                             item.uploading = false
                             onComplete(token)
                             ErikuraApplication.instance.notifyUpload()

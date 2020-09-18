@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
@@ -58,6 +59,7 @@ class JobDetailsActivity : BaseActivity() {
             if (value != null) {
                 jobRestored = true
                 job = value
+                ErikuraApplication.instance.currentJob = job
             } else {
                 handleIntent(intent)
             }
@@ -105,6 +107,7 @@ class JobDetailsActivity : BaseActivity() {
         Api(this).reloadJob(job) {
             it.toString()
             job = it
+            ErikuraApplication.instance.currentJob = it
             if (Api.isLogin) {
                 Api(this).user {
                     user = it
@@ -173,5 +176,6 @@ class JobDetailsActivity : BaseActivity() {
         val jobId = appLinkData!!.lastPathSegment!!.toInt()
         job = Job(id= jobId)
         job.uninitialized = true
+        ErikuraApplication.instance.currentJob = job
     }
 }

@@ -72,16 +72,16 @@ class JobInfoViewFragmentViewModel: ViewModel() {
         }
     }
     val wantedVisibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(job) { job ->
-            result.value = if (job.wanted) { View.VISIBLE } else { View.GONE }
+        result.addSource(job) { job: Job? ->
+            result.value = if (job?.wanted ?: false) { View.VISIBLE } else { View.GONE }
         }
     }
     val feeLabel = MediatorLiveData<CharSequence>().also { result ->
-        result.addSource(job) { job ->
+        result.addSource(job) { job: Job? ->
             val taxLabel = "（税込）"
             val sb = SpannableStringBuilder()
             sb.append(ErikuraApplication.instance.resources.getString(R.string.jobDetails_fee))
-            if (job.boost) {
+            if (job?.boost ?: false) {
                 sb.setSpan(
                     AbsoluteSizeSpan(12, true),
                     sb.indexOf(taxLabel), sb.length,
