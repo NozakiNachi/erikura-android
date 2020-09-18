@@ -6,7 +6,6 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -50,7 +49,7 @@ class ErikuraApiServiceBuilder {
                 return@Interceptor chain.proceed(request)
             })
             // リクエストのログを有効にします
-            addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+//            addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             // タイムアウトを設定します
             readTimeout(300, TimeUnit.SECONDS)
             connectTimeout(30, TimeUnit.SECONDS)

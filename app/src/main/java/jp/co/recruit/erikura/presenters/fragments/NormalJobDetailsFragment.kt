@@ -125,7 +125,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
 class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
     val nextUpdateSchedule = MediatorLiveData<String>()?.also { result ->
         result.addSource(job) { job ->
-            result.value = job.nextUpdateScheduledAt?.let { JobUtils.DateFormats.simple.format(it) }
+            result.value = job?.nextUpdateScheduledAt?.let { JobUtils.DateFormats.simple.format(it) }
         }
     }
     val nextUpdateScheduleVisible = MediatorLiveData<Int>()?.also { result ->
@@ -135,7 +135,7 @@ class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
             //   - 応募者なしで終了した案件の場合は表示 : past 状態
             //   - 募集中の案件の場合は非表示 : active 状態
             //   - 自分が応募済みの案件の場合は非表示 : past状態だが、NormalJobDetails は使われないので対象外
-            result.value = if (job.isPastOrInactive && job.nextUpdateScheduledAt != null) {
+            result.value = if (job != null && job.isPastOrInactive && job.nextUpdateScheduledAt != null) {
                 View.VISIBLE
             }
             else {
@@ -145,7 +145,7 @@ class NormalJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
     }
 
     val applicable = MediatorLiveData<Boolean>()?.also { result ->
-        result.addSource(job) { result.value = it.isApplicable(user.value) }
+        result.addSource(job) { result.value = job.value?.isApplicable(user.value) ?: false }
         result.addSource(user) { result.value = job.value?.isApplicable(it) ?: false}
     }
 

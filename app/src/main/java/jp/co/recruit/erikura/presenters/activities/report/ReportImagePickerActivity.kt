@@ -13,6 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ToggleButton
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -23,10 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
-import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.business.models.OutputSummary
-import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
@@ -132,7 +130,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             val assetsUrls = outputSummaries.map { it.photoAsset?.contentUri }.toSet()
             adapter.forEach { item ->
                 if (assetsUrls.contains(item.contentUri)) {
-                    viewModel.imageMap.put(item.id, item)
+                    viewModel.check(item)
                 }
             }
             viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
@@ -147,9 +145,9 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         item.loadImage(this, imageView, width.toInt(), height.toInt())
 
         if (isChecked) {
-            viewModel.imageMap.put(item.id, item)
+            viewModel.check(item)
         }else {
-            viewModel.imageMap.remove(item.id)
+            viewModel.uncheck(item)
         }
         viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
     }
@@ -219,8 +217,19 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
 class ReportImagePickerViewModel: ViewModel() {
     val imageMap: MutableMap<Long, MediaItem> = HashMap()
+    val selectedCount: MutableLiveData<Int> = MutableLiveData(0)
     val isNextButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
+    fun check(item: MediaItem) {
+        this.imageMap.put(item.id, item)
+        this.selectedCount.value = this.imageMap.keys.size
+    }
+
+    fun uncheck(item: MediaItem) {
+        this.imageMap.remove(item.id)
+        this.selectedCount.value = this.imageMap.keys.size
+    }
 }
 
 class ImagePickerCellViewModel: ViewModel() {
@@ -298,7 +307,12 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
 
         val cellView: ImagePickerCellView = view.findViewById(R.id.report_image_picker_cell)
         cellView.toggleClickListener = object: ImagePickerCellView.ToggleClickListener {
-            override fun onClick(isChecked: Boolean) {
+            override fun onClick(button: ToggleButton, isChecked: Boolean) {
+                var isChecked = isChecked
+                if (isChecked && (viewModel.selectedCount.value ?: 0) >= ErikuraConst.maxOutputSummaries) {
+                    isChecked = false
+                    button.isChecked = false
+                }
                 onClickListener?.apply {
                     onClick(item, isChecked)
                 }
