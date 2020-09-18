@@ -50,7 +50,7 @@ class ErikuraApiServiceBuilder {
                 return@Interceptor chain.proceed(request)
             })
             // リクエストのログを有効にします
-            addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
+//            addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY })
             // タイムアウトを設定します
             readTimeout(300, TimeUnit.SECONDS)
             connectTimeout(30, TimeUnit.SECONDS)

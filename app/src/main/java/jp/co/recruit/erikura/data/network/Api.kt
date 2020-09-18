@@ -656,7 +656,6 @@ class Api(var context: Context) {
         }
 
         observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { response ->
                     if (response.isSuccessful) {
@@ -665,18 +664,24 @@ class Api(var context: Context) {
                                 IOUtils.copy(body.byteStream(), os)
                             }
                         }
-                        onComplete(destination)
+                        AndroidSchedulers.mainThread().scheduleDirect {
+                            onComplete(destination)
+                        }
                     }
                     else {
                         onError?.let {
-                            it(listOf("Download Error"))
+                            AndroidSchedulers.mainThread().scheduleDirect {
+                                it(listOf("Download Error"))
+                            }
                         }
                     }
                 },
                 onError = { e ->
                     Log.e("Download Error", e.message, e)
                     onError?.let {
-                        it(listOf(e.message ?: "Download Error"))
+                        AndroidSchedulers.mainThread().scheduleDirect {
+                            it(listOf(e.message ?: "Download Error"))
+                        }
                     }
                 }
             )
