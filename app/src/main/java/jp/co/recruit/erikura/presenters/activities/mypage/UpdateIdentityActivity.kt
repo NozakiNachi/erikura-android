@@ -78,7 +78,9 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         viewModel.fromWhere.value = fromWhere
         viewModel.lastName.value = user.lastName
         viewModel.firstName.value = user.firstName
-        viewModel.dateOfBirth.value = user.dateOfBirth
+        viewModel.dateOfBirth.value = user.parsedDateOfBirth?.let {
+            SimpleDateFormat("yyyy/MM/dd").format(it)
+        }
         viewModel.postalCode.value = user.postcode
         viewModel.city.value = user.city
         viewModel.street.value = user.street
@@ -129,7 +131,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         val dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
         calendar.time = dateOfBirth
         val dpd = DatePickerDialog(
-            this, onDateSetListener,
+            this@UpdateIdentityActivity, onDateSetListener,
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
