@@ -526,11 +526,6 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
-        result.addSource(fromSms) { sms ->
-            if (sms) {
-                result.value = View.GONE
-            }
-        }
     }
 
     val unconfirmedVisibility = MediatorLiveData<Int>().also { result ->
@@ -565,11 +560,6 @@ class ChangeUserInformationViewModel : ViewModel() {
                 }
             }
         }
-        result.addSource(fromSms) { sms ->
-            if (sms) {
-                result.value = View.GONE
-            }
-        }
     }
 
     val confirmedVisibility = MediatorLiveData<Int>().also { result ->
@@ -581,11 +571,6 @@ class ChangeUserInformationViewModel : ViewModel() {
                 else -> {
                     result.value = View.GONE
                 }
-            }
-        }
-        result.addSource(fromSms) { sms ->
-            if (sms) {
-                result.value = View.GONE
             }
         }
     }
@@ -602,11 +587,6 @@ class ChangeUserInformationViewModel : ViewModel() {
                 else -> {
                     result.value = View.GONE
                 }
-            }
-        }
-        result.addSource(fromSms) { sms ->
-            if (sms) {
-                result.value = View.GONE
             }
         }
     }
