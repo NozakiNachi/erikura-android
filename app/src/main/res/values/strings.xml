@@ -101,7 +101,7 @@
     <string name="upload_id_image_back_caption">※住所変更や氏名変更などにより、裏面記載事項がある場合は、裏面の写真も必要です。</string>
     <string name="upload_id_image_passport_face_page">顔写真記載ページ</string>
     <string name="upload_id_image_passport_writing_page">所持人記入欄ページ（最終ページ）</string>
-    <string name="upload_id_image_passport_writing_page_caption">※氏名・現住所を記入の上、撮影してください。</string>
+    <string name="upload_id_image_passport_writing_page_caption">※氏名・現住所を記入の上、撮影してください。\n所持人記入欄がないパスポートは使用できませんので、他の身分証を使用してください。</string>
     <string name="upload_id_image_my_number_front">表面（顔写真の面）</string>
     <string name="upload_id_image_my_number_caption">※通知カードは不可です。</string>
 
