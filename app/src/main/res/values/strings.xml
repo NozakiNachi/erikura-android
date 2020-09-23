@@ -511,7 +511,6 @@
     <!-- MEMO 身分証のitemの要素の数や順番を操作する場合はuploadIdImageも修正必須 -->
     <!-- 現在の要素番号を判定値として流用しているため -->
     <string-array name="identity_type_of_list">
-        <item>@string/please_select</item>
         <item>運転免許証</item>
         <item>運転経歴証明書</item>
         <item>健康保険証</item>
@@ -523,7 +522,6 @@
     </string-array>
 
     <string-array name="identity_type_of_id_list">
-        <item>@string/please_select</item>
         <item>drivers_license</item>
         <item>driving_history_certificate</item>
         <item>health_insurance_card</item>

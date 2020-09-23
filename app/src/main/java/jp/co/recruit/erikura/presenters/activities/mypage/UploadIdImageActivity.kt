@@ -36,9 +36,9 @@ import java.net.SocketTimeoutException
 
 class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     // 身分証種別の要素番号
-    private val driverLicenceElementNum = 1
-    private val passportElementNum = 4
-    private val myNumberElementNum = 5
+    private val driverLicenceElementNum = 0
+    private val passportElementNum = 3
+    private val myNumberElementNum = 4
 
     // 各画像のフィールド識別コード
     private val frontRequestCode = 1
@@ -528,7 +528,7 @@ class UploadIdImageViewModel : ViewModel() {
 
     // 身分証種別によって画像の数をバリデーション
     private fun isValidTypeOfId(): Boolean {
-        return !(typeOfId.value == 0 || typeOfId.value == null)
+        return !(typeOfId.value == null)
     }
 
     private fun isValidPhoto(): Boolean {
@@ -544,12 +544,6 @@ class UploadIdImageViewModel : ViewModel() {
             else -> {
                 return ((addBackPhotoButtonVisibility.value == View.GONE) && (otherPhotoBack.contentUri != null)
                         && (addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null))
-//                if (addBackPhotoButtonVisibility.value == View.GONE) {
-//                    //　裏面も選択されている場合
-//                    return ((otherPhotoBack.contentUri != null) && ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null)))
-//                } else {
-//                    return ((addFrontPhotoButtonVisibility.value == View.GONE) && (otherPhotoFront.contentUri != null))
-//                }
             }
         }
     }
