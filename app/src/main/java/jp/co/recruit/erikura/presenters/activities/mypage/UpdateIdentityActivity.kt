@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -41,6 +42,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         ViewModelProvider(this).get(UpdateIdentityViewModel::class.java)
     }
 
+    var previousPostalCode: String? = null
     // 都道府県のリスト
     val prefectureList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
@@ -90,6 +92,20 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         // 都道府県のプルダウン初期表示
         val id = getPrefectureId(user.prefecture ?: "")
         viewModel.prefectureId.value = id
+
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
+
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
+                }
+            }
+        })
 
     }
 
