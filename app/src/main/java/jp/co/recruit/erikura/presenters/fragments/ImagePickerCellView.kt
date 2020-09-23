@@ -33,14 +33,14 @@ class ImagePickerCellView : FrameLayout {
 
         toggleButton.setOnClickListener {
             toggleClickListener?.apply {
-                onClick(toggleButton.isChecked)
+                onClick(toggleButton, toggleButton.isChecked)
             }
         }
 
     }
 
     interface ToggleClickListener {
-        fun onClick(isChecked: Boolean)
+        fun onClick(button: ToggleButton, isChecked: Boolean)
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {

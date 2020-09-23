@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.MypageActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -677,7 +678,6 @@ class Api(var context: Context) {
         }
 
         observable.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { response ->
                     if (response.isSuccessful) {
@@ -686,18 +686,24 @@ class Api(var context: Context) {
                                 IOUtils.copy(body.byteStream(), os)
                             }
                         }
-                        onComplete(destination)
+                        AndroidSchedulers.mainThread().scheduleDirect {
+                            onComplete(destination)
+                        }
                     }
                     else {
                         onError?.let {
-                            it(listOf("Download Error"))
+                            AndroidSchedulers.mainThread().scheduleDirect {
+                                it(listOf("Download Error"))
+                            }
                         }
                     }
                 },
                 onError = { e ->
                     Log.e("Download Error", e.message, e)
                     onError?.let {
-                        it(listOf(e.message ?: "Download Error"))
+                        AndroidSchedulers.mainThread().scheduleDirect {
+                            it(listOf(e.message ?: "Download Error"))
+                        }
                     }
                 }
             )
@@ -875,6 +881,19 @@ class Api(var context: Context) {
                                                 context.startActivity(it)
                                             }
                                         }
+                                    }
+                                }
+                                404 -> {
+                                    (context as? FragmentActivity)?.also { activity ->
+                                        activity.finish()
+
+                                        Intent(context, MapViewActivity::class.java).let {
+                                            it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                            it.putStringArrayListExtra(ErikuraApplication.ERROR_MESSAGE_KEY, arrayListOf("該当の案件が存在しません"))
+                                            activity.startActivity(it)
+                                        }
+                                    } ?: run {
+                                        processError(listOf("該当の案件が存在しません"), onError)
                                     }
                                 }
                                 500 -> {

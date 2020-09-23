@@ -703,7 +703,13 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
     }
 
     override fun getItemCount(): Int {
-        return summaries.count() + 1
+        val count = summaries.count()
+        if (count < ErikuraConst.maxOutputSummaries) {
+            return count + 1
+        }
+        else {
+            return count
+        }
     }
 
     override fun onBindViewHolder(holder: ReportImageViewHolder, position: Int) {
@@ -722,7 +728,6 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
                 }
             }
         }
-
     }
 
     interface OnClickListener {

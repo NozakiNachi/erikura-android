@@ -76,6 +76,13 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
         super.onResume()
         Log.v("ERIKURA", "${this.javaClass.name}: onResume")
         currentActivity = this
+
+        intent.getStringArrayListExtra(ErikuraApplication.ERROR_MESSAGE_KEY)?.also {
+            intent.putStringArrayListExtra(ErikuraApplication.ERROR_MESSAGE_KEY, null)
+            if (it.isNotEmpty()) {
+                Api(this).displayErrorAlert(it.toList())
+            }
+        }
     }
 
     override fun onPause() {
