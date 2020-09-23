@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +13,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -22,6 +24,7 @@ import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUpdateIdentityBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
@@ -150,6 +153,24 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             dpd.datePicker.touchables[0].performClick()
         }
+    }
+
+    override fun onClickTermsOfService(view: View) {
+        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
+        val intent = Intent(this, WebViewActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(termsOfServiceURLString)
+        }
+        startActivity(intent)
+    }
+
+    override fun onClickPrivacyPolicy(view: View) {
+        val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + "/pdf/privacy_policy.pdf"
+        val intent = Intent(this, WebViewActivity::class.java).apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(privacyPolicyURLString)
+        }
+        startActivity(intent)
     }
 
     override fun onClickRegister(view: View) {
@@ -402,4 +423,6 @@ interface UpdateIdentityEventHandlers {
     fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
     fun onClickSkip(view: View)
+    fun onClickTermsOfService(view: View)
+    fun onClickPrivacyPolicy(view: View)
 }
