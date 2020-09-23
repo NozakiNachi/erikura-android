@@ -868,6 +868,7 @@ class Api(var context: Context) {
 
                                         Intent(context, MapViewActivity::class.java).let {
                                             it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                            it.putStringArrayListExtra(ErikuraApplication.ERROR_MESSAGE_KEY, arrayListOf("該当の案件が存在しません"))
                                             activity.startActivity(it)
                                         }
                                     } ?: run {

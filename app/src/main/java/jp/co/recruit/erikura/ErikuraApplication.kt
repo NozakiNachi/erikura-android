@@ -80,6 +80,9 @@ class ErikuraApplication : Application() {
         // 再認証画面の遷移元の定数
         const val REQUEST_RESIGHIN = 4
 
+        // 画面遷移後のエラーメッセージ表示
+        const val ERROR_MESSAGE_KEY = "errors"
+
         var versionAlertModal: AlertDialog? = null
     }
 
