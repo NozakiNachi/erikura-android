@@ -327,12 +327,13 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickUploadIdImage(view: View) {
+        val api = Api(this)
+        api.showProgressAlert()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "send_id_document", params= bundleOf())
         Tracking.trackUserId( "send_id_document",  user)
         // 身分証種別によってエンコードしてデータをセット
         // 各contentUriはバリデーションチェック済
-        val api = Api(this)
         when (viewModel.typeOfId.value) {
             passportElementNum -> {
                 //パスポートは２枚とも表面扱い
@@ -349,6 +350,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
         idDocument.type = identityTypeOfIdList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
+        api.hideProgressAlert()
         user.id?.let { userId ->
             try {
                 api.idVerify(userId, idDocument) { result ->
