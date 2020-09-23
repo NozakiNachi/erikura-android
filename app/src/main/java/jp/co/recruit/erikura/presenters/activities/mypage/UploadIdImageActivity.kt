@@ -426,6 +426,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                 //　会員情報変更画面へ遷移し、身分証確認完了モーダルを表示
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
                 finish()
             }
