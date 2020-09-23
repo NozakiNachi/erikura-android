@@ -75,15 +75,17 @@
                     android:text="@string/upload_id_image_kind" />
 
                 <Spinner
-                    android:id="@+id/registerAddress_prefecture"
+                    android:id="@+id/kind_of_id_list"
                     style="@style/spinnerField"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentTop="true"
                     android:layout_marginTop="10dp"
                     android:entries="@array/identity_type_of_list"
+                    android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onClickSpinner(view)}}"
                     android:selectedItemPosition="@={viewModel.typeOfId}"
-                    android:spinnerMode="dialog" />
+                    android:spinnerMode="dialog"
+                    />
 
                 <!-- パスポート、マイナンバーカード以外-->
                 <LinearLayout

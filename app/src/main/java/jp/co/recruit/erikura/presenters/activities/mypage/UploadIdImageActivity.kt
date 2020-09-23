@@ -376,6 +376,41 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
     }
 
+    override fun onClickSpinner(view: View) {
+        // 身分証の種別を選択する度に画像をリセットします
+
+        viewModel.otherPhotoFront = MediaItem()
+        val frontImageView: ImageView = findViewById(R.id.image_front)
+        frontImageView.setImageDrawable(null)
+        viewModel.addFrontPhotoButtonVisibility.value = View.VISIBLE
+        viewModel.removeFrontPhotoButtonVisibility.value = View.GONE
+
+
+        viewModel.otherPhotoBack = MediaItem()
+        val backImageView: ImageView = findViewById(R.id.image_back)
+        backImageView.setImageDrawable(null)
+        viewModel.addBackPhotoButtonVisibility.value = View.VISIBLE
+        viewModel.removeBackPhotoButtonVisibility.value = View.GONE
+
+        viewModel.otherPhotoPassportFront = MediaItem()
+        val passportFrontImageView: ImageView = findViewById(R.id.passport_front_image)
+        passportFrontImageView.setImageDrawable(null)
+        viewModel.addPassportFrontPhotoButtonVisibility.value = View.VISIBLE
+        viewModel.removePassportFrontPhotoButtonVisibility.value = View.GONE
+
+        viewModel.otherPhotoPassportBack = MediaItem()
+        val passportBackImageView: ImageView = findViewById(R.id.passport_back_image)
+        passportBackImageView.setImageDrawable(null)
+        viewModel.addPassportBackPhotoButtonVisibility.value = View.VISIBLE
+        viewModel.removePassportBackPhotoButtonVisibility.value = View.GONE
+
+        viewModel.otherPhotoMyNumber = MediaItem()
+        val myNumberImageView: ImageView = findViewById(R.id.my_number_image)
+        myNumberImageView.setImageDrawable(null)
+        viewModel.addMyNumberPhotoButtonVisibility.value = View.VISIBLE
+        viewModel.removeMyNumberPhotoButtonVisibility.value = View.GONE
+    }
+
     private fun resizeImage(item: MediaItem): ByteArray {
         var imageByteArray: ByteArray? = null
         // uriから読み込み用InputStreamを生成
@@ -580,6 +615,7 @@ interface UploadIdImageEventHandlers {
     fun onCLickRemovePassportFrontPhoto(view: View)
     fun onClickRemovePassportBackPhoto(view: View)
     fun onClickRemoveMyNumberPhoto(view: View)
+    fun onClickSpinner(view:View)
 
     // 送信イベント
     fun onClickUploadIdImage(view: View)
