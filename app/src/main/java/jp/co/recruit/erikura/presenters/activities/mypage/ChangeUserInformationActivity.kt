@@ -102,10 +102,11 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             user.id?.let { userId ->
                 api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, identifyComparingData ->
                     identifyStatus = status
+                    val sdf = SimpleDateFormat("yyyy/MM/dd")
                     // 身分確認状況を取得
                     if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE || identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED){
                         userName = identifyComparingData?.lastName + identifyComparingData?.firstName
-                        birthDay = identifyComparingData?.dateOfBirth
+                        birthDay = sdf.format(identifyComparingData?.dateOfBirth)
                         cityName = identifyComparingData?.city
                     }
                     loadData()

@@ -198,7 +198,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         // 入力された本人確認情報
         identifyComparingData.lastName = viewModel.lastName.value
         identifyComparingData.firstName = viewModel.firstName.value
-        identifyComparingData.dateOfBirth = viewModel.dateOfBirth.value
+        identifyComparingData.dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
         identifyComparingData.postcode = viewModel.postalCode.value
         identifyComparingData.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
         identifyComparingData.city = viewModel.city.value
