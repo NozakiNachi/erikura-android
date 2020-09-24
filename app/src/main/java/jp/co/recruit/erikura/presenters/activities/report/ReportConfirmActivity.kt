@@ -347,8 +347,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         }
     }
 
-
-
     private fun waitUpload() {
         val maxCount = 100
 
@@ -388,38 +386,39 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             }
         }
 
-        if (handler.paused) {
-            //アップロード中かつonPause状態の場合はダイアログの切り替えを行わない
-        } else {
-            observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeBy(
-                    onNext = { count ->
+        val result = observable.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(
+                onNext = { count ->
+                    if (!handler.paused) {
                         Log.d("Upload Next", count.toString())
                         uploadingDialog.dismiss()
                         if (!isCompletedUploadPhotos()) {
                             // 画像アップ不可モーダル表示
                             val failedDialog = UploadFailedDialogFragment().also {
-                                it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
-                                    override fun onClickRetryButton() {
-                                        it.dismiss()
-                                        retry()
-                                    }
+                                it.onClickListener =
+                                    object : UploadFailedDialogFragment.OnClickListener {
+                                        override fun onClickRetryButton() {
+                                            it.dismiss()
+                                            retry()
+                                        }
 
-                                    override fun onClickRemoveButton() {
-                                        it.dismiss()
-                                        // レポートを削除して案件詳細画面へ遷移します
-                                        removeAllContents()
+                                        override fun onClickRemoveButton() {
+                                            it.dismiss()
+                                            // レポートを削除して案件詳細画面へ遷移します
+                                            removeAllContents()
+                                        }
                                     }
-                                }
                             }
                             failedDialog.isCancelable = false
                             failedDialog.show(supportFragmentManager, "UploadFailed")
                         } else {
                             saveReport()
                         }
-                    },
-                    onError = { e ->
+                    }
+                },
+                onError = { e ->
+                    if (!handler.paused) {
                         Log.e("Upload Error", e.message, e)
                         uploadingDialog.dismiss()
                         // 画像アップ不可モーダル表示
@@ -440,8 +439,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         failedDialog.isCancelable = false
                         failedDialog.show(supportFragmentManager, "UploadFailed")
                     }
-                )
-        }
+                }
+            )
     }
 
     private fun updateProgress(): Pair<Int, Int> {
@@ -640,8 +639,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     }
 
     // 画像アップロード中のライフサイクルを保持するhandlerを生成
-    class UploadingPauseHandler : Handler() {
-
+    class UploadingPauseHandler {
         var paused: Boolean = false
         var activity: ReportConfirmActivity? = null
 
