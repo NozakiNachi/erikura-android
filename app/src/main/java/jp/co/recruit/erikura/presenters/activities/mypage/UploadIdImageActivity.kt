@@ -11,6 +11,8 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.util.Base64
 import android.util.Log
+import android.util.TypedValue
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import androidx.core.os.bundleOf
@@ -327,8 +329,20 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickUploadIdImage(view: View) {
+        // リサイズ中のスピナーをAPI経由で呼ぶと、誤差があるので直呼びしてます
+        var progressAlert: androidx.appcompat.app.AlertDialog? = null
+        progressAlert = androidx.appcompat.app.AlertDialog.Builder(this).apply {
+            setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null, false))
+            setCancelable(false)
+        }.create()
+
+        val dm = this.resources.displayMetrics
+        progressAlert?.show()
+        progressAlert?.window?.setLayout(
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
+            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
+
         val api = Api(this)
-        api.showProgressAlert()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "send_id_document", params= bundleOf())
         Tracking.trackUserId( "send_id_document",  user)
@@ -350,7 +364,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
         idDocument.type = identityTypeOfIdList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
-        api.hideProgressAlert()
+        progressAlert.dismiss()
         user.id?.let { userId ->
             try {
                 api.idVerify(userId, idDocument) { result ->
