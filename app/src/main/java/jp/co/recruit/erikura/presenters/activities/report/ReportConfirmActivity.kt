@@ -648,18 +648,14 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         fun resume() {
             if (paused) {
                 paused = false
-                processDisplayDialog ()
+
+                // 画像アップロード完了かアップロード中かチェック
+                activity?.checkPhotoToken()
             }
         }
 
         fun pause() {
             paused = true
-        }
-
-
-        fun processDisplayDialog () {
-            // 画像アップロード完了かアップロード中かチェック
-            activity?.checkPhotoToken()
         }
     }
 }
