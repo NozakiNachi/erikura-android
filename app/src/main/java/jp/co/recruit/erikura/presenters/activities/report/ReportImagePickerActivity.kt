@@ -31,6 +31,7 @@ import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
 import kotlin.collections.HashMap
 
@@ -312,6 +313,7 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                 if (isChecked && (viewModel.selectedCount.value ?: 0) >= ErikuraConst.maxOutputSummaries) {
                     isChecked = false
                     button.isChecked = false
+                    MessageUtils.displayAlert(activity, listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません"))
                 }
                 onClickListener?.apply {
                     onClick(item, isChecked)
