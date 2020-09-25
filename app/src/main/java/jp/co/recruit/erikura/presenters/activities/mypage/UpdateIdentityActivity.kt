@@ -121,11 +121,35 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     // 戻るボタンの制御
     override fun onBackPressed() {
         super.onBackPressed()
-        finish()
+        when (fromWhere) {
+            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+                // 元の画面へ iOSでは乗っかってる画面を消して
+                // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+            else -> {
+                finish()
+            }
+        }
     }
 
     override fun onClickClose(view: View) {
-        finish()
+        when (fromWhere) {
+            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+                // 元の画面へ iOSでは乗っかってる画面を消して
+                // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+                finish()
+            }
+            else -> {
+                finish()
+            }
+        }
     }
 
     // 生年月日
@@ -237,12 +261,12 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
                     }
                 }
             }
-            ErikuraApplication.FROM_CHANGE_USER -> {
-                // 元の画面へ
-                finish()
-            }
-            ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
-                // 元の画面へ
+            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+                // 元の画面へ iOSでは乗っかってる画面を消して
+                // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
+                val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
                 finish()
             }
             ErikuraApplication.FROM_ENTRY -> {
