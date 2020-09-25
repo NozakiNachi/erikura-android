@@ -6,8 +6,11 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -67,6 +70,23 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         if(errorMessages != null){
             Api(this).displayErrorAlert(errorMessages.asList())
         }
+
+        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
+            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
+                    viewModel.city.value = city
+                    viewModel.street.value = street
+
+                    if (user.postcode != viewModel.postalCode.value) {
+                        val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                        streetEditText.requestFocus()
+                    }
+                    user.postcode = viewModel.postalCode.value
+                }
+            }
+        })
+
         loadData()
 
     }
@@ -86,27 +106,25 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         viewModel.dateOfBirth.value = user.parsedDateOfBirth?.let {
             SimpleDateFormat("yyyy/MM/dd").format(it)
         }
+
         viewModel.postalCode.value = user.postcode
         viewModel.city.value = user.city
         viewModel.street.value = user.street
         // 都道府県のプルダウン初期表示
         val id = getPrefectureId(user.prefecture ?: "")
         viewModel.prefectureId.value = id
+    }
 
-        viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
-            if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
-                Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
-                    user.postcode = viewModel.postalCode.value
-                    viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
-                    viewModel.city.value = city
-                    viewModel.street.value = street
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
+            constraintLayout.requestFocus()
 
-                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                    streetEditText.requestFocus()
-                }
-            }
-        })
-
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun getPrefectureId(prefecture: String): Int {
