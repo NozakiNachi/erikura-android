@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.ExifInterface
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -55,6 +56,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
     private val realm: Realm get() = ErikuraApplication.realm
     lateinit var positions: Array<Int>
+    private val handler = UploadingPauseHandler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +114,22 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             // ページ参照のトラッキングの送出
             Tracking.logEvent(event= "view_edit_job_report_confirm", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/confirm/${job.id}", title= "作業報告編集確認画面", jobId= job.id)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        handler.activity = this
+        handler.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        // アップロード中にバックグラウンドになった場合
+        if (!isCompletedUploadPhotos()) {
+            handler.pause()
         }
     }
 
@@ -329,8 +347,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         }
     }
 
-
-
     private fun waitUpload() {
         val maxCount = 100
 
@@ -370,13 +386,41 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             }
         }
 
-        observable.subscribeOn(Schedulers.io())
+        val result = observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { count ->
-                    Log.d("Upload Next", count.toString())
-                    uploadingDialog.dismiss()
-                    if (!isCompletedUploadPhotos()) {
+                    if (!handler.paused) {
+                        Log.d("Upload Next", count.toString())
+                        uploadingDialog.dismiss()
+                        if (!isCompletedUploadPhotos()) {
+                            // 画像アップ不可モーダル表示
+                            val failedDialog = UploadFailedDialogFragment().also {
+                                it.onClickListener =
+                                    object : UploadFailedDialogFragment.OnClickListener {
+                                        override fun onClickRetryButton() {
+                                            it.dismiss()
+                                            retry()
+                                        }
+
+                                        override fun onClickRemoveButton() {
+                                            it.dismiss()
+                                            // レポートを削除して案件詳細画面へ遷移します
+                                            removeAllContents()
+                                        }
+                                    }
+                            }
+                            failedDialog.isCancelable = false
+                            failedDialog.show(supportFragmentManager, "UploadFailed")
+                        } else {
+                            saveReport()
+                        }
+                    }
+                },
+                onError = { e ->
+                    if (!handler.paused) {
+                        Log.e("Upload Error", e.message, e)
+                        uploadingDialog.dismiss()
                         // 画像アップ不可モーダル表示
                         val failedDialog = UploadFailedDialogFragment().also {
                             it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
@@ -394,30 +438,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         }
                         failedDialog.isCancelable = false
                         failedDialog.show(supportFragmentManager, "UploadFailed")
-                    } else {
-                        saveReport()
                     }
-                },
-                onError = { e ->
-                    Log.e("Upload Error", e.message, e)
-                    uploadingDialog.dismiss()
-                    // 画像アップ不可モーダル表示
-                    val failedDialog = UploadFailedDialogFragment().also {
-                        it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
-                            override fun onClickRetryButton() {
-                                it.dismiss()
-                                retry()
-                            }
-
-                            override fun onClickRemoveButton() {
-                                it.dismiss()
-                                // レポートを削除して案件詳細画面へ遷移します
-                                removeAllContents()
-                            }
-                        }
-                    }
-                    failedDialog.isCancelable = false
-                    failedDialog.show(supportFragmentManager, "UploadFailed")
                 }
             )
     }
@@ -615,6 +636,25 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         intent.putExtra("job", job)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
+    }
+
+    // 画像アップロード中のライフサイクルを保持するhandlerを生成
+    class UploadingPauseHandler {
+        var paused: Boolean = false
+        var activity: ReportConfirmActivity? = null
+
+        fun resume() {
+            if (paused) {
+                paused = false
+
+                // 画像アップロード完了かアップロード中かチェック
+                activity?.checkPhotoToken()
+            }
+        }
+
+        fun pause() {
+            paused = true
+        }
     }
 }
 

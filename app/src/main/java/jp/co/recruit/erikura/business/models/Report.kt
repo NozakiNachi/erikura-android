@@ -140,66 +140,60 @@ data class Report (
         val completable = Completable.fromAction {
             // 画像リサイズ処理
             item?.let {
-                try {
-                    item.uploading = true
-                    item.resizeImage(activity, 640, 640, onComplete = { resource: Bitmap ->
-                        // リサイズしたものをファイルに書き出しておきます
-                        val temp = File.createTempFile("resizedImage", "jpg", activity.cacheDir)
-                        val os = temp.outputStream()
-                        try {
-                            resource.compress(Bitmap.CompressFormat.JPEG, 90, os)
-                        }
-                        finally {
-                            os.closeQuietly()
-                        }
+                item.uploading = true
+                item.resizeImage(activity, 640, 640, onComplete = { resource: Bitmap ->
+                    // リサイズしたものをファイルに書き出しておきます
+                    val temp = File.createTempFile("resizedImage", "jpg", activity.cacheDir)
+                    val os = temp.outputStream()
+                    try {
+                        resource.compress(Bitmap.CompressFormat.JPEG, 90, os)
+                    }
+                    finally {
+                        os.closeQuietly()
+                    }
 
+                    // 画像アップロード処理
+                    Api(activity).imageUpload(item, temp, scheduler = Report.scheduler, onError = {
+                        if (temp.exists()) {
+                            temp.delete()
+                        }
+                        Log.e("Error in waiting upload", it.toString())
+                        item.uploading = false
+                        ErikuraApplication.instance.notifyUpload()
+                    }) { token ->
+                        if (temp.exists()) {
+                            temp.delete()
+                        }
+                        item.uploading = false
+                        onComplete(token)
+                        ErikuraApplication.instance.notifyUpload()
+                    }
+                }, onError = { e ->
+                    if (e != null) {
+                        Crashlytics.logException(e)
+                    }
+
+                    // エラーが発生した場合には、そのままの形でアップロードを行います
+                    try {
                         // 画像アップロード処理
-                        Api(activity).imageUpload(item, temp, scheduler = Report.scheduler, onError = {
-                            if (temp.exists()) {
-                                temp.delete()
-                            }
+                        Api(activity).imageUpload(item, activity, onError = {
                             Log.e("Error in waiting upload", it.toString())
                             item.uploading = false
                             ErikuraApplication.instance.notifyUpload()
                         }) { token ->
-                            if (temp.exists()) {
-                                temp.delete()
-                            }
                             item.uploading = false
                             onComplete(token)
                             ErikuraApplication.instance.notifyUpload()
                         }
-                    }, onError = { e ->
-                        if (e != null) {
-                            Crashlytics.logException(e)
-                        }
-
-                        // エラーが発生した場合には、そのままの形でアップロードを行います
-                        try {
-                            // 画像アップロード処理
-                            Api(activity).imageUpload(item, activity, onError = {
-                                Log.e("Error in waiting upload", it.toString())
-                                item.uploading = false
-                                ErikuraApplication.instance.notifyUpload()
-                            }) { token ->
-                                item.uploading = false
-                                onComplete(token)
-                                ErikuraApplication.instance.notifyUpload()
-                            }
-                            item.uploading = false
-                            ErikuraApplication.instance.notifyUpload()
-                        }
-                        catch(e: IOException) {
-                            Crashlytics.logException(e)
-                            item.uploading = false
-                            ErikuraApplication.instance.notifyUpload()
-                        }
-                    })
-                }
-                finally {
-                    item.uploading = false
-                    ErikuraApplication.instance.notifyUpload()
-                }
+                        item.uploading = false
+                        ErikuraApplication.instance.notifyUpload()
+                    }
+                    catch(e: IOException) {
+                        Crashlytics.logException(e)
+                        item.uploading = false
+                        ErikuraApplication.instance.notifyUpload()
+                    }
+                })
             }
         }
         completable.subscribeOn(Report.scheduler).subscribe()
