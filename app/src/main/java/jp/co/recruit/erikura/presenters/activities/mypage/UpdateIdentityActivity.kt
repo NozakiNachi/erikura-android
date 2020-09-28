@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -148,6 +149,12 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
                 startActivity(intent)
                 finish()
             }
+            ErikuraApplication.FROM_ENTRY -> {
+                //　応募経由の場合のみonActivityResultで画面を遷移
+                val intent = Intent()
+                setResult(RESULT_OK, intent)
+                finish()
+            }
             else -> {
                 finish()
             }
@@ -231,12 +238,14 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         identifyComparingData.street = viewModel.street.value
         intent.putExtra("identifyComparingData", identifyComparingData)
         intent.putExtra("user", user)
+        intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             intent.putExtra("job", job)
+            startActivityForResult(intent, ErikuraApplication.JOB_APPLY_BUTTON_REQUEST)
+        } else {
+            startActivity(intent)
+            finish()
         }
-        intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
-        startActivity(intent)
-        finish()
     }
 
     override fun onClickSkip(view: View) {
@@ -273,11 +282,28 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
             }
             ErikuraApplication.FROM_ENTRY -> {
                 // 仕事詳細へ遷移し応募確認ダイアログへ
-                val intent= Intent(this, JobDetailsActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.putExtra("fromIdentify", true)
-                intent.putExtra("job", job)
-                startActivity(intent)
+                val intent = Intent()
+                intent.putExtra("displayApplyDialog", true)
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val displayApplyDialog: Boolean? = data?.getBooleanExtra("displayApplyDialog", false)
+        if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+            if (displayApplyDialog == true) {
+                // 身分確認完了、あとで行う　の場合
+                val intent = Intent()
+                intent.putExtra("displayApplyDialog", true)
+                setResult(RESULT_OK, intent)
+                finish()
+            } else {
+                // 戻るボタンの場合
+                val intent = Intent()
+                setResult(RESULT_OK, intent)
                 finish()
             }
         }

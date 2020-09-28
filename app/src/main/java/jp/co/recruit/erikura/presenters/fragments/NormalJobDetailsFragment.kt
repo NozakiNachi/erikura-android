@@ -25,11 +25,9 @@ import kotlinx.android.synthetic.main.activity_upload_id_image.*
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
-        const val FROM_IDENTIFY = "fromIdentify"
-        fun newInstance(job: Job?, user: User?, fromIdentify: Boolean): NormalJobDetailsFragment {
+        fun newInstance(job: Job?, user: User?): NormalJobDetailsFragment {
             val args = Bundle()
             fillArguments(args, job, user)
-            args.putBoolean(FROM_IDENTIFY, fromIdentify)
 
             return NormalJobDetailsFragment().also {
                 it.arguments = args
@@ -51,15 +49,11 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var applyButton: ApplyButtonFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
     private var reportExamplesButton: ReportExamplesButtonFragment? = null
-    private var fromIdentify: Boolean = false
 
     constructor() : super()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let { args ->
-            this.fromIdentify = args.getBoolean(FROM_IDENTIFY)
-        }
     }
 
     override fun refresh(job: Job?, user: User?) {
@@ -86,9 +80,6 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        arguments?.let { args ->
-            this.fromIdentify = args.getBoolean(FROM_IDENTIFY)
-        }
         super.onCreateView(inflater, container, savedInstanceState)
 
         container?.removeAllViews()
@@ -134,15 +125,6 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_job_detail", params= bundleOf())
         Tracking.viewJobDetails(name= "/jobs/${job?.id?.toString() ?: ""}", title= "タスク詳細画面", jobId= job?.id ?: 0)
-        // 身分確認経由の場合応募確認ダイアログを表示する
-        arguments?.let { args ->
-            this.fromIdentify = args.getBoolean(FROM_IDENTIFY)
-        }
-        if (fromIdentify) {
-            val dialog = ApplyDialogFragment.newInstance(job)
-            dialog.show(childFragmentManager, "Apply")
-            fromIdentify = false
-        }
     }
 }
 

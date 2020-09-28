@@ -36,8 +36,8 @@ class UploadedIdImageActivity : BaseActivity(), UploadedIdImageEventHandlers {
     override fun onStart() {
         super.onStart()
         // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "view_user_verifications_completed", params= bundleOf())
-        Tracking.view( "/user/verifications/completed",  "身分証確認完了画面")
+        Tracking.logEvent(event = "view_user_verifications_completed", params = bundleOf())
+        Tracking.view("/user/verifications/completed", "身分証確認完了画面")
 
     }
 
@@ -64,12 +64,25 @@ class UploadedIdImageActivity : BaseActivity(), UploadedIdImageEventHandlers {
             }
             ErikuraApplication.FROM_ENTRY -> {
                 // 仕事詳細へ遷移し応募確認ダイアログへ
-                val intent = Intent(this, JobDetailsActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.putExtra("fromIdentify", true)
-                intent.putExtra("job", job)
-                startActivity(intent)
+                val intent = Intent()
+                intent.putExtra("displayApplyDialog", true)
+                setResult(RESULT_OK, intent)
                 finish()
+            }
+        }
+    }
+
+    // 戻るボタンの制御
+    override fun onBackPressed() {
+        when (fromWhere) {
+            //　応募経由の場合のみonActivityResultで画面を遷移
+            ErikuraApplication.FROM_ENTRY -> {
+                val intent = Intent()
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+            else -> {
+                super.onBackPressed()
             }
         }
     }

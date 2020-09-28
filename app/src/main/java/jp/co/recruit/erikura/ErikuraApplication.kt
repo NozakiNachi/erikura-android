@@ -93,6 +93,9 @@ class ErikuraApplication : Application() {
         const val FAILED_NEVER_APPROVED = 4
         const val FAILED_ONCE_APPROVED= 5
 
+        //身分証のリクエストコード
+        const val JOB_APPLY_BUTTON_REQUEST = 1
+
         // 身分証比較データの定数
         const val GET_COMPARING_DATA = true
         const val NOT_GET_COMPARING_DATA = false

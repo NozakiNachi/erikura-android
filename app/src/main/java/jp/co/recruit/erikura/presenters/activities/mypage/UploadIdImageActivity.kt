@@ -15,6 +15,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -212,15 +213,29 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
 
                 cursor?.close()
             }
+            fromGallery = true
         }
 
-        fromGallery = true
+        if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+            val displayApplyDialog: Boolean? = data?.getBooleanExtra("displayApplyDialog", false)
+            if (displayApplyDialog == true) {
+                // 身分確認完了、あとで行う　の場合
+                val intent = Intent()
+                intent.putExtra("displayApplyDialog", true)
+                setResult(RESULT_OK, intent)
+                finish()
+            } else {
+                // 戻るボタンの場合
+                val intent = Intent()
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+        }
 
     }
 
     // 戻るボタンの制御
     override fun onBackPressed() {
-        super.onBackPressed()
         when (fromWhere) {
             ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
                 // 元の画面へ iOSでは乗っかってる画面を消して
@@ -228,6 +243,12 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                 val intent = Intent(this, ChangeUserInformationActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
+                finish()
+            }
+            ErikuraApplication.FROM_ENTRY -> {
+                //　応募経由の場合のみonActivityResultで画面を遷移
+                val intent = Intent()
+                setResult(RESULT_OK, intent)
                 finish()
             }
             else -> {
@@ -270,11 +291,9 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
             }
             ErikuraApplication.FROM_ENTRY -> {
                 // 仕事詳細へ遷移し応募確認ダイアログへ
-                val intent = Intent(this, JobDetailsActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.putExtra("fromIdentify", true)
-                intent.putExtra("job", job)
-                startActivity(intent)
+                val intent = Intent()
+                intent.putExtra("displayApplyDialog", true)
+                setResult(RESULT_OK, intent)
                 finish()
             }
         }
@@ -499,8 +518,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                 val intent = Intent(this, UploadedIdImageActivity::class.java)
                 intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
                 intent.putExtra("job", job)
-                startActivity(intent)
-                finish()
+                startActivityForResult(intent, ErikuraApplication.JOB_APPLY_BUTTON_REQUEST)
             }
         }
     }

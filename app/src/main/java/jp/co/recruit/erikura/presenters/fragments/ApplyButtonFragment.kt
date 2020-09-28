@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ToggleButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -108,7 +109,8 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
                         intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_ENTRY)
                         intent.putExtra("user", user)
                         intent.putExtra("job", job)
-                        startActivity(intent)
+                        startActivityForResult(intent, ErikuraApplication.JOB_APPLY_BUTTON_REQUEST)
+//                        startActivity(intent)
                     }
                 }
             }
@@ -118,6 +120,17 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val displayApplyDialog: Boolean? = data?.getBooleanExtra("displayApplyDialog", false)
+        if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+            if (displayApplyDialog == true) {
+                // 身分確認完了、あとで行う　の場合は応募ダイアログを表示する
+                val dialog = ApplyDialogFragment.newInstance(job)
+                dialog.show(childFragmentManager, "Apply")
+            }
+        }
+    }
 }
 
 class ApplyButtonFragmentViewModel: ViewModel() {

@@ -21,7 +21,6 @@ class JobDetailsActivity : BaseActivity() {
     var fragment: BaseJobDetailFragment? = null
     var fromAppliedJobDetailsFragment: Boolean = false
     var fromWorkingJobDetailsFragment: Boolean = false
-    var fromIdentify: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -41,7 +40,6 @@ class JobDetailsActivity : BaseActivity() {
         // アラート表示
         fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
         fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
-        fromIdentify = intent.getBooleanExtra("fromIdentify", false)
 
         // 現時点での案件情報をもとに画面を構築します
         if (jobRestored) {
@@ -65,8 +63,6 @@ class JobDetailsActivity : BaseActivity() {
             }
             Log.v("DEBUG", job.toString())
 
-            // 身分確認からの場合
-            fromIdentify = intent.getBooleanExtra("fromIdentify", false)
             // アラート表示
             fromAppliedJobDetailsFragment = intent.getBooleanExtra("onClickStart", false)
             fromWorkingJobDetailsFragment = intent.getBooleanExtra("onClickCancelWorking", false)
@@ -133,11 +129,6 @@ class JobDetailsActivity : BaseActivity() {
         }
         else if (job.id == renderedJobId && job.status == renderedJobStatus) {
             fragment?.refresh(job, user)
-            // intentを受け取ってfromIdentifyが更新されている可能性があるので身分確認のフラグも更新する
-            fragment?.arguments?.let { args ->
-                args.putBoolean("fromIdentify", fromIdentify)
-                fromIdentify = false
-            }
         }
         else {
             val transaction = supportFragmentManager.beginTransaction()
@@ -145,7 +136,7 @@ class JobDetailsActivity : BaseActivity() {
             // jobのステータスで挿しこむフラグメントを変更します
             when (job.status) {
                 JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user, fromIdentify)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user)
                 }
                 JobStatus.Applied -> {
                     fragment = AppliedJobDetailsFragment.newInstance(job, user)
@@ -160,7 +151,7 @@ class JobDetailsActivity : BaseActivity() {
                     fragment = ReportedJobDetailsFragment.newInstance(job, user)
                 }
                 else -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user, fromIdentify)
+                    fragment = NormalJobDetailsFragment.newInstance(job, user)
                 }
             }
             // fragmentの更新
