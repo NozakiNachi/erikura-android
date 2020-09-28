@@ -75,17 +75,19 @@
 
                         <!-- 会員情報変更の(身分確認経由)の場合非表示 変更リンクからだと表示-->
                         <TextView
+                            style="@style/label_w2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
                             android:textSize="18dp"
                             android:textColor="@color/black"
                             android:text="@{viewModel.updateIdentityCaption1}"
                             android:visibility="@{viewModel.caption1Visibility}" />
 
                         <TextView
+                            style="@style/label_w2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
                             android:textSize="18dp"
                             android:textColor="@color/black"
                             android:text="@string/update_identity_caption2" />
