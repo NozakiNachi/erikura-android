@@ -154,22 +154,6 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         }
     }
 
-    override fun onClickClose(view: View) {
-        when (fromWhere) {
-            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
-                // 元の画面へ iOSでは乗っかってる画面を消して
-                // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                finish()
-            }
-            else -> {
-                finish()
-            }
-        }
-    }
-
     // 生年月日
     override fun onClickBirthdayEditView(view: View) {
         Log.v("EditView", "EditTextTapped!")
@@ -478,7 +462,6 @@ class UpdateIdentityViewModel: ViewModel() {
 }
 
 interface UpdateIdentityEventHandlers {
-    fun onClickClose(view:View)
     fun onClickBirthdayEditView(view: View)
     fun onClickRegister(view: View)
     fun onClickSkip(view: View)

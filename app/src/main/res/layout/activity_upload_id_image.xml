@@ -31,23 +31,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <ImageButton
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="60dp"
-                    android:background="#00000000"
-                    android:src="@drawable/cross_3x"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:onSafeClick="@{handlers.onClickClose}" />
 
                 <TextView
                     style="@style/label_w2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="60dp"
                     android:layout_marginRight="20dp"
                     android:text="@string/upload_id_image"
                     android:textColor="@color/black"
