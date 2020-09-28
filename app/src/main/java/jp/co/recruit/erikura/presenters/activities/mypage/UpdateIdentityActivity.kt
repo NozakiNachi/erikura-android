@@ -290,6 +290,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
             ErikuraApplication.FROM_ENTRY -> {
                 // 仕事詳細へ遷移し応募確認ダイアログへ
                 val intent= Intent(this, JobDetailsActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("fromIdentify", true)
                 intent.putExtra("job", job)
                 startActivity(intent)
