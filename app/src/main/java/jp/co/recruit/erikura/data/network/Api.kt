@@ -139,7 +139,8 @@ class Api(var context: Context) {
         ) { body ->
             val calendar = Calendar.getInstance()
             calendar.time = Date()
-            calendar.add(Calendar.SECOND, 10 * 60)
+            // 再認証まで60分
+            calendar.add(Calendar.SECOND, 60 * 60)
             val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = calendar.time)
             //再認証に来る場合、SMS認証画面を遷移してきたのでtrue
             session.smsVerifyCheck = true
