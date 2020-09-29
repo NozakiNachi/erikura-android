@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.ExifInterface
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +55,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
     private val realm: Realm get() = ErikuraApplication.realm
     lateinit var positions: Array<Int>
-    private val handler = UploadingPauseHandler()
+    private val handler = UploadingPauseHandler(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,8 +118,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
     override fun onResume() {
         super.onResume()
-
-        handler.activity = this
         handler.resume()
     }
 
@@ -128,9 +125,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         super.onPause()
 
         // アップロード中にバックグラウンドになった場合
-        if (!isCompletedUploadPhotos()) {
-            handler.pause()
-        }
+        handler.pause()
     }
 
     override fun onClickComplete(view: View) {
@@ -386,11 +381,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             }
         }
 
+        handler.startUploadingCheck()
         val result = observable.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
                 onNext = { count ->
-                    if (!handler.paused) {
+                    handler.finishUploadingCheck()
+                    if (!handler.isPaused) {
                         Log.d("Upload Next", count.toString())
                         uploadingDialog.dismiss()
                         if (!isCompletedUploadPhotos()) {
@@ -418,7 +415,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                     }
                 },
                 onError = { e ->
-                    if (!handler.paused) {
+                    handler.finishUploadingCheck()
+                    if (!handler.isPaused) {
                         Log.e("Upload Error", e.message, e)
                         uploadingDialog.dismiss()
                         // 画像アップ不可モーダル表示
@@ -639,21 +637,49 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     }
 
     // 画像アップロード中のライフサイクルを保持するhandlerを生成
-    class UploadingPauseHandler {
-        var paused: Boolean = false
-        var activity: ReportConfirmActivity? = null
+    class UploadingPauseHandler(val activity: ReportConfirmActivity?) {
+        // アップロードチェック処理が動いているか
+        private var inUploadingCheck: Boolean = false
+        private var paused: Boolean = false
+        private var checkTokenRequired: Boolean = false
+
+        val isPaused: Boolean get() = paused
+
+        fun startUploadingCheck() {
+            synchronized(this) {
+                inUploadingCheck = true
+            }
+        }
+
+        fun finishUploadingCheck() {
+            synchronized(this) {
+                inUploadingCheck = false
+            }
+        }
 
         fun resume() {
-            if (paused) {
-                paused = false
-
-                // 画像アップロード完了かアップロード中かチェック
-                activity?.checkPhotoToken()
+            paused = false
+            synchronized(this) {
+                // inUploadingCheck = true の場合、再開後にアップロードチェックの結果が決まるので再チェックは不要
+                // checkTokenRequired = false の場合、pause されたタイミングでアップロードチェックを行っていないので再チェックは不要
+                if (!inUploadingCheck && checkTokenRequired) {
+                    activity?.checkPhotoToken()
+                }
             }
+            // 念の為に再チェック必要フラグはクリアします
+            checkTokenRequired = false
         }
 
         fun pause() {
             paused = true
+            synchronized(this) {
+                // 念の為に再チェック必要フラグはクリアします
+                checkTokenRequired = false
+                if (inUploadingCheck) {
+                    // アップロードチェック中であれば、再開時にトークンチェック処理が必要と判断します
+                    checkTokenRequired = true
+                }
+            }
         }
     }
 }
