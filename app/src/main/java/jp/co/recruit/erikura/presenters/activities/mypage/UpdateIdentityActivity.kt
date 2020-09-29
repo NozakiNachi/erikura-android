@@ -47,6 +47,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     }
 
     var previousPostalCode: String? = null
+
     // 都道府県のリスト
     val prefectureList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
@@ -54,7 +55,8 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         user = intent.getParcelableExtra("user")
-        fromWhere = intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
+        fromWhere =
+            intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
         // 応募経由の場合、スキップ、または認証後にjobが必要
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             job = intent.getParcelableExtra("job")
@@ -68,22 +70,20 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
-        if(errorMessages != null){
+        if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
         }
 
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
             if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
                 Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
+                    user.postcode = viewModel.postalCode.value
                     viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
                     viewModel.city.value = city
                     viewModel.street.value = street
 
-                    if (user.postcode != viewModel.postalCode.value) {
-                        val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
-                        streetEditText.requestFocus()
-                    }
-                    user.postcode = viewModel.postalCode.value
+                    val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
+                    streetEditText.requestFocus()
                 }
             }
         })
@@ -95,8 +95,8 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     override fun onStart() {
         super.onStart()
         // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "view_user_comparing_data", params= bundleOf())
-        Tracking.view( "/user/verifications/comparing_data",  "本人確認情報入力画面")
+        Tracking.logEvent(event = "view_user_comparing_data", params = bundleOf())
+        Tracking.view("/user/verifications/comparing_data", "本人確認情報入力画面")
     }
 
     // 表示する画面の初期化
@@ -108,6 +108,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
             SimpleDateFormat("yyyy/MM/dd").format(it)
         }
 
+        previousPostalCode = user.postcode
         viewModel.postalCode.value = user.postcode
         viewModel.city.value = user.city
         viewModel.street.value = user.street
@@ -119,10 +120,12 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val view = this.currentFocus
         if (view != null) {
-            val constraintLayout = findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
+            val constraintLayout =
+                findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
             constraintLayout.requestFocus()
 
-            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
@@ -180,7 +183,8 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
             }
 
         val calendar = Calendar.getInstance()
-        val dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        val dateOfBirth =
+            DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
         calendar.time = dateOfBirth
         val dpd = DatePickerDialog(
             this@UpdateIdentityActivity, onDateSetListener,
@@ -224,16 +228,18 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
     override fun onClickRegister(view: View) {
         // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "send_comparing_data", params= bundleOf())
-        Tracking.trackUserId( "send_comparing_data",  user)
+        Tracking.logEvent(event = "send_comparing_data", params = bundleOf())
+        Tracking.trackUserId("send_comparing_data", user)
         // 身元確認画面へ遷移する
         val intent = Intent(this, UploadIdImageActivity::class.java)
         // 入力された本人確認情報
         identifyComparingData.lastName = viewModel.lastName.value
         identifyComparingData.firstName = viewModel.firstName.value
-        identifyComparingData.dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        identifyComparingData.dateOfBirth =
+            DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
         identifyComparingData.postcode = viewModel.postalCode.value
-        identifyComparingData.prefecture = prefectureList.getString(viewModel.prefectureId.value ?: 0)
+        identifyComparingData.prefecture =
+            prefectureList.getString(viewModel.prefectureId.value ?: 0)
         identifyComparingData.city = viewModel.city.value
         identifyComparingData.street = viewModel.street.value
         intent.putExtra("identifyComparingData", identifyComparingData)
@@ -250,10 +256,10 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
     override fun onClickSkip(view: View) {
         // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "skip_user_verifications_comparing_data", params= bundleOf())
-        Tracking.trackUserId( "skip_user_verifications_comparing_data",  user)
+        Tracking.logEvent(event = "skip_user_verifications_comparing_data", params = bundleOf())
+        Tracking.trackUserId("skip_user_verifications_comparing_data", user)
         //遷移元によって遷移先を切り分ける
-        when(fromWhere) {
+        when (fromWhere) {
             ErikuraApplication.FROM_REGISTER -> {
                 // 地図画面へ
                 if (ErikuraApplication.instance.isOnboardingDisplayed()) {
@@ -262,11 +268,11 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(intent)
                     finish()
-                }
-                else {
+                } else {
                     // 位置情報の許諾、オンボーディングを表示します
                     Intent(this, PermitLocationActivity::class.java).let { intent ->
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         finish()
                     }
@@ -311,16 +317,19 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
 }
 
-class UpdateIdentityViewModel: ViewModel() {
+class UpdateIdentityViewModel : ViewModel() {
     // 遷移元
     val fromWhere: MutableLiveData<Int> = MutableLiveData()
+
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
     val lastNameError: ErrorMessageViewModel = ErrorMessageViewModel()
     val firstName: MutableLiveData<String> = MutableLiveData()
     val firstNameError: ErrorMessageViewModel = ErrorMessageViewModel()
+
     // 生年月日
     val dateOfBirth: MutableLiveData<String> = MutableLiveData()
+
     // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeError: ErrorMessageViewModel = ErrorMessageViewModel()
@@ -329,6 +338,7 @@ class UpdateIdentityViewModel: ViewModel() {
     val cityError: ErrorMessageViewModel = ErrorMessageViewModel()
     val street: MutableLiveData<String> = MutableLiveData()
     val streetError: ErrorMessageViewModel = ErrorMessageViewModel()
+
     // 登録ボタン押下
     val isChangeButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(lastName) { result.value = isValid() }
@@ -339,20 +349,24 @@ class UpdateIdentityViewModel: ViewModel() {
         result.addSource(city) { result.value = isValid() }
         result.addSource(street) { result.value = isValid() }
     }
+
     // テキスト
     var updateIdentityCaption1 = MediatorLiveData<String>().also { result ->
         result.addSource(fromWhere) { from ->
             //応募経由の場合、会員情報変更から入力値の変更経由の場合
-            when(from) {
+            when (from) {
                 ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
-                    result.value = ErikuraApplication.instance.getString(R.string.update_identity_caption1_from_change)
+                    result.value =
+                        ErikuraApplication.instance.getString(R.string.update_identity_caption1_from_change)
                 }
                 ErikuraApplication.FROM_ENTRY -> {
-                    result.value = ErikuraApplication.instance.getString(R.string.update_identity_caption1_from_entry)
+                    result.value =
+                        ErikuraApplication.instance.getString(R.string.update_identity_caption1_from_entry)
                 }
             }
         }
     }
+
     // 各visibility
     var captionBlockVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(fromWhere) { from ->
