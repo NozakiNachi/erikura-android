@@ -30,7 +30,8 @@ class JobDetailsActivity : BaseActivity() {
         var jobRestored: Boolean = false
         val value = intent.getParcelableExtra<Job>("job")
         if (value != null) {
-            jobRestored = true
+            // FDL経由で来た時はfalseが入っている
+            jobRestored = intent.getBooleanExtra("jobRestored", true)
             job = value
         } else {
             handleIntent(intent)
@@ -55,7 +56,8 @@ class JobDetailsActivity : BaseActivity() {
         intent?.let { intent ->
             val value = intent.getParcelableExtra<Job>("job")
             if (value != null) {
-                jobRestored = true
+                // FDL経由で来た時はfalseが入っている
+                jobRestored = intent.getBooleanExtra("jobRestored", true)
                 job = value
                 ErikuraApplication.instance.currentJob = job
             } else {
