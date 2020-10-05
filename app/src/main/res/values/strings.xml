@@ -71,11 +71,47 @@
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
+    <string name="registerFinished_recommend">お仕事への応募までに身分証のご提出をお願いしております。完了まで最長数日かかるため、事前の身分証確認をおすすめします。</string>
 
     <!-- 会員情報変更成功モーダル -->
     <string name="change_user_information_success">会員情報を更新しました</string>
     <string name="change_user_information_other_than_phone_success">会員情報を更新しました\n※電話番号は携帯電話番号認証後に更新します</string>
     <string name="change_user_information_only_phone_success">電話番号を更新しました</string>
+
+    <!-- 会員情報変更画面-->
+    <string name="unconfirmed_identification_explain">身分証未確認の項目あり</string>
+    <string name="recommend_identification">お仕事への応募までに身分証のご提出をお願いしております。完了まで最長数日かかるため、事前の身分証確認をおすすめします。</string>
+    <string name="change"><a href="">変更</a></string>
+    <string name="confirmed_identification">身分証確認済み</string>
+    <string name="confirming_identification">※身分証確認中：</string>
+    <string name="unconfirmed_identification">※身分証未確認</string>
+    <string name="denied_identification">※身分証確認失敗：</string>
+    
+    <!-- 本人確認情報入力画面-->
+    <string name="update_identity_caption1_from_entry">お仕事への応募にあたり、身分証の確認の実施をお願いしております。</string>
+    <string name="update_identity_caption1_from_change">こちらの項目を更新する際には身分証の確認の実施をお願いしております。</string>
+    <string name="update_identity_caption2">身分証確認にあたり、下記が身分証の内容と異なる場合は身分証と一致する情報を入力してください。</string>
+
+    <!-- 身分証確認画面-->
+    <string name="upload_id_image">身分証確認</string>
+    <string name="upload_id_image_caption">身分証確認にあたり、身分証のご提出をお願いしております。\n\n下記のいずれかの写真をお送りください。\n運転免許証／運転経歴証明書／健康保険証／パスポート／マイナンバーカード／住民基本台帳カード／在留カード／特別永住者証明書</string>
+    <string name="upload_id_image_kind">身分証の種別</string>
+    <string name="upload_id_image_front">表面</string>
+    <string name="upload_id_image_back">裏面</string>
+    <string name="upload_id_image_back_caption">※住所変更や氏名変更などにより、裏面記載事項がある場合は、裏面の写真も必要です。</string>
+    <string name="upload_id_image_passport_face_page">顔写真記載ページ</string>
+    <string name="upload_id_image_passport_writing_page">所持人記入欄ページ（最終ページ）</string>
+    <string name="upload_id_image_passport_writing_page_caption">※氏名・現住所を記入の上、撮影してください。\n所持人記入欄がないパスポートは使用できませんので、他の身分証を使用してください。</string>
+    <string name="upload_id_image_my_number_front">表面（顔写真の面）</string>
+    <string name="upload_id_image_my_number_caption">※通知カードは不可です。</string>
+
+    <!-- 身分証確認完了画面-->
+    <string name="uploaded_id_image">身分証を送信しました！</string>
+    <string name="uploaded_id_image_caption">内容の確認完了まで数分〜数日をいただいております。確認が完了しましたらメールにてご連絡いたします。\n\n確認が完了すると、ご入力いただいた内容がプロフィールに反映されます。</string>
+
+    <!-- 身分証確認エラーモーダル-->
+    <string name="failed_upload_id_image_title">身分証確認の実施に失敗しました</string>
+    <string name="failed_upload_id_image_sentence">時間をおいて再実施をお願いいたします。</string>
 
     <!-- 口座情報登録成功モーダル -->
     <string name="register_account_success">口座情報を登録しました</string>
@@ -361,6 +397,12 @@
     <string name="remove_all_contents">入力内容をすべて破棄</string>
     <string name="bank_registration">口座情報登録</string>
     <string name="authenticate">認証</string>
+    <string name="first_search_job">先に仕事を探す</string>
+    <string name="first_confirm_identification">先に身分証確認を行う</string>
+    <string name="confirm_identification">身分証確認を行う</string>
+    <string name="send_identity">入力内容を送る</string>
+    <string name="after_identify"><a href="">あとで行う</a></string>
+    <string name="send_id_image">写真を送る</string>
 
     <!-- プレースホルダ -->
     <string name="email_hint">sample@erikura.net</string>
@@ -464,6 +506,32 @@
         <item>self_employed</item>
         <item>other_job</item>
     </string-array>
+
+    <!-- 身分証種別 -->
+    <!-- MEMO 身分証のitemの要素の数や順番を操作する場合はuploadIdImageも修正必須 -->
+    <!-- 現在の要素番号を判定値として流用しているため -->
+    <string-array name="identity_type_of_list">
+        <item>運転免許証</item>
+        <item>運転経歴証明書</item>
+        <item>健康保険証</item>
+        <item>パスポート</item>
+        <item>マイナンバーカード</item>
+        <item>住民基本台帳カード</item>
+        <item>在留カード</item>
+        <item>特別永住者証明書</item>
+    </string-array>
+
+    <string-array name="identity_type_of_id_list">
+        <item>drivers_license</item>
+        <item>driving_history_certificate</item>
+        <item>health_insurance_card</item>
+        <item>passport</item>
+        <item>individual_number_card</item>
+        <item>basic_resident_registration_card</item>
+        <item>residence_card</item>
+        <item>special_permanent_resident_certificate</item>
+    </string-array>
+
 
     <!-- 作業後の状態 -->
     <string name="bad">異常あり、未対応</string>

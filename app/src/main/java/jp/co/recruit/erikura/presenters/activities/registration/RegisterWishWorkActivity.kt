@@ -94,18 +94,24 @@ class RegisterWishWorkActivity : BaseActivity(),
                 user = data.getParcelableExtra("user")
             }
             //ユーザー登録API呼び出し
-            Api(this).initialUpdateUser(user) {
-                Log.v("DEBUG", "ユーザ登録： userSEssion=${it}")
-                // 登録完了画面へ遷移
-                val intent: Intent = Intent(this, RegisterFinishedActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
-                finish()
+            val api = Api(this)
+            api.initialUpdateUser(user) { userSession->
+                Log.v("DEBUG", "ユーザ登録： userSession=${userSession}")
+                // 登録したuser情報がセッションから取れないのでセッションのuserIdからuserを再取得します
+                api.user() {
+                    user = it
+                    // 登録完了画面へ遷移
+                    val intent: Intent = Intent(this, RegisterFinishedActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    intent.putExtra("user", user)
+                    startActivity(intent)
+                    finish()
 
-                // 登録完了のトラッキングの送出
-                Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", it.userId)))
-                Tracking.identify(user = user, status = "login")
-                Tracking.logCompleteRegistrationEvent()
+                    // 登録完了のトラッキングの送出
+                    Tracking.logEvent(event = "signup", params = bundleOf(Pair("user_id", user.id)))
+                    Tracking.identify(user = user, status = "login")
+                    Tracking.logCompleteRegistrationEvent()
+                }
             }
         }
     }

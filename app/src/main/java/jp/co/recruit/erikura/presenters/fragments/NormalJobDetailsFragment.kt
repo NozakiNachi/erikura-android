@@ -19,7 +19,9 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
+import kotlinx.android.synthetic.main.activity_upload_id_image.*
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
@@ -49,6 +51,10 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var reportExamplesButton: ReportExamplesButtonFragment? = null
 
     constructor() : super()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)

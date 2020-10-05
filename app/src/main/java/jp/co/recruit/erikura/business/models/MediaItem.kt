@@ -17,6 +17,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.CustomTarget
+import jp.co.recruit.erikura.ErikuraApplication
 import com.bumptech.glide.request.target.Target
 import jp.co.recruit.erikura.business.util.UrlUtils
 import kotlinx.android.parcel.Parcelize
@@ -280,6 +281,27 @@ data class MediaItem(
                     transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
                 ) {
                     onComplete(resource)
+                }
+            })
+    }
+
+    fun resizeIdentifyImage(context: Context, imageHeight: Int, imageWidth: Int, onComplete: (bytes: ByteArray) -> Unit) {
+        Glide.with(context)
+            .asBitmap()
+            .load(contentUri)
+            .override(imageWidth, imageHeight)
+            .into(object : CustomTarget<Bitmap>(imageWidth, imageHeight) {
+                override fun onLoadCleared(placeholder: Drawable?) {}
+
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: com.bumptech.glide.request.transition.Transition<in Bitmap>?
+                ) {
+                    val outputStream = ByteArrayOutputStream()
+                    resource.compress(Bitmap.CompressFormat.JPEG, ErikuraApplication.ID_IMAGE_QUALITY, outputStream)
+                    outputStream.close()
+                    val bytes: ByteArray = outputStream.toByteArray()
+                    onComplete(bytes)
                 }
             })
     }

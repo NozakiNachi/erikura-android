@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
@@ -35,6 +36,11 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     var previousPostalCode: String? = null
     var requestCode: Int? = null
     var fromSms: Boolean = false
+    var identifyStatus: Int? = null
+    var userName: String? = null
+    var birthDay: String? = null
+    var cityName: String? = null
+    var fromWhere: Int? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -67,6 +73,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         fromSms = intent.getBooleanExtra("fromSms", false)
+        fromWhere = intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -89,9 +96,30 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
 
         // 変更するユーザーの現在の登録値を取得
-        Api(this).user() {
+        val api = Api(this)
+        api.user() {
             user = it
-            loadData()
+            user.id?.let { userId ->
+                api.showIdVerifyStatus(userId, ErikuraApplication.GET_COMPARING_DATA) { status, identifyComparingData ->
+                    identifyStatus = status
+                    val sdf = SimpleDateFormat("yyyy/MM/dd")
+                    // 身分確認状況を取得
+                    if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE || identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED){
+                        userName = identifyComparingData?.lastName + identifyComparingData?.firstName
+                        birthDay = sdf.format(identifyComparingData?.dateOfBirth)
+                        cityName = identifyComparingData?.city
+                    }
+                    loadData()
+                }
+            }
+        }
+        // 身分証送信経由の場合、完了ダイアログを表示
+        if (fromWhere == ErikuraApplication.FROM_CHANGE_USER || fromWhere == ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO) {
+            val dialog = AlertDialog.Builder(this)
+                .setView(R.layout.dialog_uploaded_id_image)
+                .setCancelable(true)
+                .create()
+            dialog.show()
         }
     }
 
@@ -297,6 +325,31 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
     }
 
+    override fun onClickUpdateIdentity(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_identity_verification_edit_profile", params= bundleOf())
+        Tracking.trackUserId( "push_identity_verification_edit_profile",  user)
+        // 本人確認情報入力画面へ遷移
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
+        intent.putExtra("user", user)
+        // 会員情報から遷移
+        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_CHANGE_USER)
+        startActivity(intent)
+    }
+
+    override fun onClickUpdateIdentityForChangeInfo(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "push_identity_verification_edit_link", params= bundleOf())
+        Tracking.trackUserId( "push_identity_verification_edit_link",  user)
+
+        //本人確認情報入力画面へ遷移
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
+        intent.putExtra("user", user)
+        // 会員情報(変更リンク)から遷移
+        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO)
+        startActivity(intent)
+    }
+
     // データの読み込み
     private fun loadData() {
         viewModel.email.value = user.email
@@ -334,6 +387,23 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             else -> {
                 viewModel.female.value = true
             }
+        }
+
+            viewModel.identifyStatus.value = identifyStatus
+            viewModel.fromSms.value = fromSms
+
+        //確認中、否認の場合比較データを表示する
+        if(identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE) {
+                // 確認中の場合表示する氏名、生年月日、住所を取得
+                viewModel.confirmingUserName.value = getString(R.string.confirming_identification) + userName
+                viewModel.confirmingCityName.value = getString(R.string.confirming_identification) + cityName
+                viewModel.confirmingBirthDay.value = getString(R.string.confirming_identification) + birthDay
+        }
+        if(identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED) {
+            // 失敗した氏名、生年月日、住所を取得
+            viewModel.deniedUserName.value = getString(R.string.denied_identification) + userName
+            viewModel.deniedCityName.value = getString(R.string.denied_identification) + cityName
+            viewModel.deniedBirthDay.value = getString(R.string.denied_identification) + birthDay
         }
     }
 
@@ -433,6 +503,132 @@ class ChangeUserInformationViewModel : ViewModel() {
         result.addSource(interestedWalk) { result.value = isValid() }
         result.addSource(interestedBicycle) { result.value = isValid() }
         result.addSource(interestedCar) { result.value = isValid() }
+    }
+
+    // 身分確認
+    val identifyStatus: MutableLiveData<Int> = MutableLiveData()
+    val fromSms: MutableLiveData<Boolean> = MutableLiveData()
+    val confirmingUserName: MutableLiveData<String> = MutableLiveData()
+    val confirmingBirthDay: MutableLiveData<String> = MutableLiveData()
+    val confirmingCityName: MutableLiveData<String> = MutableLiveData()
+    val deniedUserName: MutableLiveData<String> = MutableLiveData()
+    val deniedBirthDay: MutableLiveData<String> = MutableLiveData()
+    val deniedCityName: MutableLiveData<String> = MutableLiveData()
+
+
+    val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val unconfirmedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                ErikuraApplication.FAILED_NEVER_APPROVED -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
+    }
+
+    val confirmingVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_CONFIRMING_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val confirmedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_CONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val deniedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.FAILED_NEVER_APPROVED -> {
+                    result.value = View.VISIBLE
+                }
+                ErikuraApplication.FAILED_ONCE_APPROVED -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+
+    val changeVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            if (isConfirmingOrConfirmed(status)) {
+                result.value = View.VISIBLE
+            } else {
+                result.value = View.GONE
+            }
+        }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
+    }
+
+    val inputIdentityInfoEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            result.value = !(isConfirmingOrConfirmed(status))
+        }
+    }
+
+    //確認中と確認済と否認（確認済）の場合 true
+    private fun isConfirmingOrConfirmed(status: Int) : Boolean{
+        var isConfirmingOrConfirmed = false
+        when (status) {
+            ErikuraApplication.ID_CONFIRMING_CODE -> {
+                isConfirmingOrConfirmed = true
+            }
+            ErikuraApplication.ID_CONFIRMED_CODE -> {
+                isConfirmingOrConfirmed = true
+            }
+            ErikuraApplication.FAILED_ONCE_APPROVED -> {
+                isConfirmingOrConfirmed = true
+            }
+        }
+        return isConfirmingOrConfirmed
     }
 
     // バリデーションルール
@@ -640,4 +836,6 @@ interface ChangeUserInformationEventHandlers {
     fun onClickRegister(view: View)
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
+    fun onClickUpdateIdentity(view: View)
+    fun onClickUpdateIdentityForChangeInfo(view: View)
 }
