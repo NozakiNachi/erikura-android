@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -33,6 +34,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.report.StorageAccessConfirmDialogFragment
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.io.ByteArrayOutputStream
 import java.net.SocketTimeoutException
@@ -436,6 +438,26 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         viewModel.addMyNumberPhotoButtonVisibility.value = View.VISIBLE
         viewModel.removeMyNumberPhotoButtonVisibility.value = View.GONE
     }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when(requestCode) {
+            ErikuraApplication.REQUEST_EXTERNAL_STORAGE_PERMISSION_ID -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+
+                }else {
+                    val dialog = StorageAccessConfirmDialogFragment()
+                    dialog.show(supportFragmentManager, "confirm")
+                }
+            }
+        }
+    }
+
 
     private fun resizeImage(item: MediaItem): ByteArray {
         var imageByteArray: ByteArray? = null
