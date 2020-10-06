@@ -43,7 +43,8 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     private val passportElementNum = 3
     private val myNumberElementNum = 4
 
-    // 各画像のフィールド識別コード
+    // 各画像のフィールド識別リクエストコードとボタンのリクエストコード
+    private val jobApplyButtonRequest = ErikuraApplication.JOB_APPLY_BUTTON_REQUEST
     private val frontRequestCode = 1
     private val backRequestCode = 2
     private val passportFrontRequestCode = 3
@@ -152,7 +153,6 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
             val uri = data?.data
             uri?.let {
                 MediaItem.createFrom(this, uri)?.let { item ->
-
                     // requestCodeによって画像フィールドを切り分ける
                     when (requestCode) {
                         frontRequestCode -> {
@@ -196,7 +196,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
             fromGallery = true
         }
 
-        if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+        if (requestCode == jobApplyButtonRequest && resultCode == AppCompatActivity.RESULT_OK) {
             val displayApplyDialog: Boolean? = data?.getBooleanExtra("displayApplyDialog", false)
             if (displayApplyDialog == true) {
                 // 身分確認完了、あとで行う　の場合
