@@ -249,11 +249,11 @@
                         style="@style/linkText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="right|center_vertical"
                         android:layout_marginLeft="0dp"
                         android:layout_marginRight="0dp"
-                        android:textSize="12dp"
+                        android:gravity="right|center_vertical"
                         android:text="@string/change"
+                        android:textSize="12dp"
                         android:visibility="@{viewModel.changeVisibility}"
                         app:onSafeClick="@{handlers.onClickUpdateIdentityForChangeInfo}" />
                 </LinearLayout>
@@ -373,11 +373,11 @@
                         style="@style/linkText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="right|center_vertical"
                         android:layout_marginLeft="0dp"
                         android:layout_marginRight="0dp"
-                        android:textSize="12dp"
+                        android:gravity="right|center_vertical"
                         android:text="@string/change"
+                        android:textSize="12dp"
                         android:visibility="@{viewModel.changeVisibility}"
                         app:onSafeClick="@{handlers.onClickUpdateIdentityForChangeInfo}" />
 
@@ -450,79 +450,25 @@
 
                 <!-- 郵便番号 -->
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="40dp"
-                android:layout_marginRight="20dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    style="@style/fieldLabel"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="10dp"
-                    android:drawableLeft="@drawable/icon_required_18"
-                    android:drawablePadding="10dp"
-                    android:text="@string/postalCode" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
 
-                <!-- 身分証の確認状況を表示-->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="@string/unconfirmed_identification"
-                    android:textColor="@color/coral"
-                    android:textSize="12dp"
-                    android:visibility="@{viewModel.unconfirmedExplainVisibility}" />
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="10dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/postalCode" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text="@{viewModel.confirmingCityName}"
-                    android:textColor="@color/coral"
-                    android:textSize="12dp"
-                    android:visibility="@{viewModel.confirmingVisibility}" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:drawableLeft="@drawable/verified_1x"
-                    android:text="@string/confirmed_identification"
-                    android:textColor="@color/warmGrey"
-                    android:textSize="12dp"
-                    android:visibility="@{viewModel.confirmedVisibility}" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:text="@{viewModel.deniedCityName}"
-                    android:textColor="@color/coral"
-                    android:textSize="12dp"
-                    android:visibility="@{viewModel.deniedVisibility}" />
-
-                <TextView
-                    style="@style/linkText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="right|center_vertical"
-                    android:layout_marginLeft="0dp"
-                    android:layout_marginRight="0dp"
-                    android:textSize="12dp"
-                    android:text="@string/change"
-                    android:visibility="@{viewModel.changeVisibility}"
-                    app:onSafeClick="@{handlers.onClickUpdateIdentityForChangeInfo}" />
-
-            </LinearLayout>
+                </LinearLayout>
 
                 <EditText
                     style="@style/textField"
@@ -548,14 +494,80 @@
                     android:visibility="@{viewModel.postalCodeError.visibility}" />
 
                 <!-- 都道府県 -->
-                <TextView
-                    style="@style/fieldLabel"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="40dp"
-                    android:drawableLeft="@drawable/icon_required_18"
-                    android:drawablePadding="10dp"
-                    android:text="@string/prefecture" />
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="10dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/prefecture" />
+
+                    <!-- 身分証の確認状況を表示-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/unconfirmed_identification"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.unconfirmedExplainVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.confirmingPrefecture}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.confirmingVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/verified_1x"
+                        android:text="@string/confirmed_identification"
+                        android:textColor="@color/warmGrey"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.confirmedVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.deniedPrefecture}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.deniedVisibility}" />
+
+                    <TextView
+                        style="@style/linkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:gravity="right|center_vertical"
+                        android:text="@string/change"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.changeVisibility}"
+                        app:onSafeClick="@{handlers.onClickUpdateIdentityForChangeInfo}" />
+
+                </LinearLayout>
 
                 <Spinner
                     android:id="@+id/registerAddress_prefecture"
@@ -570,14 +582,80 @@
                     android:spinnerMode="dialog" />
 
                 <!-- ご住所 -->
-                <TextView
-                    style="@style/fieldLabel"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="40dp"
-                    android:drawableLeft="@drawable/icon_required_18"
-                    android:drawablePadding="10dp"
-                    android:text="@string/city" />
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="10dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/city" />
+
+                    <!-- 身分証の確認状況を表示-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/unconfirmed_identification"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.unconfirmedExplainVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.confirmingCityName}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.confirmingVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/verified_1x"
+                        android:text="@string/confirmed_identification"
+                        android:textColor="@color/warmGrey"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.confirmedVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.deniedCityName}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.deniedVisibility}" />
+
+                    <TextView
+                        style="@style/linkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:gravity="right|center_vertical"
+                        android:text="@string/change"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.changeVisibility}"
+                        app:onSafeClick="@{handlers.onClickUpdateIdentityForChangeInfo}" />
+
+                </LinearLayout>
 
                 <EditText
                     style="@style/textField"
@@ -596,14 +674,80 @@
                     android:visibility="@{viewModel.cityError.visibility}" />
 
                 <!-- 番地以降 -->
-                <TextView
-                    style="@style/fieldLabel"
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
                     android:layout_marginTop="40dp"
-                    android:drawableLeft="@drawable/icon_required_18"
-                    android:drawablePadding="10dp"
-                    android:text="@string/street" />
+                    android:layout_marginRight="20dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/fieldLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="10dp"
+                        android:drawableLeft="@drawable/icon_required_18"
+                        android:drawablePadding="10dp"
+                        android:text="@string/street" />
+
+                    <!-- 身分証の確認状況を表示-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/unconfirmed_identification"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.unconfirmedExplainVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.confirmingStreet}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.confirmingVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:drawableLeft="@drawable/verified_1x"
+                        android:text="@string/confirmed_identification"
+                        android:textColor="@color/warmGrey"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.confirmedVisibility}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="@{viewModel.deniedStreet}"
+                        android:textColor="@color/coral"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.deniedVisibility}" />
+
+                    <TextView
+                        style="@style/linkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="0dp"
+                        android:gravity="right|center_vertical"
+                        android:text="@string/change"
+                        android:textSize="12dp"
+                        android:visibility="@{viewModel.changeVisibility}"
+                        app:onSafeClick="@{handlers.onClickUpdateIdentityForChangeInfo}" />
+
+                </LinearLayout>
 
                 <EditText
                     android:id="@+id/registerAddress_street"
