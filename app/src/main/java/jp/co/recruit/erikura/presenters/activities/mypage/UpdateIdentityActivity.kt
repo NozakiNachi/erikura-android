@@ -76,6 +76,7 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
             if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
+                previousPostalCode = viewModel.postalCode.value
                 Api(this).postalCode(viewModel.postalCode.value ?: "") { prefecture, city, street ->
                     user.postcode = viewModel.postalCode.value
                     viewModel.prefectureId.value = getPrefectureId(prefecture ?: "")
