@@ -451,7 +451,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
 
                 }else {
-                    val dialog = StorageAccessConfirmDialogFragment()
+                    val dialog = StorageAccessConfirmDialogFragment.newInstance(true)
                     dialog.show(supportFragmentManager, "confirm")
                 }
             }
