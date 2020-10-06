@@ -110,7 +110,6 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
                         intent.putExtra("user", user)
                         intent.putExtra("job", job)
                         startActivityForResult(intent, ErikuraApplication.JOB_APPLY_BUTTON_REQUEST)
-//                        startActivity(intent)
                     }
                 }
             }
