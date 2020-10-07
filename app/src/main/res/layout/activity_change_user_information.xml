@@ -220,6 +220,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.confirmingUserName}"
+                        app:onSafeClick="@{handlers.onCLickName}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.confirmingVisibility}" />
@@ -241,6 +242,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.deniedUserName}"
+                        app:onSafeClick="@{handlers.onCLickName}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.deniedVisibility}" />
@@ -344,6 +346,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.confirmingBirthDay}"
+                        app:onSafeClick="@{handlers::onClickBirthDay}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.confirmingVisibility}" />
@@ -365,6 +368,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.deniedBirthDay}"
+                        app:onSafeClick="@{handlers::onClickBirthDay}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.deniedVisibility}" />
@@ -530,6 +534,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.confirmingPrefecture}"
+                        app:onSafeClick="@{handlers.onCLickPrefecture}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.confirmingVisibility}" />
@@ -551,6 +556,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.deniedPrefecture}"
+                        app:onSafeClick="@{handlers::onCLickPrefecture}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.deniedVisibility}" />
@@ -618,6 +624,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.confirmingCityName}"
+                        app:onSafeClick="@{handlers::onClickCity}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.confirmingVisibility}" />
@@ -639,6 +646,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.deniedCityName}"
+                        app:onSafeClick="@{handlers::onClickCity}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.deniedVisibility}" />
@@ -710,6 +718,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.confirmingStreet}"
+                        app:onSafeClick="@{handlers::onCLickStreet}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.confirmingVisibility}" />
@@ -731,6 +740,7 @@
                         android:ellipsize="end"
                         android:singleLine="true"
                         android:text="@{viewModel.deniedStreet}"
+                        app:onSafeClick="@{handlers::onCLickStreet}"
                         android:textColor="@color/coral"
                         android:textSize="12dp"
                         android:visibility="@{viewModel.deniedVisibility}" />

@@ -5,6 +5,8 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -26,6 +28,7 @@ import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
+import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import java.text.SimpleDateFormat
 import java.util.*
@@ -416,25 +419,29 @@ class ChangeUserInformationActivity :
         if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE) {
             // 確認中の場合表示する氏名、生年月日、住所を取得
             viewModel.confirmingUserName.value =
-                getString(R.string.confirming_identification) + userName
+                fromHtml((getString(R.string.confirming_identification) + userName))
             viewModel.confirmingPrefecture.value =
-                getString(R.string.confirming_identification) + prefectureName
+                fromHtml((getString(R.string.confirming_identification) + prefectureName))
             viewModel.confirmingCityName.value =
-                getString(R.string.confirming_identification) + cityName
+                fromHtml((getString(R.string.confirming_identification) + cityName))
             viewModel.confirmingStreet.value =
-                getString(R.string.confirming_identification) + streetName
+                fromHtml((getString(R.string.confirming_identification) + streetName))
             viewModel.confirmingBirthDay.value =
-                getString(R.string.confirming_identification) + birthDay
+                fromHtml((getString(R.string.confirming_identification) + birthDay))
         }
         if (identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED) {
             // 失敗した氏名、生年月日、住所を取得
-            viewModel.deniedUserName.value = getString(R.string.denied_identification) + userName
+            viewModel.deniedUserName.value = fromHtml((getString(R.string.denied_identification) + userName))
             viewModel.deniedPrefecture.value =
-                getString(R.string.denied_identification) + prefectureName
-            viewModel.deniedCityName.value = getString(R.string.denied_identification) + cityName
-            viewModel.deniedStreet.value = getString(R.string.denied_identification) + streetName
-            viewModel.deniedBirthDay.value = getString(R.string.denied_identification) + birthDay
+                fromHtml((getString(R.string.denied_identification) + prefectureName))
+            viewModel.deniedCityName.value = fromHtml((getString(R.string.denied_identification) + cityName))
+            viewModel.deniedStreet.value = fromHtml((getString(R.string.denied_identification) + streetName))
+            viewModel.deniedBirthDay.value = fromHtml((getString(R.string.denied_identification) + birthDay))
         }
+    }
+
+    private fun fromHtml(text: String): Spanned {
+        return Html.fromHtml("<u>${text}</u>")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -471,6 +478,27 @@ class ChangeUserInformationActivity :
             startActivityForResult(intent, ErikuraApplication.REQUEST_RESIGHIN)
         }
     }
+
+    override fun onCLickName(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( userName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")
+    }
+
+    override fun onClickBirthDay(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( birthDay?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
+
+    override fun onCLickPrefecture(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( prefectureName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
+
+    override fun onClickCity(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( cityName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
+
+    override fun onCLickStreet(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( streetName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
 }
 
 class ChangeUserInformationViewModel : ViewModel() {
@@ -546,16 +574,16 @@ class ChangeUserInformationViewModel : ViewModel() {
     // 身分確認
     val identifyStatus: MutableLiveData<Int> = MutableLiveData()
     val fromSms: MutableLiveData<Boolean> = MutableLiveData()
-    val confirmingUserName: MutableLiveData<String> = MutableLiveData()
-    val confirmingBirthDay: MutableLiveData<String> = MutableLiveData()
-    val confirmingPrefecture: MutableLiveData<String> = MutableLiveData()
-    val confirmingCityName: MutableLiveData<String> = MutableLiveData()
-    val confirmingStreet: MutableLiveData<String> = MutableLiveData()
-    val deniedUserName: MutableLiveData<String> = MutableLiveData()
-    val deniedBirthDay: MutableLiveData<String> = MutableLiveData()
-    val deniedPrefecture: MutableLiveData<String> = MutableLiveData()
-    val deniedCityName: MutableLiveData<String> = MutableLiveData()
-    val deniedStreet: MutableLiveData<String> = MutableLiveData()
+    val confirmingUserName: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingBirthDay: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingPrefecture: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingCityName: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingStreet: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedUserName: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedBirthDay: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedPrefecture: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedCityName: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedStreet: MutableLiveData<Spanned> = MutableLiveData()
 
 
     val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
@@ -883,4 +911,9 @@ interface ChangeUserInformationEventHandlers {
     fun onClickFemale(view: View)
     fun onClickUpdateIdentity(view: View)
     fun onClickUpdateIdentityForChangeInfo(view: View)
+    fun onCLickName(view: View)
+    fun onClickBirthDay(view: View)
+    fun onCLickPrefecture(view: View)
+    fun onClickCity(view: View)
+    fun onCLickStreet(view: View)
 }
