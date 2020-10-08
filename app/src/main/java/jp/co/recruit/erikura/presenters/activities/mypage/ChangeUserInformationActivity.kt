@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -30,6 +31,7 @@ import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
+import kotlinx.android.synthetic.main.activity_change_user_information.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -97,6 +99,15 @@ class ChangeUserInformationActivity :
                     val streetEditText = findViewById<EditText>(R.id.registerAddress_street)
                     streetEditText.requestFocus()
                 }
+            }
+        })
+
+        //　スピナーがdisabledのとき文字色を他のdisabledされたフィールドと同色にする
+        viewModel.inputIdentityInfoEnabled.observe(this, androidx.lifecycle.Observer{
+            if (it == false) {
+                val adapter = ArrayAdapter<String>(this@ChangeUserInformationActivity, R.layout.custom_dropdown_disabled_item, ErikuraApplication.instance.resources.getStringArray(R.array.prefecture_list))
+                adapter.setDropDownViewResource(R.layout.custom_dropdown_disabled_item)
+                registerAddress_prefecture.adapter = adapter
             }
         })
 
