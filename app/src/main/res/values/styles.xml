@@ -37,6 +37,12 @@
         <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
         <item name="android:textSize">14dp</item>
     </style>
+    <style name="spinnerDropDownItemDisableStyle" parent="android:Widget.Holo.Light.DropDownItem.Spinner">
+        <item name="android:fontFamily">@font/hirakakupron_w2_alphanum_01</item>
+        <item name="android:textSize">14dp</item>
+        <item name="android:textColor">@color/black</item>
+
+    </style>
 
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/launcher_screen</item>
