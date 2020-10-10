@@ -70,6 +70,7 @@ class ErikuraApplication : Application() {
         const val REQUEST_ACCESS_FINE_LOCATION_PERMISSION_ID = 0x0001
         const val REQUEST_ACTIVITY_RECOGNITION_PERMISSION_ID = 0x0002
         const val REQUEST_EXTERNAL_STORAGE_PERMISSION_ID = 0x0003
+        const val REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_ID = 0x0004
 
         // SMS認証の遷移元の定数
         const val REQUEST_DEFAULT_CODE = 0

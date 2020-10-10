@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="handler"
+            type="jp.co.recruit.erikura.presenters.fragments.JobAttachmentItemHandler" />
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.fragments.JobAttachmentAdapter.JobAttachmentItemViewModel" />
+    </data>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/linkText"
+        android:textSize="14dp"
+        android:text="@{viewModel.jobAttachment.label}"
+        app:onSafeClick="@{handler::onClick}"
+        />
+</layout>
