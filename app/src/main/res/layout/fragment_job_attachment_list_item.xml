@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         style="@style/linkText"
         android:textSize="14dp"
-        android:text="@{viewModel.jobAttachment.label}"
+        android:text="@{viewModel.labelWithAnchor}"
         app:onSafeClick="@{handler::onClick}"
         />
 </layout>

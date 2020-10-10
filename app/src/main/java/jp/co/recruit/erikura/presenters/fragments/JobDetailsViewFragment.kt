@@ -13,23 +13,18 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.telephony.mbms.DownloadStatusListener
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.text.style.DynamicDrawableSpan
-import android.text.style.ImageSpan
-import android.text.style.TextAppearanceSpan
+import android.text.style.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.databinding.DataBindingUtil
@@ -359,6 +354,11 @@ class JobAttachmentAdapter(val owner: LifecycleOwner, var jobAttachments: List<J
         fun onClick(view: View, jobAttachment: JobAttachment)
     }
     class JobAttachmentItemViewModel(val jobAttachment: JobAttachment): ViewModel() {
+        val labelWithAnchor: SpannableString get() {
+            val spannableString = SpannableString(jobAttachment.label)
+            spannableString.setSpan(UnderlineSpan(), 0, jobAttachment.label.length, 0)
+            return spannableString
+        }
     }
     class JobAttachmentViewHolder(val binding: FragmentJobAttachmentListItemBinding): RecyclerView.ViewHolder(binding.root)
 
