@@ -58,6 +58,7 @@ android {
             properties.setProperty("erikura_protocol", "http")
             properties.setProperty("erikura_relative_url_root", "/app")
             properties.setProperty("old_erikura_host", "dev-app.erikura.net")
+            properties.setProperty("firebase_dynamic_link_host", "erikuradev.page.link")
 
             buildConfigField("String", "SERVER_BASE_URL", '"' + properties.getProperty("server.base_url") + '"')
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"' + properties.getProperty("google.map_api_key") + '"')
@@ -79,6 +80,7 @@ android {
                     erikura_protocol:  properties.getProperty("erikura_protocol"),
                     erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root"),
                     old_erikura_host: properties.getProperty("old_erikura_host"),
+                    firebase_dynamic_link_host: properties.getProperty("firebase_dynamic_link_host"),
             ])
         }
         staging {
@@ -87,6 +89,7 @@ android {
             properties.setProperty("erikura_protocol", "https")
             properties.setProperty("erikura_relative_url_root", "/app")
             properties.setProperty("old_erikura_host", "dev-app.erikura.net")
+            properties.setProperty("firebase_dynamic_link_host", "erikuradev.page.link")
 
             buildConfigField("String", "SERVER_BASE_URL", "\"https://dev.erikura.net/app/\"")
             buildConfigField("String", "GOOGLE_MAP_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
@@ -108,6 +111,7 @@ android {
                     erikura_protocol:  properties.getProperty("erikura_protocol"),
                     erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root"),
                     old_erikura_host: properties.getProperty("old_erikura_host"),
+                    firebase_dynamic_link_host: properties.getProperty("firebase_dynamic_link_host"),
             ])
         }
         release {
@@ -116,6 +120,7 @@ android {
             properties.setProperty("erikura_protocol", "https")
             properties.setProperty("erikura_relative_url_root", "/app")
             properties.setProperty("old_erikura_host", "app.erikura.net")
+            properties.setProperty("firebase_dynamic_link_host", "erikura.page.link")
 
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -139,6 +144,7 @@ android {
                     erikura_protocol:  properties.getProperty("erikura_protocol"),
                     erikura_relative_url_root:  properties.getProperty("erikura_relative_url_root"),
                     old_erikura_host: properties.getProperty("old_erikura_host"),
+                    firebase_dynamic_link_host: properties.getProperty("firebase_dynamic_link_host"),
             ])
         }
     }
@@ -184,6 +190,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads-identifier:17.0.0'
 
     // Firebase
+    implementation 'com.google.firebase:firebase-dynamic-links-ktx:19.1.0'
     implementation 'com.google.firebase:firebase-analytics:17.2.3'
     implementation 'com.google.firebase:firebase-messaging:20.1.2'
     // Karte
