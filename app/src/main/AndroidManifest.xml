@@ -115,6 +115,16 @@
                     android:scheme="erikura" />
                 <data android:pathPrefix="/jobs/" />
             </intent-filter>
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".presenters.activities.job.ApplyCompletedActivity"
@@ -214,6 +224,16 @@
                     android:scheme="erikura" />
                 <data android:path="/user/register/mail_auth" />
             </intent-filter>
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/mail_auth" />
+            </intent-filter>
 
             <!-- ドメイン統合後の登録用URL -->
             <intent-filter>
@@ -277,6 +297,21 @@
         <activity
             android:name=".presenters.activities.WebViewActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.FirebaseDynamicLinksActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            <!-- 今後有効にする可能性があるので残しています -->
+            <!-- FDLの設定 -->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW"/>-->
+<!--                <category android:name="android.intent.category.DEFAULT"/>-->
+<!--                <category android:name="android.intent.category.BROWSABLE"/>-->
+<!--                <data-->
+<!--                    android:host="${firebase_dynamic_link_host}"-->
+<!--                    android:scheme="https"/>-->
+<!--            </intent-filter>-->
+        </activity>
 
         <service
             android:name=".services.ErikuraMessagingService"
