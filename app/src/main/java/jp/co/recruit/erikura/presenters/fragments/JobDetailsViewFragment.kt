@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -29,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.text.bold
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
@@ -44,8 +46,10 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentJobAttachmentListItemBinding
 import jp.co.recruit.erikura.databinding.FragmentJobDetailsViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 import java.lang.ref.WeakReference
 import java.util.*
+import java.util.jar.Manifest
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -68,6 +72,7 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
     private val downloader: RxDownloader by lazy {
         RxDownloader(context ?: ErikuraApplication.instance)
     }
+    private var writeStorageAlertDialog: AlertDialog? = null
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -100,6 +105,18 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
                 }
             }
             listView?.adapter = adapter
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        if (writeStorageAlertDialog != null) {
+            if (activity?.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                writeStorageAlertDialog?.dismiss()
+                this.writeStorageAlertDialog = null
+                startDownloader()
+            }
         }
     }
 
@@ -141,10 +158,6 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
         tv.movementMethod = LinkMovementMethod.getInstance()
     }
 
-    private val downloadManager: DownloadManager by lazy {
-        ErikuraApplication.instance.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-    }
-
     fun onClickAttachmentDownloadLink(jobAttachment: JobAttachment) {
         // ダウンロード用のリクエストを作成します
         val request = DownloadManager.Request(Uri.parse(jobAttachment.url))
@@ -165,6 +178,15 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
         }
     }
 
+    val WriteStorageCheckedNotAskAgainKey = "WRITE_EXTERNAL_STORAGE_CHECKED_NOT_ASK_AGAIN"
+    var checkedNotAskAgain: Boolean
+        get() = PreferenceManager.getDefaultSharedPreferences(ErikuraApplication.instance).getBoolean(WriteStorageCheckedNotAskAgainKey, false)
+        set(value) {
+            PreferenceManager.getDefaultSharedPreferences(ErikuraApplication.instance)
+                .edit()
+                .putBoolean(WriteStorageCheckedNotAskAgainKey, value)
+                .commit()
+        }
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -173,7 +195,16 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == ErikuraApplication.REQUEST_WRITE_EXTERNAL_STORAGE_PERMISSION_ID) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                checkedNotAskAgain = false
                 startDownloader()
+            }
+            else {
+                checkedNotAskAgain = shouldShowRequestPermissionRationale(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                activity?.let { activity ->
+                    this.writeStorageAlertDialog = MessageUtils.displayWriteExternalStorageAlert(activity) {
+                        this.writeStorageAlertDialog = null
+                    }
+                }
             }
         }
     }
