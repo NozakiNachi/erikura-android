@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.util
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -20,6 +21,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.databinding.DialogLocationAlertBinding
 import jp.co.recruit.erikura.databinding.DialogMessageAlertBinding
+import jp.co.recruit.erikura.databinding.DialogWriteStorageAccessConfirmBinding
 
 // 画面へのメッセージ表示を行うためのユーティリティ
 object MessageUtils {
@@ -111,6 +113,33 @@ object MessageUtils {
         // ダイアログが消えた場合の対応
         dialog.setOnDismissListener {
             onCloseListener?.invoke(openSettings)
+        }
+
+        return dialog
+    }
+
+    fun displayWriteExternalStorageAlert(context: FragmentActivity, onCloseListener: ((openSettings: Boolean) -> Unit)? = null): AlertDialog {
+        var openSettings = false
+        val dialog = AlertDialog.Builder(context).apply {
+            val binding: DialogWriteStorageAccessConfirmBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(context),
+                R.layout.dialog_write_storage_access_confirm,
+                null, false
+            )
+            binding.lifecycleOwner = context
+
+            setView(binding.root)
+            setOnDismissListener { onCloseListener?.invoke(openSettings) }
+        }.create()
+
+        dialog.show()
+
+        val button: Button = dialog.findViewById(R.id.update_button)
+        button.setOnSafeClickListener {
+            openSettings = true
+            val uriString = "package:" + ErikuraApplication.instance.packageName
+            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse(uriString))
+            context.startActivity(intent)
         }
 
         return dialog
