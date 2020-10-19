@@ -410,15 +410,18 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             }
             else {
                 AndroidSchedulers.mainThread().scheduleDirect {
-                    MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つからなかったため、", "一番近くのお仕事を表示します")) {
-                        // クリアした検索条件での再検索を行います
-                        val newQuery = JobQuery(
-                            latitude = locationManager.latLngOrDefault.latitude,
-                            longitude = locationManager.latLngOrDefault.longitude)
-                        if (query != newQuery) {
+                    val newQuery = JobQuery(
+                        latitude = locationManager.latLngOrDefault.latitude,
+                        longitude = locationManager.latLngOrDefault.longitude)
+                    if (query != newQuery) {
+                        MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つからなかったため、", "一番近くのお仕事を表示します")) {
+                            // クリアした検索条件での再検索を行います
                             viewModel.apply(newQuery)
                             fetchJobs(newQuery)
                         }
+                    }
+                    else {
+                        MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つかりませんでした。"))
                     }
                 }
             }
