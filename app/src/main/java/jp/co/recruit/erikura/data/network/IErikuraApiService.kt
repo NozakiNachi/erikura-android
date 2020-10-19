@@ -29,6 +29,13 @@ interface IErikuraApiService {
     @POST("users/sms_verify")
     fun smsVerify(@Body request: SmsVerifyRequest): ApiObservable<ResultResponse>
 
+    @GET("users/verifications/show")
+    fun showIdVerifyStatus(@Query("user_id") userID: Int,
+                           @Query("detail") detail: Boolean): ApiObservable<ShowIdVerifyResponse>
+
+    @POST("users/verifications")
+    fun idVerify(@Body request: IdVerifyRequest): ApiObservable<ResultResponse>
+
     @GET("users")
     fun user(): ApiObservable<User>
 
@@ -267,6 +274,11 @@ data class SmsVerifyRequest(
     var passcode: String
 )
 
+data class IdVerifyRequest(
+    var userId: Int,
+    var idDocument: IdDocument
+)
+
 data class LoginRequest(
     var email: String,
     var password: String
@@ -348,6 +360,12 @@ data class FavoriteRequest(
 
 data class FavoritePlacesResponse(
     var places: List<Place>
+)
+
+data class ShowIdVerifyResponse(
+    var status: Int,
+    @SerializedName("comparing_data")
+    var identifyComparingData: IdentifyComparingData?
 )
 
 data class ReloadJobResponse(

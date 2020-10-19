@@ -85,6 +85,34 @@ class ErikuraApplication : Application() {
         const val ERROR_MESSAGE_KEY = "errors"
 
         var versionAlertModal: AlertDialog? = null
+
+        // 身分証の実施状況(0は非表示)の定数
+        const val ID_DISABLE_DISPLAY_CODE = 0
+        const val ID_UNCONFIRMED_CODE = 1
+        const val ID_CONFIRMING_CODE = 2
+        const val ID_CONFIRMED_CODE = 3
+        const val FAILED_NEVER_APPROVED = 4
+        const val FAILED_ONCE_APPROVED= 5
+
+        //身分証のリクエストコード
+        const val JOB_APPLY_BUTTON_REQUEST = 0
+
+        // 身分証比較データの定数
+        const val GET_COMPARING_DATA = true
+        const val NOT_GET_COMPARING_DATA = false
+
+        // 身分証遷移元の定数
+        const val FROM_WHERE = "from"
+        const val FROM_NOT_FOUND = 0
+        const val FROM_REGISTER = 1
+        const val FROM_CHANGE_USER = 2
+        const val FROM_CHANGE_USER_FOR_CHANGE_INFO = 3
+        const val FROM_ENTRY = 4
+
+        // 身分証確認の長辺の幅px
+        const val ID_IMAGE_MAX_SIZE = 2592
+        // 身分証確認圧縮する画像のquality
+        const val ID_IMAGE_QUALITY = 90
     }
 
     //    var userSession: UserSession? = null
@@ -502,6 +530,30 @@ object Tracking {
     }
 
     fun skipSmsVerify(name: String, user: User) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user.id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
+
+    fun pushEntryThroughIdentityVerification(name: String, user_id: Int) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("user_id", user_id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
+
+    fun trackUserId(name: String, user: User) {
         try {
             Log.v("ERIKURA", "Sending view tracking: ${name})")
             val values = bundleOf(

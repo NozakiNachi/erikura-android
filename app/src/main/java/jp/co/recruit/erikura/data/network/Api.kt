@@ -139,7 +139,8 @@ class Api(var context: Context) {
         ) { body ->
             val calendar = Calendar.getInstance()
             calendar.time = Date()
-            calendar.add(Calendar.SECOND, 10 * 60)
+            // 再認証まで60分
+            calendar.add(Calendar.SECOND, 60 * 60)
             val session = UserSession(userId = body.userId, token = body.accessToken, resignInExpiredAt = calendar.time)
             //再認証に来る場合、SMS認証画面を遷移してきたのでtrue
             session.smsVerifyCheck = true
@@ -185,6 +186,27 @@ class Api(var context: Context) {
         ) { body ->
             //bodyはtrueしか返ってこないので送信結果の判定は入れていない
             onComplete()
+        }
+    }
+
+    fun showIdVerifyStatus(userId: Int, detail: Boolean, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (status: Int, identifyComparingData: IdentifyComparingData?) -> Unit){
+        executeObservable(
+            erikuraApiService.showIdVerifyStatus(userId, detail),
+            onError = onError
+        ) { body ->
+            val status = body.status
+            val identifyComparingData = body.identifyComparingData
+            onComplete(status, identifyComparingData)
+        }
+    }
+
+    fun idVerify(userId: Int, idDocument: IdDocument, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.idVerify(IdVerifyRequest(userId, idDocument)),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
         }
     }
 

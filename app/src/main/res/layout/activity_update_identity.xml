@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityViewModel"/>
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityEventHandlers"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/change_user_information_constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        style="@style/label_w2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginRight="20dp"
+                        android:text="本人確認情報入力"
+                        android:textColor="@color/black"
+                        android:textSize="22dp" />
+
+                    <!-- 本登録経由の場合非表示-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:visibility="@{viewModel.captionBlockVisibility}"
+                        android:orientation="vertical">
+
+                        <!-- 会員情報変更の(身分確認経由)の場合非表示 変更リンクからだと表示-->
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="20dp"
+                            android:textSize="18dp"
+                            android:textColor="@color/black"
+                            android:text="@{viewModel.updateIdentityCaption1}"
+                            android:visibility="@{viewModel.caption1Visibility}" />
+
+                        <TextView
+                            style="@style/label_w2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18dp"
+                            android:textColor="@color/black"
+                            android:text="@string/update_identity_caption2" />
+
+                    </LinearLayout>
+                </LinearLayout>
+                <!--氏名-->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:layout_marginTop="40dp"
+                    android:text="氏名 （姓・名）" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    >
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="8dp"
+                        android:inputType="text"
+                        style="@style/textField"
+                        android:hint="@string/register_last_name_hint"
+                        android:text="@={viewModel.lastName}"
+                        />
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="70dp"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="0dp"
+                        android:layout_marginRight="8dp"
+                        android:inputType="text"
+                        style="@style/textField"
+                        android:hint="@string/register_first_name_hint"
+                        android:text="@={viewModel.firstName}"
+                        />
+                </LinearLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.lastNameError.visibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.lastNameError.message}"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:visibility="@{viewModel.firstNameError.visibility}"
+                    style="@style/errorField"
+                    android:text="@={viewModel.firstNameError.message}"
+                    />
+
+                <!--生年月日-->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/birthday" />
+                <EditText
+                    style="@style/selectField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:focusable="false"
+                    app:onSafeClick="@{handlers::onClickBirthdayEditView}"
+                    android:text="@={viewModel.dateOfBirth}"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    style="@style/smallCaption"
+                    android:text="@string/registerBirthday_notice"
+                    />
+
+                <!-- 郵便番号 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/postalCode" />
+                <EditText
+                    style="@style/textField"
+                    android:hint="@string/register_postal_code_hint"
+                    android:inputType="number"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.postalCode}"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/smallCaption"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/registerPhone_notice"
+                    />
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.postalCodeError.message}"
+                    android:visibility="@{viewModel.postalCodeError.visibility}" />
+
+                <!-- 都道府県 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/prefecture" />
+                <Spinner
+                    android:id="@+id/registerAddress_prefecture"
+                    style="@style/spinnerField"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    android:entries="@array/prefecture_list"
+                    android:spinnerMode="dialog"
+                    android:selectedItemPosition="@={viewModel.prefectureId}"
+                    />
+
+                <!-- ご住所 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/city" />
+                <EditText
+                    style="@style/textField"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_city_hint"
+                    android:text="@={viewModel.city}"
+                    android:inputType="text"
+                    />
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.cityError.message}"
+                    android:visibility="@{viewModel.cityError.visibility}"
+                    />
+
+                <!-- 番地以降 -->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/street" />
+                <EditText
+                    android:id="@+id/registerAddress_street"
+                    style="@style/textField"
+                    android:layout_marginTop="10dp"
+                    android:inputType="text"
+                    android:hint="@string/register_street_hint"
+                    android:text="@={viewModel.street}"
+                    />
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.streetError.message}"
+                    android:visibility="@{viewModel.streetError.visibility}"
+                    />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        style="@style/linkText"
+                        android:text="@string/registerEmail_terms_of_service"
+                        app:onSafeClick="@{handlers::onClickTermsOfService}"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:textColor="@color/blackTwo"
+                        android:text="@string/registerEmail_comma"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        style="@style/linkText"
+                        android:text="@string/registerEmail_privacy_policy"
+                        app:onSafeClick="@{handlers::onClickPrivacyPolicy}"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14dp"
+                        android:textColor="@color/blackTwo"
+                        android:text="@string/registerEmail_agree"
+                        />
+
+                </LinearLayout>
+
+
+                <Button
+                    android:id="@+id/change_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="40dp"
+                    style="@style/primaryButton"
+                    android:text="@string/send_identity"
+                    app:onSafeClick="@{handlers::onClickRegister}"
+                    android:enabled="@{viewModel.isChangeButtonEnabled}"
+                    />
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="60dp"
+                    android:onClick="@{handlers::onClickSkip}"
+                    android:text="@string/after_identify"
+                    android:textSize="14dp" />
+
+
+            </LinearLayout>
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

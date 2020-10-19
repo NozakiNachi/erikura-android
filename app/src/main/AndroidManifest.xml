@@ -191,6 +191,17 @@
             android:windowSoftInputMode="adjustResize" /> <!-- このアプリについて画面 -->
         <activity android:name=".presenters.activities.mypage.FavoritePlacesActivity"
             android:screenOrientation="portrait"/>
+        <!-- 本人確認情報入力画面 -->
+        <activity android:name=".presenters.activities.mypage.UpdateIdentityActivity"
+            android:screenOrientation="portrait"/>
+        <!-- 身分証確認画面-->
+        <activity android:name=".presenters.activities.mypage.UploadIdImageActivity"
+            android:screenOrientation="portrait"/>
+        <!-- 身分証確認完了画面-->
+        <activity android:name=".presenters.activities.mypage.UploadedIdImageActivity"
+            android:screenOrientation="portrait"/>
+
+
         <!-- ============================================================ -->
         <!-- 新規会員登録関連 -->
         <activity

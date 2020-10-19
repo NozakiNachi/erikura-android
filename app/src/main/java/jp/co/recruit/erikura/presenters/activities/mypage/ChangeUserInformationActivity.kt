@@ -1,13 +1,17 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.Spanned
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -25,16 +29,27 @@ import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
+import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
+import kotlinx.android.synthetic.main.activity_change_user_information.*
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION), ChangeUserInformationEventHandlers {
+class ChangeUserInformationActivity :
+    BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION),
+    ChangeUserInformationEventHandlers {
     var user: User = User()
     var previousPostalCode: String? = null
     var requestCode: Int? = null
     var fromSms: Boolean = false
+    var identifyStatus: Int? = null
+    var userName: String? = null
+    var birthDay: String? = null
+    var prefectureName: String? = null
+    var cityName: String? = null
+    var streetName: String? = null
+    var fromWhere: Int? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
@@ -43,11 +58,12 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
     // 都道府県のリスト
     val prefectureList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
+
     // 職業のリスト
     val jobStatusIdList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.job_status_id_list)
 
-    override fun onCreate(savedInstanceState: Bundle?){
+    override fun onCreate(savedInstanceState: Bundle?) {
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         fromSms = intent.getBooleanExtra("fromSms", false)
         super.onCreate(savedInstanceState)
@@ -62,11 +78,13 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
-        if(errorMessages != null){
+        if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
         }
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         fromSms = intent.getBooleanExtra("fromSms", false)
+        fromWhere =
+            intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
         // 郵便番号が変更された場合に、住所を取り直すように修正します
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -84,24 +102,62 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             }
         })
 
+        //　スピナーがdisabledのとき文字色を他のdisabledされたフィールドと同色にする
+        viewModel.inputIdentityInfoEnabled.observe(this, androidx.lifecycle.Observer{
+            if (it == false) {
+                val adapter = ArrayAdapter<String>(this@ChangeUserInformationActivity, R.layout.custom_dropdown_disabled_item, ErikuraApplication.instance.resources.getStringArray(R.array.prefecture_list))
+                adapter.setDropDownViewResource(R.layout.custom_dropdown_disabled_item)
+                registerAddress_prefecture.adapter = adapter
+            }
+        })
+
         // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "view_edit_profile", params= bundleOf())
-        Tracking.view(name= "/mypage/users/edit", title= "会員情報変更画面")
+        Tracking.logEvent(event = "view_edit_profile", params = bundleOf())
+        Tracking.view(name = "/mypage/users/edit", title = "会員情報変更画面")
 
         // 変更するユーザーの現在の登録値を取得
-        Api(this).user() {
+        val api = Api(this)
+        api.user() {
             user = it
-            loadData()
+            user.id?.let { userId ->
+                api.showIdVerifyStatus(
+                    userId,
+                    ErikuraApplication.GET_COMPARING_DATA
+                ) { status, identifyComparingData ->
+                    identifyStatus = status
+                    val sdf = SimpleDateFormat("yyyy/MM/dd")
+                    // 身分確認状況を取得
+                    if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE || identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED) {
+                        userName =
+                            identifyComparingData?.lastName + identifyComparingData?.firstName
+                        birthDay = sdf.format(identifyComparingData?.dateOfBirth)
+                        prefectureName = identifyComparingData?.prefecture
+                        cityName = identifyComparingData?.city
+                        streetName = identifyComparingData?.street
+                    }
+                    loadData()
+                }
+            }
+        }
+        // 身分証送信経由の場合、完了ダイアログを表示
+        if (fromWhere == ErikuraApplication.FROM_CHANGE_USER || fromWhere == ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO) {
+            val dialog = AlertDialog.Builder(this)
+                .setView(R.layout.dialog_uploaded_id_image)
+                .setCancelable(true)
+                .create()
+            dialog.show()
         }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val view = this.currentFocus
         if (view != null) {
-            val constraintLayout = findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
+            val constraintLayout =
+                findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
             constraintLayout.requestFocus()
 
-            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
         }
         return super.dispatchTouchEvent(ev)
@@ -135,7 +191,8 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             }
 
         val calendar = Calendar.getInstance()
-        val dateOfBirth = DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
+        val dateOfBirth =
+            DateUtils.parseDate(viewModel.dateOfBirth.value, arrayOf("yyyy/MM/dd", "yyyy-MM-dd"))
         calendar.time = dateOfBirth
         val dpd = DatePickerDialog(
             this@ChangeUserInformationActivity, onDateSetListener,
@@ -180,7 +237,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
 
     override fun onClickRegister(view: View) {
         // パスワード
-        if(!viewModel.password.value.isNullOrBlank()) {
+        if (!viewModel.password.value.isNullOrBlank()) {
             // パスワードが設定されている場合のみ、更新するようにします
             user.password = viewModel.password.value
         }
@@ -226,7 +283,10 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                         val intent = Intent()
                         //SMS認証画面経由の場合、元の認証画面へ
                         intent.putExtra(SmsVerifyActivity.NewPhoneNumber, newPhoneNumber)
-                        intent.putExtra(SmsVerifyActivity.BeforeChangeNewPhoneNumber, newPhoneNumber)
+                        intent.putExtra(
+                            SmsVerifyActivity.BeforeChangeNewPhoneNumber,
+                            newPhoneNumber
+                        )
                         intent.putExtra(SmsVerifyActivity.SmsVerified, result)
                         //電話番号の変更があることを元の認証画面へ
                         if (isChangedPhoneNumber) {
@@ -243,8 +303,7 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                         Api(this).updateUser(user) {
                             finishEditing()
                         }
-                    }
-                    else {
+                    } else {
                         // SMS認証画面に戻ります
                         finishEditing()
                     }
@@ -297,6 +356,34 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
         }
     }
 
+    override fun onClickUpdateIdentity(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event = "push_identity_verification_edit_profile", params = bundleOf())
+        Tracking.trackUserId("push_identity_verification_edit_profile", user)
+        // 本人確認情報入力画面へ遷移
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
+        intent.putExtra("user", user)
+        // 会員情報から遷移
+        intent.putExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_CHANGE_USER)
+        startActivity(intent)
+    }
+
+    override fun onClickUpdateIdentityForChangeInfo(view: View) {
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event = "push_identity_verification_edit_link", params = bundleOf())
+        Tracking.trackUserId("push_identity_verification_edit_link", user)
+
+        //本人確認情報入力画面へ遷移
+        val intent = Intent(this, UpdateIdentityActivity::class.java)
+        intent.putExtra("user", user)
+        // 会員情報(変更リンク)から遷移
+        intent.putExtra(
+            ErikuraApplication.FROM_WHERE,
+            ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO
+        )
+        startActivity(intent)
+    }
+
     // データの読み込み
     private fun loadData() {
         viewModel.email.value = user.email
@@ -335,6 +422,37 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
                 viewModel.female.value = true
             }
         }
+
+        viewModel.identifyStatus.value = identifyStatus
+        viewModel.fromSms.value = fromSms
+
+        //確認中、否認の場合比較データを表示する
+        if (identifyStatus == ErikuraApplication.ID_CONFIRMING_CODE) {
+            // 確認中の場合表示する氏名、生年月日、住所を取得
+            viewModel.confirmingUserName.value =
+                fromHtml((getString(R.string.confirming_identification) + userName))
+            viewModel.confirmingPrefecture.value =
+                fromHtml((getString(R.string.confirming_identification) + prefectureName))
+            viewModel.confirmingCityName.value =
+                fromHtml((getString(R.string.confirming_identification) + cityName))
+            viewModel.confirmingStreet.value =
+                fromHtml((getString(R.string.confirming_identification) + streetName))
+            viewModel.confirmingBirthDay.value =
+                fromHtml((getString(R.string.confirming_identification) + birthDay))
+        }
+        if (identifyStatus == ErikuraApplication.FAILED_NEVER_APPROVED || identifyStatus == ErikuraApplication.FAILED_ONCE_APPROVED) {
+            // 失敗した氏名、生年月日、住所を取得
+            viewModel.deniedUserName.value = fromHtml((getString(R.string.denied_identification) + userName))
+            viewModel.deniedPrefecture.value =
+                fromHtml((getString(R.string.denied_identification) + prefectureName))
+            viewModel.deniedCityName.value = fromHtml((getString(R.string.denied_identification) + cityName))
+            viewModel.deniedStreet.value = fromHtml((getString(R.string.denied_identification) + streetName))
+            viewModel.deniedBirthDay.value = fromHtml((getString(R.string.denied_identification) + birthDay))
+        }
+    }
+
+    private fun fromHtml(text: String): Spanned {
+        return Html.fromHtml("<u>${text}</u>")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -371,27 +489,53 @@ class ChangeUserInformationActivity : BaseReSignInRequiredActivity(fromActivity 
             startActivityForResult(intent, ErikuraApplication.REQUEST_RESIGHIN)
         }
     }
+
+    override fun onCLickName(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( userName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")
+    }
+
+    override fun onClickBirthDay(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( birthDay?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
+
+    override fun onCLickPrefecture(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( prefectureName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
+
+    override fun onClickCity(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( cityName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
+
+    override fun onCLickStreet(view: View) {
+        val dialog = JobTitleDialogFragment.newInstance( streetName?: "")
+        dialog.show(supportFragmentManager, "JobTitle")    }
 }
 
 class ChangeUserInformationViewModel : ViewModel() {
     // メールアドレス
     val email: MutableLiveData<String> = MutableLiveData()
+
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
     val passwordError: ErrorMessageViewModel = ErrorMessageViewModel()
     val verificationPassword: MutableLiveData<String> = MutableLiveData()
     val verificationPasswordError: ErrorMessageViewModel = ErrorMessageViewModel()
+
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
     val lastNameError: ErrorMessageViewModel = ErrorMessageViewModel()
     val firstName: MutableLiveData<String> = MutableLiveData()
     val firstNameError: ErrorMessageViewModel = ErrorMessageViewModel()
+
     // 生年月日
     val dateOfBirth: MutableLiveData<String> = MutableLiveData()
+
     // 性別
     val gender: MutableLiveData<String> = MutableLiveData()
     val male: MutableLiveData<Boolean> = MutableLiveData()
     val female: MutableLiveData<Boolean> = MutableLiveData()
+
     // 所在地
     val postalCode: MutableLiveData<String> = MutableLiveData()
     val postalCodeError: ErrorMessageViewModel = ErrorMessageViewModel()
@@ -400,11 +544,14 @@ class ChangeUserInformationViewModel : ViewModel() {
     val cityError: ErrorMessageViewModel = ErrorMessageViewModel()
     val street: MutableLiveData<String> = MutableLiveData()
     val streetError: ErrorMessageViewModel = ErrorMessageViewModel()
+
     // 電話番号
     val phone: MutableLiveData<String> = MutableLiveData()
     val phoneError: ErrorMessageViewModel = ErrorMessageViewModel()
+
     // 職業
     val jobStatusId: MutableLiveData<Int> = MutableLiveData()
+
     // やりたい仕事
     val interestedSmartPhone: MutableLiveData<Boolean> = MutableLiveData()
     val interestedCleaning: MutableLiveData<Boolean> = MutableLiveData()
@@ -433,6 +580,136 @@ class ChangeUserInformationViewModel : ViewModel() {
         result.addSource(interestedWalk) { result.value = isValid() }
         result.addSource(interestedBicycle) { result.value = isValid() }
         result.addSource(interestedCar) { result.value = isValid() }
+    }
+
+    // 身分確認
+    val identifyStatus: MutableLiveData<Int> = MutableLiveData()
+    val fromSms: MutableLiveData<Boolean> = MutableLiveData()
+    val confirmingUserName: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingBirthDay: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingPrefecture: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingCityName: MutableLiveData<Spanned> = MutableLiveData()
+    val confirmingStreet: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedUserName: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedBirthDay: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedPrefecture: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedCityName: MutableLiveData<Spanned> = MutableLiveData()
+    val deniedStreet: MutableLiveData<Spanned> = MutableLiveData()
+
+
+    val unconfirmedExplainVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val unconfirmedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_UNCONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                ErikuraApplication.FAILED_NEVER_APPROVED -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
+    }
+
+    val confirmingVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_CONFIRMING_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val confirmedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.ID_CONFIRMED_CODE -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+    val deniedVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            when (status) {
+                ErikuraApplication.FAILED_NEVER_APPROVED -> {
+                    result.value = View.VISIBLE
+                }
+                ErikuraApplication.FAILED_ONCE_APPROVED -> {
+                    result.value = View.VISIBLE
+                }
+                else -> {
+                    result.value = View.GONE
+                }
+            }
+        }
+    }
+
+
+    val changeVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            if (isConfirmingOrConfirmed(status)) {
+                result.value = View.VISIBLE
+            } else {
+                result.value = View.GONE
+            }
+        }
+        result.addSource(fromSms) { sms ->
+            if (sms) {
+                result.value = View.GONE
+            }
+        }
+    }
+
+    val inputIdentityInfoEnabled = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(identifyStatus) { status ->
+            result.value = !(isConfirmingOrConfirmed(status))
+        }
+    }
+
+    //確認中と確認済と否認（確認済）の場合 true
+    private fun isConfirmingOrConfirmed(status: Int): Boolean {
+        var isConfirmingOrConfirmed = false
+        when (status) {
+            ErikuraApplication.ID_CONFIRMING_CODE -> {
+                isConfirmingOrConfirmed = true
+            }
+            ErikuraApplication.ID_CONFIRMED_CODE -> {
+                isConfirmingOrConfirmed = true
+            }
+            ErikuraApplication.FAILED_ONCE_APPROVED -> {
+                isConfirmingOrConfirmed = true
+            }
+        }
+        return isConfirmingOrConfirmed
     }
 
     // バリデーションルール
@@ -566,16 +843,18 @@ class ChangeUserInformationViewModel : ViewModel() {
         val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
         val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
 
-        if(valid && password.value.isNullOrBlank()) {
+        if (valid && password.value.isNullOrBlank()) {
             passwordError.message.value = null
-        }else{
+        } else {
             password.value?.let { pwd ->
-                if(valid && !(pattern.matcher(pwd).find())) {
+                if (valid && !(pattern.matcher(pwd).find())) {
                     valid = false
-                    passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
+                    passwordError.message.value =
+                        ErikuraApplication.instance.getString(R.string.password_count_error)
                 } else if (valid && !(hasAlphabet(pwd) && hasNumeric(pwd))) {
                     valid = false
-                    passwordError.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
+                    passwordError.message.value =
+                        ErikuraApplication.instance.getString(R.string.password_pattern_error)
                 } else {
                     valid = true
                     passwordError.message.value = null
@@ -588,12 +867,13 @@ class ChangeUserInformationViewModel : ViewModel() {
     private fun isValidVerificationPassword(): Boolean {
         var valid = true
 
-        if(valid && password.value.isNullOrBlank() && verificationPassword.value.isNullOrBlank()) {
+        if (valid && password.value.isNullOrBlank() && verificationPassword.value.isNullOrBlank()) {
             verificationPasswordError.message.value = null
         } else {
             if (valid && !(password.value.equals(verificationPassword.value))) {
                 valid = false
-                verificationPasswordError.message.value = ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+                verificationPasswordError.message.value =
+                    ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
             } else {
                 valid = true
                 verificationPasswordError.message.value = null
@@ -640,4 +920,11 @@ interface ChangeUserInformationEventHandlers {
     fun onClickRegister(view: View)
     fun onClickMale(view: View)
     fun onClickFemale(view: View)
+    fun onClickUpdateIdentity(view: View)
+    fun onClickUpdateIdentityForChangeInfo(view: View)
+    fun onCLickName(view: View)
+    fun onClickBirthDay(view: View)
+    fun onCLickPrefecture(view: View)
+    fun onClickCity(view: View)
+    fun onCLickStreet(view: View)
 }
