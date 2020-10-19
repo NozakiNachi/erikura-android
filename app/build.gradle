@@ -44,8 +44,8 @@ android {
         applicationId "jp.co.recruit.erikura"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 1050
-        versionName "10.5.0"
+        versionCode 1200
+        versionName "12.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // MEMO: http でアクセスするためには res/xml/network_security_config.html にドメインを追加してください
