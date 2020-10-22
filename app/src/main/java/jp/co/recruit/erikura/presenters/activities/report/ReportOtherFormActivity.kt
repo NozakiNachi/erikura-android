@@ -4,6 +4,7 @@ import JobUtil
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.ExifInterface
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -27,6 +28,7 @@ import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 
 class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     private val viewModel by lazy {
@@ -178,20 +180,53 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         if (resultCode == Activity.RESULT_OK) {
             val uri = data?.data
             uri?.let {
-                MediaItem.createFrom(this, uri)?.let { item ->
-                    viewModel.addPhotoButtonVisibility.value = View.GONE
-                    viewModel.removePhotoButtonVisibility.value = View.VISIBLE
-                    val imageView: ImageView = findViewById(R.id.report_other_image)
-                    val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
-                    val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
-                    item.loadImage(this, imageView, width.toInt(), height.toInt())
-                    viewModel.otherPhoto = item
+                // 縦長画像は選択できない
+                val cr = this.contentResolver.openInputStream(uri)
+                if (cr != null) {
+                    val exifInterface = ExifInterface(cr)
+                    val orientation = exifInterface.getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_UNDEFINED
+                    )
+                    var imageWidth: Int
+                    var imageHeight: Int
+                    when (orientation) {
+                        ExifInterface.ORIENTATION_ROTATE_90 -> {
+                            imageHeight =
+                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                            imageWidth =
+                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                        }
+                        ExifInterface.ORIENTATION_ROTATE_270 -> {
+                            imageHeight =
+                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                            imageWidth =
+                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                        }
+                        else -> {
+                            imageWidth =
+                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                            imageHeight =
+                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                        }
+                    }
+                    if (imageHeight > imageWidth) {
+                        MessageUtils.displayAlert(this, listOf("縦長画像は選択できません"))
+                    }else {
+                        MediaItem.createFrom(this, uri)?.let { item ->
+                            viewModel.addPhotoButtonVisibility.value = View.GONE
+                            viewModel.removePhotoButtonVisibility.value = View.VISIBLE
+                            val imageView: ImageView = findViewById(R.id.report_other_image)
+                            val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                            val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+                            item.loadImage(this, imageView, width.toInt(), height.toInt())
+                            viewModel.otherPhoto = item
+                        }
+                    }
                 }
             }
         }
-
         fromGallery = true
-
     }
 
     override fun onClickNext(view: View) {

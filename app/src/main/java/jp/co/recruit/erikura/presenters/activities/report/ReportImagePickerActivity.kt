@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
+import android.media.ExifInterface
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -314,6 +315,34 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                     isChecked = false
                     button.isChecked = false
                     MessageUtils.displayAlert(activity, listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません"))
+                }else {
+                    // 縦長画像は選択できない
+                    val cr = item.contentUri?.let { activity.contentResolver.openInputStream(it) }
+                    if (cr != null) {
+                        val exifInterface = ExifInterface(cr)
+                        val orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+                        var width: Int
+                        var height: Int
+                        when(orientation) {
+                            ExifInterface.ORIENTATION_ROTATE_90 -> {
+                                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                            }
+                            ExifInterface.ORIENTATION_ROTATE_270 -> {
+                                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                            }
+                            else -> {
+                                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                            }
+                        }
+                        if (height > width) {
+                            isChecked = false
+                            button.isChecked = false
+                            MessageUtils.displayAlert(activity, listOf("縦長画像は選択できません"))
+                        }
+                    }
                 }
                 onClickListener?.apply {
                     onClick(item, isChecked)
