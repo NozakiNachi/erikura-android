@@ -340,7 +340,7 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                         if (height > width) {
                             isChecked = false
                             button.isChecked = false
-                            MessageUtils.displayAlert(activity, listOf("縦長画像は選択できません"))
+                            MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
                         }
                     }
                 }

@@ -320,7 +320,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                                 }
                             }
                             if (imageHeight > imageWidth) {
-                                MessageUtils.displayAlert(this, listOf("縦長画像は選択できません"))
+                                MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
                             }else {
                                 val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
                                 val takenAt = takenAtString?.let {

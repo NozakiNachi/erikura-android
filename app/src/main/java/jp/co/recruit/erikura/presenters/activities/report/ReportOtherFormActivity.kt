@@ -211,7 +211,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                         }
                     }
                     if (imageHeight > imageWidth) {
-                        MessageUtils.displayAlert(this, listOf("縦長画像は選択できません"))
+                        MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
                     }else {
                         MediaItem.createFrom(this, uri)?.let { item ->
                             viewModel.addPhotoButtonVisibility.value = View.GONE
