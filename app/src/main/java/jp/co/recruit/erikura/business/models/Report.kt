@@ -4,7 +4,7 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.os.Parcelable
 import android.util.Log
-import com.crashlytics.android.Crashlytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Completable
 import io.reactivex.schedulers.Schedulers
@@ -170,7 +170,7 @@ data class Report (
                     }
                 }, onError = { e ->
                     if (e != null) {
-                        Crashlytics.logException(e)
+                        FirebaseCrashlytics.getInstance().recordException(e)
                     }
 
                     // エラーが発生した場合には、そのままの形でアップロードを行います
@@ -189,7 +189,7 @@ data class Report (
                         ErikuraApplication.instance.notifyUpload()
                     }
                     catch(e: IOException) {
-                        Crashlytics.logException(e)
+                        FirebaseCrashlytics.getInstance().recordException(e)
                         item.uploading = false
                         ErikuraApplication.instance.notifyUpload()
                     }

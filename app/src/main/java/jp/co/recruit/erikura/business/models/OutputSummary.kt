@@ -4,8 +4,8 @@ import android.media.ExifInterface
 import android.net.Uri
 import android.os.Parcelable
 import androidx.fragment.app.FragmentActivity
-import com.crashlytics.android.Crashlytics
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
 import java.io.IOException
@@ -119,7 +119,7 @@ data class OutputSummary(
                 Date(it * 1000) // 秒単位のための、x1000してミリ秒単位とする
             }
             // Crashlytics に例外を通知しておきます
-            Crashlytics.logException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
 }

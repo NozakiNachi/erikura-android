@@ -22,14 +22,12 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
 import com.adjust.sdk.Adjust
 import com.adjust.sdk.AdjustConfig
-import com.crashlytics.android.Crashlytics
 import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.iid.FirebaseInstanceId
 //import com.gu.toolargetool.TooLargeTool
-import io.fabric.sdk.android.Fabric
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
 import io.realm.Realm
@@ -298,7 +296,8 @@ object Tracking {
 
         // Crashlyticsの初期化
         // FIXME: Firebase コンソールで、Crashlytics の設定が必要？
-        Fabric.with(application, Crashlytics())
+        // Fabric.with(application, Crashlytics())
+        // 初期化は不要なようだ
 
         // Karteの初期を行います
         val config = TrackerConfig.Builder()
