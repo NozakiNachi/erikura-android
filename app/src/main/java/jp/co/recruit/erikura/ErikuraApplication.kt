@@ -26,6 +26,7 @@ import com.facebook.FacebookSdk
 import com.facebook.appevents.AppEventsConstants
 import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.iid.FirebaseInstanceId
 //import com.gu.toolargetool.TooLargeTool
 import io.karte.android.tracker.Tracker
@@ -117,6 +118,15 @@ class ErikuraApplication : Application() {
     val erikuraComponent: ErikuraComponent = DaggerErikuraComponent.create()
 
     var currentJob: Job? = null
+        set(value) {
+            if (value == null) {
+                Log.v("REPORTED JOB", ToStringBuilder.reflectionToString(value))
+                // FirebaseCrashlytics に案件がnullにされたことを通知しておきます
+                val e = Throwable("ErikuraApplication.currentJob : ${value.toString()}")
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+            field = value
+        }
 
     // プッシュ通知のURL
     var pushUri: Uri? = null
