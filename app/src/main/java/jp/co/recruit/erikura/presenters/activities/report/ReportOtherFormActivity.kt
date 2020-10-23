@@ -4,6 +4,7 @@ import JobUtil
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.ExifInterface
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
@@ -27,6 +28,7 @@ import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import jp.co.recruit.erikura.presenters.util.MessageUtils
 
 class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     private val viewModel by lazy {
@@ -179,19 +181,25 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             val uri = data?.data
             uri?.let {
                 MediaItem.createFrom(this, uri)?.let { item ->
-                    viewModel.addPhotoButtonVisibility.value = View.GONE
-                    viewModel.removePhotoButtonVisibility.value = View.VISIBLE
-                    val imageView: ImageView = findViewById(R.id.report_other_image)
-                    val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
-                    val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
-                    item.loadImage(this, imageView, width.toInt(), height.toInt())
-                    viewModel.otherPhoto = item
+                    val cr = this.contentResolver.openInputStream(uri)
+                    val exifInterface = ExifInterface(cr)
+                    val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
+                    // 横より縦の方が長い時アラートを表示します
+                    if (imageHeight > imageWidth) {
+                        MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
+                    }else {
+                        viewModel.addPhotoButtonVisibility.value = View.GONE
+                        viewModel.removePhotoButtonVisibility.value = View.VISIBLE
+                        val imageView: ImageView = findViewById(R.id.report_other_image)
+                        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+                        item.loadImage(this, imageView, width.toInt(), height.toInt())
+                        viewModel.otherPhoto = item
+                    }
                 }
             }
         }
-
         fromGallery = true
-
     }
 
     override fun onClickNext(view: View) {

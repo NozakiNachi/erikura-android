@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
+import android.media.ExifInterface
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -314,6 +315,19 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                     isChecked = false
                     button.isChecked = false
                     MessageUtils.displayAlert(activity, listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません"))
+                }else {
+                    val cr = item.contentUri?.let { activity.contentResolver.openInputStream(it) }
+                    if (cr != null) {
+                        // exif情報取得
+                        val exifInterface = ExifInterface(cr)
+                        val (width, height) = item.getWidthAndHeight(activity, exifInterface)
+                        // 横より縦の方が長い時アラートを表示します
+                        if (height > width) {
+                            isChecked = false
+                            button.isChecked = false
+                            MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
+                        }
+                    }
                 }
                 onClickListener?.apply {
                     onClick(item, isChecked)
