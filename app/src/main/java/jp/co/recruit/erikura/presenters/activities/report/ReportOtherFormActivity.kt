@@ -180,48 +180,21 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         if (resultCode == Activity.RESULT_OK) {
             val uri = data?.data
             uri?.let {
-                // 縦長画像は選択できない
-                val cr = this.contentResolver.openInputStream(uri)
-                if (cr != null) {
+                MediaItem.createFrom(this, uri)?.let { item ->
+                    val cr = this.contentResolver.openInputStream(uri)
                     val exifInterface = ExifInterface(cr)
-                    val orientation = exifInterface.getAttributeInt(
-                        ExifInterface.TAG_ORIENTATION,
-                        ExifInterface.ORIENTATION_UNDEFINED
-                    )
-                    var imageWidth: Int
-                    var imageHeight: Int
-                    when (orientation) {
-                        ExifInterface.ORIENTATION_ROTATE_90 -> {
-                            imageHeight =
-                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                            imageWidth =
-                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                        }
-                        ExifInterface.ORIENTATION_ROTATE_270 -> {
-                            imageHeight =
-                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                            imageWidth =
-                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                        }
-                        else -> {
-                            imageWidth =
-                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                            imageHeight =
-                                exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                        }
-                    }
+                    val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
+                    // 横より縦の方が長い時アラートを表示します
                     if (imageHeight > imageWidth) {
                         MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
                     }else {
-                        MediaItem.createFrom(this, uri)?.let { item ->
-                            viewModel.addPhotoButtonVisibility.value = View.GONE
-                            viewModel.removePhotoButtonVisibility.value = View.VISIBLE
-                            val imageView: ImageView = findViewById(R.id.report_other_image)
-                            val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
-                            val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
-                            item.loadImage(this, imageView, width.toInt(), height.toInt())
-                            viewModel.otherPhoto = item
-                        }
+                        viewModel.addPhotoButtonVisibility.value = View.GONE
+                        viewModel.removePhotoButtonVisibility.value = View.VISIBLE
+                        val imageView: ImageView = findViewById(R.id.report_other_image)
+                        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+                        item.loadImage(this, imageView, width.toInt(), height.toInt())
+                        viewModel.otherPhoto = item
                     }
                 }
             }

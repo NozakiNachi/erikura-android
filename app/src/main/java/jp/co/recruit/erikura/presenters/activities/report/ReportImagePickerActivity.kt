@@ -316,27 +316,12 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                     button.isChecked = false
                     MessageUtils.displayAlert(activity, listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません"))
                 }else {
-                    // 縦長画像は選択できない
                     val cr = item.contentUri?.let { activity.contentResolver.openInputStream(it) }
                     if (cr != null) {
+                        // exif情報取得
                         val exifInterface = ExifInterface(cr)
-                        val orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
-                        var width: Int
-                        var height: Int
-                        when(orientation) {
-                            ExifInterface.ORIENTATION_ROTATE_90 -> {
-                                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                            }
-                            ExifInterface.ORIENTATION_ROTATE_270 -> {
-                                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                            }
-                            else -> {
-                                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                            }
-                        }
+                        val (width, height) = item.getWidthAndHeight(activity, exifInterface)
+                        // 横より縦の方が長い時アラートを表示します
                         if (height > width) {
                             isChecked = false
                             button.isChecked = false

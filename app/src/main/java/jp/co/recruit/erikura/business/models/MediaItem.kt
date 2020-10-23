@@ -1,10 +1,13 @@
 package jp.co.recruit.erikura.business.models
 
+import android.app.Activity
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Parcelable
@@ -304,5 +307,35 @@ data class MediaItem(
                     onComplete(bytes)
                 }
             })
+    }
+
+    fun getWidthAndHeight(activity: Activity, exifInterface: ExifInterface): Pair<Int, Int> {
+        val orientation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_UNDEFINED)
+        var width: Int
+        var height: Int
+        when(orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> {
+                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+            }
+            ExifInterface.ORIENTATION_ROTATE_270 -> {
+                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+            }
+            else -> {
+                width = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
+                height = exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+            }
+        }
+        // widthとheightが取得できなかった場合はbitmapから取得します
+        if (height == 0 && width == 0) {
+            // uriから読み込み用InputStreamを生成
+            val inputStream = activity.contentResolver?.openInputStream(contentUri!!)
+            // inputStreamからbitmap生成
+            val imageBitmap = BitmapFactory.decodeStream(inputStream)
+            height = imageBitmap.height
+            width = imageBitmap.width
+        }
+        return Pair(width, height)
     }
 }

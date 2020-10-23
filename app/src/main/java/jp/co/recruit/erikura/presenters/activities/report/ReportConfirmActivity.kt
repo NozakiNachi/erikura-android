@@ -292,69 +292,43 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
                         val cr = contentResolver.openInputStream(uri)
                         val exifInterface = ExifInterface(cr)
-                        val orientation = exifInterface.getAttributeInt(
-                            ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_UNDEFINED
-                        )
-                        orientation.let {
-                            var imageWidth: Int
-                            var imageHeight: Int
-                            when (orientation) {
-                                ExifInterface.ORIENTATION_ROTATE_90 -> {
-                                    imageHeight =
-                                        exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                                    imageWidth =
-                                        exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                                }
-                                ExifInterface.ORIENTATION_ROTATE_270 -> {
-                                    imageHeight =
-                                        exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                                    imageWidth =
-                                        exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
-                                }
-                                else -> {
-                                    imageWidth =
-                                        exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_WIDTH, 0)
-                                    imageHeight =
-                                        exifInterface.getAttributeInt(ExifInterface.TAG_IMAGE_LENGTH, 0)
+                        val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
+                        // 横より縦の方が長い時アラートを表示します
+                        if (imageHeight > imageWidth) {
+                            MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
+                        }else {
+                            val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
+                            val takenAt = takenAtString?.let {
+                                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
+                            } ?: item.dateTaken?.let {
+                                Date(item.dateTaken)
+                            } ?: item.dateAdded?.let {
+                                Date(item.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
+                            }
+                            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+                            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+                            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+                            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
+                            summary.photoTakedAt = takenAt
+                            summary.latitude = latitude?.let { lat ->
+                                latitudeRef?.let { ref ->
+                                    MediaItem.exifLatitudeToDegrees(ref, lat)
                                 }
                             }
-                            if (imageHeight > imageWidth) {
-                                MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
-                            }else {
-                                val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-                                val takenAt = takenAtString?.let {
-                                    SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
-                                } ?: item.dateTaken?.let {
-                                    Date(item.dateTaken)
-                                } ?: item.dateAdded?.let {
-                                    Date(item.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
+                            summary.longitude = longitude?.let { lon ->
+                                longitudeRef?.let { ref ->
+                                    MediaItem.exifLongitudeToDegrees(ref, lon)
                                 }
-                                val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-                                val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-                                val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-                                val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-                                summary.photoTakedAt = takenAt
-                                summary.latitude = latitude?.let { lat ->
-                                    latitudeRef?.let { ref ->
-                                        MediaItem.exifLatitudeToDegrees(ref, lat)
-                                    }
-                                }
-                                summary.longitude = longitude?.let { lon ->
-                                    longitudeRef?.let { ref ->
-                                        MediaItem.exifLongitudeToDegrees(ref, lon)
-                                    }
-                                }
+                            }
 
-                                var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
-                                outputSummaryList =
-                                    job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
-                                outputSummaryList.add(summary)
-                                job.report?.let {
-                                    it.outputSummaries = outputSummaryList
-                                    it.uploadPhoto(this, job, summary.photoAsset){ token ->
-                                        PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
-                                    }
+                            var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+                            outputSummaryList =
+                                job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
+                            outputSummaryList.add(summary)
+                            job.report?.let {
+                                it.outputSummaries = outputSummaryList
+                                it.uploadPhoto(this, job, summary.photoAsset){ token ->
+                                    PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
                                 }
                             }
                         }
