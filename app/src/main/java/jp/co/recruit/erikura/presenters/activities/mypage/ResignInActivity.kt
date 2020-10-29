@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResignInBinding
@@ -26,10 +27,12 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
 
     var user: User = User()
     val date: Date = Date()
+    var job = Job()
 
     var fromActivity: Int = 0
     var requestCode: Int? = null
     var fromSms: Boolean = false
+    var fromWhere: Int? = null
 
     private val viewModel: ResignInViewModel by lazy {
         ViewModelProvider(this).get(ResignInViewModel::class.java)
@@ -51,6 +54,13 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
         fromActivity = intent.getIntExtra("fromActivity", 0)
         requestCode = intent.getIntExtra("requestCode", ErikuraApplication.REQUEST_DEFAULT_CODE)
         fromSms = intent.getBooleanExtra("fromSms", false)
+        if (fromActivity == BaseReSignInRequiredActivity.ACTIVITY_UPDATE_IDENTITY) {
+            user = intent.getParcelableExtra("user")
+            job = intent.getParcelableExtra("job")
+            fromWhere =
+                intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
+
+        }
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
@@ -84,6 +94,14 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
                     startActivity(intent)
                     finish()
                 }
+                BaseReSignInRequiredActivity.ACTIVITY_UPDATE_IDENTITY -> {
+                    val intent = Intent()
+                    intent.putExtra("user", user)
+                    intent.putExtra("job", job)
+                    intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
                 else -> {
                     throw IllegalArgumentException("unknown fromActivity")
                 }
@@ -94,6 +112,10 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
     override fun onBackPressed(){
         when (fromActivity) {
             BaseReSignInRequiredActivity.ACTIVITY_CHANGE_USER_INFORMATION -> {
+                setResult(Activity.RESULT_CANCELED)
+                finish()
+            }
+            BaseReSignInRequiredActivity.ACTIVITY_UPDATE_IDENTITY -> {
                 setResult(Activity.RESULT_CANCELED)
                 finish()
             }

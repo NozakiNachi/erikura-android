@@ -16,6 +16,7 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
 
         val ACTIVITY_CHANGE_USER_INFORMATION = 0x0001
         val ACTIVITY_ACCOUNT_SETTINGS = 0x0002
+        val ACTIVITY_UPDATE_IDENTITY = 0x0003
     }
 
     private var savedInstanceState: Bundle? = null

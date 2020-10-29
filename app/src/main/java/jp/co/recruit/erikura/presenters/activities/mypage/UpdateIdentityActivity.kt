@@ -37,7 +37,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
+class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_UPDATE_IDENTITY),
+    UpdateIdentityEventHandlers {
     var user = User()
     var job = Job()
     var identifyComparingData = IdentifyComparingData()
@@ -54,14 +55,9 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        user = intent.getParcelableExtra("user")
-        fromWhere =
-            intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
-        // 応募経由の場合、スキップ、または認証後にjobが必要
-        if (fromWhere == ErikuraApplication.FROM_ENTRY) {
-            job = intent.getParcelableExtra("job")
-        }
+    }
 
+    override fun onCreateImpl(savedInstanceState: Bundle?) {
         val binding: ActivityUpdateIdentityBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_update_identity)
         binding.lifecycleOwner = this
@@ -72,6 +68,13 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         val errorMessages = intent.getStringArrayExtra("errorMessages")
         if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
+        }
+        user = intent.getParcelableExtra("user")
+        fromWhere =
+            intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
+        // 応募経由の場合、スキップ、または認証後にjobが必要
+        if (fromWhere == ErikuraApplication.FROM_ENTRY) {
+            job = intent.getParcelableExtra("job")
         }
 
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
@@ -90,7 +93,30 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         })
 
         loadData()
+    }
 
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout =
+                findViewById<ConstraintLayout>(R.id.update_identity_constraintLayout)
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager =
+                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun startResignInActivity() {
+        Intent(this, ResignInActivity::class.java).let { intent ->
+            intent.putExtra("fromActivity", fromActivity)
+            intent.putExtra("user", user)
+            intent.putExtra("job", job)
+            intent.putExtra(ErikuraApplication.FROM_WHERE, fromWhere)
+            startActivityForResult(intent, ErikuraApplication.REQUEST_RESIGHIN)
+        }
     }
 
     override fun onStart() {
@@ -116,20 +142,6 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
         // 都道府県のプルダウン初期表示
         val id = getPrefectureId(user.prefecture ?: "")
         viewModel.prefectureId.value = id
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        val view = this.currentFocus
-        if (view != null) {
-            val constraintLayout =
-                findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
-            constraintLayout.requestFocus()
-
-            val imm: InputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
-        }
-        return super.dispatchTouchEvent(ev)
     }
 
     private fun getPrefectureId(prefecture: String): Int {
@@ -300,7 +312,11 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val displayApplyDialog: Boolean? = data?.getBooleanExtra("displayApplyDialog", false)
-        if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == AppCompatActivity.RESULT_OK) {
+        if (requestCode == ErikuraApplication.REQUEST_RESIGHIN && resultCode == RESULT_OK) {
+            //再認証経由の場合
+            onCreateImpl(savedInstanceState = null)
+        }
+        else if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == RESULT_OK) {
             if (displayApplyDialog == true) {
                 // 身分確認完了、あとで行う　の場合
                 val intent = Intent()
@@ -313,6 +329,9 @@ class UpdateIdentityActivity : BaseActivity(), UpdateIdentityEventHandlers {
                 setResult(RESULT_OK, intent)
                 finish()
             }
+        }
+        else {
+            finish()
         }
     }
 
