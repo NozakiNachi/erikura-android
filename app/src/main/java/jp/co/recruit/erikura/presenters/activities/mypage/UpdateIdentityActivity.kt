@@ -37,7 +37,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
 
-class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_UPDATE_IDENTITY),
+class UpdateIdentityActivity :
+    BaseReSignInRequiredActivity(fromActivity = BaseReSignInRequiredActivity.ACTIVITY_UPDATE_IDENTITY),
     UpdateIdentityEventHandlers {
     var user = User()
     var job = Job()
@@ -51,6 +52,29 @@ class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
     // 都道府県のリスト
     val prefectureList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
+
+    override fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
+        val nowTime = Date()
+        val reSignTime = Api.userSession?.resignInExpiredAt
+
+        if (!(fromWhere == ErikuraApplication.FROM_REGISTER)) {
+            //　本登録経由以外は再認証チェック
+            if (Api.userSession?.resignInExpiredAt !== null) {
+                // 過去の再認証から10分以上経っていたら再認証画面へ
+                if (reSignTime!! < nowTime) {
+                    onComplete(false)
+                } else {
+                    onComplete(true)
+                }
+            } else {
+                // 一度も再認証していなければ、再認証画面へ
+                onComplete(false)
+            }
+        } else {
+            // 本登録経由は本人確認情報入力画面へ
+            onComplete(true)
+        }
+    }
 
     override fun onCreateImpl(savedInstanceState: Bundle?) {
         val binding: ActivityUpdateIdentityBinding =
@@ -310,8 +334,7 @@ class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
         if (requestCode == ErikuraApplication.REQUEST_RESIGHIN && resultCode == RESULT_OK) {
             //再認証経由の場合
             onCreateImpl(savedInstanceState = null)
-        }
-        else if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == RESULT_OK) {
+        } else if (requestCode == ErikuraApplication.JOB_APPLY_BUTTON_REQUEST && resultCode == RESULT_OK) {
             if (displayApplyDialog == true) {
                 // 身分確認完了、あとで行う　の場合
                 val intent = Intent()
@@ -324,8 +347,7 @@ class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
                 setResult(RESULT_OK, intent)
                 finish()
             }
-        }
-        else {
+        } else {
             finish()
         }
     }

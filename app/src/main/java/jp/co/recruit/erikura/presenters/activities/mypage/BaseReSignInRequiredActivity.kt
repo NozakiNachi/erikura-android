@@ -8,7 +8,10 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import java.util.*
 
-abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackButton: Boolean = false) : BaseActivity(finishByBackButton) {
+abstract class BaseReSignInRequiredActivity(
+    val fromActivity: Int,
+    finishByBackButton: Boolean = false
+) : BaseActivity(finishByBackButton) {
     companion object {
         val REQUEST_RESIGN_IN = 0x1001
         val RESULT_RESIGN_IN_SUCCESS = 0x00
@@ -30,22 +33,17 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
         fromWhere =
             intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
-        //　本登録経由以外は再認証チェック
-        if (!(fromWhere == ErikuraApplication.FROM_REGISTER)) {
-            // 再認証が必要かどうか確認
-            checkResignIn() { isResignIn ->
-                if (isResignIn) {
-                    onCreateImpl(savedInstanceState)
-                } else {
-                    startResignInActivity()
-                }
+        // 再認証が必要かどうか確認
+        checkResignIn() { isResignIn ->
+            if (isResignIn) {
+                onCreateImpl(savedInstanceState)
+            } else {
+                startResignInActivity()
             }
-        } else {
-            onCreateImpl(savedInstanceState)
         }
     }
 
-    open fun startResignInActivity () {
+    open fun startResignInActivity() {
         finish()
         Intent(this, ResignInActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -75,7 +73,7 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
     abstract fun onCreateImpl(savedInstanceState: Bundle?)
 
     // 再認証画面へ遷移
-    protected fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
+    protected open fun checkResignIn(onComplete: (isResignIn: Boolean) -> Unit) {
         val nowTime = Date()
         val reSignTime = Api.userSession?.resignInExpiredAt
 
