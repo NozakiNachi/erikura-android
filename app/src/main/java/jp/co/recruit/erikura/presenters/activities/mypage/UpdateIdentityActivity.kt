@@ -42,7 +42,6 @@ class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
     var user = User()
     var job = Job()
     var identifyComparingData = IdentifyComparingData()
-    var fromWhere: Int? = null
     private val viewModel: UpdateIdentityViewModel by lazy {
         ViewModelProvider(this).get(UpdateIdentityViewModel::class.java)
     }
@@ -52,10 +51,6 @@ class UpdateIdentityActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
     // 都道府県のリスト
     val prefectureList =
         ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onCreateImpl(savedInstanceState: Bundle?) {
         val binding: ActivityUpdateIdentityBinding =

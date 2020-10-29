@@ -21,19 +21,27 @@ abstract class BaseReSignInRequiredActivity(val fromActivity: Int, finishByBackB
 
     private var savedInstanceState: Bundle? = null
     private var resignInChecked: Boolean = false
+    var fromWhere: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
         this.savedInstanceState = savedInstanceState
+        fromWhere =
+            intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
-        // 再認証が必要かどうか確認
-        checkResignIn() { isResignIn ->
-            if (isResignIn) {
-                onCreateImpl(savedInstanceState)
-            } else {
-                startResignInActivity ()
+        //　本登録経由以外は再認証チェック
+        if (!(fromWhere == ErikuraApplication.FROM_REGISTER)) {
+            // 再認証が必要かどうか確認
+            checkResignIn() { isResignIn ->
+                if (isResignIn) {
+                    onCreateImpl(savedInstanceState)
+                } else {
+                    startResignInActivity()
+                }
             }
+        } else {
+            onCreateImpl(savedInstanceState)
         }
     }
 
