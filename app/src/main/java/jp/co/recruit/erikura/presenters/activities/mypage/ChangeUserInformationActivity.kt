@@ -49,7 +49,6 @@ class ChangeUserInformationActivity :
     var prefectureName: String? = null
     var cityName: String? = null
     var streetName: String? = null
-    var fromWhere: Int? = null
 
     private val viewModel: ChangeUserInformationViewModel by lazy {
         ViewModelProvider(this).get(ChangeUserInformationViewModel::class.java)
