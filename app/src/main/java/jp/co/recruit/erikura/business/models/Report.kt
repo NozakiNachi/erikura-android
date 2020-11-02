@@ -54,6 +54,7 @@ data class Report (
     var operatorLikesCount: Int = 0,
     var operatorCommentsCount: Int = 0,
     var acceptedAt: Date? = null,
+    var acceptComment: String? = null,
     var rejectedAt: Date? = null,
     var rejectComment: String? = null,
     var createdAt: Date? = null,
