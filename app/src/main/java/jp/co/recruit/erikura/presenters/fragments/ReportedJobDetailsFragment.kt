@@ -222,8 +222,15 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                             str.length,
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
-                        viewModel.rejectedCommentVisibility.value = View.GONE
-                        viewModel.buttonVisibility.value = View.GONE
+                        if (it.acceptComment == null) {
+                            viewModel.acceptedCommentVisibility.value = View.GONE
+                            viewModel.rejectedCommentVisibility.value = View.GONE
+                        } else {
+                            viewModel.acceptedComment.value = it.acceptComment ?: ""
+                            viewModel.acceptedCommentVisibility.value = View.VISIBLE
+                            viewModel.rejectedCommentVisibility.value = View.GONE
+                        }
+                        viewModel.buttonVisibility.value = View.VISIBLE
                     }
                     ReportStatus.Rejected -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_reject))
@@ -234,8 +241,10 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
                         if (it.rejectComment.isNullOrBlank()) {
+                            viewModel.acceptedCommentVisibility.value = View.GONE
                             viewModel.rejectedCommentVisibility.value = View.GONE
                         } else {
+                            viewModel.acceptedCommentVisibility.value = View.GONE
                             viewModel.rejectedComment.value = it.rejectComment ?: ""
                             viewModel.rejectedCommentVisibility.value = View.VISIBLE
                         }
@@ -249,6 +258,7 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                             str.length,
                             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
                         )
+                        viewModel.acceptedCommentVisibility.value = View.GONE
                         viewModel.rejectedCommentVisibility.value = View.GONE
                         viewModel.buttonVisibility.value = View.VISIBLE
                     }
@@ -335,6 +345,8 @@ class ReportedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val status: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
     val rejectedComment: MutableLiveData<String> = MutableLiveData()
     val rejectedCommentVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val acceptedComment: MutableLiveData<String> = MutableLiveData()
+    val acceptedCommentVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
     // 作業報告編集削除ボタンの表示・非表示
     val buttonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
