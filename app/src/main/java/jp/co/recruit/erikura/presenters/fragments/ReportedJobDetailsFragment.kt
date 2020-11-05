@@ -230,7 +230,7 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                             viewModel.acceptedCommentVisibility.value = View.VISIBLE
                             viewModel.rejectedCommentVisibility.value = View.GONE
                         }
-                        viewModel.buttonVisibility.value = View.VISIBLE
+                        viewModel.buttonVisibility.value = View.GONE
                     }
                     ReportStatus.Rejected -> {
                         str.append(ErikuraApplication.instance.getString(R.string.report_status_reject))
