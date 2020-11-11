@@ -309,10 +309,10 @@
         <activity
             android:name=".presenters.activities.WebViewActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".presenters.activities.FirebaseDynamicLinksActivity"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+<!--        <activity-->
+<!--            android:name=".presenters.activities.FirebaseDynamicLinksActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">-->
             <!-- 今後有効にする可能性があるので残しています -->
             <!-- FDLの設定 -->
 <!--            <intent-filter>-->
@@ -323,7 +323,7 @@
 <!--                    android:host="${firebase_dynamic_link_host}"-->
 <!--                    android:scheme="https"/>-->
 <!--            </intent-filter>-->
-        </activity>
+<!--        </activity>-->
 
         <service
             android:name=".services.ErikuraMessagingService"
