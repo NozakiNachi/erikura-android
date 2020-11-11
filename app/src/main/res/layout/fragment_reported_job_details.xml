@@ -512,6 +512,18 @@
                         android:background="@color/silver" />
 
                 </LinearLayout>
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:onClick="@{handlers::onClickTransitionWebModal}"
+                    android:text="@string/failed_report_link"
+                    android:textSize="14dp"
+                    android:visibility="@{viewModel.buttonVisibility}"/>
             </LinearLayout>
         </ScrollView>
 

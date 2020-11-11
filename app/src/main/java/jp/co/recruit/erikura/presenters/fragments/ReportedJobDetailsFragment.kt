@@ -1,5 +1,8 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -11,6 +14,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.ToggleButton
 import androidx.core.graphics.drawable.toBitmap
@@ -28,6 +32,7 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
@@ -152,6 +157,47 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                     favoriteButton.isEnabled = true
                 }
             }
+        }
+    }
+
+    override fun onClickTransitionWebModal(view: View) {
+        // WEB遷移確認モーダルを表示する
+        BaseActivity.currentActivity?.let { activity ->
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_confirm_transition_web)
+                .setCancelable(false)
+                .create()
+            dialog.show()
+            val button: Button = dialog.findViewById(R.id.open_button)
+            button.setOnClickListener(View.OnClickListener{
+                //開く場合
+                dialog.dismiss()
+                Api(activity).agree(){result ->
+                    if (result){
+                        //カスタマWebの作業報告編集画面を開く
+                        val jobEditReportURLString = ErikuraConfig.jobEditReportURLString(job?.id, job?.reportId)
+                        // FIXME 現在のログインセッションをカスタマWebでも引き継ぐ
+                        Uri.parse(jobEditReportURLString)?.let { uri ->
+                            try {
+                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                    intent.setPackage("com.android.chrome")
+                                    startActivity(intent)
+                                }
+                            }
+                            catch (e: ActivityNotFoundException) {
+                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                    startActivity(intent)
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+            val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+            cancelButton.setOnClickListener(View.OnClickListener {
+                //キャンセル場合
+                dialog.dismiss()
+            })
         }
     }
 
@@ -400,6 +446,7 @@ class ReportedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
 
 interface ReportedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
+    fun onClickTransitionWebModal(view: View)
 }
 
 

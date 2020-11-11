@@ -1,7 +1,9 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
@@ -135,8 +138,22 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
                 dialog.dismiss()
                 Api(activity).agree(){result ->
                     if (result){
-//                        ・カスタマWebの作業報告画面を開く
-//                        ・現在のログインセッションをカスタマWebでも引き継ぐ
+                        //カスタマWebの作業報告新規作成画面を開く
+                        val jobNewReportURLString = ErikuraConfig.jobNewReportURLString(job.id)
+                        // FIXME 現在のログインセッションをカスタマWebでも引き継ぐ
+                        Uri.parse(jobNewReportURLString)?.let { uri ->
+                            try {
+                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                    intent.setPackage("com.android.chrome")
+                                    startActivity(intent)
+                                }
+                            }
+                            catch (e: ActivityNotFoundException) {
+                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                    startActivity(intent)
+                                }
+                            }
+                        }
                     }
                 }
             })
