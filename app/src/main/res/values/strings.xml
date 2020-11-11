@@ -578,4 +578,10 @@
     <string name="report_examples_button">このお仕事のお手本報告</string>
     <string name="report_examples_button2">このお仕事の\nお手本報告</string>
 
+    <!--WEB遷移確認ダイアログ-->
+    <string name="confirm_transition_web_title">制限付き報告画面を開きますか？</string>
+    <string name="confirm_transition_web_explain">こちらは制限付きの報告画面です。「作業を報告」ボタンからの作業報告ができない場合にご利用ください。</string>
+    <string name="confirm_transition_web_open">開く</string>
+    <string name="confirm_transition_web_cancel">キャンセル</string>
+
 </resources>

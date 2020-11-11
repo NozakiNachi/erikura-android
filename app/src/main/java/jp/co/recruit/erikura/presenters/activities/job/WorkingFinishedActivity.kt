@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -120,6 +121,33 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         }
     }
 
+    override fun onClickTransitionWebModal(view: View) {
+        // WEB遷移確認モーダルを表示する
+        BaseActivity.currentActivity?.let { activity ->
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_confirm_transition_web)
+                .setCancelable(false)
+                .create()
+            dialog.show()
+            val button: Button = dialog.findViewById(R.id.open_button)
+            button.setOnClickListener(View.OnClickListener{
+                //開く場合
+                dialog.dismiss()
+                Api(activity).agree(){result ->
+                    if (result){
+//                        ・カスタマWebの作業報告画面を開く
+//                        ・現在のログインセッションをカスタマWebでも引き継ぐ
+                    }
+                }
+            })
+            val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+            cancelButton.setOnClickListener(View.OnClickListener {
+                //キャンセル場合
+                dialog.dismiss()
+            })
+        }
+    }
+
     fun onJobSelected(job: Job) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
@@ -136,4 +164,5 @@ class WorkingFinishedViewModel: ViewModel() {
 interface WorkingFinishedEventHandlers {
     fun onClickReport(view: View)
     fun onClickAppliedJobs(view: View)
+    fun onClickTransitionWebModal(view: View)
 }
