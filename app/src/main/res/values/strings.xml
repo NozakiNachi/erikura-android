@@ -197,6 +197,7 @@
     <!-- 作業完了画面 -->
     <string name="working_finished_caption">作業が完了しました！</string>
     <string name="working_finished_note">撮影した実施箇所の写真を送って、\n作業報告を行いましょう！</string>
+    <string name="failed_report_link"><a href="">報告に失敗する方はこちら</a></string>
 
     <!-- 作業報告写真選択画面 -->
     <string name="report_image_picker_caption">作業報告</string>
