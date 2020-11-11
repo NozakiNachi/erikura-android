@@ -126,6 +126,16 @@
                     android:scheme="${erikura_protocol}"
                     android:pathPrefix="${erikura_relative_url_root}/link/jobs/" />
             </intent-filter>
+            <!-- 応募のFDL -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/job/apply/" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".presenters.activities.job.ApplyCompletedActivity"
@@ -158,7 +168,19 @@
         <!-- 応募済みの仕事関連 -->
         <activity
             android:name=".presenters.activities.OwnJobsActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/report/finish/" />
+            </intent-filter>
+<!--            FIXME-->
+        </activity>
         <!-- ============================================================ -->
         <!-- マイページ関連 -->
         <activity
@@ -234,7 +256,7 @@
                 <data
                     android:host="*"
                     android:scheme="erikura" />
-                <data android:path="/user/register/mail_auth" />
+                <data android:path="/user/register" />
             </intent-filter>
             <!-- FDLの設定 -->
             <intent-filter>
@@ -244,7 +266,7 @@
                 <data
                     android:host="${erikura_host}"
                     android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/mail_auth" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/" />
             </intent-filter>
 
             <!-- ドメイン統合後の登録用URL -->

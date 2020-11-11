@@ -1,6 +1,9 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -46,6 +49,7 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
     }
     var fromReportCompleted = false
     var fromMypageJobCommentGoodButton = false
+    var fromReportedFDL = false
     lateinit var viewPager: ViewPager
 
     // 差し戻しマークが表示されているか?
@@ -139,6 +143,13 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
             intent.putExtra(EXTRA_FROM_REPORT_COMPLETED_KEY, false)
             fromReportCompleted = false
         }
+        //FDLの処理
+        fromReportedFDL = handleReportedFDL(intent)
+        if (fromReportedFDL) {
+            viewPager.setCurrentItem(PAGE_REPORTED_JOBS, true)
+            intent.putExtra(EXTRA_FROM_REPORT_COMPLETED_KEY, false)
+            fromReportedFDL = false
+        }
 
         fromMypageJobCommentGoodButton = intent.getBooleanExtra(EXTRA_FROM_MYPAGE_JOB_COMMENT_GOOD_BUTTON, false)
         if (fromMypageJobCommentGoodButton) {
@@ -189,6 +200,17 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
                 }
             }
         }
+    }
+
+    private fun handleReportedFDL(intent: Intent): Boolean {
+        var fromReportedFDL = false
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == "/app/link/report/finish/") {
+                fromReportedFDL = true
+            }
+        }
+        return fromReportedFDL
     }
 }
 
