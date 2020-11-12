@@ -11,7 +11,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- おおよその位置情報(ネットワーク基地局) -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- 完全なネットワークアクセス -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -25,53 +25,76 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        >
+        android:theme="@style/AppTheme">
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
+            android:exported="false"
+            android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
         <!-- チュートリアル -->
-        <activity android:name=".presenters.activities.tutorial.PermitLocationActivity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.tutorial.Onboarding0Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.tutorial.Onboarding1Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.tutorial.Onboarding2Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.tutorial.Onboarding3Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.tutorial.Onboarding4Activity"
-            android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.tutorial.Onboarding5Activity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.tutorial.PermitLocationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.tutorial.Onboarding0Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.tutorial.Onboarding1Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.tutorial.Onboarding2Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.tutorial.Onboarding3Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.tutorial.Onboarding4Activity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.tutorial.Onboarding5Activity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".services.PedometerService"
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".presenters.activities.report.ReportConfirmActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.report.ReportEvaluationActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.report.ReportOtherFormActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.report.ReportWorkingTimeActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.mypage.PaymentInformationActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.report.ReportFormActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.errors.LoginRequiredActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.report.ReportImagePickerActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".presenters.activities.report.ReportExamplesActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.report.ReportConfirmActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.report.ReportEvaluationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.report.ReportOtherFormActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.report.ReportWorkingTimeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.mypage.PaymentInformationActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.report.ReportFormActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.errors.LoginRequiredActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.report.ReportImagePickerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".presenters.activities.report.ReportExamplesActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Launcher"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            >
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -88,33 +111,47 @@
         <activity
             android:name=".presenters.activities.job.MapViewActivity"
             android:label="@string/title_activity_map_view"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/map/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/map/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- リスト画面 -->
         <activity
             android:name=".presenters.activities.job.ListViewActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/> <!-- 案件検索画面 -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${erikura_host}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/list/"
+                    android:scheme="${erikura_protocol}" />
+            </intent-filter>
+        </activity><!-- 案件検索画面 -->
         <activity
             android:name=".presenters.activities.job.SearchJobActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <!-- ============================================================ -->
         <!-- 案件詳細関連 -->
         <activity
             android:name=".presenters.activities.job.JobDetailsActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            >
+            android:screenOrientation="portrait">
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -130,32 +167,38 @@
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
             <!-- 応募のFDL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/job/apply/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/job/apply/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
             <!-- 作業報告のFDL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/report/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/report/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
         <activity
@@ -166,9 +209,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".presenters.activities.job.PlaceDetailActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            >
+            android:screenOrientation="portrait">
 
             <!-- ディープリンクの設定 -->
             <intent-filter>
@@ -183,22 +225,25 @@
                 <data android:pathPrefix="/places/" />
             </intent-filter>
         </activity>
-        <activity android:name=".presenters.activities.job.PropertyNotesActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.job.PropertyNotesActivity"
+            android:screenOrientation="portrait" />
         <!-- ============================================================ -->
         <!-- 応募済みの仕事関連 -->
         <activity
             android:name=".presenters.activities.OwnJobsActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/report/finish/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/report/finish/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
         <!-- ============================================================ -->
@@ -206,16 +251,18 @@
         <activity
             android:name=".presenters.activities.mypage.MypageActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
         <!-- マイページ -->
@@ -227,31 +274,35 @@
         <activity
             android:name=".presenters.activities.mypage.ChangeUserInformationActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/change/user/information/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/change/user/information/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 会員情報変更 -->
         <activity
             android:name=".presenters.activities.mypage.AccountSettingActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/payment/register/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/payment/register/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 口座情報登録更新 -->
         <activity
@@ -266,17 +317,21 @@
             android:name=".presenters.activities.mypage.AboutAppActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" /> <!-- このアプリについて画面 -->
-        <activity android:name=".presenters.activities.mypage.FavoritePlacesActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.mypage.FavoritePlacesActivity"
+            android:screenOrientation="portrait" />
         <!-- 本人確認情報入力画面 -->
-        <activity android:name=".presenters.activities.mypage.UpdateIdentityActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.mypage.UpdateIdentityActivity"
+            android:screenOrientation="portrait" />
         <!-- 身分証確認画面-->
-        <activity android:name=".presenters.activities.mypage.UploadIdImageActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.mypage.UploadIdImageActivity"
+            android:screenOrientation="portrait" />
         <!-- 身分証確認完了画面-->
-        <activity android:name=".presenters.activities.mypage.UploadedIdImageActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.mypage.UploadedIdImageActivity"
+            android:screenOrientation="portrait" />
 
 
         <!-- ============================================================ -->
@@ -284,21 +339,20 @@
         <activity
             android:name=".presenters.activities.registration.RegisterEmailActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterEmailFinishedActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterNameActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterPasswordActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTask"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
-            >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
 
             <!-- ディープリンクの設定 -->
             <intent-filter>
@@ -315,91 +369,98 @@
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/" />
+                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
 
             <!-- ドメイン統合後の登録用URL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_app" />
+                    android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_app"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
 
             <!-- 旧ドメインでの登録用URL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="${old_erikura_host}"
-                    android:scheme="${erikura_protocol}"
-                    android:pathPrefix="/api/v1/utils/open_android_app" />
+                    android:pathPrefix="/api/v1/utils/open_android_app"
+                    android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
         <activity
             android:name=".presenters.activities.registration.RegisterBirthdayActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterGenderActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterAddressActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterPhoneActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterJobStatusActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterWishWorkActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.SmsVerifyActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <activity
             android:name=".presenters.activities.registration.RegisterFinishedActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" />
         <!-- ============================================================ -->
         <!-- その他 -->
-        <activity android:name=".presenters.activities.errors.UpgradeRequiredActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".presenters.activities.errors.UpgradeRequiredActivity"
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".presenters.activities.WebViewActivity"
             android:screenOrientation="portrait" />
-<!--        <activity-->
-<!--            android:name=".presenters.activities.FirebaseDynamicLinksActivity"-->
-<!--            android:screenOrientation="portrait"-->
-<!--            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">-->
-            <!-- 今後有効にする可能性があるので残しています -->
-            <!-- FDLの設定 -->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.VIEW"/>-->
-<!--                <category android:name="android.intent.category.DEFAULT"/>-->
-<!--                <category android:name="android.intent.category.BROWSABLE"/>-->
-<!--                <data-->
-<!--                    android:host="${firebase_dynamic_link_host}"-->
-<!--                    android:scheme="https"/>-->
-<!--            </intent-filter>-->
-<!--        </activity>-->
+        <!--        <activity-->
+        <!--            android:name=".presenters.activities.FirebaseDynamicLinksActivity"-->
+        <!--            android:screenOrientation="portrait"-->
+        <!--            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">-->
+        <!-- 今後有効にする可能性があるので残しています -->
+        <!-- FDLの設定 -->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.intent.action.VIEW"/>-->
+        <!--                <category android:name="android.intent.category.DEFAULT"/>-->
+        <!--                <category android:name="android.intent.category.BROWSABLE"/>-->
+        <!--                <data-->
+        <!--                    android:host="${firebase_dynamic_link_host}"-->
+        <!--                    android:scheme="https"/>-->
+        <!--            </intent-filter>-->
+        <!--        </activity>-->
 
         <service
             android:name=".services.ErikuraMessagingService"
@@ -412,8 +473,8 @@
 
         <receiver
             android:name="com.adjust.sdk.AdjustReferrerReceiver"
-            android:permission="android.permission.INSTALL_PACKAGES"
-            android:exported="true" >
+            android:exported="true"
+            android:permission="android.permission.INSTALL_PACKAGES">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
@@ -445,7 +506,7 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            android:value="633836627103645"/>
+            android:value="633836627103645" />
     </application>
 
 </manifest>
