@@ -185,7 +185,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/job/apply/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/apply/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
             <!-- 作業報告のFDL -->
@@ -197,7 +197,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/report/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/report/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -319,7 +319,18 @@
             android:windowSoftInputMode="adjustResize" /> <!-- このアプリについて画面 -->
         <activity
             android:name=".presenters.activities.mypage.FavoritePlacesActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/favorite/"
+                    android:scheme="${erikura_protocol}" />
+            </intent-filter>
+        </activity>
         <!-- 本人確認情報入力画面 -->
         <activity
             android:name=".presenters.activities.mypage.UpdateIdentityActivity"
@@ -446,21 +457,24 @@
         <activity
             android:name=".presenters.activities.WebViewActivity"
             android:screenOrientation="portrait" />
-        <!--        <activity-->
-        <!--            android:name=".presenters.activities.FirebaseDynamicLinksActivity"-->
-        <!--            android:screenOrientation="portrait"-->
-        <!--            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">-->
-        <!-- 今後有効にする可能性があるので残しています -->
-        <!-- FDLの設定 -->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.VIEW"/>-->
-        <!--                <category android:name="android.intent.category.DEFAULT"/>-->
-        <!--                <category android:name="android.intent.category.BROWSABLE"/>-->
-        <!--                <data-->
-        <!--                    android:host="${firebase_dynamic_link_host}"-->
-        <!--                    android:scheme="https"/>-->
-        <!--            </intent-filter>-->
-        <!--        </activity>-->
+<!--        <activity-->
+<!--            android:name=".presenters.activities.FirebaseDynamicLinksActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">-->
+<!--&lt;!&ndash;            FDLの設定&ndash;&gt;-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.VIEW" />-->
+<!--                <category android:name="android.intent.category.DEFAULT" />-->
+<!--                <category android:name="android.intent.category.BROWSABLE" />-->
+<!--&lt;!&ndash;                <data&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:host="${firebase_dynamic_link_host}"&ndash;&gt;-->
+<!--&lt;!&ndash;                    android:scheme="https" />&ndash;&gt;-->
+<!--                <data-->
+<!--                    android:host="${erikura_host}"-->
+<!--                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/"-->
+<!--                    android:scheme="${erikura_protocol}" />-->
+<!--            </intent-filter>-->
+<!--        </activity>-->
 
         <service
             android:name=".services.ErikuraMessagingService"
