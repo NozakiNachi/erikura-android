@@ -88,7 +88,18 @@
         <activity
             android:name=".presenters.activities.job.MapViewActivity"
             android:label="@string/title_activity_map_view"
-            android:screenOrientation="portrait" /> <!-- リスト画面 -->
+            android:screenOrientation="portrait" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/map/" />
+            </intent-filter>
+        </activity><!-- リスト画面 -->
         <activity
             android:name=".presenters.activities.job.ListViewActivity"
             android:screenOrientation="portrait"
@@ -135,6 +146,16 @@
                     android:host="${erikura_host}"
                     android:scheme="${erikura_protocol}"
                     android:pathPrefix="${erikura_relative_url_root}/link/job/apply/" />
+            </intent-filter>
+            <!-- 作業報告のFDL -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/report/" />
             </intent-filter>
         </activity>
         <activity
