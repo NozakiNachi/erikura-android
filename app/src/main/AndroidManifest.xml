@@ -206,7 +206,18 @@
         <activity
             android:name=".presenters.activities.mypage.ChangeUserInformationActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- 会員情報変更 -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/change/user/information/" />
+            </intent-filter>
+        </activity><!-- 会員情報変更 -->
         <activity
             android:name=".presenters.activities.mypage.AccountSettingActivity"
             android:screenOrientation="portrait"
