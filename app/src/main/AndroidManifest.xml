@@ -179,14 +179,25 @@
                     android:scheme="${erikura_protocol}"
                     android:pathPrefix="${erikura_relative_url_root}/link/report/finish/" />
             </intent-filter>
-<!--            FIXME-->
         </activity>
         <!-- ============================================================ -->
         <!-- マイページ関連 -->
         <activity
             android:name=".presenters.activities.mypage.MypageActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" /> <!-- マイページ -->
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="${erikura_host}"
+                    android:scheme="${erikura_protocol}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/" />
+            </intent-filter>
+        </activity>
+        <!-- マイページ -->
         <activity
             android:name=".presenters.activities.mypage.ConfigurationActivity"
             android:screenOrientation="portrait"
