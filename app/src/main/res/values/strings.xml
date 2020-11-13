@@ -18,6 +18,8 @@
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
     <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
+    <string name="registered_user"><a href="">エリクラに登録済みの方はこちら</a></string>
+
 
     <!-- 仮登録画面 -->
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
@@ -68,6 +70,15 @@
     <string name="smsVerify_register_phone">電話番号を編集する</string>
     <string name="smsVerify_caption">エリクラを安全にご利用いただくために携帯電話番号認証をお願いしております。</string>
     <string name="smsVerify_not_mobilePhone_format">ご登録の電話番号が携帯電話番号ではないようです。”電話番号を編集する”リンクからご登録の電話番号を携帯電話番号（070、080、090から始まる番号）に変更してください。</string>
+
+    <!-- パスワード再設定送信画面 -->
+    <string name="send_reset_password_caption">ご登録いただいたメールアドレスを入力してください。\nメールアドレス宛にパスワード変更ページのURLが記載されたメールを送信します。</string>
+    <string name="send_reset_password_button">パスワード再設定メールを送信する</string>
+
+    <!-- パスワード再設定画面 -->
+    <string name="reset_password_title">パスワード再設定</string>
+    <string name="reset_password_caption">新しく設定するパスワードを入力してください</string>
+    <string name="reset_password_button">パスワードを変更</string>
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>

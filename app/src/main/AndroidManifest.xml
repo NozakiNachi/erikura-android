@@ -343,6 +343,29 @@
         <activity
             android:name=".presenters.activities.mypage.UploadedIdImageActivity"
             android:screenOrientation="portrait" />
+        <!-- パスワード再設定メール-->
+        <activity
+            android:name=".presenters.activities.SendResetPasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+        <!-- パスワード再設定-->
+        <activity
+            android:name=".presenters.activities.ResetPasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${erikura_host}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/reset/password/"
+                    android:scheme="${erikura_protocol}" />
+            </intent-filter>
+        </activity>
 
 
         <!-- ============================================================ -->

@@ -109,12 +109,16 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
     }
 
     override fun onClickReminderLink(view: View) {
-        val reminderURLString = BuildConfig.SERVER_BASE_URL + "users/password/new"
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(reminderURLString)
+        // FIXME パスワード再設定メール送信Activityへ遷移する
+        val intent = Intent(this, SendResetPasswordActivity::class.java).apply {
         }
         startActivity(intent)
+//        val reminderURLString = BuildConfig.SERVER_BASE_URL + "users/password/new"
+//        val intent = Intent(this, WebViewActivity::class.java).apply {
+//            action = Intent.ACTION_VIEW
+//            data = Uri.parse(reminderURLString)
+//        }
+//        startActivity(intent)
     }
 
     override fun onClickUnreachLink(view: View) {
