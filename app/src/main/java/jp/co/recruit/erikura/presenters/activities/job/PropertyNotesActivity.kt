@@ -44,6 +44,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         ViewModelProvider(this).get(PropertyNotesViewModel::class.java)
     }
     private var cautions: List<Caution> = listOf()
+    private var jobId: Int? = null
     private var placeId: Int? = null
     private var jobKindId: Int? = null
 
@@ -51,17 +52,16 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        jobId = intent.getIntExtra("job_id", 0)
         placeId = intent.getIntExtra("place_id", 0)
         jobKindId = intent.getIntExtra("job_kind_id", 0)
         // 物件の注意事項を取得
-        placeId?.let { place_id ->
-            jobKindId?.let { job_kind_id ->
-                Api(this).placeCautions(place_id, job_kind_id) {
-                    //ボタンのラベルを生成しセット
-                    cautions = it
-                    propertyNotesAdapter.cautions = it
-                    propertyNotesAdapter.notifyDataSetChanged()
-                }
+        if (jobId != null || placeId != null) {
+            Api(this).placeCautions(jobId, placeId, jobKindId) {
+                //ボタンのラベルを生成しセット
+                cautions = it
+                propertyNotesAdapter.cautions = it
+                propertyNotesAdapter.notifyDataSetChanged()
             }
         }
         val binding: ActivityPropertyNotesBinding =
@@ -76,24 +76,24 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
     override fun onResume() {
         super.onResume()
+        val api = Api(this)
         placeId?.let { placeId ->
-            jobKindId?.let { jobKindId ->
-                val api = Api(this)
-                api.place(placeId) { place ->
-                    if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
-                        // 現ユーザーが応募済の物件の場合　フル住所を表示
-                        viewModel.address.value = place.workingPlace + place.workingBuilding
-                    } else {
-                        // 現ユーザーが未応募の物件の場合　短縮住所を表示
-                        viewModel.address.value = place.workingPlaceShort
-                    }
+            api.place(placeId) { place ->
+                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                    // 現ユーザーが応募済の物件の場合　フル住所を表示
+                    viewModel.address.value = place.workingPlace + place.workingBuilding
+                } else {
+                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                    viewModel.address.value = place.workingPlaceShort
                 }
-                api.placeCautions(placeId, jobKindId) {
-                    //ボタンのラベルを生成しセット
-                    cautions = it
-                    propertyNotesAdapter.cautions = it
-                    propertyNotesAdapter.notifyDataSetChanged()
-                }
+            }
+        }
+        if (jobId != null || placeId != null) {
+            api.placeCautions(jobId, placeId, jobKindId) {
+                //ボタンのラベルを生成しセット
+                cautions = it
+                propertyNotesAdapter.cautions = it
+                propertyNotesAdapter.notifyDataSetChanged()
             }
         }
     }
