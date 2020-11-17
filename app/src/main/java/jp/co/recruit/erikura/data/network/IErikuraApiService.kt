@@ -120,7 +120,7 @@ interface IErikuraApiService {
     fun favoritePlaces(): ApiObservable<FavoritePlacesResponse>
 
     @GET("places/cautions")
-    fun placeCautions(@Query("place_id") placeId: Int): ApiObservable<CautionResponse>
+    fun placeCautions(@Query("place_id") placeId: Int, @Query("job_kind_id") jobKindId: Int): ApiObservable<CautionResponse>
 
     @GET("reports/good_examples")
     fun goodExamples(@Query("place_id") placeID: Int,

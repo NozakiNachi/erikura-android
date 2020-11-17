@@ -156,6 +156,7 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
 
             val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity::class.java)
             intent.putExtra("place_id", job.placeId)
+            intent.putExtra("job_kind_id", job.jobKind?.id)
             startActivity(intent)
         }
     }

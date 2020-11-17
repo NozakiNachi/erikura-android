@@ -1,25 +1,18 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
-import android.app.Activity
 import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
-import android.content.ContentResolver
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
+import android.widget.ImageView
+import android.widget.LinearLayout
 import androidx.core.content.FileProvider
-import androidx.core.view.ViewCompat
-import androidx.core.view.marginTop
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -30,12 +23,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
-import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Caution
 import jp.co.recruit.erikura.business.models.CautionFile
 import jp.co.recruit.erikura.business.models.ErikuraConfig
-import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.databinding.ActivityPropertyNotesBinding
@@ -54,19 +45,23 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     }
     private var cautions: List<Caution> = listOf()
     private var placeId: Int? = null
+    private var jobKindId: Int? = null
 
     private lateinit var propertyNotesAdapter: PropertyNotesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         placeId = intent.getIntExtra("place_id", 0)
+        jobKindId = intent.getIntExtra("job_kind_id", 0)
         // 物件の注意事項を取得
         placeId?.let { place_id ->
-            Api(this).placeCautions(place_id) {
-                //ボタンのラベルを生成しセット
-                cautions = it
-                propertyNotesAdapter.cautions = it
-                propertyNotesAdapter.notifyDataSetChanged()
+            jobKindId?.let { job_kind_id ->
+                Api(this).placeCautions(place_id, job_kind_id) {
+                    //ボタンのラベルを生成しセット
+                    cautions = it
+                    propertyNotesAdapter.cautions = it
+                    propertyNotesAdapter.notifyDataSetChanged()
+                }
             }
         }
         val binding: ActivityPropertyNotesBinding =
@@ -81,22 +76,24 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
     override fun onResume() {
         super.onResume()
-        placeId?.let {
-            val api = Api(this)
-            api.place(it) { place ->
-                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
-                    // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace + place.workingBuilding
-                } else {
-                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
-                    viewModel.address.value = place.workingPlaceShort
+        placeId?.let { placeId ->
+            jobKindId?.let { jobKindId ->
+                val api = Api(this)
+                api.place(placeId) { place ->
+                    if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                        // 現ユーザーが応募済の物件の場合　フル住所を表示
+                        viewModel.address.value = place.workingPlace + place.workingBuilding
+                    } else {
+                        // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                        viewModel.address.value = place.workingPlaceShort
+                    }
                 }
-            }
-            api.placeCautions(it) {
-                //ボタンのラベルを生成しセット
-                cautions = it
-                propertyNotesAdapter.cautions = it
-                propertyNotesAdapter.notifyDataSetChanged()
+                api.placeCautions(placeId, jobKindId) {
+                    //ボタンのラベルを生成しセット
+                    cautions = it
+                    propertyNotesAdapter.cautions = it
+                    propertyNotesAdapter.notifyDataSetChanged()
+                }
             }
         }
     }

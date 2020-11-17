@@ -510,9 +510,9 @@ class Api(var context: Context) {
         }
     }
 
-    fun placeCautions(placeId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<Caution>) -> Unit){
+    fun placeCautions(placeId: Int, jobKindId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (result: List<Caution>) -> Unit){
         executeObservable(
-            erikuraApiService.placeCautions(placeId),
+            erikuraApiService.placeCautions(placeId, jobKindId),
             onError = onError
         ) { body ->
             val cautions = body.cautions
