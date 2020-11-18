@@ -174,9 +174,9 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                 dialog.dismiss()
                 Api(activity).createToken() { token ->
                     //カスタマWebの作業報告編集画面を開く
-                    val jobEditReportURLString =
-                        ErikuraConfig.jobEditReportURLString(job?.reportId, token)
-                    Uri.parse(jobEditReportURLString)?.let { uri ->
+                    val jobReportURLString =
+                        ErikuraConfig.jobReportURLString(job?.id, token)
+                    Uri.parse(jobReportURLString)?.let { uri ->
                         try {
                             Intent(Intent.ACTION_VIEW, uri).let { intent ->
                                 intent.setPackage("com.android.chrome")
