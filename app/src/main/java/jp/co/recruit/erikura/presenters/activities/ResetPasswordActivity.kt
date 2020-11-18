@@ -1,5 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.os.bundleOf
@@ -8,18 +10,21 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResetPasswordBinding
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import java.util.regex.Pattern
 
 class ResetPasswordActivity : BaseActivity(),
     ResetPasswordEventHandlers {
     var user: User = User()
+    private var resetPasswordToken: String? = null
 
     private val viewModel: ResetPasswordViewModel by lazy {
         ViewModelProvider(this).get(ResetPasswordViewModel::class.java)
@@ -33,7 +38,23 @@ class ResetPasswordActivity : BaseActivity(),
         binding.handlers = this
         binding.viewModel = viewModel
 
-        //FIXME トークンが一致するか判定API　できなければ画面を表示しない
+        // FIXME FDLは12/11リリース
+        // FDLの場合
+//        resetPasswordToken = handleIntent(intent)
+
+        // FIXME FDLは12/11削除予定
+        // パスワード再設定トークン取得
+        var uri: Uri? = intent.data
+        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_app") {
+            val path = uri?.getQueryParameter("path")
+            uri = Uri.parse("erikura://${path}")
+        }
+        else if (uri?.path == "/api/v1/utils/open_android_app") {
+            val path = uri?.getQueryParameter("path")
+            uri = Uri.parse("erikura://${path}")
+        }
+        resetPasswordToken = uri?.getQueryParameter("reset_password_token")
+        // FIXME FDLは12/11削除予定ここまで
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
@@ -45,22 +66,25 @@ class ResetPasswordActivity : BaseActivity(),
         Tracking.logEvent(event = "view_edit_password", params = bundleOf())
         Tracking.view(name = "/users/password/", title = "パスワード再設定")
 
-        // 変更するユーザーの現在の登録値を取得
-        val api = Api(this)
-        api.user() {
-            user = it
-            user.id?.let { userId ->
-            }
-        }
     }
 
 
     override fun onClickResetPassword(view: View) {
-        // パスワード
-        if (!viewModel.password.value.isNullOrBlank()) {
-            // パスワードが設定されている場合のみ、更新するようにします
-            user.password = viewModel.password.value
+        // パスワード再設定API
+        Api(this).updateResetPassword(resetPasswordToken?: "",
+            viewModel.password.value?: "",
+            viewModel.verificationPassword.value?:""){
+            if (it == true) {
+                var intent = Intent(this, MapViewActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
+    }
+
+    private fun handleIntent(intent: Intent): String {
+        val appLinkData: Uri? = intent.data
+        return appLinkData!!.lastPathSegment!!.toString()
     }
 }
 
@@ -88,6 +112,7 @@ class ResetPasswordViewModel : ViewModel() {
 
 
     private fun isValidPassword(): Boolean {
+        // URLが有効か判定する
         var valid = true
         val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
@@ -139,3 +164,4 @@ class ResetPasswordViewModel : ViewModel() {
 interface ResetPasswordEventHandlers {
     fun onClickResetPassword(view: View)
 }
+

@@ -787,6 +787,26 @@ class Api(var context: Context) {
         activeObservables.clear()
     }
 
+    fun sendPasswordReset(email: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.sendPasswordReset(RegisterEmailRequest(email = email)),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
+        }
+    }
+
+    fun updateResetPassword(passwordResetToken: String, password: String, passwordConfirmation: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.updateResetPassword(UpdatePasswordRequest(passwordResetToken = passwordResetToken, password = password, passwordConfirmation = passwordConfirmation)),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
+        }
+    }
+
     private val activeObservables = mutableSetOf<Observable<*>>()
 
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>,

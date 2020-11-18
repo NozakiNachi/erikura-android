@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -42,10 +43,12 @@ class SendResetPasswordActivity : BaseActivity(),
     }
 
     override fun onClickSendResetPassword(view: View) {
-        //API実行
-        //メール送信後下記を行う
-        var intent = Intent(this, SendedResetPasswordActivity::class.java)
-        startActivity(intent)
+        Api(this).sendPasswordReset(viewModel.email.value ?:"") {
+            Log.v("DEBUG","パスワード再設定メール送信： mail=${viewModel.email.value ?:""}")
+            // 常にrespons　trueなので送信完了画面へ遷移します
+            var intent = Intent(this, SendedResetPasswordActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
 
@@ -62,7 +65,6 @@ class SendResetPasswordViewModel : ViewModel() {
     }
 
     private fun isValid(): Boolean {
-        //FIXME API側で確認するかもやけど　アドレスがDBに存在するか、そのユーザーと一致してるか要確認
         var valid = true
 
         if (valid && email.value?.isBlank() ?: true) {

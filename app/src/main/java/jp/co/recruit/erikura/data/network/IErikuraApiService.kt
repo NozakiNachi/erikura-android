@@ -171,6 +171,12 @@ interface IErikuraApiService {
 
     @GET("utils/erikura_config")
     fun erikuraConfig(): ApiObservable<ErikuraConfigMap>
+
+    @POST("users/password_reset")
+    fun sendPasswordReset(@Body request: RegisterEmailRequest): ApiObservable<ResultResponse>
+
+    @PATCH("users/password_update")
+    fun updateResetPassword(@Body request: UpdatePasswordRequest): ApiObservable<ResultResponse>
 }
 
 typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
@@ -356,6 +362,12 @@ data class PushEndpointRequest(
 
 data class FavoriteRequest(
     var placeId: Int
+)
+
+data class UpdatePasswordRequest(
+    var passwordResetToken: String,
+    var password: String,
+    var passwordConfirmation: String
 )
 
 data class FavoritePlacesResponse(
