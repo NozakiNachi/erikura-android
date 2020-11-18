@@ -1,11 +1,8 @@
 package jp.co.recruit.erikura.presenters.activities
 
+import android.content.Intent
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,13 +10,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
-import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivitySendResetPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import org.apache.commons.lang.StringUtils
 
-//FIXME 遷移するのにログイン求められているのでそちらを修正する必要あり
 
 class SendResetPasswordActivity : BaseActivity(),
     SendResetPasswordEventHandlers {
@@ -36,57 +32,20 @@ class SendResetPasswordActivity : BaseActivity(),
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
-
-        //FIXME トークンが一致するか判定API　できなければ画面を表示しない
+        viewModel.error.message.value = null
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
         if (errorMessages != null) {
             Api(this).displayErrorAlert(errorMessages.asList())
         }
-
-        // ページ参照のトラッキングの送出
-        Tracking.logEvent(event = "view_send_reset_password", params = bundleOf())
-        Tracking.view(name = "/users/send/reset/password/", title = "パスワード再設定メール送信")
-
-        // 変更するユーザーの現在の登録値を取得
-        val api = Api(this)
-        api.user() {
-            user = it
-            user.id?.let { userId ->
-            }
-        }
-    }
-
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        val view = this.currentFocus
-        if (view != null) {
-            val constraintLayout =
-                findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
-            constraintLayout.requestFocus()
-
-            val imm: InputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
-        }
-        return super.dispatchTouchEvent(ev)
     }
 
     override fun onClickSendResetPassword(view: View) {
         //API実行
         //メール送信後下記を行う
-        //ログインフォームへ遷移　遷移する際文言を表示する
-        //「パスワードのリセット方法を数分以内にメールでご連絡します。」
-    }
-
-    override fun onClickLoginForm(view: View) {
-        //ログインフォーム
-        TODO("Not yet implemented")
-    }
-
-    override fun onClickResendPreRegister(view: View) {
-        //仮登録メールの再送信
-        TODO("Not yet implemented")
+        var intent = Intent(this, SendedResetPasswordActivity::class.java)
+        startActivity(intent)
     }
 }
 
@@ -122,8 +81,20 @@ class SendResetPasswordViewModel : ViewModel() {
 
 }
 
+class ErrorMessageViewModel {
+    val message: MutableLiveData<String> = MutableLiveData()
+    val visibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(message) {
+            result.value = if (message.value == null || StringUtils.isBlank(message.value)) {
+                View.GONE
+            }
+            else {
+                View.VISIBLE
+            }
+        }
+    }
+}
+
 interface SendResetPasswordEventHandlers {
     fun onClickSendResetPassword(view: View)
-    fun onClickLoginForm(view: View)
-    fun onClickResendPreRegister(view: View)
 }

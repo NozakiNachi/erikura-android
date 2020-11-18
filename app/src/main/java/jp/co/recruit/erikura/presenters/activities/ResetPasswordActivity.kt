@@ -1,10 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.os.Bundle
-import android.view.MotionEvent
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -57,19 +54,6 @@ class ResetPasswordActivity : BaseActivity(),
         }
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
-        val view = this.currentFocus
-        if (view != null) {
-            val constraintLayout =
-                findViewById<ConstraintLayout>(R.id.change_user_information_constraintLayout)
-            constraintLayout.requestFocus()
-
-            val imm: InputMethodManager =
-                getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
-        }
-        return super.dispatchTouchEvent(ev)
-    }
 
     override fun onClickResetPassword(view: View) {
         // パスワード
@@ -77,16 +61,6 @@ class ResetPasswordActivity : BaseActivity(),
             // パスワードが設定されている場合のみ、更新するようにします
             user.password = viewModel.password.value
         }
-    }
-
-    override fun onClickLoginForm(view: View) {
-        //ログインフォーム
-        TODO("Not yet implemented")
-    }
-
-    override fun onClickResendPreRegister(view: View) {
-        //仮登録メールの再送信
-        TODO("Not yet implemented")
     }
 }
 
@@ -164,6 +138,4 @@ class ResetPasswordViewModel : ViewModel() {
 
 interface ResetPasswordEventHandlers {
     fun onClickResetPassword(view: View)
-    fun onClickLoginForm(view: View)
-    fun onClickResendPreRegister(view: View)
 }

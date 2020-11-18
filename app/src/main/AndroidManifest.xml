@@ -348,6 +348,11 @@
             android:name=".presenters.activities.SendResetPasswordActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
+        <!-- パスワード再設定メール送信完了-->
+        <activity
+            android:name=".presenters.activities.SendedResetPasswordActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <!-- パスワード再設定-->
         <activity
             android:name=".presenters.activities.ResetPasswordActivity"

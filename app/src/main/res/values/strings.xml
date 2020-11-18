@@ -75,6 +75,13 @@
     <string name="send_reset_password_caption">ご登録いただいたメールアドレスを入力してください。\nメールアドレス宛にパスワード変更ページのURLが記載されたメールを送信します。</string>
     <string name="send_reset_password_button">パスワード再設定メールを送信する</string>
 
+    <!-- パスワード再設定送信完了画面 -->
+    <string name="sended_reset_password_caption">まだパスワード再設定\n完了しておりません</string>
+    <string name="sended_reset_password_sendEmail">ご入力いただいたメールアドレス宛に確認メールをお送りしました。</string>
+    <string name="sended_reset_password_clickEmailLink">お届けしたメール内の\nURLをクリックして\nパスワード再設定を続けてください。</string>
+    <string name="sended_reset_password_limit">※メールに記載された登録URLの有効期限は10分間です。\n有効期限が切れた場合は再度パスワード再設定を実施してください。</string>
+    <string name="sended_reset_password_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
+
     <!-- パスワード再設定画面 -->
     <string name="reset_password_title">パスワード再設定</string>
     <string name="reset_password_caption">新しく設定するパスワードを入力してください</string>
