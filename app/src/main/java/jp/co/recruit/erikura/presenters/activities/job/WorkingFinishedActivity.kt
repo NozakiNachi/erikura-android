@@ -133,25 +133,21 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
                 .create()
             dialog.show()
             val button: Button = dialog.findViewById(R.id.open_button)
-            button.setOnClickListener(View.OnClickListener{
+            button.setOnClickListener(View.OnClickListener {
                 //開く場合
                 dialog.dismiss()
-                Api(activity).agree(){result ->
-                    if (result){
-                        //カスタマWebの作業報告新規作成画面を開く
-                        val jobNewReportURLString = ErikuraConfig.jobNewReportURLString(job.id)
-                        // FIXME 現在のログインセッションをカスタマWebでも引き継ぐ
-                        Uri.parse(jobNewReportURLString)?.let { uri ->
-                            try {
-                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                                    intent.setPackage("com.android.chrome")
-                                    startActivity(intent)
-                                }
+                Api(activity).createToken() { token ->
+                    //カスタマWebの作業報告新規作成画面を開く
+                    val jobNewReportURLString = ErikuraConfig.jobNewReportURLString(job.id, token)
+                    Uri.parse(jobNewReportURLString)?.let { uri ->
+                        try {
+                            Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                intent.setPackage("com.android.chrome")
+                                startActivity(intent)
                             }
-                            catch (e: ActivityNotFoundException) {
-                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                                    startActivity(intent)
-                                }
+                        } catch (e: ActivityNotFoundException) {
+                            Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                startActivity(intent)
                             }
                         }
                     }

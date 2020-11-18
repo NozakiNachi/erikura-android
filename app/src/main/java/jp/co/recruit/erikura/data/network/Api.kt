@@ -807,6 +807,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun createToken(onError: ((message: List<String>?) -> Unit)? = null, onComplete: (accessToken: String) -> Unit) {
+        executeObservable(
+            erikuraApiService.createToken(),
+            onError = onError
+        ) { body ->
+            val accessToken = body.accessToken
+            onComplete(accessToken)
+        }
+    }
+
     private val activeObservables = mutableSetOf<Observable<*>>()
 
     private fun <T> executeObservable(observable: Observable<Response<ApiResponse<T>>>,

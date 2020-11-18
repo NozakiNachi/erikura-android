@@ -48,6 +48,9 @@ interface IErikuraApiService {
     @POST("login")
     fun login(@Body request: LoginRequest): ApiObservable<LoginResponse>
 
+    @POST("create_token")
+    fun createToken(): ApiObservable<CreateTokenResponse>
+
     @DELETE("logout")
     fun logout(): ApiObservable<LogoutResponse>
 
@@ -206,6 +209,10 @@ data class LoginResponse(
 
 data class LogoutResponse(
     var userId: Int,
+    var accessToken: String
+)
+
+data class CreateTokenResponse(
     var accessToken: String
 )
 
