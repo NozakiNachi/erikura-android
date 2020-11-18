@@ -378,7 +378,6 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
         idDocument.type = identityTypeOfIdList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
-        progressAlert.dismiss()
         user.id?.let { userId ->
             try {
                 api.idVerify(userId, idDocument) { result ->
