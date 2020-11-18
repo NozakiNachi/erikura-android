@@ -343,20 +343,8 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickUploadIdImage(view: View) {
-        // リサイズ中のスピナーをAPI経由で呼ぶと、誤差があるので直呼びしてます
-        var progressAlert: androidx.appcompat.app.AlertDialog? = null
-        progressAlert = androidx.appcompat.app.AlertDialog.Builder(this).apply {
-            setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null, false))
-            setCancelable(false)
-        }.create()
-
-        val dm = this.resources.displayMetrics
-        progressAlert?.show()
-        progressAlert?.window?.setLayout(
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
-
         val api = Api(this)
+        api.showProgressAlert()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "send_id_document", params= bundleOf())
         Tracking.trackUserId( "send_id_document",  user)
