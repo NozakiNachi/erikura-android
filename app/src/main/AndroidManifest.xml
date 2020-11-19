@@ -463,7 +463,7 @@
                 <data
                     android:host="*"
                     android:scheme="erikura" />
-                <data android:path="/user/register" />
+                <data android:path="/user/register/mail_auth" />
             </intent-filter>
             <!-- FDLの設定 -->
             <intent-filter>
