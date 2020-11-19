@@ -106,10 +106,8 @@
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="${erikura_host}"
                     android:pathPrefix="${erikura_relative_url_root}/link/report/example/"
@@ -459,7 +457,6 @@
             <!-- ディープリンクの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -480,11 +477,9 @@
                     android:pathPrefix="${erikura_relative_url_root}/link/user/register/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
-
             <!-- ドメイン統合後の登録用URL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
