@@ -102,7 +102,20 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".presenters.activities.report.ReportExamplesActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${erikura_host}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/report/example/"
+                    android:scheme="${erikura_protocol}" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".presenters.activities.StartActivity"
             android:screenOrientation="portrait"

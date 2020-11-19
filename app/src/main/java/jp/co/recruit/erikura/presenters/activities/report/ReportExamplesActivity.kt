@@ -1,11 +1,14 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -31,6 +34,10 @@ class ReportExamplesActivity : BaseActivity() {
 
         job = intent.getParcelableExtra<Job>("job")
         reportExamples = intent.getParcelableArrayListExtra<ReportExample>("reportExamples").toList() ?: listOf()
+        //FDLで遷移した場合
+        if (job == null) {
+            handleIntent(intent)
+        }
 
         val adapter = object : FragmentPagerAdapter(
             supportFragmentManager,
@@ -71,5 +78,26 @@ class ReportExamplesActivity : BaseActivity() {
     fun onClickNext() {
         //１ページ前に進む
         viewPager.currentItem += 1
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val appLinkData: Uri? = intent.data
+        val jobId = appLinkData!!.lastPathSegment!!.toInt()
+        job = Job(id= jobId)
+        job.jobKind?.id?.let { jobKindId ->
+            //APIでお手本報告を取得する
+            Api(this).goodExamples(job.placeId, jobKindId, true) { listReportExamples ->
+                reportExamples = listReportExamples
+                //トラッキングの送出、お手本報告画面の表示
+                Tracking.logEvent(event = "view_good_examples", params = bundleOf())
+                Tracking.viewGoodExamples(
+                    name = "/places/good_examples",
+                    title = "お手本報告画面表示",
+                    jobId = job.id,
+                    jobKindId = jobKindId,
+                    placeId = job.placeId
+                )
+            }
+        }
     }
 }
