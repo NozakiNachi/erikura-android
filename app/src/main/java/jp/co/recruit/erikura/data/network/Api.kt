@@ -358,6 +358,15 @@ class Api(var context: Context) {
         }
     }
 
+    fun reloadJobById(jobId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (job: Job) -> Unit) {
+        executeObservable(
+            erikuraApiService.reloadJob(jobId),
+            onError = onError
+        ) { job ->
+            onComplete(job)
+        }
+    }
+
     fun reloadReport(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (report: Report) -> Unit) {
         executeObservable(
             erikuraApiService.reloadReport(job.id),
