@@ -35,6 +35,7 @@ class RegisterPasswordActivity : BaseActivity(),
     }
 
     val user: User = User()
+    var confirmationToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
@@ -48,16 +49,21 @@ class RegisterPasswordActivity : BaseActivity(),
         viewModel.error.message.value = null
 
         // 仮登録トークン取得
-        var uri: Uri? = intent.data
-        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_app") {
-            val path = uri?.getQueryParameter("path")
-            uri = Uri.parse("erikura://${path}")
-        }
-        else if (uri?.path == "/api/v1/utils/open_android_app") {
-            val path = uri?.getQueryParameter("path")
-            uri = Uri.parse("erikura://${path}")
-        }
-        val confirmationToken: String? = uri?.getQueryParameter("confirmation_token")
+        confirmationToken = handleIntent(intent)
+
+        // 仮登録トークン取得
+//        var uri: Uri? = intent.data
+//        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_app") {
+//            val path = uri?.getQueryParameter("path")
+//            uri = Uri.parse("erikura://${path}")
+//        }
+//        else if (uri?.path == "/api/v1/utils/open_android_app") {
+//            val path = uri?.getQueryParameter("path")
+//            uri = Uri.parse("erikura://${path}")
+//        }
+//        confirmationToken = uri?.getQueryParameter("confirmation_token")
+
+
         // ワーカ仮登録の確認
         Api(this).registerConfirm(confirmationToken ?:"", onError = {
             Log.v("DEBUG", "ユーザ仮登録確認失敗")
@@ -111,6 +117,11 @@ class RegisterPasswordActivity : BaseActivity(),
             it.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(it)
         }
+    }
+
+    private fun handleIntent(intent: Intent): String {
+        val appLinkData: Uri? = intent.data
+        return appLinkData!!.lastPathSegment!!.toString()
     }
 }
 
