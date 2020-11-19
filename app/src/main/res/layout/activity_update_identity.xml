@@ -238,7 +238,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/smallCaption"
+                    style="@style/errorField"
                     android:layout_marginTop="10dp"
                     android:text="※市区町村が抜けていませんか？"
                     android:visibility="@{viewModel.cityWarningVisiblity}"
@@ -272,7 +272,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/smallCaption"
+                    style="@style/errorField"
                     android:layout_marginTop="10dp"
                     android:text="※番地の入力をわすれていませんか？"
                     android:visibility="@{viewModel.streetNumberWarningVisibility}"
