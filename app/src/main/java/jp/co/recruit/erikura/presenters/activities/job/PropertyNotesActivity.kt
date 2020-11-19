@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
@@ -56,25 +57,56 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     }
     private var cautions: List<Caution> = listOf()
     private var placeId: Int? = null
+    val api = Api(this)
 
     private lateinit var propertyNotesAdapter: PropertyNotesAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         placeId = intent.getIntExtra("place_id", 0)
-        // FDLの場合
+
         if (intent.data != null && placeId == 0) {
-            handleIntent(intent)
-        }
-        // 物件の注意事項を取得
-        placeId?.let { place_id ->
-            Api(this).placeCautions(place_id) {
-                //ボタンのラベルを生成しセット
-                cautions = it
-                propertyNotesAdapter.cautions = it
-                propertyNotesAdapter.notifyDataSetChanged()
+            // FDLの場合
+            api.reloadJobById(handleIntent(intent)) { job ->
+                placeId = job.placeId
+                Tracking.logEvent(event = "view_cautions", params = bundleOf())
+                Tracking.viewCautions(
+                    name = "/places/cautions",
+                    title = "物件注意事項画面表示",
+                    jobId = job.id,
+                    placeId = job.placeId
+                )
+                // 物件の注意事項を取得
+                placeId?.let { place_id ->
+                    api.placeCautions(place_id) {
+                        //ボタンのラベルを生成しセット
+                        cautions = it
+                        propertyNotesAdapter.cautions = it
+                        propertyNotesAdapter.notifyDataSetChanged()
+                        api.place(place_id) { place ->
+                            if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                                // 現ユーザーが応募済の物件の場合　フル住所を表示
+                                viewModel.address.value = place.workingPlace + place.workingBuilding
+                            } else {
+                                // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                                viewModel.address.value = place.workingPlaceShort
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            // 物件の注意事項を取得
+            placeId?.let { place_id ->
+                api.placeCautions(place_id) {
+                    //ボタンのラベルを生成しセット
+                    cautions = it
+                    propertyNotesAdapter.cautions = it
+                    propertyNotesAdapter.notifyDataSetChanged()
+                }
             }
         }
+
         val binding: ActivityPropertyNotesBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_property_notes)
         binding.lifecycleOwner = this
@@ -88,21 +120,22 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
     override fun onResume() {
         super.onResume()
         placeId?.let {
-            val api = Api(this)
-            api.place(it) { place ->
-                if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
-                    // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace + place.workingBuilding
-                } else {
-                    // 現ユーザーが未応募の物件の場合　短縮住所を表示
-                    viewModel.address.value = place.workingPlaceShort
+            if (placeId != 0) {
+                api.place(it) { place ->
+                    if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
+                        // 現ユーザーが応募済の物件の場合　フル住所を表示
+                        viewModel.address.value = place.workingPlace + place.workingBuilding
+                    } else {
+                        // 現ユーザーが未応募の物件の場合　短縮住所を表示
+                        viewModel.address.value = place.workingPlaceShort
+                    }
                 }
-            }
-            api.placeCautions(it) {
-                //ボタンのラベルを生成しセット
-                cautions = it
-                propertyNotesAdapter.cautions = it
-                propertyNotesAdapter.notifyDataSetChanged()
+                api.placeCautions(it) {
+                    //ボタンのラベルを生成しセット
+                    cautions = it
+                    propertyNotesAdapter.cautions = it
+                    propertyNotesAdapter.notifyDataSetChanged()
+                }
             }
         }
     }
@@ -135,19 +168,20 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         manager.orientation = RecyclerView.VERTICAL
         recyclerView.layoutManager = manager
         //アダプター取得　レイアウトとデータ関連付けさせるため
-        propertyNotesAdapter = PropertyNotesAdapter(this, cautions, (this.resources.getDimension(R.dimen.Property_notes_item_margin)).toInt())
+        propertyNotesAdapter = PropertyNotesAdapter(
+            this,
+            cautions,
+            (this.resources.getDimension(R.dimen.Property_notes_item_margin)).toInt()
+        )
         // アダプターをRecyclerViewにセット
         recyclerView.adapter = propertyNotesAdapter
         // アイテム間の幅をセットします
         recyclerView.addItemDecoration(PropertyNotesItemDecorator())
     }
-    private fun handleIntent(intent: Intent) {
+
+    private fun handleIntent(intent: Intent): Int {
         val appLinkData: Uri? = intent.data
-        val jobId = appLinkData!!.lastPathSegment!!.toInt()
-        val job = Job(id= jobId)
-        placeId = job.placeId
-        Tracking.logEvent(event= "view_cautions", params= bundleOf())
-        Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
+        return appLinkData!!.lastPathSegment!!.toInt()
     }
 }
 
@@ -204,15 +238,21 @@ class PropertyNotesAdapter(
         val files: List<CautionFile> = caution.files
         //ListViewで実装しようとしたが高さが適性値を取得できないため、addViewで実装　
         // ListViewについてはコメントアウトで残してます。
-        val linearLayout :LinearLayout = holder.itemView.findViewById(R.id.property_notes_image_pdf)
+        val linearLayout: LinearLayout = holder.itemView.findViewById(R.id.property_notes_image_pdf)
         linearLayout.removeAllViewsInLayout()
-        val layout = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        val layout = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
         layout.setMargins(margin, margin, margin, margin)
         if (files.isNotEmpty()) {
             for (i in 0 until files.size) {
-                if (files[i].file_name.endsWith(".pdf")){
+                if (files[i].file_name.endsWith(".pdf")) {
                     val imageView = ImageView(activity)
-                    val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    val lp = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
                     imageView.layoutParams = lp
                     imageView.adjustViewBounds = true
                     imageView.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -238,9 +278,16 @@ class PropertyNotesAdapter(
                             out.closeQuietly()
                             input.closeQuietly()
 
-                            val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".fileprovider", pdfFile)
+                            val uri = FileProvider.getUriForFile(
+                                activity!!,
+                                BuildConfig.APPLICATION_ID + ".fileprovider",
+                                pdfFile
+                            )
                             val intent = Intent(Intent.ACTION_VIEW)
-                            intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
+                            intent.setDataAndType(
+                                uri,
+                                MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf")
+                            )
                             intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
                             activity.startActivity(intent)
                         }
@@ -248,7 +295,10 @@ class PropertyNotesAdapter(
                     linearLayout.addView(imageView, layout)
                 } else {
                     val imageView = ImageView(activity)
-                    val lp = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+                    val lp = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
                     imageView.layoutParams = lp
                     imageView.adjustViewBounds = true
                     imageView.scaleType = ImageView.ScaleType.FIT_CENTER
@@ -258,15 +308,21 @@ class PropertyNotesAdapter(
                         Glide.with(activity).load(File(asset.path)).into(imageView)
                     }
                     linearLayout.addView(imageView, layout)
-                    imageView.setOnClickListener{
+                    imageView.setOnClickListener {
                         val itemUrl: String = files[i].url
-                        assetsManager.fetchAsset(activity, itemUrl, Asset.AssetType.Other) { asset ->
+                        assetsManager.fetchAsset(
+                            activity,
+                            itemUrl,
+                            Asset.AssetType.Other
+                        ) { asset ->
                             val intent = Intent(activity, WebViewActivity::class.java).apply {
                                 action = Intent.ACTION_VIEW
                                 data = Uri.parse("file://" + asset.path)
                             }
-                            activity.startActivity(intent,
-                                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle())
+                            activity.startActivity(
+                                intent,
+                                ActivityOptions.makeSceneTransitionAnimation(activity).toBundle()
+                            )
                         }
                     }
                 }
