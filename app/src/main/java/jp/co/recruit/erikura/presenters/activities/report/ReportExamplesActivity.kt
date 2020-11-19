@@ -34,8 +34,8 @@ class ReportExamplesActivity : BaseActivity() {
 
         job = intent.getParcelableExtra<Job>("job")
         reportExamples = intent.getParcelableArrayListExtra<ReportExample>("reportExamples").toList() ?: listOf()
-        //FDLで遷移した場合
-        if (job == null) {
+        //FDLの場合
+        if (intent.data != null && job == null) {
             handleIntent(intent)
         }
 

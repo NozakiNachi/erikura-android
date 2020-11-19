@@ -18,6 +18,7 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
+import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.marginTop
 import androidx.databinding.DataBindingUtil
@@ -32,6 +33,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.ErikuraApplication.Companion.applicationContext
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Caution
 import jp.co.recruit.erikura.business.models.CautionFile
 import jp.co.recruit.erikura.business.models.ErikuraConfig
@@ -60,6 +62,10 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         super.onCreate(savedInstanceState)
 
         placeId = intent.getIntExtra("place_id", 0)
+        // FDLの場合
+        if (intent.data != null && placeId == 0) {
+            handleIntent(intent)
+        }
         // 物件の注意事項を取得
         placeId?.let { place_id ->
             Api(this).placeCautions(place_id) {
@@ -135,8 +141,14 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         // アイテム間の幅をセットします
         recyclerView.addItemDecoration(PropertyNotesItemDecorator())
     }
-
-
+    private fun handleIntent(intent: Intent) {
+        val appLinkData: Uri? = intent.data
+        val jobId = appLinkData!!.lastPathSegment!!.toInt()
+        val job = Job(id= jobId)
+        placeId = job.placeId
+        Tracking.logEvent(event= "view_cautions", params= bundleOf())
+        Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
+    }
 }
 
 class PropertyNotesViewModel : ViewModel() {
