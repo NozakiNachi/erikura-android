@@ -224,6 +224,18 @@
                     android:scheme="erikura" />
                 <data android:pathPrefix="/places/" />
             </intent-filter>
+            <!-- FDL -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${erikura_host}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/places/"
+                    android:scheme="${erikura_protocol}" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".presenters.activities.job.PropertyNotesActivity"
