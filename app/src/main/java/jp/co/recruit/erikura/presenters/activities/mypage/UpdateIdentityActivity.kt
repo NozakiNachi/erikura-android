@@ -10,7 +10,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -28,9 +27,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityUpdateIdentityBinding
-import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
-import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 import java.text.SimpleDateFormat
@@ -355,6 +352,10 @@ class UpdateIdentityActivity :
 }
 
 class UpdateIdentityViewModel : ViewModel() {
+    private val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
+    private val cityPattern = "(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村|宮古|富良野|別府|佐伯|黒部|小諸|塩尻|玉野|周南)市|(?:余市|高市|[^市]{2,3}?)郡(?:玉村|大町|.{1,5}?)[町村]|(?:.{1,4}市)?[^町]{1,4}?区|.{1,7}?[市町村])(.+)".toRegex()
+    private val streetNumberPattern = ".*[0-9０１２３４５６７８９９０一二三四五六七八九〇十].*".toRegex()
+
     // 遷移元
     val fromWhere: MutableLiveData<Int> = MutableLiveData()
 
@@ -425,6 +426,9 @@ class UpdateIdentityViewModel : ViewModel() {
         }
     }
 
+    val cityWarningVisiblity: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val streetNumberWarningVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
     fun isValidPostalCode(): Boolean {
         var valid = true
         val pattern = Pattern.compile("^([0-9])")
@@ -457,6 +461,10 @@ class UpdateIdentityViewModel : ViewModel() {
         valid = isValidPrefecture() && valid
         valid = isValidCity() && valid
         valid = isValidStreet() && valid
+
+        checkCityWarning()
+        checkStreetNumberWarning()
+
         return valid
     }
 
@@ -536,6 +544,38 @@ class UpdateIdentityViewModel : ViewModel() {
         return valid
     }
 
+    private fun checkCityWarning() {
+        val cityFilled = city.value?.isNotBlank() ?: false
+
+        if (cityFilled) {
+            val prefecture = prefectureList.getString(prefectureId.value ?: 0)
+            val addr = prefecture + (city.value ?: "") + (street.value ?: "")
+            val matchResult = cityPattern.find(addr)
+            val normalizedCity = matchResult?.groupValues?.get(2)
+            if (normalizedCity.isNullOrBlank()) {
+                cityWarningVisiblity.value = View.VISIBLE
+            } else {
+                cityWarningVisiblity.value = View.GONE
+            }
+        }
+        else {
+            cityWarningVisiblity.value = View.VISIBLE
+        }
+    }
+
+    private fun checkStreetNumberWarning() {
+        val streetFieldFilled = street.value?.isNotBlank() ?: false
+        if (streetFieldFilled) {
+            if (streetNumberPattern.matches(street.value ?: "")) {
+                streetNumberWarningVisibility.value = View.GONE
+            } else {
+                streetNumberWarningVisibility.value = View.VISIBLE
+            }
+        }
+        else {
+            streetNumberWarningVisibility.value = View.VISIBLE
+        }
+    }
 }
 
 interface UpdateIdentityEventHandlers {
