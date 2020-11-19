@@ -179,7 +179,7 @@ interface IErikuraApiService {
     fun sendPasswordReset(@Body request: RegisterEmailRequest): ApiObservable<ResultResponse>
 
     @PATCH("users/password_update")
-    fun updateResetPassword(@Body request: UpdatePasswordRequest): ApiObservable<ResultResponse>
+    fun updateResetPassword(@Body request: UpdatePasswordRequest): ApiObservable<UpdatePasswordResponse>
 }
 
 typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
@@ -266,6 +266,12 @@ data class CautionResponse(
 
 data class GoodExamplesResponse(
     var report_examples: List<ReportExample>
+)
+
+data class UpdatePasswordResponse(
+    var result: Boolean,
+    var id: Int?,
+    var accessToken: String?
 )
 
 data class RegisterEmailRequest(

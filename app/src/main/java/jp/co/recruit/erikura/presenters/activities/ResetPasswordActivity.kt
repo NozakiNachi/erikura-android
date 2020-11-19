@@ -15,6 +15,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResetPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -73,8 +74,10 @@ class ResetPasswordActivity : BaseActivity(),
         // パスワード再設定API
         Api(this).updateResetPassword(resetPasswordToken?: "",
             viewModel.password.value?: "",
-            viewModel.verificationPassword.value?:""){
-            if (it == true) {
+            viewModel.verificationPassword.value?:""){ result, userId, accessToken ->
+            if (result) {
+                var userSession = UserSession(userId = userId, token = accessToken)
+                userSession.store()
                 var intent = Intent(this, MapViewActivity::class.java)
                 startActivity(intent)
                 finish()

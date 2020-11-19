@@ -806,13 +806,15 @@ class Api(var context: Context) {
         }
     }
 
-    fun updateResetPassword(passwordResetToken: String, password: String, passwordConfirmation: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+    fun updateResetPassword(passwordResetToken: String, password: String, passwordConfirmation: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean, id: Int, accessToken: String) -> Unit) {
         executeObservable(
             erikuraApiService.updateResetPassword(UpdatePasswordRequest(passwordResetToken = passwordResetToken, password = password, passwordConfirmation = passwordConfirmation)),
             onError = onError
         ) { body ->
             val result = body.result
-            onComplete(result)
+            val userId = body.id
+            val accessToken = body.accessToken
+            onComplete(result, userId?: 0, accessToken?: "")
         }
     }
 
