@@ -39,6 +39,9 @@ interface IErikuraApiService {
     @GET("users")
     fun user(): ApiObservable<User>
 
+    @PATCH("users/initial_register")
+    fun initialRegister(@Body request: User): ApiObservable<IdResponse>
+
     @PATCH("users/initial_update")
     fun initialUpdateUser(@Body request: User): ApiObservable<InitialUpdateResponse>
 
