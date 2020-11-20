@@ -407,6 +407,17 @@
             android:name=".presenters.activities.ResetPasswordActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
+            <!-- ディープリンクの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="*"
+                    android:scheme="erikura" />
+                <data android:path="/users/password/edit" />
+            </intent-filter>
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
