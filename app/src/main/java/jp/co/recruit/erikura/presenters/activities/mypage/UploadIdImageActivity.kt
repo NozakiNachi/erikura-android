@@ -648,6 +648,8 @@ interface UploadIdImageEventHandlers {
     fun onCLickRemovePassportFrontPhoto(view: View)
     fun onClickRemovePassportBackPhoto(view: View)
     fun onClickRemoveMyNumberPhoto(view: View)
+
+    //画像種別選択イベント
     fun onClickSpinner(view: View?)
 
     // 送信イベント
