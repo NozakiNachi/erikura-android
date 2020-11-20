@@ -272,7 +272,6 @@ data class GoodExamplesResponse(
 )
 
 data class UpdatePasswordResponse(
-    var result: Boolean,
     var id: Int?,
     var accessToken: String?
 )
