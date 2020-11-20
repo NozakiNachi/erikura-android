@@ -391,7 +391,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
     }
 
-    override fun onClickSpinner(view: View) {
+    override fun onClickSpinner(view: View?) {
         // 身分証の種別を選択する度に画像をリセットします
 
         viewModel.otherPhotoFront = MediaItem()
@@ -648,7 +648,9 @@ interface UploadIdImageEventHandlers {
     fun onCLickRemovePassportFrontPhoto(view: View)
     fun onClickRemovePassportBackPhoto(view: View)
     fun onClickRemoveMyNumberPhoto(view: View)
-    fun onClickSpinner(view:View)
+
+    //画像種別選択イベント
+    fun onClickSpinner(view: View?)
 
     // 送信イベント
     fun onClickUploadIdImage(view: View)
