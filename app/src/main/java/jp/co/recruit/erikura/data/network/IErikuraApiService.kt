@@ -380,7 +380,7 @@ data class FavoriteRequest(
 )
 
 data class UpdatePasswordRequest(
-    var passwordResetToken: String,
+    var resetPasswordToken: String,
     var password: String,
     var passwordConfirmation: String
 )

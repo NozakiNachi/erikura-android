@@ -818,7 +818,7 @@ class Api(var context: Context) {
 
     fun updateResetPassword(passwordResetToken: String, password: String, passwordConfirmation: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (id: Int, accessToken: String) -> Unit) {
         executeObservable(
-            erikuraApiService.updateResetPassword(UpdatePasswordRequest(passwordResetToken = passwordResetToken, password = password, passwordConfirmation = passwordConfirmation)),
+            erikuraApiService.updateResetPassword(UpdatePasswordRequest(resetPasswordToken = passwordResetToken, password = password, passwordConfirmation = passwordConfirmation)),
             onError = onError
         ) { body ->
             val userId = body.id

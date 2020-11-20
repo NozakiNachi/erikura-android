@@ -20,6 +20,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResetPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
+import org.apache.commons.lang.StringUtils
 import java.util.regex.Pattern
 
 class ResetPasswordActivity : BaseActivity(),
@@ -93,8 +94,28 @@ class ResetPasswordViewModel : ViewModel() {
     // パスワード
     val password: MutableLiveData<String> = MutableLiveData()
     val passwordError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val passwordErrorVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(passwordError.message) { message ->
+            result.value = if (message == null || StringUtils.isBlank(message)) {
+                View.GONE
+            }
+            else {
+                View.VISIBLE
+            }
+        }
+    }
     val verificationPassword: MutableLiveData<String> = MutableLiveData()
     val verificationPasswordError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val verificationPasswordErrorVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(verificationPasswordError.message) { message ->
+            result.value = if (message == null || StringUtils.isBlank(message)) {
+                View.GONE
+            }
+            else {
+                View.VISIBLE
+            }
+        }
+    }
 
     // 登録ボタン押下
     val isChangeButtonEnabled = MediatorLiveData<Boolean>().also { result ->
