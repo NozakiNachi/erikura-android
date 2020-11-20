@@ -60,13 +60,15 @@ class RegisterWishWorkActivity : BaseActivity(),
         if(viewModel.interestedCar.value ?: false){ list.add("car") }
         user.wishWorks = list
         Log.v("WISHWORK", list.toString())
-        //登録処理を行う前にSMS認証を行う
-        val intent: Intent = Intent(this, SmsVerifyActivity::class.java)
-        intent.putExtra("user", user)
-        intent.putExtra("phoneNumber",user.phoneNumber)
-        intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
-        startActivityForResult(intent,ErikuraApplication.REQUEST_SIGN_UP_CODE)
-
+        // SMS認証前登録処理
+        Api(this).initialRegister(user) {
+            //登録処理を行う前にSMS認証を行う
+            val intent: Intent = Intent(this, SmsVerifyActivity::class.java)
+            intent.putExtra("user", user)
+            intent.putExtra("phoneNumber", user.phoneNumber)
+            intent.putExtra("requestCode", ErikuraApplication.REQUEST_SIGN_UP_CODE)
+            startActivityForResult(intent, ErikuraApplication.REQUEST_SIGN_UP_CODE)
+        }
     }
 
     override fun onClickTermsOfService(view: View) {

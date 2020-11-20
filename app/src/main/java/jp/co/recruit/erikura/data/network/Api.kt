@@ -294,6 +294,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun initialRegister(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (id: Int) -> Unit)  {
+        executeObservable(
+            erikuraApiService.initialRegister(user),
+            onError = onError
+        ) { body ->
+            val userId = body.id
+            onComplete(userId)
+        }
+    }
+
     fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
         executeObservable(
             erikuraApiService.initialUpdateUser(user),
