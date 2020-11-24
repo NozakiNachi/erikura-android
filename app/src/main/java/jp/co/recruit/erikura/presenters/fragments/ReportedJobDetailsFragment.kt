@@ -19,6 +19,7 @@ import android.widget.ImageView
 import android.widget.ToggleButton
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -27,6 +28,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
@@ -178,6 +180,12 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                         ErikuraConfig.jobReportURLString(job?.id, token)
                     Uri.parse(jobReportURLString)?.let { uri ->
                         try {
+                            Tracking.logEvent(event = "push_web_report", params = bundleOf())
+                            Tracking.trackWebReport(
+                                name = "push_web_report",
+                                job_kind_id = job?.jobKind?.id ?: 0,
+                                user_id = user?.id?: 0
+                            )
                             Intent(Intent.ACTION_VIEW, uri).let { intent ->
                                 intent.setPackage("com.android.chrome")
                                 startActivity(intent)

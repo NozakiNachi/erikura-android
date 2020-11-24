@@ -573,6 +573,19 @@ object Tracking {
             Log.e("ERIKURA", "Karte identify error", e)
         }
     }
+
+    fun trackWebReport(name: String, job_kind_id: Int, user_id: Int) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("job_kind_id", job_kind_id),
+                Pair("user_id", user_id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
 }
 
 class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {

@@ -141,9 +141,19 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
                     val jobReportURLString = ErikuraConfig.jobReportURLString(job.id, token)
                     Uri.parse(jobReportURLString)?.let { uri ->
                         try {
-                            Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                                intent.setPackage("com.android.chrome")
-                                startActivity(intent)
+                            Tracking.logEvent(event = "push_web_report", params = bundleOf())
+                            var userId: Int? = null
+                            Api(this).user {
+                                userId = it.id
+                                Tracking.trackWebReport(
+                                    name = "push_web_report",
+                                    job_kind_id = job.jobKind?.id ?: 0,
+                                    user_id = userId ?: 0
+                                )
+                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                                    intent.setPackage("com.android.chrome")
+                                    startActivity(intent)
+                                }
                             }
                         } catch (e: ActivityNotFoundException) {
                             Intent(Intent.ACTION_VIEW, uri).let { intent ->
