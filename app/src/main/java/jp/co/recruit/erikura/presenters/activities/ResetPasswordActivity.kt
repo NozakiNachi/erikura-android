@@ -68,14 +68,19 @@ class ResetPasswordActivity : BaseActivity(),
         }
 
         // ページ参照のトラッキングの送出
-        Tracking.logEvent(event = "view_edit_password", params = bundleOf())
-        Tracking.view(name = "/users/password/", title = "パスワード再設定")
+        Tracking.logEvent(event = "view_password_update", params = bundleOf())
+        Tracking.view(name = "/user/password/update", title = "パスワード再設定画面")
 
     }
 
 
     override fun onClickResetPassword(view: View) {
         // パスワード再設定API
+        Tracking.logEvent(event = "push_password_update", params = bundleOf())
+        Tracking.trackUserId(
+            name = "push_password_update",
+            user = user
+        )
         Api(this).updateResetPassword(resetPasswordToken?: "",
             viewModel.password.value?: "",
             viewModel.verificationPassword.value?:""){ userSession ->

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -45,7 +47,11 @@ class SendResetPasswordActivity : BaseActivity(),
 
     override fun onClickSendResetPassword(view: View) {
         Api(this).sendPasswordReset(viewModel.email.value ?:"") {
-            Log.v("DEBUG","パスワード再設定メール送信： mail=${viewModel.email.value ?:""}")
+            Tracking.logEvent(event = "view_password_edit", params = bundleOf())
+            Tracking.view(
+                name = "/user/password/edit",
+                title = "パスワード再設定通知完了画面"
+            )
             // 常にrespons　trueなので送信完了画面へ遷移します
             var intent = Intent(this, SendedResetPasswordActivity::class.java)
             startActivity(intent)
