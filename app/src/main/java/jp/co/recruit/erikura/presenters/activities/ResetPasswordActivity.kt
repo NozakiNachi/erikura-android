@@ -15,7 +15,6 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.User
-import jp.co.recruit.erikura.business.models.UserSession
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityResetPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -39,6 +38,10 @@ class ResetPasswordActivity : BaseActivity(),
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
+
+        // エラーメッセージは画面生成時は存在しないので表示しない
+        viewModel.passwordErrorVisibility.value = View.GONE
+        viewModel.verificationPasswordErrorVisibility.value = View.GONE
 
         // FIXME FDLは12/11リリース
         // FDLの場合
