@@ -75,8 +75,7 @@ class ResetPasswordActivity : BaseActivity(),
         // パスワード再設定API
         Api(this).updateResetPassword(resetPasswordToken?: "",
             viewModel.password.value?: "",
-            viewModel.verificationPassword.value?:""){ userId, accessToken ->
-                var userSession = UserSession(userId = userId, token = accessToken)
+            viewModel.verificationPassword.value?:""){ userSession ->
                 userSession.store()
                 var intent = Intent(this, MapViewActivity::class.java)
                 startActivity(intent)

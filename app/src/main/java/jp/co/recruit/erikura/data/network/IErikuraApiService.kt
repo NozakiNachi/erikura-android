@@ -272,8 +272,8 @@ data class GoodExamplesResponse(
 )
 
 data class UpdatePasswordResponse(
-    var id: Int?,
-    var accessToken: String?
+    var id: Int,
+    var accessToken: String
 )
 
 data class RegisterEmailRequest(
