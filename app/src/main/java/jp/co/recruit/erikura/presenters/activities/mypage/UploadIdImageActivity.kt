@@ -344,6 +344,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
 
     override fun onClickUploadIdImage(view: View) {
         val api = Api(this)
+        // リサイズ中に表示するスピナー
         api.showProgressAlert()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "send_id_document", params= bundleOf())
@@ -368,7 +369,14 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         idDocument.identifyComparingData = identifyComparingData
         user.id?.let { userId ->
             try {
-                api.idVerify(userId, idDocument) { result ->
+                val errorHandler: (List<String>?) -> Unit = { messages ->
+                    api.displayErrorAlert(messages)
+                    //　リサイズ中表示していたスピナーを削除
+                    api.hideProgressAlert()
+                }
+                api.idVerify(userId, idDocument, onError = errorHandler) { result ->
+                    //　リサイズ中表示していたスピナーを削除
+                    api.hideProgressAlert()
                     if (result) {
                         // 遷移元に応じて身分証確認完了を表示
                         moveUploadedIdImage()

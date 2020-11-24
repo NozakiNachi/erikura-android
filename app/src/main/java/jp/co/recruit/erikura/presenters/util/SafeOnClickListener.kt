@@ -15,8 +15,8 @@ abstract class SafeOnClickListener(
             // 前回のクリック時間から、一定時間経過していない場合は、イベントを無視します
             return
         }
-        lastClickTime = now
         onSafeClick(v)
+        lastClickTime = SystemClock.elapsedRealtime()
     }
 
     abstract fun onSafeClick(v: View?)
