@@ -55,10 +55,10 @@ import kotlin.collections.HashMap
 
 class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): JobDetailsViewFragment {
+        fun newInstance(user: User?): JobDetailsViewFragment {
             return JobDetailsViewFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

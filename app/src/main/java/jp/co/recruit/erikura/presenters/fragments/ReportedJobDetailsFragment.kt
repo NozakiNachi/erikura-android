@@ -33,9 +33,9 @@ import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
 class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ReportedJobDetailsFragment {
+        fun newInstance(user: User?): ReportedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, user)
 
             return ReportedJobDetailsFragment().also {
                 it.arguments = args
@@ -108,12 +108,12 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         additionalCommentView.adapter = additionalOperatorCommentsAdapter
 
         val transaction = childFragmentManager.beginTransaction()
-        timeLabel = TimeLabelFragment.newInstance(job, user)
-        jobInfoView = JobInfoViewFragment.newInstance(job, user)
-        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
-        reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(job, user)
-        reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(job, user)
-        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
+        timeLabel = TimeLabelFragment.newInstance(user)
+        jobInfoView = JobInfoViewFragment.newInstance(user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(user)
+        reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(user)
+        reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(user)
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")

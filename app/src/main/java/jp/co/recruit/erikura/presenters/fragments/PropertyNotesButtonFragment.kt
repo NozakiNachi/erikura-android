@@ -20,10 +20,10 @@ import jp.co.recruit.erikura.databinding.FragmentPropertyNotesButtonBinding
 
 class PropertyNotesButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): PropertyNotesButtonFragment {
+        fun newInstance(user: User?): PropertyNotesButtonFragment {
             return PropertyNotesButtonFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

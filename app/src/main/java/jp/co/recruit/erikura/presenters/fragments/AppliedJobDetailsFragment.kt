@@ -47,9 +47,9 @@ import java.util.*
 
 class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): AppliedJobDetailsFragment {
+        fun newInstance(user: User?): AppliedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, user)
 
             return AppliedJobDetailsFragment().also {
                 it.arguments = args
@@ -121,16 +121,16 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        jobInfoView = JobInfoViewFragment.newInstance(job, user)
-        manualImage = ManualImageFragment.newInstance(job, user)
-        entryInformationFragment = EntryInformationFragment.newInstance(job, user)
-        cancelButton = CancelButtonFragment.newInstance(job, user)
-        manualButton = ManualButtonFragment.newInstance(job, user)
-        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
-        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
-        mapView = MapViewFragment.newInstance(job, user)
-        propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
-        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
+        jobInfoView = JobInfoViewFragment.newInstance(user)
+        manualImage = ManualImageFragment.newInstance(user)
+        entryInformationFragment = EntryInformationFragment.newInstance(user)
+        cancelButton = CancelButtonFragment.newInstance(user)
+        manualButton = ManualButtonFragment.newInstance(user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(user)
+        mapView = MapViewFragment.newInstance(user)
+        propertyNotesButton = PropertyNotesButtonFragment.newInstance(user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(user)
         transaction.add(R.id.appliedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.appliedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.appliedJobDetails_entryInformationFragment, entryInformationFragment!!, "entryInformation")

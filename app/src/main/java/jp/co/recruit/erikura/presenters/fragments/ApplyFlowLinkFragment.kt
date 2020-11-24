@@ -13,10 +13,10 @@ import jp.co.recruit.erikura.presenters.activities.job.ApplyFlowDialogFragment
 
 class ApplyFlowLinkFragment : BaseJobDetailFragment, ApplyFlowLinkFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ApplyFlowLinkFragment {
+        fun newInstance(user: User?): ApplyFlowLinkFragment {
             return ApplyFlowLinkFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

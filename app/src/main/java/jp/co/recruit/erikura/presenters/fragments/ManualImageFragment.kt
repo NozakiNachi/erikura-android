@@ -19,9 +19,9 @@ import jp.co.recruit.erikura.databinding.FragmentManualImageBinding
 
 class ManualImageFragment : BaseJobDetailFragment, ManualImageFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ManualImageFragment {
+        fun newInstance(user: User?): ManualImageFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, user)
 
             return ManualImageFragment().also {
                 it.arguments = args

@@ -10,10 +10,10 @@ import jp.co.recruit.erikura.business.models.User
 
 class ApplyFlowViewFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?): ApplyFlowViewFragment {
+        fun newInstance(user: User?): ApplyFlowViewFragment {
             return ApplyFlowViewFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }
@@ -39,7 +39,7 @@ class ApplyFlowViewFragment : BaseJobDetailFragment {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         val transaction = childFragmentManager.beginTransaction()
-        applyFlowLink = ApplyFlowLinkFragment.newInstance(job, user)
+        applyFlowLink = ApplyFlowLinkFragment.newInstance(user)
         transaction.add(R.id.applyFlow_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
         transaction.commitAllowingStateLoss()
     }

@@ -10,10 +10,10 @@ import jp.co.recruit.erikura.databinding.FragmentReportExamplesButtonBinding
 
 class ReportExamplesButtonFragment : BaseJobDetailFragment, ReportExamplesButtonFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ReportExamplesButtonFragment {
+        fun newInstance(user: User?): ReportExamplesButtonFragment {
             return ReportExamplesButtonFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

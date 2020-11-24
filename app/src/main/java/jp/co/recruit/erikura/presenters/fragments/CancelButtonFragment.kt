@@ -12,9 +12,9 @@ import jp.co.recruit.erikura.presenters.activities.job.CancelDialogFragment
 
 class CancelButtonFragment : BaseJobDetailFragment, CancelButtonFragmentEventHandler {
     companion object {
-        fun newInstance(job: Job?, user: User?): CancelButtonFragment {
+        fun newInstance(user: User?): CancelButtonFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, user)
 
             return CancelButtonFragment().also {
                 it.arguments = args

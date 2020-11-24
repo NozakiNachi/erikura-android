@@ -22,10 +22,10 @@ import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 
 class JobInfoViewFragment : BaseJobDetailFragment, JobInfoViewFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): JobInfoViewFragment {
+        fun newInstance(user: User?): JobInfoViewFragment {
             return JobInfoViewFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }
