@@ -27,9 +27,9 @@ import java.util.*
 
 class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): FinishedJobDetailsFragment {
+        fun newInstance(user: User?): FinishedJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, user)
 
             return FinishedJobDetailsFragment().also {
                 it.arguments = args
@@ -89,15 +89,15 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        jobInfoView = JobInfoViewFragment.newInstance(job, user)
-        manualImage = ManualImageFragment.newInstance(job, user)
-        manualButton = ManualButtonFragment.newInstance(job, user)
-        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
-        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
-        mapView = MapViewFragment.newInstance(job, user)
-        entryInformationFragment = EntryInformationFragment.newInstance(job, user)
-        propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
-        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
+        jobInfoView = JobInfoViewFragment.newInstance(user)
+        manualImage = ManualImageFragment.newInstance(user)
+        manualButton = ManualButtonFragment.newInstance(user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(user)
+        mapView = MapViewFragment.newInstance(user)
+        entryInformationFragment = EntryInformationFragment.newInstance(user)
+        propertyNotesButton = PropertyNotesButtonFragment.newInstance(user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(user)
         transaction.add(R.id.finishedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.finishedJobDetails_manualImageFragment, manualImage!!, "manualImage")
         transaction.add(R.id.finishedJobDetails_manualButtonFragment, manualButton!!, "manualButton")

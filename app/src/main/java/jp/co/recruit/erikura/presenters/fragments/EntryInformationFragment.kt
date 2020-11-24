@@ -14,10 +14,10 @@ import jp.co.recruit.erikura.databinding.FragmentEntryInformationBinding
 
 class EntryInformationFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?): EntryInformationFragment {
+        fun newInstance(user: User?): EntryInformationFragment {
             return EntryInformationFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

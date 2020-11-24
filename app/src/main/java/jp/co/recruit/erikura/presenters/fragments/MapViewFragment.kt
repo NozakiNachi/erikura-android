@@ -26,10 +26,10 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 
 class MapViewFragment: BaseJobDetailFragment, OnMapReadyCallback {
     companion object {
-        fun newInstance(job: Job?, user: User?): MapViewFragment {
+        fun newInstance(user: User?): MapViewFragment {
             return MapViewFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

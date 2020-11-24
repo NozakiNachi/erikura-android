@@ -120,6 +120,7 @@ class JobDetailsActivity : BaseActivity() {
     private fun refreshContents() {
         if (isDestroyed) { return }
 
+        ErikuraApplication.instance.currentJob = job
         if (job.status == JobStatus.Uninitialized) {
             fragment?.let {
                 val transaction = supportFragmentManager.beginTransaction()
@@ -138,22 +139,22 @@ class JobDetailsActivity : BaseActivity() {
             // jobのステータスで挿しこむフラグメントを変更します
             when (job.status) {
                 JobStatus.Normal -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(user)
                 }
                 JobStatus.Applied -> {
-                    fragment = AppliedJobDetailsFragment.newInstance(job, user)
+                    fragment = AppliedJobDetailsFragment.newInstance(user)
                 }
                 JobStatus.Working -> {
-                    fragment = WorkingJobDetailsFragment.newInstance(job, user)
+                    fragment = WorkingJobDetailsFragment.newInstance(user)
                 }
                 JobStatus.Finished -> {
-                    fragment = FinishedJobDetailsFragment.newInstance(job, user)
+                    fragment = FinishedJobDetailsFragment.newInstance(user)
                 }
                 JobStatus.Reported -> {
-                    fragment = ReportedJobDetailsFragment.newInstance(job, user)
+                    fragment = ReportedJobDetailsFragment.newInstance(user)
                 }
                 else -> {
-                    fragment = NormalJobDetailsFragment.newInstance(job, user)
+                    fragment = NormalJobDetailsFragment.newInstance(user)
                 }
             }
             // fragmentの更新

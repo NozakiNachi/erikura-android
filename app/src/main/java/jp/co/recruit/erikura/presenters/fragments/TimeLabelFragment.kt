@@ -19,10 +19,10 @@ import jp.co.recruit.erikura.databinding.FragmentTimeLabelBinding
 
 class TimeLabelFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?): TimeLabelFragment {
+        fun newInstance(user: User?): TimeLabelFragment {
             return TimeLabelFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

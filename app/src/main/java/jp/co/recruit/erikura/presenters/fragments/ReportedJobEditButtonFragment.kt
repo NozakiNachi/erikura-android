@@ -20,10 +20,10 @@ import java.util.*
 
 class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButtonFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ReportedJobEditButtonFragment {
+        fun newInstance(user: User?): ReportedJobEditButtonFragment {
             return ReportedJobEditButtonFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }
