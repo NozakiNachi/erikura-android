@@ -427,7 +427,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/reset/password/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/user/password/update/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
             <!-- ドメイン統合後の登録用URL -->
