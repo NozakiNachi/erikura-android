@@ -345,7 +345,20 @@
         <activity
             android:name=".presenters.activities.mypage.NotificationSettingActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" /> <!-- 通知設定 -->
+            android:windowSoftInputMode="adjustResize" >
+            <!-- FDLの設定 -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${erikura_host}"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/notification_settings/"
+                    android:scheme="${erikura_protocol}" />
+            </intent-filter>
+        </activity><!-- 通知設定 -->
         <activity
             android:name=".presenters.activities.mypage.ResignInActivity"
             android:screenOrientation="portrait"
