@@ -87,7 +87,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/payments/information/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/payment_history/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -145,7 +145,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/map/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/map/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- リスト画面 -->
@@ -162,7 +162,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/list/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/list/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 案件検索画面 -->
@@ -221,7 +221,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/report/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/own/reported/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -291,7 +291,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/report/finish/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/reports/register/completed/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -333,7 +333,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/change/user/information/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/users/edit/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 会員情報変更 -->
@@ -350,7 +350,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/payment/register/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/bank/edit/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 口座情報登録更新 -->
@@ -376,7 +376,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/favorite/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/favorite/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -485,7 +485,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/user/register/password/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
             <!-- ドメイン統合後の登録用URL -->

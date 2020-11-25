@@ -206,7 +206,7 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
         var fromReportedFDL = false
         val appLinkData: Uri? = intent.data
         appLinkData?.let{
-            if (appLinkData.path == "/app/link/report/finish/") {
+            if (appLinkData.path == "/app/link/reports/register/completed/") {
                 fromReportedFDL = true
             }
         }
