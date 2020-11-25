@@ -714,8 +714,14 @@ class ChangeUserInformationViewModel : ViewModel() {
     // バリデーションルール
     private fun isValid(): Boolean {
         var valid = true
-        valid = isValidPassword() && valid
-        valid = isValidVerificationPassword() && valid
+        //　パスワードと確認用パスワードのバリデーション
+        val passwordValidAndErrorMessage = User.isValidPassword(password.value)
+        val verificationPassValidAndErrorMessage = User.isValidVerificationPassword(password.value, verificationPassword.value)
+        // パスワードと確認用パスワードのエラーメッセージを取得
+        passwordError.message.value = passwordValidAndErrorMessage.second
+        verificationPasswordError.message.value = verificationPassValidAndErrorMessage.second
+        valid = passwordValidAndErrorMessage.first && valid
+        valid = verificationPassValidAndErrorMessage.first && valid
         valid = isValidFirstName() && valid
         valid = isValidLastName() && valid
         valid = isValidPostalCode() && valid
@@ -830,54 +836,6 @@ class ChangeUserInformationViewModel : ViewModel() {
             streetError.message.value = null
         }
 
-        return valid
-    }
-
-    private fun isValidPassword(): Boolean {
-        var valid = true
-        val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
-        val alPattern = Pattern.compile("^(.*[A-z]+.*)")
-        val numPattern = Pattern.compile("^(.*[0-9]+.*)")
-
-        val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
-        val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
-
-        if (valid && password.value.isNullOrBlank()) {
-            passwordError.message.value = null
-        } else {
-            password.value?.let { pwd ->
-                if (valid && !(pattern.matcher(pwd).find())) {
-                    valid = false
-                    passwordError.message.value =
-                        ErikuraApplication.instance.getString(R.string.password_count_error)
-                } else if (valid && !(hasAlphabet(pwd) && hasNumeric(pwd))) {
-                    valid = false
-                    passwordError.message.value =
-                        ErikuraApplication.instance.getString(R.string.password_pattern_error)
-                } else {
-                    valid = true
-                    passwordError.message.value = null
-                }
-            }
-        }
-        return valid
-    }
-
-    private fun isValidVerificationPassword(): Boolean {
-        var valid = true
-
-        if (valid && password.value.isNullOrBlank() && verificationPassword.value.isNullOrBlank()) {
-            verificationPasswordError.message.value = null
-        } else {
-            if (valid && !(password.value.equals(verificationPassword.value))) {
-                valid = false
-                verificationPasswordError.message.value =
-                    ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
-            } else {
-                valid = true
-                verificationPasswordError.message.value = null
-            }
-        }
         return valid
     }
 

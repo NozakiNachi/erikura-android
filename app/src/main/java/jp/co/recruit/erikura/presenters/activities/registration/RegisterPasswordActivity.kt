@@ -134,32 +134,16 @@ class RegisterPasswordViewModel: ViewModel() {
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
     val isNextButtonEnabled = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(password) {result.value = isValid() }
+        result.addSource(password) {result.value = isValid(it) }
     }
 
-    private fun isValid(): Boolean {
+    private fun isValid(password: String?): Boolean {
         var valid = true
-        val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
-        val alPattern = Pattern.compile("^(.*[A-z]+.*)")
-        val numPattern = Pattern.compile("^(.*[0-9]+.*)")
-
-        val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
-        val hasNumeric: (str: String) -> Boolean = { str -> numPattern.matcher(str).find() }
-
-        if (valid && password.value?.isBlank() ?:true) {
-            valid = false
-            error.message.value = null
-        }else if(valid && !(pattern.matcher(password.value).find())) {
-            valid = false
-            error.message.value = ErikuraApplication.instance.getString(R.string.password_count_error)
-        }else if(valid && !(hasAlphabet(password.value ?: "") && hasNumeric(password.value ?: ""))) {
-            valid = false
-            error.message.value = ErikuraApplication.instance.getString(R.string.password_pattern_error)
-        } else {
-            valid = true
-            error.message.value = null
-        }
-
+        //　パスワードのバリデーション
+        val passwordValidAndErrorMessage = User.isValidFirstRegisterPassword(password)
+        // パスワードのエラーメッセージを取得
+        error.message.value = passwordValidAndErrorMessage.second
+        valid = passwordValidAndErrorMessage.first && valid
         return valid
     }
 }
