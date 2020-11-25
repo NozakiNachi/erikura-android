@@ -212,18 +212,6 @@
                     android:pathPrefix="${erikura_relative_url_root}/link/jobs/apply/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
-            <!-- 作業報告のFDL -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/own/reported/"
-                    android:scheme="${erikura_protocol}" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".presenters.activities.job.ApplyCompletedActivity"
