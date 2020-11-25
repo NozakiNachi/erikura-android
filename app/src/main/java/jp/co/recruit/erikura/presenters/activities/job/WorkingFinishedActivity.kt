@@ -21,6 +21,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.TransitionWebModal
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
 import jp.co.recruit.erikura.databinding.DialogAlertAbleEndBinding
@@ -126,48 +127,8 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
     override fun onClickTransitionWebModal(view: View) {
         // WEB遷移確認モーダルを表示する
-        BaseActivity.currentActivity?.let { activity ->
-            val dialog = AlertDialog.Builder(activity)
-                .setView(R.layout.dialog_confirm_transition_web)
-                .setCancelable(false)
-                .create()
-            dialog.show()
-            val button: Button = dialog.findViewById(R.id.open_button)
-            button.setOnClickListener(View.OnClickListener {
-                //開く場合
-                dialog.dismiss()
-                Api(activity).createToken() { token ->
-                    //カスタマWebの作業報告新規作成画面を開く
-                    val jobReportURLString = ErikuraConfig.jobReportURLString(job.id, token)
-                    Uri.parse(jobReportURLString)?.let { uri ->
-                        try {
-                            Tracking.logEvent(event = "push_web_report", params = bundleOf())
-                            var userId: Int? = null
-                            Api(this).user {
-                                userId = it.id
-                                Tracking.trackWebReport(
-                                    name = "push_web_report",
-                                    job_kind_id = job.jobKind?.id ?: 0,
-                                    user_id = userId ?: 0
-                                )
-                                Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                                    intent.setPackage("com.android.chrome")
-                                    startActivity(intent)
-                                }
-                            }
-                        } catch (e: ActivityNotFoundException) {
-                            Intent(Intent.ACTION_VIEW, uri).let { intent ->
-                                startActivity(intent)
-                            }
-                        }
-                    }
-                }
-            })
-            val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
-            cancelButton.setOnClickListener(View.OnClickListener {
-                //キャンセル場合
-                dialog.dismiss()
-            })
+        Api(this).user {
+            TransitionWebModal.transitionWebModal(view, this, job, it)
         }
     }
 
