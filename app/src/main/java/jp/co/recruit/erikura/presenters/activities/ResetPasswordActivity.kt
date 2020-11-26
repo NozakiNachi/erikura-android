@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -43,19 +44,12 @@ class ResetPasswordActivity : BaseActivity(),
         viewModel.passwordErrorVisibility.value = View.GONE
         viewModel.verificationPasswordErrorVisibility.value = View.GONE
 
-        // FIXME FDLは12/11リリース
-
-
         // パスワード再設定トークン取得
         var uri: Uri? = intent.data
-        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_app") {
-            val path = uri?.getQueryParameter("path")
-            uri = Uri.parse("erikura://${path}")
+        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/users/password/edit") {
             resetPasswordToken = uri?.getQueryParameter("reset_password_token")
         }
-        else if (uri?.path == "/api/v1/utils/open_android_app") {
-            val path = uri?.getQueryParameter("path")
-            uri = Uri.parse("erikura://${path}")
+        else if (uri?.path == "/users/password/edit") {
             resetPasswordToken = uri?.getQueryParameter("reset_password_token")
         }
         else {
@@ -83,13 +77,16 @@ class ResetPasswordActivity : BaseActivity(),
             name = "push_password_update",
             user = user
         )
-        Api(this).updateResetPassword(resetPasswordToken?: "",
-            viewModel.password.value?: "",
-            viewModel.verificationPassword.value?:""){ userSession ->
-                userSession.store()
-                var intent = Intent(this, MapViewActivity::class.java)
-                startActivity(intent)
-                finish()
+        Api(this).updateResetPassword(
+            resetPasswordToken ?: "",
+            viewModel.password.value ?: "",
+            viewModel.verificationPassword.value ?: ""
+        ) { userSession ->
+            userSession.store()
+            var intent = Intent(this, MapViewActivity::class.java)
+            startActivity(intent)
+            ErikuraApplication.instance.pushUri = null
+            finish()
         }
     }
 
