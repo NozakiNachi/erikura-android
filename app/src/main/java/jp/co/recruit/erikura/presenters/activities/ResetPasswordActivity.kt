@@ -44,22 +44,24 @@ class ResetPasswordActivity : BaseActivity(),
         viewModel.verificationPasswordErrorVisibility.value = View.GONE
 
         // FIXME FDLは12/11リリース
-        // FDLの場合
-//        resetPasswordToken = handleIntent(intent)
 
-        // FIXME FDLは12/11削除予定
+
         // パスワード再設定トークン取得
         var uri: Uri? = intent.data
         if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_app") {
             val path = uri?.getQueryParameter("path")
             uri = Uri.parse("erikura://${path}")
+            resetPasswordToken = uri?.getQueryParameter("reset_password_token")
         }
         else if (uri?.path == "/api/v1/utils/open_android_app") {
             val path = uri?.getQueryParameter("path")
             uri = Uri.parse("erikura://${path}")
+            resetPasswordToken = uri?.getQueryParameter("reset_password_token")
         }
-        resetPasswordToken = uri?.getQueryParameter("reset_password_token")
-        // FIXME FDLは12/11削除予定ここまで
+        else {
+            // FDLの場合
+            resetPasswordToken = handleIntent(intent)
+        }
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
