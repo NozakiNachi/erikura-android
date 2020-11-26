@@ -84,7 +84,7 @@
 
     <!-- パスワード再設定画面 -->
     <string name="reset_password_title">パスワード再設定</string>
-    <string name="reset_password_caption">新しく設定するパスワードを入力してください</string>
+    <string name="reset_password_caption">新しく設定するパスワードを入力してください。</string>
     <string name="reset_password_button">パスワードを変更する</string>
 
     <!-- 会員登録完了画面 -->
