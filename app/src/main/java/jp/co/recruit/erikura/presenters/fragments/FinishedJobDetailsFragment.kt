@@ -17,9 +17,11 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.TransitionWebModal
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
@@ -177,6 +179,13 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
         }
     }
 
+    override fun onClickTransitionWebModal(view: View) {
+        // WEB遷移確認モーダルを表示する
+        BaseActivity.currentActivity?.let { activity ->
+            TransitionWebModal.transitionWebModal(view, activity, job, user)
+        }
+    }
+
 }
 
 class FinishedJobDetailsFragmentViewModel: BaseJobDetailViewModel() {
@@ -237,4 +246,5 @@ interface FinishedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
     fun onClickCancelWorking(view: View)
     fun onClickReport(view: View)
+    fun onClickTransitionWebModal(view: View)
 }

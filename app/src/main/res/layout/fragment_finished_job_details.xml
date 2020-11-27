@@ -201,8 +201,18 @@
                     android:id="@+id/finishedJobDetails_mapViewFragment"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
+                    android:layout_marginTop="20dp" />
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
                     android:layout_marginTop="20dp"
-                    android:layout_marginBottom="110dp" />
+                    android:layout_marginBottom="110dp"
+                    android:onClick="@{handlers::onClickTransitionWebModal}"
+                    android:text="@string/failed_report_link"
+                    android:textSize="14dp" />
 
             </LinearLayout>
 
