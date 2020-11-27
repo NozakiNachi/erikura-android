@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.NotificationSetting
@@ -29,6 +30,11 @@ class NotificationSettingActivity : BaseActivity(),
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        if (intent.data?.path != null){
+            // FDLで遷移した場合、空にセットしておく
+            ErikuraApplication.instance.pushUri = null
+        }
 
         // ユーザーの現在の通知設定を取得
         Api(this).notificationSetting() { notificationSetting ->

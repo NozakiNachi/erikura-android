@@ -8,6 +8,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -129,6 +130,8 @@ class ReportExamplesActivity : BaseActivity() {
 
     private fun handleIntent(intent: Intent): Int {
         val appLinkData: Uri? = intent.data
+        // FDLで遷移した場合、空にセットしておく
+        ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toInt()
     }
 }

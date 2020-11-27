@@ -110,7 +110,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/report/example/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/report/example/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -197,7 +197,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/show/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
             <!-- 応募のFDL -->
@@ -245,7 +245,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/places/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/places/show/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -261,7 +261,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/property/notes/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/property/notes/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -291,16 +291,16 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <!-- FDLの設定 -->
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+            <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/"
-                    android:scheme="${erikura_protocol}" />
-            </intent-filter>
+            <data
+                android:host="${erikura_host}"
+                android:pathPrefix="${erikura_relative_url_root}/link/mypage/show/"
+                android:scheme="${erikura_protocol}" />
+        </intent-filter>
         </activity>
         <!-- マイページ -->
         <activity
@@ -332,7 +332,6 @@
             <!-- FDLの設定 -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 

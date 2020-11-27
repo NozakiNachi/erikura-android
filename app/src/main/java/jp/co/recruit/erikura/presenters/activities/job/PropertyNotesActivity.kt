@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,9 +62,17 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         jobKindId = intent.getIntExtra("job_kind_id", 0)
 
         if (intent.data?.path != null && placeId == 0) {
+            Log.v("DEBUG","ここ通る！")
+            Log.v("DEBUG","path=${intent.data?.path}")
+            Log.v("DEBUG","placeId~${placeId}")
             // FDLの場合
             api.reloadJobById(handleIntent(intent)) { job ->
+                jobId = job.id
                 placeId = job.placeId
+                jobKindId = job.jobKind?.id
+                Log.v("DEBUG","placeId~${placeId}")
+                Log.v("DEBUG","jobId~${jobId}")
+                Log.v("DEBUG","jobKindId~${jobKindId}")
                 Tracking.logEvent(event = "view_cautions", params = bundleOf())
                 Tracking.viewCautions(
                     name = "/places/cautions",
@@ -91,13 +100,18 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                 }
             }
         } else {
+            Log.v("DEBUG","ここ通ったらダメ")
+            Log.v("DEBUG","path=${intent.data?.path}")
+            Log.v("DEBUG","placeId~${placeId}")
             // 物件の注意事項を取得
             placeId?.let { place_id ->
-                api.placeCautions(place_id) {
-                    //ボタンのラベルを生成しセット
-                    cautions = it
-                    propertyNotesAdapter.cautions = it
-                    propertyNotesAdapter.notifyDataSetChanged()
+                if (jobId != null || placeId != null) {
+                    api.placeCautions(jobId, placeId, jobKindId) {
+                        //ボタンのラベルを生成しセット
+                        cautions = it
+                        propertyNotesAdapter.cautions = it
+                        propertyNotesAdapter.notifyDataSetChanged()
+                    }
                 }
             }
         }
@@ -114,9 +128,8 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
     override fun onResume() {
         super.onResume()
-        val api = Api(this)
-        placeId?.let { placeId ->
-            api.place(placeId) { place ->
+        if (placeId != null && placeId != 0){
+            api.place(placeId!!) { place ->
                 if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                     // 現ユーザーが応募済の物件の場合　フル住所を表示
                     viewModel.address.value = place.workingPlace + place.workingBuilding
@@ -126,7 +139,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                 }
             }
         }
-        if (jobId != null || placeId != null) {
+        if ((jobId != null && jobId != 0) || (placeId != null && placeId != 0)) {
             api.placeCautions(jobId, placeId, jobKindId) {
                 //ボタンのラベルを生成しセット
                 cautions = it
@@ -177,6 +190,8 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
     private fun handleIntent(intent: Intent): Int {
         val appLinkData: Uri? = intent.data
+        // FDLで遷移した場合、空にセットしておく
+        ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toInt()
     }
 }

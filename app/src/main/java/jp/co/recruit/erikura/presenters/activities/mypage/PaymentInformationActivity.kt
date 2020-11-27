@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -45,6 +46,11 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+        if (intent.data?.path != null){
+            // FDLで遷移した場合、空にセットしておく
+            ErikuraApplication.instance.pushUri = null
+        }
 
         monthlyPaymentAdapter = MonthlyPaymentAdapter(this, listOf())
         binding.paymentInformationMonthlyList.adapter = monthlyPaymentAdapter

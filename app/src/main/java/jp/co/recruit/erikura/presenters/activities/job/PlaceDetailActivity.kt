@@ -117,6 +117,8 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
         val appLinkData: Uri? = intent.data
         val placeId = appLinkData!!.lastPathSegment!!.toInt()
         place.id = placeId
+        // FDLで遷移した場合、空にセットしておく
+        ErikuraApplication.instance.pushUri = null
     }
 }
 
