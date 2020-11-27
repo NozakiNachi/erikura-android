@@ -25,9 +25,9 @@ import kotlinx.android.synthetic.main.activity_upload_id_image.*
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?): NormalJobDetailsFragment {
+        fun newInstance(user: User?): NormalJobDetailsFragment {
             val args = Bundle()
-            fillArguments(args, job, user)
+            fillArguments(args, user)
 
             return NormalJobDetailsFragment().also {
                 it.arguments = args
@@ -95,17 +95,17 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         super.onActivityCreated(savedInstanceState)
 
         val transaction = childFragmentManager.beginTransaction()
-        timeLabel = TimeLabelFragment.newInstance(job, user)
-        jobInfoView = JobInfoViewFragment.newInstance(job, user)
-        thumbnailImage = ThumbnailImageFragment.newInstance(job, user)
-        manualButton = ManualButtonFragment.newInstance(job, user)
-        applyFlowLink = ApplyFlowLinkFragment.newInstance(job, user)
-        jobDetailsView = JobDetailsViewFragment.newInstance(job, user)
-        mapView = MapViewFragment.newInstance(job, user)
-        applyFlowView = ApplyFlowViewFragment.newInstance(job, user)
-        applyButton = ApplyButtonFragment.newInstance(job, user)
-        propertyNotesButton = PropertyNotesButtonFragment.newInstance(job, user)
-        reportExamplesButton = ReportExamplesButtonFragment.newInstance(job, user)
+        timeLabel = TimeLabelFragment.newInstance(user)
+        jobInfoView = JobInfoViewFragment.newInstance(user)
+        thumbnailImage = ThumbnailImageFragment.newInstance(user)
+        manualButton = ManualButtonFragment.newInstance(user)
+        applyFlowLink = ApplyFlowLinkFragment.newInstance(user)
+        jobDetailsView = JobDetailsViewFragment.newInstance(user)
+        mapView = MapViewFragment.newInstance(user)
+        applyFlowView = ApplyFlowViewFragment.newInstance(user)
+        applyButton = ApplyButtonFragment.newInstance(user)
+        propertyNotesButton = PropertyNotesButtonFragment.newInstance(user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(user)
         transaction.add(R.id.jobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.jobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.jobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")

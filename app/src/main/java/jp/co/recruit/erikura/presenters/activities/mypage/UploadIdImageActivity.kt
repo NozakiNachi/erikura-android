@@ -343,20 +343,9 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickUploadIdImage(view: View) {
-        // リサイズ中のスピナーをAPI経由で呼ぶと、誤差があるので直呼びしてます
-        var progressAlert: androidx.appcompat.app.AlertDialog? = null
-        progressAlert = androidx.appcompat.app.AlertDialog.Builder(this).apply {
-            setView(LayoutInflater.from(context).inflate(R.layout.dialog_progress, null, false))
-            setCancelable(false)
-        }.create()
-
-        val dm = this.resources.displayMetrics
-        progressAlert?.show()
-        progressAlert?.window?.setLayout(
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
-
         val api = Api(this)
+        // リサイズ中に表示するスピナー
+        api.showProgressAlert()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "send_id_document", params= bundleOf())
         Tracking.trackUserId( "send_id_document",  user)
@@ -378,10 +367,16 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
         idDocument.type = identityTypeOfIdList.getString(viewModel.typeOfId.value ?: 0)
         idDocument.identifyComparingData = identifyComparingData
-        progressAlert.dismiss()
         user.id?.let { userId ->
             try {
-                api.idVerify(userId, idDocument) { result ->
+                val errorHandler: (List<String>?) -> Unit = { messages ->
+                    api.displayErrorAlert(messages)
+                    //　リサイズ中表示していたスピナーを削除
+                    api.hideProgressAlert()
+                }
+                api.idVerify(userId, idDocument, onError = errorHandler) { result ->
+                    //　リサイズ中表示していたスピナーを削除
+                    api.hideProgressAlert()
                     if (result) {
                         // 遷移元に応じて身分証確認完了を表示
                         moveUploadedIdImage()
@@ -404,7 +399,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         }
     }
 
-    override fun onClickSpinner(view: View) {
+    override fun onClickSpinner(view: View?) {
         // 身分証の種別を選択する度に画像をリセットします
 
         viewModel.otherPhotoFront = MediaItem()
@@ -661,7 +656,9 @@ interface UploadIdImageEventHandlers {
     fun onCLickRemovePassportFrontPhoto(view: View)
     fun onClickRemovePassportBackPhoto(view: View)
     fun onClickRemoveMyNumberPhoto(view: View)
-    fun onClickSpinner(view:View)
+
+    //画像種別選択イベント
+    fun onClickSpinner(view: View?)
 
     // 送信イベント
     fun onClickUploadIdImage(view: View)

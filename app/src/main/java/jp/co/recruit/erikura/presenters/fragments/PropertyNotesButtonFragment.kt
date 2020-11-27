@@ -20,10 +20,10 @@ import jp.co.recruit.erikura.databinding.FragmentPropertyNotesButtonBinding
 
 class PropertyNotesButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): PropertyNotesButtonFragment {
+        fun newInstance(user: User?): PropertyNotesButtonFragment {
             return PropertyNotesButtonFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }
@@ -58,7 +58,9 @@ class PropertyNotesButtonFragment : BaseJobDetailFragment, PropertyNotesButtonFr
             Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
 
             val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity::class.java)
+            intent.putExtra("job_id", job.id)
             intent.putExtra("place_id", job.placeId)
+            intent.putExtra("job_kind_id", job.jobKind?.id)
             startActivity(intent)
         }
     }

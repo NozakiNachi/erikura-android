@@ -18,10 +18,10 @@ import jp.co.recruit.erikura.databinding.FragmentThumbnailImageBinding
 
 class ThumbnailImageFragment : BaseJobDetailFragment {
     companion object {
-        fun newInstance(job: Job?, user: User?): ThumbnailImageFragment {
+        fun newInstance(user: User?): ThumbnailImageFragment {
             return ThumbnailImageFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }

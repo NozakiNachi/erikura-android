@@ -202,10 +202,11 @@
                     style="@style/fieldLabel"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
                     android:drawableLeft="@drawable/icon_required_18"
                     android:drawablePadding="10dp"
-                    android:layout_marginTop="40dp"
                     android:text="@string/prefecture" />
+
                 <Spinner
                     android:id="@+id/registerAddress_prefecture"
                     style="@style/spinnerField"
@@ -235,6 +236,14 @@
                     android:inputType="text"
                     />
                 <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
+                    android:layout_marginTop="10dp"
+                    android:text="※市区町村が抜けていませんか？"
+                    android:visibility="@{viewModel.cityWarningVisiblity}"
+                    />
+                <TextView
                     style="@style/errorField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -259,6 +268,14 @@
                     android:inputType="text"
                     android:hint="@string/register_street_hint"
                     android:text="@={viewModel.street}"
+                    />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/errorField"
+                    android:layout_marginTop="10dp"
+                    android:text="※番地の入力を忘れていませんか？"
+                    android:visibility="@{viewModel.streetNumberWarningVisibility}"
                     />
                 <TextView
                     style="@style/errorField"

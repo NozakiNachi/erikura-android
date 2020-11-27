@@ -8,11 +8,9 @@ import jp.co.recruit.erikura.business.models.User
 
 abstract class BaseJobDetailFragment : Fragment {
     companion object {
-        const val JOB_ARGUMENT = "job"
         const val USER_ARGUMENT = "user"
 
-        fun fillArguments(bundle: Bundle, job: Job?, user: User?) {
-            ErikuraApplication.instance.currentJob = job
+        fun fillArguments(bundle: Bundle, user: User?) {
             bundle.putParcelable(USER_ARGUMENT, user)
         }
     }
@@ -33,7 +31,7 @@ abstract class BaseJobDetailFragment : Fragment {
 
     open fun refresh(job: Job?, user: User?) {
         arguments?.let { args ->
-            fillArguments(args, job, user)
+            fillArguments(args, user)
         }
         this.job = job
         this.user = user

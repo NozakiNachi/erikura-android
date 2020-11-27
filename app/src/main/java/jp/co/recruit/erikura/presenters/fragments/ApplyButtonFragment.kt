@@ -26,10 +26,10 @@ import jp.co.recruit.erikura.presenters.activities.mypage.UpdateIdentityActivity
 
 class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandlers {
     companion object {
-        fun newInstance(job: Job?, user: User?): ApplyButtonFragment {
+        fun newInstance(user: User?): ApplyButtonFragment {
             return ApplyButtonFragment().also {
                 it.arguments = Bundle().also { args ->
-                    fillArguments(args, job, user)
+                    fillArguments(args, user)
                 }
             }
         }
