@@ -73,12 +73,12 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                 )
                 // 物件の注意事項を取得
                 if (jobId != null || placeId != null) {
-                    api.placeCautions(place_id) {
+                    api.placeCautions(jobId, placeId, jobKindId) {
                         //ボタンのラベルを生成しセット
                         cautions = it
                         propertyNotesAdapter.cautions = it
                         propertyNotesAdapter.notifyDataSetChanged()
-                        api.place(place_id) { place ->
+                        api.place(placeId?: 0) { place ->
                             if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                                 // 現ユーザーが応募済の物件の場合　フル住所を表示
                                 viewModel.address.value = place.workingPlace + place.workingBuilding
