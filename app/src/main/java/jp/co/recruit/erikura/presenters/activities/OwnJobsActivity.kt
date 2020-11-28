@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
@@ -208,6 +209,8 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
         appLinkData?.let{
             if (appLinkData.path == "/app/link/reports/register/completed/") {
                 fromReportedFDL = true
+                // FDLで遷移した場合、空にセットしておく
+                ErikuraApplication.instance.pushUri = null
             }
         }
         return fromReportedFDL
