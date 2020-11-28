@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -44,6 +45,14 @@ class AccountSettingActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
+
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == "/app/link/mypage/bank/edit/") {
+                // FDLで遷移した場合、空にセットしておく
+                ErikuraApplication.instance.pushUri = null
+            }
+        }
 
         setupBankNameAdapter()
         setupBranchNameAdapter()
