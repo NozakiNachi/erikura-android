@@ -92,6 +92,7 @@ class ResetPasswordActivity : BaseActivity(),
 
     private fun handleIntent(intent: Intent): String {
         val appLinkData: Uri? = intent.data
+        ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toString()
     }
 }
