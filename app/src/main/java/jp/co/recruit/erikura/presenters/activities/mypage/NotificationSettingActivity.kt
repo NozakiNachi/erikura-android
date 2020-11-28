@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -31,9 +32,12 @@ class NotificationSettingActivity : BaseActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
 
-        if (intent.data?.path != null){
-            // FDLで遷移した場合、空にセットしておく
-            ErikuraApplication.instance.pushUri = null
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == "/app/link/mypage/notification_settings/") {
+                // FDLで遷移した場合、空にセットしておく
+                ErikuraApplication.instance.pushUri = null
+            }
         }
 
         // ユーザーの現在の通知設定を取得
