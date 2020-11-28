@@ -334,7 +334,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/users/edit/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/user/edit/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 会員情報変更 -->

@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -74,6 +75,14 @@ class ChangeUserInformationActivity :
         binding.lifecycleOwner = this
         binding.handlers = this
         binding.viewModel = viewModel
+
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == "/app/link/mypage/user/edit/") {
+                // FDLで遷移した場合、空にセットしておく
+                ErikuraApplication.instance.pushUri = null
+            }
+        }
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
