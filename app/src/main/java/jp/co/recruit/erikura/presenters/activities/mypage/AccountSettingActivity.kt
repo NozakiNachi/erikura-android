@@ -46,14 +46,6 @@ class AccountSettingActivity : BaseReSignInRequiredActivity(fromActivity = BaseR
         binding.handlers = this
         binding.viewModel = viewModel
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/mypage/bank/edit/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
-
         setupBankNameAdapter()
         setupBranchNameAdapter()
 

@@ -76,14 +76,6 @@ class ChangeUserInformationActivity :
         binding.handlers = this
         binding.viewModel = viewModel
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/mypage/user/edit/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
-
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
         if (errorMessages != null) {
