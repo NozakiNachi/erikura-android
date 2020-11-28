@@ -116,10 +116,9 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
         val appLinkData: Uri? = intent.data
         appLinkData?.let{
-            if (appLinkData.path == "/app/link/mypage/bank/edit/") {
+            if (appLinkData.path == "/app/link/jobs/list/") {
                 // FDLで遷移した場合、空にセットしておく
                 ErikuraApplication.instance.pushUri = null
-
             }
         }
 

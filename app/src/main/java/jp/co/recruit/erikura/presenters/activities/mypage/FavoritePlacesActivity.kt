@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -39,6 +40,14 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         val binding: ActivityFavoritePlacesBinding = DataBindingUtil.setContentView(this, R.layout.activity_favorite_places)
         binding.lifecycleOwner = this
         binding.handlers = this
+
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == "/app/link/jobs/favorite/") {
+                // FDLで遷移した場合、空にセットしておく
+                ErikuraApplication.instance.pushUri = null
+            }
+        }
 
         favoritePlaceAdapter = FavoritePlaceAdapter(this, listOf()).also {
             it.onClickListener = object : FavoritePlaceAdapter.OnClickListener {
