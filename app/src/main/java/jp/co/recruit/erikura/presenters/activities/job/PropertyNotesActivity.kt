@@ -6,14 +6,12 @@ import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.*
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -62,17 +60,11 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
         jobKindId = intent.getIntExtra("job_kind_id", 0)
 
         if (intent.data?.path != null && placeId == 0) {
-            Log.v("DEBUG","ここ通る！")
-            Log.v("DEBUG","path=${intent.data?.path}")
-            Log.v("DEBUG","placeId~${placeId}")
             // FDLの場合
             api.reloadJobById(handleIntent(intent)) { job ->
                 jobId = job.id
                 placeId = job.placeId
                 jobKindId = job.jobKind?.id
-                Log.v("DEBUG","placeId~${placeId}")
-                Log.v("DEBUG","jobId~${jobId}")
-                Log.v("DEBUG","jobKindId~${jobKindId}")
                 Tracking.logEvent(event = "view_cautions", params = bundleOf())
                 Tracking.viewCautions(
                     name = "/places/cautions",
@@ -100,9 +92,6 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                 }
             }
         } else {
-            Log.v("DEBUG","ここ通ったらダメ")
-            Log.v("DEBUG","path=${intent.data?.path}")
-            Log.v("DEBUG","placeId~${placeId}")
             // 物件の注意事項を取得
             placeId?.let { place_id ->
                 if (jobId != null || placeId != null) {
