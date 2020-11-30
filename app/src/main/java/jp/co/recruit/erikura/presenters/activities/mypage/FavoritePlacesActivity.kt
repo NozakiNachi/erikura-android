@@ -52,9 +52,6 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         favoritePlaceView.setHasFixedSize(true)
         favoritePlaceView.adapter = favoritePlaceAdapter
 
-        //　表示がFDL形式の場合の処理
-        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite/")
-
     }
 
     override fun onStart() {
@@ -66,6 +63,8 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
             placeList = it
             favoritePlaceAdapter.places = it
             favoritePlaceAdapter.notifyDataSetChanged()
+            //　表示がFDL形式の場合の処理
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite/")
         }
     }
 
