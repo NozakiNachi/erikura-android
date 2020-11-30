@@ -85,7 +85,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                         // 地図画面へ遷移します
                         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                             var intent = Intent(this, MapViewActivity::class.java)
-                            // プッシュ通知のURLがあるならそちらへ遷移
+                            // プッシュ通知、FDLのURLがあるならそちらへ遷移
                             ErikuraApplication.instance.pushUri?.let {
                                 intent = Intent(Intent.ACTION_VIEW, it)
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -147,7 +147,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 var intent = Intent(this, MapViewActivity::class.java)
-                // プッシュ通知のURLがあるならそちらへ遷移
+                // プッシュ通知、FDLのURLがあるならそちらへ遷移
                 ErikuraApplication.instance.pushUri?.let {
                     intent = Intent(Intent.ACTION_VIEW, it)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

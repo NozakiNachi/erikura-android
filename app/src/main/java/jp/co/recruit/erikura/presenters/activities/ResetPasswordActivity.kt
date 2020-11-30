@@ -4,7 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -95,6 +99,18 @@ class ResetPasswordActivity : BaseActivity(),
         // FDLで遷移した場合、空にセットしておく
         ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toString()
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val constraintLayout = findViewById<LinearLayout>(R.id.reset_password_LinearLayout )
+            constraintLayout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(constraintLayout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 }
 

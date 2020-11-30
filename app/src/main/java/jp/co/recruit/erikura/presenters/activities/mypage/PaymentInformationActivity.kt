@@ -50,10 +50,6 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
         monthlyPaymentAdapter = MonthlyPaymentAdapter(this, listOf())
         binding.paymentInformationMonthlyList.adapter = monthlyPaymentAdapter
         binding.paymentInformationMonthlyList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-
-
-        //　表示がFDL形式の場合の処理
-        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/payment_history/")
     }
 
     override fun onStart() {
@@ -103,6 +99,9 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
                 viewModel.noPaymentsVisibility.value = View.GONE
                 viewModel.paymentsVisibility.value = View.VISIBLE
             }
+
+            //　API実行後、表示がFDL形式の場合の処理
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/payment_history/")
         }
 
         // 口座情報が登録済みであれば、口座情報登録ボタンは表示しない。
