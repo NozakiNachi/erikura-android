@@ -270,6 +270,16 @@ class ErikuraApplication : Application() {
             }
         }
     }
+
+    fun removePushUriFromFDL(intent: Intent, path: String){
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == path) {
+                // FDLで遷移した場合、pushUriを空にセットしておく
+                instance.pushUri = null
+            }
+        }
+    }
 }
 
 class AppLifecycle: LifecycleObserver {

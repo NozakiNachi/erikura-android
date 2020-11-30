@@ -39,13 +39,8 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/user/login/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
+        // FDLで遷移した場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/user/login/")
 
         viewModel.email.value = ""
         viewModel.password.value = ""

@@ -32,14 +32,6 @@ class NotificationSettingActivity : BaseActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/mypage/notification_settings/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
-
         // ユーザーの現在の通知設定を取得
         Api(this).notificationSetting() { notificationSetting ->
             // メール通知
@@ -55,6 +47,10 @@ class NotificationSettingActivity : BaseActivity(),
             viewModel.allowReopenPushReception.value = notificationSetting.allowReopenPushReception
             viewModel.allowCommentedPushReception.value = notificationSetting.allowCommentedPushReception
             viewModel.allowLikedPushReception.value = notificationSetting.allowLikedPushReception
+
+
+            //API処理実行後に実施する
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/notification_settings/")
         }
     }
 

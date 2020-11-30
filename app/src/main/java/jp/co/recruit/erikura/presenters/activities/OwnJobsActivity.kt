@@ -179,6 +179,10 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
             }
 
             refreshHasRejected(api)
+            if (fromReportedFDL){
+                // FDLで遷移した場合、API実行後、pushUriを空にセットしておく
+                ErikuraApplication.instance.pushUri = null
+            }
         }
     }
 
@@ -209,8 +213,6 @@ class OwnJobsActivity : BaseTabbedActivity(R.id.tab_menu_applied_jobs), OwnJobsH
         appLinkData?.let{
             if (appLinkData.path == "/app/link/reports/register/completed/") {
                 fromReportedFDL = true
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
             }
         }
         return fromReportedFDL
