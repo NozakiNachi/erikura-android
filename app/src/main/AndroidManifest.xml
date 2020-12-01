@@ -443,7 +443,7 @@
                     android:pathPrefix="${erikura_relative_url_root}/link/user/password/update/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
-            <!-- ドメイン統合後の登録用URL -->
+            <!-- ドメイン統合後のパスワード再設定用URL -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
