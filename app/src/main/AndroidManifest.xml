@@ -451,7 +451,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_app_reset_password"
+                    android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_reset_password"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
 
