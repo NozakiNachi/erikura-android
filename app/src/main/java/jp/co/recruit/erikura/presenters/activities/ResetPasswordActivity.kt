@@ -47,7 +47,9 @@ class ResetPasswordActivity : BaseActivity(),
 
         // パスワード再設定トークン取得
         var uri: Uri? = intent.data
-        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/users/password/edit") {
+        if (uri?.path == "${BuildConfig.ERIKURA_RELATIVE_URL_ROOT}/api/v1/utils/open_android_reset_password") {
+            val path = uri?.getQueryParameter("path")
+            uri = Uri.parse("erikura://${path}")
             resetPasswordToken = uri?.getQueryParameter("reset_password_token")
         }
         else if (uri?.path == "/users/password/edit") {
