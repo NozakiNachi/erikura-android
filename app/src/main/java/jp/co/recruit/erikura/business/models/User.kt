@@ -77,8 +77,8 @@ data class User(
             return Pair(first = valid, second = passwordErrorMessage)
         }
 
-        // パスワード再設定の場合
-        fun isValidPassword(password: String?): Pair<Boolean, String?> {
+        // パスワード再設定の場合 会員情報変更の場合　未入力OK
+        fun isValidPasswordForChangeUser(password: String?): Pair<Boolean, String?> {
             // URLが有効か判定する
             var valid = true
             var passwordErrorMessage: String? = null
@@ -94,7 +94,26 @@ data class User(
             return Pair(first = valid, second = passwordErrorMessage)
         }
 
-        fun isValidVerificationPassword(
+        // パスワード再設定の場合 パスワード再設定の場合　未入力NG
+        fun isValidPasswordForReset(password: String?): Pair<Boolean, String?> {
+            // URLが有効か判定する
+            var valid = true
+            var passwordErrorMessage: String? = null
+
+            if (valid && password.isNullOrBlank()) {
+                valid = false
+                passwordErrorMessage = null
+            } else {
+                var validAndErrorMessage =
+                    commonValidPassword(password, valid)
+                valid = validAndErrorMessage.first
+                passwordErrorMessage = validAndErrorMessage.second
+            }
+            return Pair(first = valid, second = passwordErrorMessage)
+        }
+
+        // パスワード再設定確認の場合 会員情報変更の場合　未入力OK
+        fun isValidVerificationPasswordForChangeUser(
             password: String?,
             verificationPassword: String?
         ): Pair<Boolean, String?> {
@@ -102,6 +121,30 @@ data class User(
             var verificationPasswordErrorMessage: String? = null
 
             if (valid && password.isNullOrBlank() && verificationPassword.isNullOrBlank()) {
+                verificationPasswordErrorMessage = null
+            } else {
+                if (valid && !(password.equals(verificationPassword))) {
+                    valid = false
+                    verificationPasswordErrorMessage =
+                        ErikuraApplication.instance.getString(R.string.password_verificationPassword_match_error)
+                } else {
+                    valid = true
+                    verificationPasswordErrorMessage = null
+                }
+            }
+            return Pair(first = valid, second = verificationPasswordErrorMessage)
+        }
+
+        // パスワード再設定確認の場合 パスワード再設定の場合　未入力NG
+        fun isValidVerificationPasswordForReset(
+            password: String?,
+            verificationPassword: String?
+        ): Pair<Boolean, String?> {
+            var valid = true
+            var verificationPasswordErrorMessage: String? = null
+
+            if (valid && password.isNullOrBlank() && verificationPassword.isNullOrBlank()) {
+                valid = false
                 verificationPasswordErrorMessage = null
             } else {
                 if (valid && !(password.equals(verificationPassword))) {
