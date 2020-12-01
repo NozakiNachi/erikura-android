@@ -509,7 +509,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_app?path=/user/register/mail_auth"
+                    android:pathPrefix="${erikura_relative_url_root}/api/v1/utils/open_android_app"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
 
