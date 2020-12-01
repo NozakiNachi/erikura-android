@@ -3,12 +3,10 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -25,7 +23,6 @@ import jp.co.recruit.erikura.databinding.ActivityResetPasswordBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import org.apache.commons.lang.StringUtils
-import java.util.regex.Pattern
 
 class ResetPasswordActivity : BaseActivity(),
     ResetPasswordEventHandlers {
@@ -151,8 +148,8 @@ class ResetPasswordViewModel : ViewModel() {
     private fun isValid(): Boolean {
         var valid = true
         //　パスワードと確認用パスワードのバリデーション
-        val passwordValidAndErrorMessage = User.isValidPassword(password.value)
-        val verificationPassValidAndErrorMessage = User.isValidVerificationPassword(password.value, verificationPassword.value)
+        val passwordValidAndErrorMessage = User.isValidPasswordForReset(password.value)
+        val verificationPassValidAndErrorMessage = User.isValidVerificationPasswordForReset(password.value, verificationPassword.value)
         // パスワードと確認用パスワードのエラーメッセージを取得
         passwordError.message.value = passwordValidAndErrorMessage.second
         verificationPasswordError.message.value = verificationPassValidAndErrorMessage.second
