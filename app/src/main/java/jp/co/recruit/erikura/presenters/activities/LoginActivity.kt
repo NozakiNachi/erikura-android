@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityLoginBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
@@ -122,11 +123,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
     }
 
     override fun onClickUnreachLink(view: View) {
-        val unreachURLString = BuildConfig.SERVER_BASE_URL + "users/confirmation/new"
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(unreachURLString)
-        }
+        val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent)
     }
 
