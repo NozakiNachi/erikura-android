@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityLoginBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
+import jp.co.recruit.erikura.presenters.activities.registration.RegisterEmailActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import jp.co.recruit.erikura.presenters.activities.tutorial.PermitLocationActivity
 
@@ -39,13 +40,8 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/user/login/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
+        // FDLで遷移した場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/user/login/")
 
         viewModel.email.value = ""
         viewModel.password.value = ""
@@ -90,7 +86,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
                         // 地図画面へ遷移します
                         if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                             var intent = Intent(this, MapViewActivity::class.java)
-                            // プッシュ通知のURLがあるならそちらへ遷移
+                            // プッシュ通知、FDLのURLがあるならそちらへ遷移
                             ErikuraApplication.instance.pushUri?.let {
                                 intent = Intent(Intent.ACTION_VIEW, it)
                                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -127,11 +123,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
     }
 
     override fun onClickUnreachLink(view: View) {
-        val unreachURLString = BuildConfig.SERVER_BASE_URL + "users/confirmation/new"
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(unreachURLString)
-        }
+        val intent = Intent(this, RegisterEmailActivity::class.java)
         startActivity(intent)
     }
 
@@ -152,7 +144,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
             // 地図画面へ遷移します
             if (ErikuraApplication.instance.isOnboardingDisplayed()) {
                 var intent = Intent(this, MapViewActivity::class.java)
-                // プッシュ通知のURLがあるならそちらへ遷移
+                // プッシュ通知、FDLのURLがあるならそちらへ遷移
                 ErikuraApplication.instance.pushUri?.let {
                     intent = Intent(Intent.ACTION_VIEW, it)
                     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

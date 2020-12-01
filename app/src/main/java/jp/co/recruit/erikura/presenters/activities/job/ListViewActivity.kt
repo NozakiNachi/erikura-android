@@ -114,14 +114,6 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         binding.viewModel = viewModel
         binding.handlers = this
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/jobs/list/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
-
         intent.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
             viewModel.apply(query)
         }
@@ -211,6 +203,9 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
                 viewModel.query(it)
             }
         }
+
+        // FDL経由でmapを表示した場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/list/")
     }
 
     override fun onPause() {

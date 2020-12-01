@@ -88,14 +88,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         binding.handlers = this
         binding.coachViewModel = coachViewModel
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/jobs/map/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
-
         intent.getParcelableExtra<JobQuery>(SearchJobActivity.EXTRA_SEARCH_CONDITIONS)?.let { query ->
             // リストからの切替時に、ソート条件も引き継ぐ (ERIKURA-1051)
             // query.sortBy = SortType.DISTANCE_ASC
@@ -223,6 +215,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         if (!locationManager.checkPermission(this)) {
             locationManager.requestPermission(this)
         }
+
+        // FDL経由でmapを表示した場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/map/")
     }
 
     override fun onStart() {

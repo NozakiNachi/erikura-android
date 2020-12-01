@@ -147,6 +147,9 @@ class ChangeUserInformationActivity :
                 .create()
             dialog.show()
         }
+
+        // FDL経由の場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/user/edit/")
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

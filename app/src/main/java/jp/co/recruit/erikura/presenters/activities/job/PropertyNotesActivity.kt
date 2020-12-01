@@ -90,6 +90,8 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                         }
                     }
                 }
+                // FDLで遷移した場合、空にセットしておく
+                ErikuraApplication.instance.pushUri = null
             }
         } else {
             // 物件の注意事項を取得
@@ -179,8 +181,6 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
 
     private fun handleIntent(intent: Intent): Int {
         val appLinkData: Uri? = intent.data
-        // FDLで遷移した場合、空にセットしておく
-        ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toInt()
     }
 }

@@ -85,6 +85,8 @@ class RegisterPasswordActivity : BaseActivity(),
         }) {
             Log.v("DEBUG", "仮登録確認： userId=${it}")
             user.confirmationToken = confirmationToken
+            // API処理実行後に実施する
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/user/register/password/")
         }
     }
 
@@ -125,8 +127,6 @@ class RegisterPasswordActivity : BaseActivity(),
 
     private fun handleIntent(intent: Intent): String {
         val appLinkData: Uri? = intent.data
-        // FDLで遷移した場合、空にセットしておく
-        ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toString()
     }
 }

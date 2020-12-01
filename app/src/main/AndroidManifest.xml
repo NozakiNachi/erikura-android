@@ -110,7 +110,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/report/example/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/report/example/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -274,7 +274,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/property/notes/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/property/notes/"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>

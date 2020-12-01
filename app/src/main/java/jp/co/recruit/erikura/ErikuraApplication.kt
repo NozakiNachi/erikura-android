@@ -270,6 +270,19 @@ class ErikuraApplication : Application() {
             }
         }
     }
+
+    // pushUriのFDLのuriを削除させる　
+    // 下記を使用する際、アクティビティ内でAPI実行させている場合はログインチェックが挟まり
+    // 認証後、再度pushUriからFDL画面へ遷移させるので、API実行前ではpushUriを削除しない、APIの実行後にpushUriを削除するようにする必要あり
+    fun removePushUriFromFDL(intent: Intent, path: String){
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == path) {
+                // FDLで遷移した場合、pushUriを空にセットしておく
+                instance.pushUri = null
+            }
+        }
+    }
 }
 
 class AppLifecycle: LifecycleObserver {

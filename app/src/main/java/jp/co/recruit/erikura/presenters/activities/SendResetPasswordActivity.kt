@@ -3,7 +3,11 @@ package jp.co.recruit.erikura.presenters.activities
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -56,6 +60,18 @@ class SendResetPasswordActivity : BaseActivity(),
             var intent = Intent(this, SendedResetPasswordActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        val view = this.currentFocus
+        if (view != null) {
+            val layout = findViewById<ConstraintLayout>(R.id.reset_in_constraintLayout)
+            layout.requestFocus()
+
+            val imm: InputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(layout.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
     }
 }
 

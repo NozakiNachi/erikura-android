@@ -41,14 +41,6 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         binding.lifecycleOwner = this
         binding.handlers = this
 
-        val appLinkData: Uri? = intent.data
-        appLinkData?.let{
-            if (appLinkData.path == "/app/link/jobs/favorite/") {
-                // FDLで遷移した場合、空にセットしておく
-                ErikuraApplication.instance.pushUri = null
-            }
-        }
-
         favoritePlaceAdapter = FavoritePlaceAdapter(this, listOf()).also {
             it.onClickListener = object : FavoritePlaceAdapter.OnClickListener {
                 override fun onClick(position: Int) {
@@ -59,6 +51,7 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         val favoritePlaceView: RecyclerView = findViewById(R.id.favorite_places_recycler_view)
         favoritePlaceView.setHasFixedSize(true)
         favoritePlaceView.adapter = favoritePlaceAdapter
+
     }
 
     override fun onStart() {
@@ -70,6 +63,8 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
             placeList = it
             favoritePlaceAdapter.places = it
             favoritePlaceAdapter.notifyDataSetChanged()
+            //　表示がFDL形式の場合の処理
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite/")
         }
     }
 

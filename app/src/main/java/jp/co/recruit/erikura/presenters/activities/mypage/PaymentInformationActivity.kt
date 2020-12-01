@@ -47,11 +47,6 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-        if (intent.data?.path != null){
-            // FDLで遷移した場合、空にセットしておく
-            ErikuraApplication.instance.pushUri = null
-        }
-
         monthlyPaymentAdapter = MonthlyPaymentAdapter(this, listOf())
         binding.paymentInformationMonthlyList.adapter = monthlyPaymentAdapter
         binding.paymentInformationMonthlyList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
@@ -104,6 +99,9 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
                 viewModel.noPaymentsVisibility.value = View.GONE
                 viewModel.paymentsVisibility.value = View.VISIBLE
             }
+
+            //　API実行後、表示がFDL形式の場合の処理
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/payment_history/")
         }
 
         // 口座情報が登録済みであれば、口座情報登録ボタンは表示しない。
