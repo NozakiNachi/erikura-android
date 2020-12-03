@@ -33,7 +33,7 @@ data class User(
 ) : Parcelable {
     companion object {
         val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
-        val overPattern = Pattern.compile("^([a-zA-Z0-9])\$")
+        val passwordPattern = Pattern.compile("^([a-zA-Z0-9])\$")
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
         val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
@@ -49,7 +49,7 @@ data class User(
                     passwordErrorMessage =
                         ErikuraApplication.instance.getString(R.string.password_count_error)
                 }
-                else if(valid && (!(overPattern.matcher(pwd).find()) && !(pwd.length <= 128))) {
+                else if(valid && (!(passwordPattern.matcher(pwd).find()) && !(pwd.length <= 128))) {
                     valid = false
                     passwordErrorMessage =
                         ErikuraApplication.instance.getString(R.string.password_count_over_error)
