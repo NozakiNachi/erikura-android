@@ -191,9 +191,9 @@
     <string name="applyDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルと注意事項を必ずご覧ください。</string>
     <string name="applyDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルと注意事項を必ずご確認ください。</string>
 
-    <string name="startDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。</string>
-    <string name="startDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルと注意事項を必ずご確認ください。</string>
-    <string name="startDialog_landscapeMessage">作業箇所の写真は横向きに撮影してください。作業報告は横向きの写真のみ使用できます。\n詳細はマニュアルをご覧ください。</string>
+    <string name="startDialog_caption2Pattern1">・報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。</string>
+    <string name="startDialog_caption2Pattern2">・必須の報告箇所がある場合があるためマニュアルと注意事項を必ずご確認ください。</string>
+    <string name="startDialog_landscapeMessage">・作業箇所の写真は横向きに撮影してください。作業報告は横向きの写真のみ使用できます。\n詳細はマニュアルをご覧ください。</string>
 
     <!-- 応募完了画面 -->
     <string name="applyCompleted_caption">応募が完了しました！</string>
