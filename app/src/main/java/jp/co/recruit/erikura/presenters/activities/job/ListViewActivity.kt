@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.res.Resources
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -202,6 +203,9 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
                 viewModel.query(it)
             }
         }
+
+        // FDL経由でmapを表示した場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/list/")
     }
 
     override fun onPause() {

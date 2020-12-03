@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -33,8 +34,12 @@ abstract class BaseReSignInRequiredActivity(
         fromWhere =
             intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
 
+        val appLinkData: Uri? = intent.data
+
         // 再認証が必要かどうか確認
         checkResignIn() { isResignIn ->
+            // API実行後にFDLチェックを行い、pushUriを空にする
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/bank/edit/")
             if (isResignIn) {
                 onCreateImpl(savedInstanceState)
             } else {

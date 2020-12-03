@@ -1,11 +1,13 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.NotificationSetting
@@ -45,6 +47,10 @@ class NotificationSettingActivity : BaseActivity(),
             viewModel.allowReopenPushReception.value = notificationSetting.allowReopenPushReception
             viewModel.allowCommentedPushReception.value = notificationSetting.allowCommentedPushReception
             viewModel.allowLikedPushReception.value = notificationSetting.allowLikedPushReception
+
+
+            //API処理実行後に実施する
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/notification_settings/")
         }
     }
 

@@ -7,6 +7,7 @@ import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.AttributeSet
 import android.util.Log
@@ -214,6 +215,9 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         if (!locationManager.checkPermission(this)) {
             locationManager.requestPermission(this)
         }
+
+        // FDL経由でmapを表示した場合
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/map/")
     }
 
     override fun onStart() {

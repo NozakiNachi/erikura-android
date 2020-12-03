@@ -508,10 +508,26 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginBottom="110dp"
                         android:background="@color/silver" />
 
                 </LinearLayout>
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginBottom="15dp"
+                    android:onClick="@{handlers::onClickTransitionWebModal}"
+                    android:text="@string/failed_report_link"
+                    android:textSize="14dp"
+                    android:visibility="@{viewModel.buttonVisibility}"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="110dp" />
             </LinearLayout>
         </ScrollView>
 

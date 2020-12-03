@@ -1,5 +1,8 @@
 package jp.co.recruit.erikura.presenters.fragments
 
+import android.app.AlertDialog
+import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -11,10 +14,12 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.ToggleButton
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
@@ -23,11 +28,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentOperatorCommentItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportedJobDetailsBinding
+import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportSummaryAdapter
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 
@@ -152,6 +159,13 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                     favoriteButton.isEnabled = true
                 }
             }
+        }
+    }
+
+    override fun onClickTransitionWebModal(view: View) {
+        // WEB遷移確認モーダルを表示する
+        BaseActivity.currentActivity?.let { activity ->
+            TransitionWebModal.transitionWebModal(view, activity, job, user)
         }
     }
 
@@ -400,6 +414,7 @@ class ReportedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
 
 interface ReportedJobDetailsFragmentEventHandlers {
     fun onClickFavorite(view: View)
+    fun onClickTransitionWebModal(view: View)
 }
 
 

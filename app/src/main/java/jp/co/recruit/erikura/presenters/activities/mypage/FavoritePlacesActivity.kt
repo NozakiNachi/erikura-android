@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -50,6 +51,7 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
         val favoritePlaceView: RecyclerView = findViewById(R.id.favorite_places_recycler_view)
         favoritePlaceView.setHasFixedSize(true)
         favoritePlaceView.adapter = favoritePlaceAdapter
+
     }
 
     override fun onStart() {
@@ -61,6 +63,8 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
             placeList = it
             favoritePlaceAdapter.places = it
             favoritePlaceAdapter.notifyDataSetChanged()
+            //　表示がFDL形式の場合の処理
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite/")
         }
     }
 

@@ -18,6 +18,8 @@
     <string name="login_autoLogin">次回から自動ログインする</string>
     <string name="login_remindPassword"><a href="">パスワードをお忘れですか？</a></string>
     <string name="login_mailUnreachable"><a href="">仮登録メールが届きませんか？</a></string>
+    <string name="registered_user"><a href="">エリクラに登録済みの方はこちら</a></string>
+
 
     <!-- 仮登録画面 -->
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
@@ -68,6 +70,22 @@
     <string name="smsVerify_register_phone">電話番号を編集する</string>
     <string name="smsVerify_caption">エリクラを安全にご利用いただくために携帯電話番号認証をお願いしております。</string>
     <string name="smsVerify_not_mobilePhone_format">ご登録の電話番号が携帯電話番号ではないようです。”電話番号を編集する”リンクからご登録の電話番号を携帯電話番号（070、080、090から始まる番号）に変更してください。</string>
+
+    <!-- パスワード再設定送信画面 -->
+    <string name="send_reset_password_caption">ご登録いただいたメールアドレスを入力してください。\nメールアドレス宛にパスワード変更ページのURLが記載されたメールを送信します。</string>
+    <string name="send_reset_password_button">パスワード再設定メールを送信する</string>
+
+    <!-- パスワード再設定送信完了画面 -->
+    <string name="sended_reset_password_caption">まだパスワード再設定は\n完了しておりません</string>
+    <string name="sended_reset_password_sendEmail">ご入力いただいたメールアドレス宛に確認メールをお送りしました。</string>
+    <string name="sended_reset_password_clickEmailLink">お届けしたメール内の\nURLをクリックして\nパスワード再設定を続けてください。</string>
+    <string name="sended_reset_password_limit">※メールに記載された登録URLの有効期限は10分間です。\n有効期限が切れた場合は再度パスワード再設定を実施してください。</string>
+    <string name="sended_reset_password_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
+
+    <!-- パスワード再設定画面 -->
+    <string name="reset_password_title">パスワード再設定</string>
+    <string name="reset_password_caption">新しく設定するパスワードを入力してください。</string>
+    <string name="reset_password_button">パスワードを変更する</string>
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
@@ -201,6 +219,7 @@
     <!-- 作業完了画面 -->
     <string name="working_finished_caption">作業が完了しました！</string>
     <string name="working_finished_note">撮影した実施箇所の写真を送って、作業報告を行いましょう！\n作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>
+    <string name="failed_report_link"><a href="">報告に失敗する方はこちら</a></string>
 
     <!-- 作業報告写真選択画面 -->
     <string name="report_image_picker_caption">作業報告</string>
@@ -580,5 +599,11 @@
     <!--お手本報告画面-->
     <string name="report_examples_button">このお仕事のお手本報告</string>
     <string name="report_examples_button2">このお仕事の\nお手本報告</string>
+
+    <!--WEB遷移確認ダイアログ-->
+    <string name="confirm_transition_web_title">制限付き報告画面を開きますか？</string>
+    <string name="confirm_transition_web_explain">こちらは制限付きの報告画面です。「作業を報告」ボタンからの作業報告ができない場合にご利用ください。</string>
+    <string name="confirm_transition_web_open">開く</string>
+    <string name="confirm_transition_web_cancel">キャンセル</string>
 
 </resources>

@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -98,6 +99,9 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
                 viewModel.noPaymentsVisibility.value = View.GONE
                 viewModel.paymentsVisibility.value = View.VISIBLE
             }
+
+            //　API実行後、表示がFDL形式の場合の処理
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/payment_history/")
         }
 
         // 口座情報が登録済みであれば、口座情報登録ボタンは表示しない。

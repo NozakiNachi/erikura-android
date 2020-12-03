@@ -294,6 +294,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun initialRegister(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (id: Int) -> Unit)  {
+        executeObservable(
+            erikuraApiService.initialRegister(user),
+            onError = onError
+        ) { body ->
+            val userId = body.id
+            onComplete(userId)
+        }
+    }
+
     fun initialUpdateUser(user: User, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit)  {
         executeObservable(
             erikuraApiService.initialUpdateUser(user),
@@ -352,6 +362,15 @@ class Api(var context: Context) {
     fun reloadJob(job: Job, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (job: Job) -> Unit) {
         executeObservable(
             erikuraApiService.reloadJob(job.id),
+            onError = onError
+        ) { job ->
+            onComplete(job)
+        }
+    }
+
+    fun reloadJobById(jobId: Int, onError: ((message: List<String>?) -> Unit)? = null, onComplete: (job: Job) -> Unit) {
+        executeObservable(
+            erikuraApiService.reloadJob(jobId),
             onError = onError
         ) { job ->
             onComplete(job)
@@ -785,6 +804,37 @@ class Api(var context: Context) {
             (observable as? Disposable)?.dispose()
         }
         activeObservables.clear()
+    }
+
+    fun sendPasswordReset(email: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.sendPasswordReset(RegisterEmailRequest(email = email)),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
+        }
+    }
+
+    fun updateResetPassword(passwordResetToken: String, password: String, passwordConfirmation: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (session: UserSession) -> Unit) {
+        executeObservable(
+            erikuraApiService.updateResetPassword(UpdatePasswordRequest(resetPasswordToken = passwordResetToken, password = password, passwordConfirmation = passwordConfirmation)),
+            onError = onError
+        ) { body ->
+            var session = UserSession(userId = body.id, token = body.accessToken)
+            userSession = session
+            onComplete(session)
+        }
+    }
+
+    fun createToken(onError: ((message: List<String>?) -> Unit)? = null, onComplete: (accessToken: String) -> Unit) {
+        executeObservable(
+            erikuraApiService.createToken(),
+            onError = onError
+        ) { body ->
+            val accessToken = body.accessToken
+            onComplete(accessToken)
+        }
     }
 
     private val activeObservables = mutableSetOf<Observable<*>>()

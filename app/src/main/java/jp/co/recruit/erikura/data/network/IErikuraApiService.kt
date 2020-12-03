@@ -39,6 +39,9 @@ interface IErikuraApiService {
     @GET("users")
     fun user(): ApiObservable<User>
 
+    @PATCH("users/initial_register")
+    fun initialRegister(@Body request: User): ApiObservable<IdResponse>
+
     @PATCH("users/initial_update")
     fun initialUpdateUser(@Body request: User): ApiObservable<InitialUpdateResponse>
 
@@ -47,6 +50,9 @@ interface IErikuraApiService {
 
     @POST("login")
     fun login(@Body request: LoginRequest): ApiObservable<LoginResponse>
+
+    @POST("create_token")
+    fun createToken(): ApiObservable<CreateTokenResponse>
 
     @DELETE("logout")
     fun logout(): ApiObservable<LogoutResponse>
@@ -173,6 +179,12 @@ interface IErikuraApiService {
 
     @GET("utils/erikura_config")
     fun erikuraConfig(): ApiObservable<ErikuraConfigMap>
+
+    @POST("users/password_reset")
+    fun sendPasswordReset(@Body request: RegisterEmailRequest): ApiObservable<ResultResponse>
+
+    @PATCH("users/password_update")
+    fun updateResetPassword(@Body request: UpdatePasswordRequest): ApiObservable<UpdatePasswordResponse>
 }
 
 typealias ApiObservable<T> = Observable<Response<ApiResponse<T>>>
@@ -202,6 +214,10 @@ data class LoginResponse(
 
 data class LogoutResponse(
     var userId: Int,
+    var accessToken: String
+)
+
+data class CreateTokenResponse(
     var accessToken: String
 )
 
@@ -255,6 +271,11 @@ data class CautionResponse(
 
 data class GoodExamplesResponse(
     var report_examples: List<ReportExample>
+)
+
+data class UpdatePasswordResponse(
+    var id: Int,
+    var accessToken: String
 )
 
 data class RegisterEmailRequest(
@@ -358,6 +379,12 @@ data class PushEndpointRequest(
 
 data class FavoriteRequest(
     var placeId: Int
+)
+
+data class UpdatePasswordRequest(
+    var resetPasswordToken: String,
+    var password: String,
+    var passwordConfirmation: String
 )
 
 data class FavoritePlacesResponse(

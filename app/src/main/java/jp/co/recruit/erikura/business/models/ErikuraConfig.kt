@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.business.models
 
 import android.content.Context
+import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.ErikuraConfigValue
 
@@ -18,6 +19,10 @@ object ErikuraConfig {
     var frequentlyQuestionsURLString: String = "https://faq.erikura.net/hc/ja/sections/360003690953-FAQ"
     var recommendedEnvironmentURLString: String =
         "https://faq.erikura.net/hc/ja/articles/360020286793-%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E6%8E%A8%E5%A5%A8%E7%92%B0%E5%A2%83%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"
+
+    fun jobReportURLString(job_id: Int?, token: String?): String {
+        return BuildConfig.SERVER_BASE_URL + "report_with_token?token="+ token + "&job_id=" + job_id
+    }
 
     fun load(context: Context, onError: ((messages: List<String>?) -> Unit)? = null) {
         if (!loaded) {

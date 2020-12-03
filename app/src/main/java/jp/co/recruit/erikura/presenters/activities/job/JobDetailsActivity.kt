@@ -171,5 +171,7 @@ class JobDetailsActivity : BaseActivity() {
         job = Job(id= jobId)
         job.uninitialized = true
         ErikuraApplication.instance.currentJob = job
+        // FDLで遷移した場合、空にセットしておく
+        ErikuraApplication.instance.pushUri = null
     }
 }

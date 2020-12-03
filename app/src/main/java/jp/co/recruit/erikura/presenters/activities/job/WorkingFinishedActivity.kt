@@ -1,11 +1,14 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.TransitionWebModal
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityWorkingFinishedBinding
 import jp.co.recruit.erikura.databinding.DialogAlertAbleEndBinding
@@ -120,6 +125,13 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         }
     }
 
+    override fun onClickTransitionWebModal(view: View) {
+        // WEB遷移確認モーダルを表示する
+        Api(this).user {
+            TransitionWebModal.transitionWebModal(view, this, job, it)
+        }
+    }
+
     fun onJobSelected(job: Job) {
         val intent= Intent(this, JobDetailsActivity::class.java)
         intent.putExtra("job", job)
@@ -136,4 +148,5 @@ class WorkingFinishedViewModel: ViewModel() {
 interface WorkingFinishedEventHandlers {
     fun onClickReport(view: View)
     fun onClickAppliedJobs(view: View)
+    fun onClickTransitionWebModal(view: View)
 }

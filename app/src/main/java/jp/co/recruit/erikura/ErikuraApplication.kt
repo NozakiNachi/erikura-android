@@ -270,6 +270,19 @@ class ErikuraApplication : Application() {
             }
         }
     }
+
+    // pushUriのFDLのuriを削除させる　
+    // 下記を使用する際、アクティビティ内でAPI実行させている場合はログインチェックが挟まり
+    // 認証後、再度pushUriからFDL画面へ遷移させるので、API実行前ではpushUriを削除しない、APIの実行後にpushUriを削除するようにする必要あり
+    fun removePushUriFromFDL(intent: Intent, path: String){
+        val appLinkData: Uri? = intent.data
+        appLinkData?.let{
+            if (appLinkData.path == path) {
+                // FDLで遷移した場合、pushUriを空にセットしておく
+                instance.pushUri = null
+            }
+        }
+    }
 }
 
 class AppLifecycle: LifecycleObserver {
@@ -567,6 +580,19 @@ object Tracking {
             Log.v("ERIKURA", "Sending view tracking: ${name})")
             val values = bundleOf(
                 Pair("user_id", user.id)
+            )
+            Tracker.getInstance().track(name, values)
+        } catch (e: Exception) {
+            Log.e("ERIKURA", "Karte identify error", e)
+        }
+    }
+
+    fun trackWebReport(name: String, job_kind_id: Int, user_id: Int) {
+        try {
+            Log.v("ERIKURA", "Sending view tracking: ${name})")
+            val values = bundleOf(
+                Pair("job_kind_id", job_kind_id),
+                Pair("user_id", user_id)
             )
             Tracker.getInstance().track(name, values)
         } catch (e: Exception) {

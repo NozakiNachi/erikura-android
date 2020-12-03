@@ -78,9 +78,19 @@
                         style="@style/secondaryButton"
                         android:layout_width="match_parent"
                         android:layout_height="70dp"
-                        android:layout_marginBottom="10dp"
                         app:onSafeClick="@{handlers::onClickAppliedJobs}"
                         android:text="@string/go_applied_jobs" />
+
+                    <TextView
+                        style="@style/linkText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:onClick="@{handlers::onClickTransitionWebModal}"
+                        android:text="@string/failed_report_link"
+                        android:textSize="14dp" />
                 </LinearLayout>
 
                 <View
