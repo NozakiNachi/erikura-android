@@ -59,6 +59,8 @@ class ResetPasswordActivity : BaseActivity(),
             // FDLの場合
             resetPasswordToken = handleIntent(intent)
         }
+        // パスワード再設定画面はリンク経由で遷移するので表示後pushUriは空にセットしておく
+        ErikuraApplication.instance.pushUri = null
 
         // エラーメッセージを受け取る
         val errorMessages = intent.getStringArrayExtra("errorMessages")
@@ -95,8 +97,6 @@ class ResetPasswordActivity : BaseActivity(),
 
     private fun handleIntent(intent: Intent): String {
         val appLinkData: Uri? = intent.data
-        // FDLで遷移した場合、空にセットしておく
-        ErikuraApplication.instance.pushUri = null
         return appLinkData!!.lastPathSegment!!.toString()
     }
 
