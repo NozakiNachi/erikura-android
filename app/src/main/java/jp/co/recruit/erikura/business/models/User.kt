@@ -49,7 +49,7 @@ data class User(
                     passwordErrorMessage =
                         ErikuraApplication.instance.getString(R.string.password_count_error)
                 }
-                else if(valid && (!(passwordPattern.matcher(pwd).find()) && !(pwd.length <= 128))) {
+                else if(valid && !(pwd.length <= 128))) {
                     valid = false
                     passwordErrorMessage =
                         ErikuraApplication.instance.getString(R.string.password_count_over_error)
