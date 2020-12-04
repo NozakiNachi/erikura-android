@@ -33,7 +33,6 @@ data class User(
 ) : Parcelable {
     companion object {
         val pattern = Pattern.compile("^([a-zA-Z0-9]{6,})\$")
-        val passwordPattern = Pattern.compile("^([a-zA-Z0-9])\$")
         val alPattern = Pattern.compile("^(.*[A-z]+.*)")
         val numPattern = Pattern.compile("^(.*[0-9]+.*)")
         val hasAlphabet: (str: String) -> Boolean = { str -> alPattern.matcher(str).find() }
