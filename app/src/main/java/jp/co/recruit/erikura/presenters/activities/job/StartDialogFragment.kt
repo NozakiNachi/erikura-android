@@ -75,7 +75,7 @@ class StartDialogFragmentViewModel: ViewModel() {
         }
         if (job != null) {
             if(!job.summaryTitles.isNullOrEmpty()) {
-                caption.value = ErikuraApplication.instance.getString(R.string.applyDialog_caption2Pattern1)
+                caption.value = ErikuraApplication.instance.getString(R.string.startDialog_caption2Pattern1)
                 var summaryTitleStr = ""
                 job.summaryTitles.forEachIndexed { index, s ->
                     summaryTitleStr += "(${index+1}) ${s}　"
@@ -83,7 +83,7 @@ class StartDialogFragmentViewModel: ViewModel() {
                 reportPlaces.value = summaryTitleStr
                 reportPlacesVisibility.value = View.VISIBLE
             }else {
-                caption.value = ErikuraApplication.instance.getString(R.string.applyDialog_caption2Pattern2)
+                caption.value = ErikuraApplication.instance.getString(R.string.startDialog_caption2Pattern2)
                 reportPlacesVisibility.value = View.GONE
             }
         }

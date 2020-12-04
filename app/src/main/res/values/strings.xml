@@ -184,12 +184,16 @@
     <string name="applyFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
 
     <!-- 応募確認モーダル -->
-    <string name="applyDialog_warning">※作業報告締切は、応募後24時間以内となります。\n24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
+    <string name="applyDialog_warning">※作業報告締切は、応募後24時間以内となります。\n24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。\n※作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>
     <string name="applyDialog_checkCaption">応募前にすべてチェックしてください</string>
 
     <string name="applyDialog_caption1">※作業報告締切は、応募後24時間以内となります。24時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。</string>
     <string name="applyDialog_caption2Pattern1">※報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。詳細はマニュアルと注意事項を必ずご覧ください。</string>
     <string name="applyDialog_caption2Pattern2">※必須の報告箇所がある場合があるためマニュアルと注意事項を必ずご確認ください。</string>
+
+    <string name="startDialog_caption2Pattern1">・報告時に原則下記の写真が必要ですので撮影漏れにお気を付けください。</string>
+    <string name="startDialog_caption2Pattern2">・必須の報告箇所がある場合があるためマニュアルと注意事項を必ずご確認ください。</string>
+    <string name="startDialog_landscapeMessage">・作業箇所の写真は横向きに撮影してください。作業報告は横向きの写真のみ使用できます。\n詳細はマニュアルをご覧ください。</string>
 
     <!-- 応募完了画面 -->
     <string name="applyCompleted_caption">応募が完了しました！</string>
@@ -214,7 +218,7 @@
 
     <!-- 作業完了画面 -->
     <string name="working_finished_caption">作業が完了しました！</string>
-    <string name="working_finished_note">撮影した実施箇所の写真を送って、\n作業報告を行いましょう！</string>
+    <string name="working_finished_note">撮影した実施箇所の写真を送って、作業報告を行いましょう！\n作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>
     <string name="failed_report_link"><a href="">報告に失敗する方はこちら</a></string>
 
     <!-- 作業報告写真選択画面 -->

@@ -42,7 +42,7 @@
                 android:layout_marginTop="20dp"
                 android:textColor="@color/blackTwo"
                 android:lineSpacingExtra="10dp"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@{viewModel.caption}" />
 
             <TextView
@@ -55,6 +55,15 @@
                 android:text="@{viewModel.reportPlaces}"
                 android:visibility="@{viewModel.reportPlacesVisibility}"/>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:textColor="@color/blackTwo"
+                android:lineSpacingExtra="10dp"
+                android:gravity="left"
+                android:text="@string/startDialog_landscapeMessage"
+                />
 
         </LinearLayout>
     </ScrollView>
