@@ -47,7 +47,13 @@ data class User(
                     valid = false
                     passwordErrorMessage =
                         ErikuraApplication.instance.getString(R.string.password_count_error)
-                } else if (valid && !(hasAlphabet(pwd) && hasNumeric(pwd))) {
+                }
+                else if(valid && !(pwd.length <= 128))) {
+                    valid = false
+                    passwordErrorMessage =
+                        ErikuraApplication.instance.getString(R.string.password_count_over_error)
+                }
+                else if (valid && !(hasAlphabet(pwd) && hasNumeric(pwd))) {
                     valid = false
                     passwordErrorMessage =
                         ErikuraApplication.instance.getString(R.string.password_pattern_error)
