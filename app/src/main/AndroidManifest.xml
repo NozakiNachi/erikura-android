@@ -419,6 +419,7 @@
         <activity
             android:name=".presenters.activities.ResetPasswordActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <!-- ディープリンクの設定 -->
             <intent-filter>
