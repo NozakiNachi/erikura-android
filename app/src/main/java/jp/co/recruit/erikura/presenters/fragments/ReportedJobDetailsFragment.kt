@@ -62,6 +62,8 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
     private var reportedJobEditButton: ReportedJobEditButtonFragment? = null
     private var reportedJobRemoveButton: ReportedJobRemoveButtonFragment? = null
     private var jobDetailsView: JobDetailsViewFragment? = null
+    private var propertyNotesButton: PropertyNotesButtonFragment? = null
+    private var reportExamplesButton: ReportExamplesButtonFragment? = null
 
     constructor(): super()
 
@@ -77,6 +79,8 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
             reportedJobEditButton?.refresh(job, user)
             reportedJobRemoveButton?.refresh(job, user)
             jobDetailsView?.refresh(job, user)
+            propertyNotesButton?.refresh(job, user)
+            reportExamplesButton?.refresh(job, user)
 
             activity?.let { activity ->
                 fetchReport()
@@ -121,12 +125,16 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         reportedJobEditButton = ReportedJobEditButtonFragment.newInstance(user)
         reportedJobRemoveButton = ReportedJobRemoveButtonFragment.newInstance(user)
         jobDetailsView = JobDetailsViewFragment.newInstance(user)
+        propertyNotesButton = PropertyNotesButtonFragment.newInstance(user)
+        reportExamplesButton = ReportExamplesButtonFragment.newInstance(user)
         transaction.add(R.id.reportedJobDetails_timeLabelFragment, timeLabel!!, "timeLabel")
         transaction.add(R.id.reportedJobDetails_jobInfoViewFragment, jobInfoView!!, "jobInfoView")
         transaction.add(R.id.reportedJobDetails_thumbnailImageFragment, thumbnailImage!!, "thumbnailImage")
         transaction.add(R.id.reportedJobEditButton, reportedJobEditButton!!, "reportedJobEditButton")
         transaction.add(R.id.reportedJobRemoveButton, reportedJobRemoveButton!!, "reportedJobRemoveButton")
         transaction.add(R.id.reportedJobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
+        transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
+        transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")
         transaction.commitAllowingStateLoss()
 
         fetchReport()
@@ -221,6 +229,14 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
             if (Api.isLogin) {
                 Api(activity!!).placeFavoriteShow(job?.place?.id ?: 0) {
                     viewModel.favorited.value = it
+                }
+            }
+            // お手本報告ボタンの表示制御
+            job?.let { job ->
+                if ((job.goodExamplesCount ?: 0) > 0) {
+                    viewModel.reportExamplesButtonVisibility.value = View.VISIBLE
+                } else {
+                    viewModel.reportExamplesButtonVisibility.value = View.GONE
                 }
             }
 
@@ -381,6 +397,9 @@ class ReportedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val evaluate: MutableLiveData<Boolean> = MutableLiveData()
     val evaluateButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val evaluationComment: MutableLiveData<String> = MutableLiveData()
+
+    // お手本報告
+    val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
 
 //    private val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
