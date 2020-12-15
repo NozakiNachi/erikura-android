@@ -99,7 +99,7 @@ class FavoritePlaceItemViewModel(activity: FragmentActivity, place: Place): View
 
     init {
         if ( (place.hasEntries) || (place.workingPlaceShort.isNullOrBlank()) ) {
-            workingPlace.value = "${place.workingPlace} ${place.workingBuilding}"
+            workingPlace.value = "${place.workingPlace?:""} ${place.workingBuilding}"
         }else {
             workingPlace.value = place.workingPlaceShort
         }
