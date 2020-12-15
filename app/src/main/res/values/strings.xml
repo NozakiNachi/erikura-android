@@ -112,7 +112,7 @@
 
     <!-- 身分証確認画面-->
     <string name="upload_id_image">身分証確認</string>
-    <string name="upload_id_image_caption">身分証確認にあたり、身分証のご提出をお願いしております。\n\n下記のいずれかの写真をお送りください。\n運転免許証／運転経歴証明書／健康保険証／日本のパスポート／マイナンバーカード／住民基本台帳カード／在留カード／特別永住者証明書</string>
+    <string name="upload_id_image_caption">身分証確認にあたり、身分証のご提出をお願いしております。\n\n下記のいずれかの写真をお送りください。\n運転免許証／運転経歴証明書／健康保険証／日本のパスポート／マイナンバーカード／住民基本台帳カード／在留カード／特別永住者証明書\n\n身分証がカード形状の場合、カードのフチまでカード全体が写った画像を使用してください。</string>
     <string name="upload_id_image_kind">身分証の種別</string>
     <string name="upload_id_image_front">表面</string>
     <string name="upload_id_image_back">裏面</string>
