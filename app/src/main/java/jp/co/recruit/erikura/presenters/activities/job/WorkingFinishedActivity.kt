@@ -97,8 +97,8 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
                 viewModel.recommendedJobs = jobsList
                 recommendedJobsAdapter.jobs = viewModel.recommendedJobs
                 recommendedJobsAdapter.notifyDataSetChanged()
-                updateTimeLimit()
             }
+            updateTimeLimit()
         }
     }
 
@@ -146,9 +146,9 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
 
     private fun updateTimeLimit() {
         val str = SpannableStringBuilder()
-        val today = Date().time
+        val now = Date().time
         val limit = job.entry?.limitAt?.time ?: 0
-        val diff: Long = limit - today
+        val diff: Long = limit - now
 
         if (diff >= 0) {
             val diffHours = diff / (1000 * 60 * 60)
