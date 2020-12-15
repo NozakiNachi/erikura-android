@@ -131,7 +131,7 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
         var place = SpannableStringBuilder()
         job?.let { job ->
             if ( (job.place?.hasEntries?: false) || (job.place?.workingPlaceShort.isNullOrBlank()) ) {
-                place.append(job.place?.workingPlace)
+                place.append(job.place?.workingPlace?:"")
                 if(!(job.place?.workingBuilding.isNullOrBlank())) {
                     place.append("\n${job.place?.workingBuilding}")
                 }

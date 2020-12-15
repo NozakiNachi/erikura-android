@@ -82,7 +82,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
                         api.place(placeId?: 0) { place ->
                             if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                                 // 現ユーザーが応募済の物件の場合　フル住所を表示
-                                viewModel.address.value = place.workingPlace + place.workingBuilding
+                                viewModel.address.value = place.workingPlace?:"" + place.workingBuilding?:""
                             } else {
                                 // 現ユーザーが未応募の物件の場合　短縮住所を表示
                                 viewModel.address.value = place.workingPlaceShort
@@ -123,7 +123,7 @@ class PropertyNotesActivity : BaseActivity(), PropertyNotesEventHandlers {
             api.place(placeId!!) { place ->
                 if (place.hasEntries || place.workingPlaceShort.isNullOrEmpty()) {
                     // 現ユーザーが応募済の物件の場合　フル住所を表示
-                    viewModel.address.value = place.workingPlace + place.workingBuilding
+                    viewModel.address.value = place.workingPlace?:"" + place.workingBuilding?:""
                 } else {
                     // 現ユーザーが未応募の物件の場合　短縮住所を表示
                     viewModel.address.value = place.workingPlaceShort

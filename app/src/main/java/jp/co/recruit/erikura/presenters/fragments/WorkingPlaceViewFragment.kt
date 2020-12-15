@@ -60,11 +60,11 @@ class WorkingPlaceViewFragmentViewModel: ViewModel() {
 
     fun setup(place: Place) {
         if ( (place.hasEntries) || (place.workingPlaceShort.isNullOrBlank()) ) {
-            captionText.value = place.workingPlace
+            captionText.value = place.workingPlace?:""
             if(!(place?.workingBuilding.isNullOrBlank())) {
                 titleText.value = place.workingBuilding
             }else {
-                titleText.value = place.workingPlace
+                titleText.value = place.workingPlace?:""
                 captionVisibility.value = 8
             }
         }else {
