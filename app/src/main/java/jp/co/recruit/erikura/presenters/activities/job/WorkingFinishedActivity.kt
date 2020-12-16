@@ -148,32 +148,35 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         val str = SpannableStringBuilder()
         val now = Date().time
         val limit = job.entry?.limitAt?.time ?: 0
-        val diff: Long = limit - now
-
-        if (diff >= 0) {
-            val diffHours = diff / (1000 * 60 * 60)
-            val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
-
-            if (diffHours == 0L && diffMinutes == 0L) {
-                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
-            } else if (diffHours == 0L) {
-                str.append("あと${diffMinutes}分以内\n")
-            } else if (diffMinutes == 0L) {
-                str.append("あと${diffHours}時間以内\n")
-            } else {
-                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
-            }
-            str.setSpan(
-                ForegroundColorSpan(Color.RED),
-                0,
-                str.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            str.append(ErikuraApplication.instance.getString(R.string.working_report_do_limit))
-            viewModel.timeLimit.value = str
-            viewModel.msgVisibility.value = View.VISIBLE
+        val diff = if ((limit - now) > 0) {
+            limit - now
+        } else {
+            0
         }
+
+        val diffHours = diff / (1000 * 60 * 60)
+        val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+
+        if (diffHours == 0L && diffMinutes == 0L) {
+            str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+        } else if (diffHours == 0L) {
+            str.append("あと${diffMinutes}分以内\n")
+        } else if (diffMinutes == 0L) {
+            str.append("あと${diffHours}時間以内\n")
+        } else {
+            str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+        }
+        str.setSpan(
+            ForegroundColorSpan(Color.RED),
+            0,
+            str.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        str.append(ErikuraApplication.instance.getString(R.string.working_report_do_limit))
+        viewModel.timeLimit.value = str
+        viewModel.msgVisibility.value = View.VISIBLE
     }
+
 }
 
 class WorkingFinishedViewModel: ViewModel() {
