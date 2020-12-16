@@ -258,7 +258,10 @@ class PropertyNotesAdapter(
                     imageView.scaleType = ImageView.ScaleType.FIT_CENTER
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].thumbnail_url) { asset ->
-                        Glide.with(activity).load(File(asset.path)).into(imageView)
+                        if (ErikuraApplication.instance.isEnableActivity(activity)) {
+                            // アクティビティが存在する場合
+                            Glide.with(activity).load(File(asset.path)).into(imageView)
+                        }
                     }
 
                     imageView.setOnClickListener {
@@ -305,7 +308,10 @@ class PropertyNotesAdapter(
 
                     val assetsManager = ErikuraApplication.assetsManager
                     assetsManager.fetchAsset(activity, files[i].url) { asset ->
-                        Glide.with(activity).load(File(asset.path)).into(imageView)
+                        if (ErikuraApplication.instance.isEnableActivity(activity)) {
+                            // アクティビティが存在する場合
+                            Glide.with(activity).load(File(asset.path)).into(imageView)
+                        }
                     }
                     linearLayout.addView(imageView, layout)
                     imageView.setOnClickListener {

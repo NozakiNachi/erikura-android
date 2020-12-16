@@ -283,6 +283,11 @@ class ErikuraApplication : Application() {
             }
         }
     }
+
+    // Activityが存在することを確認
+    fun isEnableActivity(activity: Activity): Boolean {
+        return !(activity.isDestroyed)
+    }
 }
 
 class AppLifecycle: LifecycleObserver {

@@ -71,7 +71,10 @@ class AssetsManager {
 
     fun fetchImage(activity: Activity, url: String, imageView: ImageView, type: Asset.AssetType = Asset.AssetType.Other) {
         fetchAsset(activity, url, type) { asset ->
-            Glide.with(activity).load(File(asset.path)).into(imageView)
+            if (ErikuraApplication.instance.isEnableActivity(activity)) {
+                // アクティビティが存在する場合
+                Glide.with(activity).load(File(asset.path)).into(imageView)
+            }
         }
     }
 
