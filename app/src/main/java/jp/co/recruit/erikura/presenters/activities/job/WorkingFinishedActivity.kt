@@ -154,7 +154,9 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
             val diffHours = diff / (1000 * 60 * 60)
             val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
 
-            if (diffHours == 0L) {
+            if (diffHours == 0L && diffMinutes == 0L) {
+                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+            } else if (diffHours == 0L) {
                 str.append("あと${diffMinutes}分以内\n")
             } else if (diffMinutes == 0L) {
                 str.append("あと${diffHours}時間以内\n")
@@ -170,11 +172,6 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
             str.append(ErikuraApplication.instance.getString(R.string.working_report_do_limit))
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.VISIBLE
-        } else {
-            str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-            str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-            viewModel.timeLimit.value = str
-            viewModel.msgVisibility.value = View.GONE
         }
     }
 }
