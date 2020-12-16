@@ -217,8 +217,9 @@
     <string name="stopDialog_caption">作業を完了しますか？</string>
 
     <!-- 作業完了画面 -->
-    <string name="working_finished_caption">作業が完了しました！</string>
-    <string name="working_finished_note">撮影した実施箇所の写真を送って、作業報告を行いましょう！\n作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>
+    <string name="working_finished_caption">続けて作業報告をお願いします！</string>
+    <string name="working_finished_note">※作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>
+    <string name="working_report_do_limit">に撮影した実施箇所の写真を送ってください</string>
     <string name="failed_report_link"><a href="">報告に失敗する方はこちら</a></string>
 
     <!-- 作業報告写真選択画面 -->

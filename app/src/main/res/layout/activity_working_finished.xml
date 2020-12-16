@@ -48,21 +48,35 @@
                         android:gravity="center"
                         android:text="@string/working_finished_caption" />
 
-                    <TextView
+                    <!-- タイムリミット表示 -->
+                    <LinearLayout
+                        android:id="@+id/appliedJobDetails_timeLimit"
+                        android:background="@drawable/background_dialog_body"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:layout_marginTop="20dp"
-                        android:gravity="center"
-                        android:lineSpacingExtra="10dp"
-                        android:text="@string/working_finished_note"
-                        android:textColor="@color/blackTwo" />
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_marginBottom="10dp"
+                        android:padding="20dp">
 
-                    <ImageView
-                        android:layout_width="300dp"
-                        android:layout_height="300dp"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="20dp"
-                        app:srcCompat="@drawable/working_finished" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/titleLabel"
+                            android:gravity="center"
+                            android:textAllCaps="false"
+                            android:text="@{viewModel.timeLimit}" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            style="@style/smallCaption"
+                            android:text="@string/working_finished_note"
+                            android:visibility="@{viewModel.msgVisibility}"/>
+
+                    </LinearLayout>
 
                     <Button
                         android:id="@+id/registerButton"

@@ -3,8 +3,12 @@ package jp.co.recruit.erikura.presenters.activities.job
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -94,6 +98,7 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
                 recommendedJobsAdapter.jobs = viewModel.recommendedJobs
                 recommendedJobsAdapter.notifyDataSetChanged()
             }
+            updateTimeLimit()
         }
     }
 
@@ -138,9 +143,45 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         startActivity(intent)
     }
+
+    private fun updateTimeLimit() {
+        val str = SpannableStringBuilder()
+        val now = Date().time
+        val limit = job.entry?.limitAt?.time ?: 0
+        val diff = if ((limit - now) > 0) {
+            limit - now
+        } else {
+            0
+        }
+
+        val diffHours = diff / (1000 * 60 * 60)
+        val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+
+        if (diffHours == 0L && diffMinutes == 0L) {
+            str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+        } else if (diffHours == 0L) {
+            str.append("あと${diffMinutes}分以内\n")
+        } else if (diffMinutes == 0L) {
+            str.append("あと${diffHours}時間以内\n")
+        } else {
+            str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+        }
+        str.setSpan(
+            ForegroundColorSpan(Color.RED),
+            0,
+            str.length,
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        str.append(ErikuraApplication.instance.getString(R.string.working_report_do_limit))
+        viewModel.timeLimit.value = str
+        viewModel.msgVisibility.value = View.VISIBLE
+    }
+
 }
 
 class WorkingFinishedViewModel: ViewModel() {
+    val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
+    val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     var recommendedJobs: List<Job> = listOf()
     var message: MutableLiveData<String> = MutableLiveData()
 }
