@@ -359,15 +359,26 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         val diff: Long = limit - today
 
         if (diff >= 0) {
-            val diffHours = diff / (1000 * 60 * 60)
-            val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
-
-            if (diffHours == 0L) {
-                str.append("あと${diffMinutes}分以内\n")
-            } else if (diffMinutes == 0L) {
-                str.append("あと${diffHours}時間以内\n")
+            val diffDates = diff / (1000 * 60 * 60 * 24)
+            val diffHours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+            val diffMinutes = (diff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
+            
+            if (diffDates == 0L) {
+                if (diffHours == 0L) {
+                    str.append("あと${diffMinutes}分以内\n")
+                } else if (diffMinutes == 0L) {
+                    str.append("あと${diffHours}時間以内\n")
+                } else {
+                    str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+                }
             } else {
-                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+                if (diffHours == 0L) {
+                    str.append("あと${diffDates}日${diffMinutes}分以内\n")
+                } else if (diffMinutes == 0L) {
+                    str.append("あと${diffDates}日${diffHours}時間以内\n")
+                } else {
+                    str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分以内\n")
+                }
             }
             str.setSpan(
                 ForegroundColorSpan(Color.RED),
