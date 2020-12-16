@@ -39,6 +39,7 @@ import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.io.IOException
@@ -68,9 +69,26 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-//        job = intent.getParcelableExtra<Job>("job")
-//        ErikuraApplication.instance.reportingJob = job
-        job = ErikuraApplication.instance.currentJob!!
+        if (ErikuraApplication.instance.currentJob != null) {
+            job = ErikuraApplication.instance.currentJob!!
+        }
+        else {
+            // 案件情報が取れない場合
+            Intent(this, MapViewActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                it.putStringArrayListExtra(
+                    ErikuraApplication.ERROR_MESSAGE_KEY,
+                    arrayListOf("案件情報が取得できませんでした")
+                )
+                this.startActivity(it)
+            }
+            // FIXME: ログとして何を記録すればよいのか？
+//            Log.v("REPORTED JOB", ToStringBuilder.reflectionToString(value))
+//            // FirebaseCrashlytics に案件がnullにされたことを通知しておきます
+//            val e = Throwable("ErikuraApplication.currentJob : ${value.toString()}")
+//            FirebaseCrashlytics.getInstance().recordException(e)
+            return
+        }
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
             it.onClickListener = object : ReportImageAdapter.OnClickListener {
