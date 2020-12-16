@@ -20,7 +20,6 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.util.JobUtils
-import jp.co.recruit.erikura.data.network.ErikuraApiServiceBuilder
 import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.io.File
@@ -70,7 +69,7 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
             val assetsManager = ErikuraApplication.assetsManager
             assetsManager.fetchAsset(activity, thumbnailUrl) { asset ->
                 // 画像取得中に別のカルーセルに移動する可能性があるので、position が一致していることを確認する
-                if (position == this.currentPosition) {
+                if (position == this.currentPosition && ErikuraApplication.instance.isEnableActivity(activity)) {
                     Glide.with(activity).load(File(asset.path)).fitCenter().into(imageView)
                 }
             }
