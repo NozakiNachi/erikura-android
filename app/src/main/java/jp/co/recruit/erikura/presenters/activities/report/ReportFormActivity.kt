@@ -4,6 +4,7 @@ import JobUtil
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,6 +15,7 @@ import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -23,6 +25,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import kotlinx.android.synthetic.main.activity_report_form.*
 
@@ -61,7 +64,25 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 //        job = intent.getParcelableExtra<Job>("job")
 //        ErikuraApplication.instance.reportingJob = job
         // ReportingJob は常に存在しているはずなので、!! を用いる
-        job = ErikuraApplication.instance.currentJob!!
+        if (ErikuraApplication.instance.currentJob != null) {
+            job = ErikuraApplication.instance.currentJob!!
+        }
+        else {
+            // 案件情報が取れない場合
+            Intent(this, MapViewActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                it.putStringArrayListExtra(
+                    ErikuraApplication.ERROR_MESSAGE_KEY,
+                    arrayListOf("案件情報が取得できませんでした")
+                )
+                this.startActivity(it)
+            }
+            Log.v(ErikuraApplication.LOG_TAG,  "Cannot retrieve job")
+            // FirebaseCrashlytics に案件がnull出会ったことを記録します
+            val e = Throwable("ErikuraApplication.currentJob is null")
+            FirebaseCrashlytics.getInstance().recordException(e)
+            return
+        }
         pictureIndex = intent.getIntExtra("pictureIndex", 0)
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }

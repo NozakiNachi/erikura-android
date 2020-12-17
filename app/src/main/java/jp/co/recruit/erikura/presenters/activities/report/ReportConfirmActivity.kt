@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -42,6 +43,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
+import org.apache.commons.lang.builder.ToStringBuilder
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -82,11 +84,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 )
                 this.startActivity(it)
             }
-            // FIXME: ログとして何を記録すればよいのか？
-//            Log.v("REPORTED JOB", ToStringBuilder.reflectionToString(value))
-//            // FirebaseCrashlytics に案件がnullにされたことを通知しておきます
-//            val e = Throwable("ErikuraApplication.currentJob : ${value.toString()}")
-//            FirebaseCrashlytics.getInstance().recordException(e)
+            Log.v(ErikuraApplication.LOG_TAG,  "Cannot retrieve job")
+            // FirebaseCrashlytics に案件がnull出会ったことを記録します
+            val e = Throwable("ErikuraApplication.currentJob is null")
+            FirebaseCrashlytics.getInstance().recordException(e)
             return
         }
 
