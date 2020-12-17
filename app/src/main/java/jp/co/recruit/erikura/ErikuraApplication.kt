@@ -245,8 +245,12 @@ class ErikuraApplication : Application() {
             // 最新バージョンになっているか確認します
             if (!requiredClientVersion.isCurrentSatisfied(versionName)) {
                 // 最新バージョンになっていない場合 => アップデートを促すモーダルを表示
-                versionAlertModal?.dismiss()
-                versionAlertModal = null
+                val ownerActivity = versionAlertModal?.ownerActivity
+                if (ownerActivity != null && isEnableActivity(ownerActivity)) {
+                    // modalのactivityが取得できる場合
+                    versionAlertModal?.dismiss()
+                    versionAlertModal = null
+                }
 
                 Log.v("DEBUG", BaseActivity.currentActivity.toString())
                 BaseActivity.currentActivity?.let { activity ->
