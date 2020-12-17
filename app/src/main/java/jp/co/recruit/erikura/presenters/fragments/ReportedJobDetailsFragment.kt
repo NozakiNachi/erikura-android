@@ -215,20 +215,24 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                 viewModel.bitmapDrawable.value = bitmapDraw
             }else {
                 val assetsManager = ErikuraApplication.assetsManager
-                assetsManager.fetchImage(activity!!, thumbnailUrl) { result ->
-                    activity!!.runOnUiThread {
-                        val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
-                        val bitmapDraw = BitmapDrawable(bitmapReduced)
-                        bitmapDraw.alpha = 150
-                        viewModel.bitmapDrawable.value = bitmapDraw
+                activity?.let { activity ->
+                    assetsManager.fetchImage(activity, thumbnailUrl) { result ->
+                        activity.runOnUiThread {
+                            val bitmapReduced = Bitmap.createScaledBitmap(result, 15, 15, true)
+                            val bitmapDraw = BitmapDrawable(bitmapReduced)
+                            bitmapDraw.alpha = 150
+                            viewModel.bitmapDrawable.value = bitmapDraw
+                        }
                     }
                 }
             }
 
             // お気に入り状態の取得
             if (Api.isLogin) {
-                Api(activity!!).placeFavoriteShow(job?.place?.id ?: 0) {
-                    viewModel.favorited.value = it
+                activity?.let { activity ->
+                    Api(activity).placeFavoriteShow(job?.place?.id ?: 0) {
+                        viewModel.favorited.value = it
+                    }
                 }
             }
             // お手本報告ボタンの表示制御
@@ -316,8 +320,10 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
                 // マニュアル外報告の取得
                 val item = it.additionalPhotoAsset ?: MediaItem()
                 if (item.contentUri != null) {
-                    val imageView: ImageView = activity!!.findViewById(R.id.reported_job_details_other_image)
-                    item.loadImageFromString(activity!!, imageView)
+                    activity?.let { activity ->
+                        val imageView: ImageView = activity.findViewById(R.id.reported_job_details_other_image)
+                        item.loadImageFromString(activity, imageView)
+                    }
                     viewModel.otherFormImageVisibility.value = View.VISIBLE
                 } else {
                     viewModel.otherFormImageVisibility.value = View.GONE
