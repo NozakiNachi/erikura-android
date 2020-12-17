@@ -80,7 +80,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 it.putStringArrayListExtra(
                     ErikuraApplication.ERROR_MESSAGE_KEY,
-                    arrayListOf("案件情報が取得できませんでした")
+                    arrayListOf("お仕事の情報を取得できませんでした。
+メモリ不足などにより強制終了された可能性がございます。お手数ですが、再度作業報告などをお願いできますでしょうか?")
                 )
                 this.startActivity(it)
             }
