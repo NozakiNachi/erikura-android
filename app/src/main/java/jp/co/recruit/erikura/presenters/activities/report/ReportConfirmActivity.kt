@@ -21,6 +21,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -39,8 +40,10 @@ import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
+import org.apache.commons.lang.builder.ToStringBuilder
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -68,9 +71,25 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
 
-//        job = intent.getParcelableExtra<Job>("job")
-//        ErikuraApplication.instance.reportingJob = job
-        job = ErikuraApplication.instance.currentJob!!
+        if (ErikuraApplication.instance.currentJob != null) {
+            job = ErikuraApplication.instance.currentJob!!
+        }
+        else {
+            // 案件情報が取れない場合
+            Intent(this, MapViewActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                it.putStringArrayListExtra(
+                    ErikuraApplication.ERROR_MESSAGE_KEY,
+                    arrayListOf("お仕事の情報を取得できませんでした。予期せぬエラーによりアプリが終了した可能性ございます。お手数ですがもう一度はじめから操作してください。?")
+                )
+                this.startActivity(it)
+            }
+            Log.v(ErikuraApplication.LOG_TAG,  "Cannot retrieve job")
+            // FirebaseCrashlytics に案件がnull出会ったことを記録します
+            val e = Throwable("ErikuraApplication.currentJob is null")
+            FirebaseCrashlytics.getInstance().recordException(e)
+            return
+        }
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
             it.onClickListener = object : ReportImageAdapter.OnClickListener {

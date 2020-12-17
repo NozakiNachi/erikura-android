@@ -4,6 +4,7 @@ import JobUtil
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import androidx.core.os.bundleOf
@@ -11,12 +12,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.databinding.ActivityReportWorkingTimeBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 
 class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers {
     private val viewModel by lazy {
@@ -36,8 +39,25 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         binding.viewModel = viewModel
         binding.handlers = this
 
-        //job = intent.getParcelableExtra<Job>("job")
-        job = ErikuraApplication.instance.currentJob!!
+        if (ErikuraApplication.instance.currentJob != null) {
+            job = ErikuraApplication.instance.currentJob!!
+        }
+        else {
+            // 案件情報が取れない場合
+            Intent(this, MapViewActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                it.putStringArrayListExtra(
+                    ErikuraApplication.ERROR_MESSAGE_KEY,
+                    arrayListOf("お仕事の情報を取得できませんでした。予期せぬエラーによりアプリが終了した可能性ございます。お手数ですがもう一度はじめから操作してください。?")
+                )
+                this.startActivity(it)
+            }
+            Log.v(ErikuraApplication.LOG_TAG,  "Cannot retrieve job")
+            // FirebaseCrashlytics に案件がnull出会ったことを記録します
+            val e = Throwable("ErikuraApplication.currentJob is null")
+            FirebaseCrashlytics.getInstance().recordException(e)
+            return
+        }
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
         ErikuraApplication.instance.currentJob = job
     }

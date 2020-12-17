@@ -70,7 +70,6 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
     override fun onClickReportedJobEditButton(view: View) {
         if(job?.isReportEditable?: false) {
             val intent = Intent(activity,ReportConfirmActivity::class.java)
-//            intent.putExtra("job",job)
             ErikuraApplication.instance.currentJob = job
             startActivity(intent)
         }

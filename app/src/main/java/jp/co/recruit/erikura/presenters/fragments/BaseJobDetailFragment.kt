@@ -35,7 +35,6 @@ abstract class BaseJobDetailFragment : Fragment {
         }
         this.job = job
         this.user = user
-        ErikuraApplication.instance.currentJob = job
         // MEMO: viewModel の更新はサブクラスで実施します
     }
 }

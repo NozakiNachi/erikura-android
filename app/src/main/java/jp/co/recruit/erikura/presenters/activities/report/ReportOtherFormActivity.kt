@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.ExifInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -17,6 +18,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -27,6 +29,7 @@ import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 
@@ -51,7 +54,25 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         binding.handlers = this
 //        job = intent.getParcelableExtra<Job>("job")
 //        ErikuraApplication.instance.reportingJob = job
-        job = ErikuraApplication.instance.currentJob!!
+        if (ErikuraApplication.instance.currentJob != null) {
+            job = ErikuraApplication.instance.currentJob!!
+        }
+        else {
+            // 案件情報が取れない場合
+            Intent(this, MapViewActivity::class.java).let {
+                it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                it.putStringArrayListExtra(
+                    ErikuraApplication.ERROR_MESSAGE_KEY,
+                    arrayListOf("お仕事の情報を取得できませんでした。予期せぬエラーによりアプリが終了した可能性ございます。お手数ですがもう一度はじめから操作してください。?")
+                )
+                this.startActivity(it)
+            }
+            Log.v(ErikuraApplication.LOG_TAG,  "Cannot retrieve job")
+            // FirebaseCrashlytics に案件がnull出会ったことを記録します
+            val e = Throwable("ErikuraApplication.currentJob is null")
+            FirebaseCrashlytics.getInstance().recordException(e)
+            return
+        }
         fromConfirm = intent.getBooleanExtra("fromConfirm", false)
     }
 
