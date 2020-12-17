@@ -63,8 +63,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                 it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 it.putStringArrayListExtra(
                     ErikuraApplication.ERROR_MESSAGE_KEY,
-                    arrayListOf("お仕事の情報を取得できませんでした。
-メモリ不足などにより強制終了された可能性がございます。お手数ですが、再度作業報告などをお願いできますでしょうか?")
+                    arrayListOf("お仕事の情報を取得できませんでした。予期せぬエラーによりアプリが終了した可能性ございます。お手数ですがもう一度はじめから操作してください。?")
                 )
                 this.startActivity(it)
             }
