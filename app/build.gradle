@@ -195,6 +195,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
     // Karte
     implementation 'io.karte.android:tracker:1.7.7'
+    implementation 'io.karte.android:notifications:2.3.0'
     // Facebook SDK Core only (Analytics)
     implementation 'com.facebook.android:facebook-android-sdk:4.41.0'
     // Adjust

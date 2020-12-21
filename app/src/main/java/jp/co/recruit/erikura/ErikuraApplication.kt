@@ -28,6 +28,8 @@ import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.iid.FirebaseInstanceId
+import io.karte.android.KarteApp
+import io.karte.android.notifications.registerFCMToken
 //import com.gu.toolargetool.TooLargeTool
 import io.karte.android.tracker.Tracker
 import io.karte.android.tracker.TrackerConfig
@@ -355,6 +357,8 @@ object Tracking {
 
     fun refreshFcmToken(token: String) {
         this.fcmToken = token
+        // Karte に FCM トークンを登録します
+        KarteApp.registerFCMToken(token)
         if (Api.isLogin) {
             Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
                 Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")

@@ -10,6 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
+import io.karte.android.notifications.MessageHandler
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -44,21 +45,24 @@ class ErikuraMessagingService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        super.onMessageReceived(remoteMessage)
+        val karteHandled = MessageHandler.handleMessage(this, remoteMessage)
+        if (!karteHandled) {
+            super.onMessageReceived(remoteMessage)
 
-        // 通知内のデータを取得しておきます
-        val notificationData = NotificationData.fromJSON(remoteMessage.data["extra"])
-        val openURI = notificationData?.openURI
-        // ログイントークン切れの時のためにURLを保存しておきます
-        ErikuraApplication.instance.pushUri = openURI
-        openURI?.also {
-            // URL が指定されているので、URL をもとに開くための通知を行います
-            val intent = Intent(Intent.ACTION_VIEW, it)
-            notify(remoteMessage.notification?.title, remoteMessage.notification?.body, intent)
-        } ?: run {
-            // URL が指定されていないので、エリクラを起動するための通知を行います
-            val intent = Intent(this, StartActivity::class.java)
-            notify(remoteMessage.notification?.title, remoteMessage.notification?.body, intent)
+            // 通知内のデータを取得しておきます
+            val notificationData = NotificationData.fromJSON(remoteMessage.data["extra"])
+            val openURI = notificationData?.openURI
+            // ログイントークン切れの時のためにURLを保存しておきます
+            ErikuraApplication.instance.pushUri = openURI
+            openURI?.also {
+                // URL が指定されているので、URL をもとに開くための通知を行います
+                val intent = Intent(Intent.ACTION_VIEW, it)
+                notify(remoteMessage.notification?.title, remoteMessage.notification?.body, intent)
+            } ?: run {
+                // URL が指定されていないので、エリクラを起動するための通知を行います
+                val intent = Intent(this, StartActivity::class.java)
+                notify(remoteMessage.notification?.title, remoteMessage.notification?.body, intent)
+            }
         }
     }
 
