@@ -148,23 +148,34 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         val str = SpannableStringBuilder()
         val now = Date().time
         val limit = job.entry?.limitAt?.time ?: 0
-        val diff = if ((limit - now) > 0) {
+        val diff: Long = if ((limit - now) > 0) {
             limit - now
         } else {
             0
         }
 
-        val diffHours = diff / (1000 * 60 * 60)
-        val diffMinutes = (diff % (1000 * 60 * 60)) / (1000 * 60)
+        val diffDates = diff / (1000 * 60 * 60 * 24)
+        val diffHours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        val diffMinutes = (diff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
 
-        if (diffHours == 0L && diffMinutes == 0L) {
-            str.append("あと${diffHours}時間${diffMinutes}分以内\n")
-        } else if (diffHours == 0L) {
-            str.append("あと${diffMinutes}分以内\n")
-        } else if (diffMinutes == 0L) {
-            str.append("あと${diffHours}時間以内\n")
+        if (diffDates == 0L) {
+            if (diffHours == 0L) {
+                str.append("あと${diffMinutes}分以内\n")
+            } else if (diffMinutes == 0L) {
+                str.append("あと${diffHours}時間以内\n")
+            } else {
+                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+            }
         } else {
-            str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+            if (diffHours == 0L && diffMinutes == 0L) {
+                str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+            } else if (diffHours == 0L) {
+                str.append("あと${diffDates}日${diffMinutes}分以内\n")
+            } else if (diffMinutes == 0L) {
+                str.append("あと${diffDates}日${diffHours}時間以内\n")
+            } else {
+                str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分以内\n")
+            }
         }
         str.setSpan(
             ForegroundColorSpan(Color.RED),
