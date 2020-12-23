@@ -10,7 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.GsonBuilder
-import io.karte.android.notifications.MessageHandler
+import io.karte.android.tracker.firebase.MessageHandler
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking

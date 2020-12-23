@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura
 
+//import com.gu.toolargetool.TooLargeTool
 import android.Manifest
 import android.app.Activity
 import android.app.AlertDialog
@@ -9,7 +10,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
 import android.widget.Button
 import androidx.core.app.ActivityCompat
@@ -28,11 +28,7 @@ import com.facebook.appevents.AppEventsLogger
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.iid.FirebaseInstanceId
-import io.karte.android.KarteApp
-import io.karte.android.notifications.registerFCMToken
-//import com.gu.toolargetool.TooLargeTool
 import io.karte.android.tracker.Tracker
-import io.karte.android.tracker.TrackerConfig
 import io.realm.Realm
 import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.business.util.DateUtils
@@ -309,11 +305,13 @@ class AppLifecycle: LifecycleObserver {
 
 object Tracking {
     private val TAG = Tracking::class.java.name
+    lateinit var application: Application
     lateinit var firebaseAnalytics: FirebaseAnalytics
     lateinit var appEventsLogger: AppEventsLogger
     var fcmToken: String? = null
 
     fun initTrackers(application: Application) {
+        this.application = application
         firebaseAnalytics = FirebaseAnalytics.getInstance(application)
 
         // FCMトークンを取得します
@@ -334,10 +332,7 @@ object Tracking {
         // 初期化は不要なようだ
 
         // Karteの初期を行います
-        val config = TrackerConfig.Builder()
-            // FIXME: iOS版であった isEnabledVisualTracking がないようなので、設定保留
-            .build()
-        Tracker.init(application, BuildConfig.KARTE_APP_KEY, config)
+        Tracker.init(application, BuildConfig.KARTE_APP_KEY)
 
         // Facebook
         FacebookSdk.setApplicationId(BuildConfig.FACEBOOK_APP_ID)
@@ -358,7 +353,7 @@ object Tracking {
     fun refreshFcmToken(token: String) {
         this.fcmToken = token
         // Karte に FCM トークンを登録します
-        KarteApp.registerFCMToken(token)
+        Tracker.getInstance(application, BuildConfig.KARTE_APP_KEY).trackFcmToken(token)
         if (Api.isLogin) {
             Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
                 Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")

@@ -8,6 +8,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
@@ -59,8 +61,13 @@ class ResignInActivity : BaseActivity(), ResignInHandlers {
             job = intent.getParcelableExtra("job")
             fromWhere =
                 intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
-
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Tracking.logEvent(event= "view_resign_in", params= bundleOf())
+        Tracking.view(name= "/resign_in", title= "再認証画面")
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

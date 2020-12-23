@@ -1,6 +1,5 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -16,6 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import io.karte.android.tracker.Tracker
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -28,7 +28,6 @@ import jp.co.recruit.erikura.databinding.DialogLogoutBinding
 import jp.co.recruit.erikura.databinding.FragmentConfigurationCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.StartActivity
-import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.ChangeAccountSettingFragment
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationFragment
 import jp.co.recruit.erikura.presenters.activities.job.RegisterAccountSettingFragment
@@ -90,11 +89,13 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
 
-        val binding: ActivityConfigurationBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_configuration)
+        val binding: ActivityConfigurationBinding = DataBindingUtil.setContentView(this, R.layout.activity_configuration)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
+
+//        Tracker.getInstance().getInAppMessagingManager().unsuppress();
+//        Tracker.getInstance(ErikuraApplication.instance, BuildConfig.KARTE_APP_KEY)(ErikuraApplication.instance, BuildConfig.KARTE_APP_KEY).getInAppMessagingManager().unsuppress()
 
         // 未ログイン時は表示する項目を絞る。
         if (userSession == null) {
@@ -169,6 +170,9 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             dialog.show(supportFragmentManager, "ChangeAccountSetting")
             fromChangeAccountFragment = false
         }
+
+        Tracking.logEvent(event= "view_mypage_configuration", params= bundleOf())
+        Tracking.view(name= "/mypage/configuration", title= "マイページ設定画面")
     }
 
     // ログアウトリンク
