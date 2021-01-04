@@ -72,6 +72,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
             }
         },
         MenuItem(3, "ライセンス") {
+            // FIXME: トラッキングタグの記録はできない
             val intent = Intent(this, OssLicensesMenuActivity::class.java)
             startActivity(intent)
         }

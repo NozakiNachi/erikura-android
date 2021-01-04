@@ -13,12 +13,14 @@ import android.util.Log
 import android.view.View
 import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityPlaceDetailBinding
@@ -52,6 +54,13 @@ class PlaceDetailActivity : BaseActivity(), PlaceDetailEventHandlers {
         binding.viewModel = viewModel
         binding.handlers = this
         viewModel.setupMapButton()
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        Tracking.logEvent(event= "view_place_detail", params= bundleOf())
+        Tracking.viewPlaceDetails(name= "/places/${place?.id?.toString() ?: ""}", title= "場所詳細画面", placeId= place?.id ?: 0)
     }
 
     override fun onResume() {

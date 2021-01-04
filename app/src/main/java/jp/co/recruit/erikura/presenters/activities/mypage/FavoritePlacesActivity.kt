@@ -1,31 +1,27 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Place
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityFavoritePlacesBinding
 import jp.co.recruit.erikura.databinding.FragmentFavoritePlaceItemBinding
 import jp.co.recruit.erikura.presenters.activities.BaseTabbedActivity
-import jp.co.recruit.erikura.presenters.activities.OwnJobsActivity
 import jp.co.recruit.erikura.presenters.activities.TabEventHandlers
-import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 
@@ -66,6 +62,9 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
             //　表示がFDL形式の場合の処理
             ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite/")
         }
+
+        Tracking.logEvent(event= "view_mypage_favorites", params= bundleOf())
+        Tracking.view(name= "/mypage/favorites", title= "お気に入り画面")
     }
 
     override fun onResume() {

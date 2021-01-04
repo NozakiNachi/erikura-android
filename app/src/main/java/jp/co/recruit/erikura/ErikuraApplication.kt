@@ -353,7 +353,7 @@ object Tracking {
     fun refreshFcmToken(token: String) {
         this.fcmToken = token
         // Karte に FCM トークンを登録します
-        Tracker.getInstance(application, BuildConfig.KARTE_APP_KEY).trackFcmToken(token)
+        Tracker.getInstance().trackFcmToken(token)
         if (Api.isLogin) {
             Api(ErikuraApplication.applicationContext).pushEndpoint(token) {
                 Log.v(ErikuraApplication.LOG_TAG, "push_endpoint: result=${it}, token=${token}, userId=${Api.userSession?.userId ?: ""}")

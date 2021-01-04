@@ -140,6 +140,13 @@ class ReportedJobDetailsFragment : BaseJobDetailFragment, ReportedJobDetailsFrag
         fetchReport()
     }
 
+    override fun onStart() {
+        super.onStart()
+        // ページ参照のトラッキングの送出
+        Tracking.logEvent(event= "view_job_detail", params= bundleOf())
+        Tracking.viewJobDetails(name= "/jobs/${job?.id?.toString() ?: ""}", title= "タスク詳細画面", jobId= job?.id ?: 0)
+    }
+
     override fun onClickFavorite(view: View) {
         job?.place?.id?.let { placeId ->
             // 現在のボタン状態を取得します
