@@ -337,6 +337,8 @@
     <string name="password_verificationPassword_match_error">パスワードと同じものを入力してください。</string>
     <string name="passcode_pattern_error">パスコードは数字で入力してください。</string>
     <string name="passcode_count_error">パスコードは8桁で入力してください。</string>
+    <string name="street_number_caution">※番地の入力を忘れていませんか？</string>
+    <string name="room_number_caution">※集合住宅にお住まいの方は部屋番号の入力を忘れていませんか？</string>
 
     <!-- 口座情報入力フィールドのエラーメッセージ -->
     <string name="bank_name_count_error">銀行名は100文字以内で入力してください。</string>

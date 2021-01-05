@@ -355,6 +355,7 @@ class UpdateIdentityViewModel : ViewModel() {
     private val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
     private val cityPattern = "(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村|宮古|富良野|別府|佐伯|黒部|小諸|塩尻|玉野|周南)市|(?:余市|高市|[^市]{2,3}?)郡(?:玉村|大町|.{1,5}?)[町村]|(?:.{1,4}市)?[^町]{1,4}?区|.{1,7}?[市町村])(.*)".toRegex()
     private val streetNumberPattern = ".*[0-9０１２３４５６７８９９０一二三四五六七八九〇十].*".toRegex()
+    private val roomNumberPattern = ".*[0-9０１２３４５６７８９９０一二三四五六七八九〇十]{3,}.*".toRegex()
 
     // 遷移元
     val fromWhere: MutableLiveData<Int> = MutableLiveData()
@@ -376,6 +377,7 @@ class UpdateIdentityViewModel : ViewModel() {
     val cityError: ErrorMessageViewModel = ErrorMessageViewModel()
     val street: MutableLiveData<String> = MutableLiveData()
     val streetError: ErrorMessageViewModel = ErrorMessageViewModel()
+    val streetCaution: ErrorMessageViewModel = ErrorMessageViewModel()
 
     // 登録ボタン押下
     val isChangeButtonEnabled = MediatorLiveData<Boolean>().also { result ->
@@ -566,14 +568,32 @@ class UpdateIdentityViewModel : ViewModel() {
     private fun checkStreetNumberWarning() {
         val streetFieldFilled = street.value?.isNotBlank() ?: false
         if (streetFieldFilled) {
-            if (streetNumberPattern.matches(street.value ?: "")) {
+            // 番地入力チェック
+            val streetNumberPatternMatches = streetNumberPattern.matches(street.value ?: "")
+            // 部屋番号入力チェック
+            val roomNumberPatternMatches = roomNumberPattern.matches(street.value ?: "")
+            if (streetNumberPatternMatches && roomNumberPatternMatches) {
+                // 番地と部屋番号が入力済みの場合、警告は表示しません
                 streetNumberWarningVisibility.value = View.GONE
+                streetCaution.message.value = null
             } else {
                 streetNumberWarningVisibility.value = View.VISIBLE
+                // MEMO: 部屋番号チェックの条件は番地チェックの条件を包含しています
+                if (!streetNumberPatternMatches) {
+                    // 番地と部屋番号が未入力の場合
+                    streetCaution.message.value =
+                        ErikuraApplication.instance.getString(R.string.street_number_caution) + "\n" + ErikuraApplication.instance.getString(R.string.room_number_caution)
+                }else if (!roomNumberPatternMatches) {
+                    // 部屋番号が未入力の場合
+                    streetCaution.message.value = ErikuraApplication.instance.getString(R.string.room_number_caution)
+                }
             }
         }
         else {
+            // 未入力の場合、番地入力と部屋番号入力の警告を表示します
             streetNumberWarningVisibility.value = View.VISIBLE
+            streetCaution.message.value =
+                ErikuraApplication.instance.getString(R.string.street_number_caution) + "\n" + ErikuraApplication.instance.getString(R.string.room_number_caution)
         }
     }
 }
