@@ -274,7 +274,7 @@
                     android:layout_height="wrap_content"
                     style="@style/errorField"
                     android:layout_marginTop="10dp"
-                    android:text="※番地の入力を忘れていませんか？"
+                    android:text="@={viewModel.streetCaution.message}"
                     android:visibility="@{viewModel.streetNumberWarningVisibility}"
                     />
                 <TextView
