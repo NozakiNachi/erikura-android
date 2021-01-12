@@ -17,6 +17,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.os.bundleOf
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.InverseBindingAdapter
@@ -31,6 +32,7 @@ import io.realm.Realm
 import io.realm.Sort
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.JobKind
 import jp.co.recruit.erikura.business.models.JobQuery
@@ -89,6 +91,13 @@ class SearchJobActivity : BaseActivity(), SearchJobHandlers, MinMaxPickerDialogE
         Api(this).jobKinds { jobKinds ->
             viewModel.jobKinds.value = jobKinds.filter { it.refine ?: false }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        Tracking.logEvent(event= "view_search_job", params= bundleOf())
+        Tracking.view(name= "/jobs/search", title= "検索条件画面")
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
