@@ -86,7 +86,7 @@ class Api(var context: Context) {
 
     fun login(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
         executeObservable(
-            erikuraApiService.login(LoginRequest(email = email, password = password)),
+            erikuraApiService.login(LoginRequest(email = email, password = password, resign_in = false)),
             onError =  onError
         ) { body ->
             val session = UserSession(userId = body.userId, token = body.accessToken)
@@ -127,7 +127,7 @@ class Api(var context: Context) {
 
     fun resignIn(email: String, password: String, onError: ((messages: List<String>?) -> Unit)? = null, onComplete: (session: UserSession) -> Unit) {
         executeObservable(
-            erikuraApiService.login(LoginRequest(email = email, password = password)),
+            erikuraApiService.login(LoginRequest(email = email, password = password, resign_in = true)),
             onError = { errorMessages ->
                 if (errorMessages?.first() == "メールアドレスまたはパスワードが無効です。") {
                     displayErrorAlert(listOf("パスワードが誤っています。", "もう一度入力してください。"))
