@@ -39,7 +39,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
 
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "利用規約") {
-            val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + "/pdf/terms_of_service.pdf"
+            val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
             val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(termsOfServiceURLString)
@@ -48,7 +48,7 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
         },
         MenuItem(1, "プライバシーポリシー"
         ) {
-            val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + "/pdf/privacy_policy.pdf"
+            val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
             val intent = Intent(this, WebViewActivity::class.java).apply {
                 action = Intent.ACTION_VIEW
                 data = Uri.parse(privacyPolicyURLString)
