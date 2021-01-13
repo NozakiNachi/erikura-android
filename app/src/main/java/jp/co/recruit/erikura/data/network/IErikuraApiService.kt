@@ -304,7 +304,8 @@ data class IdVerifyRequest(
 
 data class LoginRequest(
     var email: String,
-    var password: String
+    var password: String,
+    var resign_in: Boolean
 )
 
 data class EntryRequest(
