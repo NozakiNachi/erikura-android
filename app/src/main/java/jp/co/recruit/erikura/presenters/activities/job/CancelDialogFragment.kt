@@ -151,8 +151,9 @@ class CancelDialogFragmentViewModel: ViewModel() {
     val reasonsItems = MediatorLiveData<List<CancelReasonItem>>().also { result ->
         result.addSource(reasons) {
             val items = mutableListOf<CancelReasonItem>()
-            it.forEach { reason -> items.add(CancelReasonItem.Item(reason)) }
+            // その他がデフォルト値で選択されているようにする
             items.add(CancelReasonItem.Other)
+            it.forEach { reason -> items.add(CancelReasonItem.Item(reason)) }
             result.value = items
         }
     }
