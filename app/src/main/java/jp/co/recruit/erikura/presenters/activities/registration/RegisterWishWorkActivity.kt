@@ -3,8 +3,11 @@ package jp.co.recruit.erikura.presenters.activities.registration
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.View
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -15,6 +18,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterWishWorkBinding
@@ -40,12 +44,14 @@ class RegisterWishWorkActivity : BaseActivity(),
 
         val binding: ActivityRegisterWishWorkBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_wish_work)
         binding.lifecycleOwner = this
+        viewModel.setupHandler(this)
         binding.viewModel = viewModel
         binding.handlers = this
     }
 
     override fun onStart() {
         super.onStart()
+        this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_register_job_request", params= bundleOf())
         Tracking.view(name= "/user/register/wish_works", title= "本登録画面（希望職種）")
@@ -120,6 +126,19 @@ class RegisterWishWorkActivity : BaseActivity(),
 }
 
 class RegisterWishWorkViewModel: ViewModel() {
+    var handler: RegisterWishWorkEventHandlers? = null
+    val agreementText = MutableLiveData<SpannableStringBuilder>(
+        SpannableStringBuilder().also { str ->
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service), R.style.linkText) {
+                handler?.onClickTermsOfService(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy, ErikuraConfig.ppTermsTitle), R.style.linkText) {
+                handler?.onClickPrivacyPolicy(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        }
+    )
     val interestedSmartPhone: MutableLiveData<Boolean> = MutableLiveData()
     val interestedCleaning: MutableLiveData<Boolean> = MutableLiveData()
     val interestedWalk: MutableLiveData<Boolean> = MutableLiveData()
@@ -136,6 +155,10 @@ class RegisterWishWorkViewModel: ViewModel() {
 
     private fun isValid(): Boolean {
         return interestedSmartPhone.value ?:false || interestedCleaning.value ?:false || interestedWalk.value ?:false || interestedBicycle.value ?:false || interestedCar.value ?:false
+    }
+
+    fun setupHandler(handler: RegisterWishWorkEventHandlers?) {
+        this.handler = handler
     }
 }
 
