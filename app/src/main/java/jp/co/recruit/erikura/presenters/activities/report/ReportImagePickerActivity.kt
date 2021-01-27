@@ -13,6 +13,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.ImageView
 import android.widget.ToggleButton
 import androidx.core.os.bundleOf
@@ -22,6 +23,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -78,6 +80,15 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
         recyclerView.addItemDecoration(decorator)
+
+        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    System.gc()
+                }
+            }
+        })
     }
 
     override fun onStart() {
@@ -109,8 +120,6 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
-
-        
     }
 
     private fun displayImagePicker() {
@@ -336,6 +345,14 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
         }
         item.loadImage(activity, cellView.imageView, viewHolder.width, viewHolder.height)
         binding.viewModel!!.loadData(job, item, viewModel)
+    }
+
+    override fun onViewRecycled(holder: ImagePickerViewHolder) {
+        super.onViewRecycled(holder)
+
+        val view = holder.binding.root
+        val cellView: ImagePickerCellView = view.findViewById(R.id.report_image_picker_cell)
+        Glide.with(activity).clear(cellView.imageView)
     }
 
     interface OnClickListener {
