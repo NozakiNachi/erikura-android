@@ -153,8 +153,8 @@ class CancelDialogFragmentViewModel: ViewModel() {
             val items = mutableListOf<CancelReasonItem>()
             // その他がデフォルト値で選択されているようにする
             it.forEach { reason -> items.add(CancelReasonItem.Item(reason)) }
-            result.value = items
             items.add(CancelReasonItem.Other)
+            result.value = items
         }
     }
 
