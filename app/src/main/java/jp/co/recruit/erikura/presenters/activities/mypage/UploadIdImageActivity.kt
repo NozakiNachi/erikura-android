@@ -10,12 +10,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.util.Base64
 import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -83,6 +86,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         val binding: ActivityUploadIdImageBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_upload_id_image)
         binding.lifecycleOwner = this
+        viewModel.setupHandler(this)
         binding.handlers = this
         binding.viewModel = viewModel
 
@@ -94,6 +98,7 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
 
     override fun onStart() {
         super.onStart()
+        this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_user_verifications_id_document", params= bundleOf())
         Tracking.view("/user/verifications/id_document",  "身分証確認画面")
@@ -522,6 +527,19 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
 }
 
 class UploadIdImageViewModel : ViewModel() {
+    var handler: UploadIdImageEventHandlers? = null
+    val agreementText = MutableLiveData<SpannableStringBuilder>(
+        SpannableStringBuilder().also { str ->
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service), R.style.linkText) {
+                handler?.onClickTermsOfService(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy, ErikuraConfig.ppTermsTitle), R.style.linkText) {
+                handler?.onClickPrivacyPolicy(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        }
+    )
     val driverLicenceElementNum = MutableLiveData<Int>()
     val passportElementNum = MutableLiveData<Int>()
     val myNumberElementNum = MutableLiveData<Int>()
@@ -635,6 +653,10 @@ class UploadIdImageViewModel : ViewModel() {
             isNotPassportOrMyNumber = true
         }
         return isNotPassportOrMyNumber
+    }
+
+    fun setupHandler(handler: UploadIdImageEventHandlers?) {
+        this.handler = handler
     }
 }
 

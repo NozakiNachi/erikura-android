@@ -4,11 +4,14 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.*
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
@@ -19,6 +22,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityLoginBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -37,6 +41,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
 
         val binding: ActivityLoginBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         binding.lifecycleOwner = this
+        viewModel.setupHandler(this)
         binding.viewModel = viewModel
         binding.handlers = this
 
@@ -50,6 +55,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
 
     override fun onStart() {
         super.onStart()
+        this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_login", params= bundleOf())
         Tracking.view(name= "/user/login", title= "ログイン画面")
@@ -192,6 +198,19 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
 }
 
 class LoginViewModel: ViewModel() {
+    var handler: LoginEventHandlers? = null
+    val agreementText = MutableLiveData<SpannableStringBuilder>(
+        SpannableStringBuilder().also { str ->
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service), R.style.linkText) {
+                handler?.onClickTermsOfService(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy, ErikuraConfig.ppTermsTitle), R.style.linkText) {
+                handler?.onClickPrivacyPolicy(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        }
+    )
     val email: MutableLiveData<String> = MutableLiveData()
     val password: MutableLiveData<String> = MutableLiveData()
     val enableAutoLogin: MutableLiveData<Boolean> = MutableLiveData()
@@ -203,6 +222,10 @@ class LoginViewModel: ViewModel() {
 
     fun isValid(): Boolean {
         return (email.value?.isNotBlank() ?: false) && (password.value?.isNotBlank() ?: false)
+    }
+
+    fun setupHandler(handler: LoginEventHandlers?) {
+        this.handler = handler
     }
 }
 

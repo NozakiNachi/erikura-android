@@ -24,6 +24,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogApplyBinding
@@ -222,7 +223,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
                 handler?.onClickTermsOfService(it)
             }
             str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
-            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy), R.style.linkText) {
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy, ErikuraConfig.ppTermsTitle), R.style.linkText) {
                 handler?.onClickPrivacyPolicy(it)
             }
             str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))

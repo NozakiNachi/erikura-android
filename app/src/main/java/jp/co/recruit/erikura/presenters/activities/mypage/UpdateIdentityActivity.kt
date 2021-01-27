@@ -5,11 +5,14 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -21,6 +24,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.IdentifyComparingData
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
@@ -77,6 +81,7 @@ class UpdateIdentityActivity :
         val binding: ActivityUpdateIdentityBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_update_identity)
         binding.lifecycleOwner = this
+        viewModel.setupHandler(this)
         binding.handlers = this
         binding.viewModel = viewModel
 
@@ -137,6 +142,8 @@ class UpdateIdentityActivity :
 
     override fun onStart() {
         super.onStart()
+        this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
+
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event = "view_user_comparing_data", params = bundleOf())
         Tracking.view("/user/verifications/comparing_data", "本人確認情報入力画面")
@@ -352,6 +359,20 @@ class UpdateIdentityActivity :
 }
 
 class UpdateIdentityViewModel : ViewModel() {
+    var handler: UpdateIdentityEventHandlers? = null
+    val agreementText = MutableLiveData<SpannableStringBuilder>(
+        SpannableStringBuilder().also { str ->
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service), R.style.linkText) {
+                handler?.onClickTermsOfService(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy, ErikuraConfig.ppTermsTitle), R.style.linkText) {
+                handler?.onClickPrivacyPolicy(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        }
+    )
+
     private val prefectureList = ErikuraApplication.instance.resources.obtainTypedArray(R.array.prefecture_list)
     private val cityPattern = "(...??[都道府県])((?:旭川|伊達|石狩|盛岡|奥州|田村|南相馬|那須塩原|東村山|武蔵村山|羽村|十日町|上越|富山|野々市|大町|蒲郡|四日市|姫路|大和郡山|廿日市|下松|岩国|田川|大村|宮古|富良野|別府|佐伯|黒部|小諸|塩尻|玉野|周南)市|(?:余市|高市|[^市]{2,3}?)郡(?:玉村|大町|.{1,5}?)[町村]|(?:.{1,4}市)?[^町]{1,4}?区|.{1,7}?[市町村])(.*)".toRegex()
     private val streetNumberPattern = ".*[0-9０１２３４５６７８９９０一二三四五六七八九〇十].*".toRegex()
@@ -595,6 +616,10 @@ class UpdateIdentityViewModel : ViewModel() {
             streetCaution.message.value =
                 ErikuraApplication.instance.getString(R.string.street_number_caution) + "\n" + ErikuraApplication.instance.getString(R.string.room_number_caution)
         }
+    }
+
+    fun setupHandler(handler: UpdateIdentityEventHandlers?) {
+        this.handler = handler
     }
 }
 
