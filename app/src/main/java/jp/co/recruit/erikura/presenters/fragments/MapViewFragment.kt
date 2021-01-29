@@ -23,6 +23,7 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentMapViewBinding
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.LocationManager
+import java.lang.IllegalArgumentException
 
 class MapViewFragment: BaseJobDetailFragment, OnMapReadyCallback {
     companion object {
@@ -46,7 +47,14 @@ class MapViewFragment: BaseJobDetailFragment, OnMapReadyCallback {
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
         // マーカーの再設定
-        setupMarker()
+        try {
+            setupMarker()
+        } catch(e: IllegalArgumentException) {
+            // 再設定する際にマーカーアイコン画像取得の遅延により
+            // マーカの削除中に該当のマーカにアイコンをセットするとエラーになる
+            // こちらのエラーは握り潰す
+            Log.e("ERROR", e.message, e)
+        }
     }
 
     override fun onCreateView(
