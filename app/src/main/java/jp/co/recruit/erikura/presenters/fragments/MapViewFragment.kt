@@ -89,7 +89,14 @@ class MapViewFragment: BaseJobDetailFragment, OnMapReadyCallback {
             true
         }
 
-        setupMarker()
+        try {
+            setupMarker()
+        } catch(e: IllegalArgumentException) {
+            // 設定する際にマーカーアイコン画像取得の遅延により
+            // マーカの削除中に該当のマーカにアイコンをセットするとエラーになる
+            // こちらのエラーは握り潰す
+            Log.e("ERROR", e.message, e)
+        }
     }
 
     private fun setupMarker() {

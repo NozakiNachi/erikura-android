@@ -47,6 +47,7 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
+import java.lang.IllegalArgumentException
 import kotlin.math.abs
 
 class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
@@ -384,8 +385,16 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                     tutorialAdapter.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
                     tutorialAdapter.notifyDataSetChanged()
 
-                    // マーカを設定します
-                    rebuildMarkers(jobs)
+
+                    try {
+                        // マーカを設定します
+                        rebuildMarkers(jobs)
+                    } catch(e: IllegalArgumentException) {
+                        // 設定する際にマーカーアイコン画像取得の遅延により
+                        // マーカの削除中に該当のマーカにアイコンをセットするとエラーになる
+                        // こちらのエラーは握り潰す
+                        Log.e("ERROR", e.message, e)
+                    }
 
                     // 最も距離が近い案件を取得します
                     var nearestMarker: ErikuraMarkerView = viewModel.markerMap[nearestJob.id]!!
