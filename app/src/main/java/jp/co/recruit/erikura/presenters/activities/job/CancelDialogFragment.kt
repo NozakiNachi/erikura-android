@@ -76,7 +76,7 @@ class CancelDialogFragment: DialogFragment(), CancelDialogFragmentEventHandlers 
     }
 
     override fun onReasonSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        viewModel.reasonSelected = position
+        viewModel.reasonSelected.value = position
 
         viewModel.reasonsItems.value?.let { items ->
             val item = items[position]
@@ -146,11 +146,12 @@ class CancelDialogFragmentViewModel: ViewModel() {
     val reasonText: MutableLiveData<String> = MutableLiveData()
     val reasonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val reasons: MutableLiveData<List<CancelReason>> = MutableLiveData()
-    var reasonSelected: Int = 0
+    var reasonSelected: MutableLiveData<Int> = MutableLiveData()
 
     val reasonsItems = MediatorLiveData<List<CancelReasonItem>>().also { result ->
         result.addSource(reasons) {
             val items = mutableListOf<CancelReasonItem>()
+            // その他がデフォルト値で選択されているようにする
             it.forEach { reason -> items.add(CancelReasonItem.Item(reason)) }
             items.add(CancelReasonItem.Other)
             result.value = items
@@ -159,7 +160,7 @@ class CancelDialogFragmentViewModel: ViewModel() {
 
     val selectedItem: CancelReasonItem? get() {
         return reasonsItems.value?.let { items ->
-            return items[reasonSelected]
+            return items[reasonSelected.value!!]
         }
     }
 
@@ -171,6 +172,7 @@ class CancelDialogFragmentViewModel: ViewModel() {
     fun setup(activity: Activity) {
         Api(activity).cancelReasons {
             reasons.value = it
+            reasonSelected.value = it.size
         }
     }
 
