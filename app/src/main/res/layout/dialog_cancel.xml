@@ -66,7 +66,8 @@
                 android:layout_marginTop="10dp"
                 android:entries="@{viewModel.reasonsItems}"
                 android:spinnerMode="dialog"
-                android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onReasonSelected(parent, view, position, id)}}" />
+                android:onItemSelected="@{@{(parent, view, position, id) -> handlers.onReasonSelected(parent, view, position, id)}}"
+                android:selectedItemPosition="@={viewModel.reasonSelected}" />
 
             <LinearLayout
                 android:layout_width="match_parent"

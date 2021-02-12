@@ -4,10 +4,13 @@ import android.app.ActivityOptions
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -19,6 +22,7 @@ import jp.co.recruit.erikura.BuildConfig
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityRegisterEmailBinding
@@ -27,7 +31,7 @@ import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 
 class RegisterEmailActivity : BaseActivity(),
-    SendEmailEventHandlers {
+    RegisterEmailEventHandlers {
     private val viewModel: RegisterEmailViewModel by lazy {
         ViewModelProvider(this).get(RegisterEmailViewModel::class.java)
     }
@@ -38,6 +42,7 @@ class RegisterEmailActivity : BaseActivity(),
 
         val binding: ActivityRegisterEmailBinding = DataBindingUtil.setContentView(this, R.layout.activity_register_email)
         binding.lifecycleOwner = this
+        viewModel.setupHandler(this)
         binding.viewModel = viewModel
         binding.handlers = this
         viewModel.error.message.value = null
@@ -45,6 +50,8 @@ class RegisterEmailActivity : BaseActivity(),
 
     override fun onStart() {
         super.onStart()
+        this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
+
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event = "view_temp_register", params = bundleOf())
         Tracking.view(name = "/user/register/pre", title = "仮登録画面")
@@ -92,6 +99,19 @@ class RegisterEmailActivity : BaseActivity(),
 }
 
 class RegisterEmailViewModel: ViewModel() {
+    var handler: RegisterEmailEventHandlers? = null
+    val agreementText = MutableLiveData<SpannableStringBuilder>(
+        SpannableStringBuilder().also { str ->
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_terms_of_service), R.style.linkText) {
+                handler?.onClickTermsOfService(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_comma))
+            JobUtil.appendLinkSpan(str, ErikuraApplication.instance.getString(R.string.registerEmail_privacy_policy, ErikuraConfig.ppTermsTitle), R.style.linkText) {
+                handler?.onClickPrivacyPolicy(it)
+            }
+            str.append(ErikuraApplication.instance.getString(R.string.registerEmail_agree))
+        }
+    )
     private val emailPattern = ErikuraConst.emailPattern
 
     val email: MutableLiveData<String> = MutableLiveData()
@@ -117,9 +137,13 @@ class RegisterEmailViewModel: ViewModel() {
 
         return valid
     }
+
+    fun setupHandler(handler: RegisterEmailEventHandlers?) {
+        this.handler = handler
+    }
 }
 
-interface SendEmailEventHandlers {
+interface RegisterEmailEventHandlers {
     fun onClickSendEmail(view: View)
     fun onClickTermsOfService(view: View)
     fun onClickPrivacyPolicy(view: View)

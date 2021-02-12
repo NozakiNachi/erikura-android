@@ -25,9 +25,9 @@
     <string name="registerEmail_caption">メールアドレスを教えてください。</string>
     <string name="registerEmail_accept">※メール受信制限をされている方は「erikura.net」からのメール受信を許可してください。</string>
     <string name="registerEmail_terms_of_service"><a href="">利用規約</a></string>
-    <string name="registerEmail_comma">、</string>
-    <string name="registerEmail_privacy_policy"><a href="">プライバシーポリシー</a></string>
-    <string name="registerEmail_agree">に同意して</string>
+    <string name="registerEmail_comma">、\n</string>
+    <string name="registerEmail_privacy_policy"><a href="">%1$s</a></string>
+    <string name="registerEmail_agree">\nに同意して</string>
 
     <!-- 仮登録完了画面 -->
     <string name="registerEmailFinished_registerUnfinished">まだ会員登録は\n完了しておりません</string>
