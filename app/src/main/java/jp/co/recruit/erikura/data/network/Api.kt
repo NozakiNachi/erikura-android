@@ -1022,17 +1022,20 @@ class Api(var context: Context) {
             }.create()
 
             val dm = context.resources.displayMetrics
-            progressAlert?.show()
-            progressAlert?.window?.setLayout(
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
-                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt())
+            if (!isFinishing() && !isDestroyed()) {
+                progressAlert?.show()
+                progressAlert?.window?.setLayout(
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt(),
+                    TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0f, dm).toInt()
+                )
+            }
         }
     }
 
     fun hideProgressAlert() {
         progressCount--
         if (progressCount <= 0) {
-            if (!isDestroyed()) {
+            if (!isFinishing() && !isDestroyed()) {
                 progressAlert?.dismiss()
             }
             progressAlert = null
@@ -1053,7 +1056,7 @@ class Api(var context: Context) {
                     )
                     setPositiveButton(R.string.common_buttons_close) { _, _ -> }
                 }.create()
-            if (!isDestroyed()) {
+            if (!isFinishing() && !isDestroyed()) {
                 // ページ参照のトラッキングの送出
                 Tracking.logEvent(event= "error_modal", params= bundleOf())
                 Tracking.track(name= "error_modal")
@@ -1061,6 +1064,10 @@ class Api(var context: Context) {
                 alertDialog.show()
             }
         }
+    }
+
+    private fun isFinishing(): Boolean {
+        return (context as? Activity)?.isFinishing ?: true
     }
 
     private fun isDestroyed(): Boolean {
