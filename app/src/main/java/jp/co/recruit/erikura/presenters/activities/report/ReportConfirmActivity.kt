@@ -21,12 +21,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
@@ -43,7 +43,6 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
-import org.apache.commons.lang.builder.ToStringBuilder
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,7 +56,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     private val GET_FILE: Int = 2001
     private lateinit var reportImageAdapter: ReportImageAdapter
     private lateinit var reportSummaryAdapter: ReportSummaryAdapter
-    private val realm: Realm get() = ErikuraApplication.realm
     lateinit var positions: Array<Int>
     private val handler = UploadingPauseHandler(this)
 
@@ -823,6 +821,14 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         }
     }
 
+    override fun onViewRecycled(holder: ReportImageViewHolder) {
+        super.onViewRecycled(holder)
+
+        val view = holder.binding.root
+        val imageView: ImageView = view.findViewById(R.id.report_image_item)
+        Glide.with(activity).clear(imageView)
+    }
+
     interface OnClickListener {
         fun onClick(view: View)
     }
@@ -957,6 +963,14 @@ class ReportSummaryAdapter(
 //        commentView.adapter = operatorCommentsAdapter
 //        operatorCommentsAdapter.operatorComments = summaries[position].operatorComments
 //        operatorCommentsAdapter.notifyDataSetChanged()
+    }
+
+    override fun onViewRecycled(holder: ReportSummaryViewHolder) {
+        super.onViewRecycled(holder)
+
+        val view = holder.binding.root
+        val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
+        Glide.with(activity).clear(imageView)
     }
 
     interface OnClickListener {
