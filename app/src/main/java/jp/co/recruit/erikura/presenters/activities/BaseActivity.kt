@@ -1,13 +1,17 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.ActivityOptions
+import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import dagger.Component
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.data.network.Api
@@ -16,7 +20,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 
-abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity() {
+abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity(), ComponentCallbacks2 {
     protected var isSkipSmsVerification: Boolean = false
     companion object {
         var currentActivity: Activity? = null
@@ -147,6 +151,57 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
                 val dialog = ChangeUserInformationOnlyPhoneFragment()
                 dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
             }
+        }
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+
+        val memInfo = getAvailableMemory()
+        Log.d(ErikuraApplication.LOG_TAG, "MEMORY: avail=${memInfo.availMem}, total=${memInfo.totalMem}, threshold=${memInfo.threshold}, lowMemory=${memInfo.lowMemory}, level=${level}")
+
+        when(level) {
+            ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
+                /* Release any UI objects that currenty hold memory. The user interface has moved to the background. */
+            }
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_MODERATE,
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
+            ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
+                /*
+                Release any memory that your app doesn't need to run.
+
+                The device is running low onn memory while the app is running.
+                The event raised indicated the severitty of the memory-related event.
+                If the event is TRIM_MEMORY_RUNNING_CRITICAL, then the system kill begin killing background processes.
+                 */
+            }
+            ComponentCallbacks2.TRIM_MEMORY_BACKGROUND,
+            ComponentCallbacks2.TRIM_MEMORY_MODERATE,
+            ComponentCallbacks2.TRIM_MEMORY_COMPLETE -> {
+                /*
+                Release as much memory as the process can.
+
+                The app is on the LRU list and the system is running low on memory.
+                The event raised indicates where the app sits within the LRU list.
+                If the event is TRIM_MEMORY_COMPLETE, the process will be one of
+                the first to be terminated.
+                 */
+            }
+            else -> {
+                /*
+                Release any non-critical data structures.
+
+                THe app received an unrecognized memory level value
+                from the system. Treat this as a generic low-memory message
+                 */
+            }
+        }
+    }
+
+    private fun getAvailableMemory(): ActivityManager.MemoryInfo {
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        return ActivityManager.MemoryInfo().also { memoryInfo ->
+            activityManager.getMemoryInfo(memoryInfo)
         }
     }
 }
