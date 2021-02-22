@@ -4,6 +4,7 @@ import JobUtil
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.graphics.Color
 import android.graphics.Rect
 import android.media.ExifInterface
 import android.os.Bundle
@@ -120,6 +121,18 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
+        recyclerView.adapter = null
+        val imageView: ImageView = findViewById(R.id.report_image_picker_preview)
+        imageView.background = null
+        imageView.setImageDrawable(null)
+        imageView.setImageBitmap(null)
+        imageView.setBackgroundColor(Color.BLACK)
     }
 
     private fun displayImagePicker() {
