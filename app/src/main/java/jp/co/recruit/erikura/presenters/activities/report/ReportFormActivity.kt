@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.presenters.activities.report
 import JobUtil
 import android.app.Activity
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -15,6 +16,7 @@ import android.widget.ImageView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
+import com.bumptech.glide.Glide
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
@@ -105,6 +107,9 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             setup()
             editCompleted = false
         }
+        else {
+            createImage()
+        }
 
         if (job.reportId != null) {
             // ページ参照のトラッキングの送出
@@ -115,6 +120,12 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             Tracking.logEvent(event= "view_edit_job_report_point", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/detail/${job.id}", title= "作業報告編集画面（箇所）", jobId= job.id)
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val imageView: ImageView = findViewById(R.id.report_form_image)
+        Glide.with(this).clear(imageView)
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

@@ -129,10 +129,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
         recyclerView.adapter = null
         val imageView: ImageView = findViewById(R.id.report_image_picker_preview)
-        imageView.background = null
-        imageView.setImageDrawable(null)
-        imageView.setImageBitmap(null)
-        imageView.setBackgroundColor(Color.BLACK)
+        Glide.with(this).clear(imageView)
     }
 
     private fun displayImagePicker() {

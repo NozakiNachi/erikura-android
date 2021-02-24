@@ -44,7 +44,6 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
 
-
 class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragmentEventHandlers {
     companion object {
         fun newInstance(user: User?): AppliedJobDetailsFragment {
