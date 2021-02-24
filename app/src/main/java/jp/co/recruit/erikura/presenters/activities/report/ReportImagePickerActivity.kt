@@ -130,6 +130,9 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         recyclerView.adapter = null
         val imageView: ImageView = findViewById(R.id.report_image_picker_preview)
         Glide.with(this).clear(imageView)
+
+        // GCをかけておきます
+        System.gc()
     }
 
     private fun displayImagePicker() {

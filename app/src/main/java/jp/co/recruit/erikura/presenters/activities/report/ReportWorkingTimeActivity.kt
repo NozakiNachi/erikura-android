@@ -90,6 +90,13 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        // GCをかけておきます
+        System.gc()
+    }
+
     override fun onClickManual(view: View) {
         if(job.manualUrl != null){
             JobUtil.openManual(this, job!!)

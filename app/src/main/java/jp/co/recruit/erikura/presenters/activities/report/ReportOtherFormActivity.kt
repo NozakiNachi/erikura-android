@@ -106,6 +106,13 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+
+        // GCをかけておきます
+        System.gc()
+    }
+
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
         val view = this.currentFocus
         if (view != null) {

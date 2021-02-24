@@ -143,6 +143,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         reportSummaryAdapter = null
         val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
         reportSummaryView.adapter = null
+
+        // GCをかけておきます
+        System.gc()
     }
 
     override fun onResume() {

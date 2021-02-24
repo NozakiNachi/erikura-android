@@ -126,6 +126,9 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         super.onStop()
         val imageView: ImageView = findViewById(R.id.report_form_image)
         Glide.with(this).clear(imageView)
+
+        // GCをかけておきます
+        System.gc()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
