@@ -3,6 +3,7 @@ package jp.co.recruit.erikura
 //import com.gu.toolargetool.TooLargeTool
 import android.Manifest
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.app.Application
 import android.content.Context
@@ -633,4 +634,7 @@ class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
     }
+}
+
+class MemoryTraceException(klassName: String, memoryInfo: ActivityManager.MemoryInfo) : Exception("class=${klassName}, total=${memoryInfo.totalMem / 1024.0 / 1024.0}, avail=${memoryInfo.availMem / 1024.0 / 1024.0},threshold=${memoryInfo.threshold / 1024.0 / 1024.0},lowMemory=${memoryInfo.lowMemory}") {
 }

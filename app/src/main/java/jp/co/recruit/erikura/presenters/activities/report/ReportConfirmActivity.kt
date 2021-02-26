@@ -21,13 +21,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.MemoryTraceException
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
@@ -43,7 +44,6 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
-import org.apache.commons.lang.builder.ToStringBuilder
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -55,9 +55,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     var job = Job()
     private val EDIT_DATA: Int = 1001
     private val GET_FILE: Int = 2001
-    private lateinit var reportImageAdapter: ReportImageAdapter
-    private lateinit var reportSummaryAdapter: ReportSummaryAdapter
-    private val realm: Realm get() = ErikuraApplication.realm
+    private var reportImageAdapter: ReportImageAdapter? = null
+    private var reportSummaryAdapter: ReportSummaryAdapter? = null
     lateinit var positions: Array<Int>
     private val handler = UploadingPauseHandler(this)
 
@@ -90,6 +89,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             FirebaseCrashlytics.getInstance().recordException(e)
             return
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ErikuraApplication.instance.currentJob?.let {
+            job = it
+        }
 
         reportImageAdapter = ReportImageAdapter(this, listOf()).also {
             it.onClickListener = object : ReportImageAdapter.OnClickListener {
@@ -115,13 +121,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
         reportSummaryView.setHasFixedSize(true)
         reportSummaryView.adapter = reportSummaryAdapter
-    }
-
-    override fun onStart() {
-        super.onStart()
-        ErikuraApplication.instance.currentJob?.let {
-            job = it
-        }
 
         loadData()
 
@@ -134,6 +133,21 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             Tracking.logEvent(event= "view_edit_job_report_confirm", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/confirm/${job.id}", title= "作業報告編集確認画面", jobId= job.id)
         }
+        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
+    }
+
+    override fun onStop() {
+        super.onStop()
+        reportImageAdapter = null
+        val reportImageView: RecyclerView = findViewById(R.id.report_confirm_report_images)
+        reportImageView.adapter = null
+
+        reportSummaryAdapter = null
+        val reportSummaryView: RecyclerView = findViewById(R.id.report_confirm_report_summaries)
+        reportSummaryView.adapter = null
+
+        // GCをかけておきます
+        System.gc()
     }
 
     override fun onResume() {
@@ -574,10 +588,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                     i++
                 }
             }
-            reportImageAdapter.summaries = summaries
-            reportImageAdapter.notifyDataSetChanged()
-            reportSummaryAdapter.summaries = summaries
-            reportSummaryAdapter.notifyDataSetChanged()
+            reportImageAdapter?.summaries = summaries
+            reportImageAdapter?.notifyDataSetChanged()
+            reportSummaryAdapter?.summaries = summaries
+            reportSummaryAdapter?.notifyDataSetChanged()
             // 作業時間の更新
             val minute = it.workingMinute ?: 0
             viewModel.workingTime.value = if (minute == 0) {
@@ -823,6 +837,14 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         }
     }
 
+    override fun onViewRecycled(holder: ReportImageViewHolder) {
+        super.onViewRecycled(holder)
+
+        val view = holder.binding.root
+        val imageView: ImageView = view.findViewById(R.id.report_image_item)
+        Glide.with(activity).clear(imageView)
+    }
+
     interface OnClickListener {
         fun onClick(view: View)
     }
@@ -957,6 +979,14 @@ class ReportSummaryAdapter(
 //        commentView.adapter = operatorCommentsAdapter
 //        operatorCommentsAdapter.operatorComments = summaries[position].operatorComments
 //        operatorCommentsAdapter.notifyDataSetChanged()
+    }
+
+    override fun onViewRecycled(holder: ReportSummaryViewHolder) {
+        super.onViewRecycled(holder)
+
+        val view = holder.binding.root
+        val imageView: ImageView = view.findViewById(R.id.report_summary_item_image)
+        Glide.with(activity).clear(imageView)
     }
 
     interface OnClickListener {

@@ -1,14 +1,20 @@
 package jp.co.recruit.erikura.presenters.activities
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.ActivityOptions
+import android.content.ComponentCallbacks2
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
+import androidx.core.os.bundleOf
+import dagger.Component
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationOnlyPhoneFragment
@@ -16,7 +22,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 
-abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity() {
+abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompatActivity(), ComponentCallbacks2 {
     protected var isSkipSmsVerification: Boolean = false
     companion object {
         var currentActivity: Activity? = null
@@ -83,11 +89,31 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
                 Api(this).displayErrorAlert(it.toList())
             }
         }
+
+        val memoryInfo = getAvailableMemory()
+        Tracking.logEvent(event = "memory_trace", params = bundleOf(
+            Pair("className", this.javaClass.name),
+            Pair("timing", "onResume"),
+            Pair("availMem", memoryInfo.availMem),
+            Pair("totalMem", memoryInfo.totalMem),
+            Pair("threashold", memoryInfo.threshold),
+            Pair("lowMemory", memoryInfo.lowMemory)
+        ))
     }
 
     override fun onPause() {
         super.onPause()
         Log.v("ERIKURA", "${this.javaClass.name}: onPause")
+
+        val memoryInfo = getAvailableMemory()
+        Tracking.logEvent(event = "memory_trace", params = bundleOf(
+            Pair("className", this.javaClass.name),
+            Pair("timing", "onPause"),
+            Pair("availMem", memoryInfo.availMem),
+            Pair("totalMem", memoryInfo.totalMem),
+            Pair("threashold", memoryInfo.threshold),
+            Pair("lowMemory", memoryInfo.lowMemory)
+        ))
     }
 
     override fun onStop() {
@@ -147,6 +173,30 @@ abstract class BaseActivity(val finishByBackButton: Boolean = false) : AppCompat
                 val dialog = ChangeUserInformationOnlyPhoneFragment()
                 dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
             }
+        }
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+
+        val memInfo = getAvailableMemory()
+        Log.d(ErikuraApplication.LOG_TAG, "MEMORY: avail=${memInfo.availMem}, total=${memInfo.totalMem}, threshold=${memInfo.threshold}, lowMemory=${memInfo.lowMemory}, level=${level}")
+        val memoryInfo = getAvailableMemory()
+        Tracking.logEvent(event = "memory_trace", params = bundleOf(
+            Pair("className", this.javaClass.name),
+            Pair("timing", "onTrimMemory"),
+            Pair("level", level),
+            Pair("availMem", memoryInfo.availMem),
+            Pair("totalMem", memoryInfo.totalMem),
+            Pair("threashold", memoryInfo.threshold),
+            Pair("lowMemory", memoryInfo.lowMemory)
+        ))
+    }
+
+    protected fun getAvailableMemory(): ActivityManager.MemoryInfo {
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        return ActivityManager.MemoryInfo().also { memoryInfo ->
+            activityManager.getMemoryInfo(memoryInfo)
         }
     }
 }

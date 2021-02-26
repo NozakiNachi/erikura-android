@@ -25,12 +25,15 @@ import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 
+/**
+ * 実施済みの仕事一覧
+ */
 class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
     private val viewModel: FinishedJobsViewModel by lazy {
         ViewModelProvider(this).get(FinishedJobsViewModel::class.java)
     }
-    private lateinit var jobListView: RecyclerView
-    private lateinit var jobListAdapter: JobListAdapter
+    private var jobListView: RecyclerView? = null
+    private var jobListAdapter: JobListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,11 +58,19 @@ class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
             }
         }
         jobListView = binding.root.findViewById(R.id.finished_jobs_recycler_view)
-        jobListView.adapter = jobListAdapter
-        jobListView.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
-        jobListView.addItemDecoration(JobListItemDecorator())
+        jobListView?.adapter = jobListAdapter
+        jobListView?.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
+        jobListView?.addItemDecoration(JobListItemDecorator())
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        jobListView?.adapter = null
+        jobListView = null
+        jobListAdapter = null
     }
 
     override fun onResume() {
@@ -71,12 +82,12 @@ class FinishedJobsFragment : Fragment(), FinishedJobsHandlers {
     private fun fetchFinishedJobs() {
         Api(context!!).ownJob(OwnJobQuery(status = OwnJobQuery.Status.FINISHED)) { jobs ->
             viewModel.finishedJobs.value = jobs.filter { !it.isExpired }
-            jobListAdapter.jobs = viewModel.unreportedJobs
-            jobListAdapter.notifyDataSetChanged()
+            jobListAdapter?.jobs = viewModel.unreportedJobs
+            jobListAdapter?.notifyDataSetChanged()
 
             // ページ参照のトラッキングの送出
             Tracking.logEvent(event= "view_entried_job_list_finished", params= bundleOf())
-            Tracking.viewJobs(name= "/jobs/own/finished", title= "応募した仕事画面（実施済み・未報告）", jobId= jobListAdapter.jobs.map { it.id })
+            Tracking.viewJobs(name= "/jobs/own/finished", title= "応募した仕事画面（実施済み・未報告）", jobId= jobListAdapter?.jobs?.map { it.id } ?: listOf())
         }
     }
 }

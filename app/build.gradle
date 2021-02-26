@@ -44,8 +44,8 @@ android {
         applicationId "jp.co.recruit.erikura"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 1900
-        versionName "19.0.0"
+        versionCode 2000
+        versionName "20.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // MEMO: http でアクセスするためには res/xml/network_security_config.html にドメインを追加してください
@@ -65,7 +65,7 @@ android {
             buildConfigField("String", "GEOCODING_API_KEY", '"' + properties.getProperty("google.geocoding_api_key") + '"')
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
             buildConfigField("String", "ADJUST_ENVIRONMENT", 'com.adjust.sdk.AdjustConfig.ENVIRONMENT_SANDBOX')
-            buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+            buildConfigField("String", "ADJUST_KEY", '"o6vg7idmdb7k"')
 
             buildConfigField("String", "FACEBOOK_APP_ID", "\"633836627103645\"")
             resValue "string", "facebook_app_id", "633836627103645"
@@ -98,7 +98,7 @@ android {
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "KARTE_APP_KEY", '"3GIormvTYdFdV3ZxncnkMhtfGrMipNUc"')
             buildConfigField("String", "ADJUST_ENVIRONMENT", 'com.adjust.sdk.AdjustConfig.ENVIRONMENT_SANDBOX')
-            buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+            buildConfigField("String", "ADJUST_KEY", '"o6vg7idmdb7k"')
 
             buildConfigField("String", "FACEBOOK_APP_ID", "\"633836627103645\"")
             resValue "string", "facebook_app_id", "633836627103645"
@@ -133,7 +133,7 @@ android {
             buildConfigField("String", "GEOCODING_API_KEY", '"AIzaSyBnRRAEvo3bBVs89xuP4MuTmqvbjpZrLbI"')
             buildConfigField("String", "KARTE_APP_KEY", '"Fnz0u2qNxnY4BmYLtH1LBHOJjUjTgA7Q"')
             buildConfigField("String", "ADJUST_ENVIRONMENT", 'com.adjust.sdk.AdjustConfig.ENVIRONMENT_PRODUCTION')
-            buildConfigField("String", "ADJUST_KEY", '"4k5awo8maj5s"')
+            buildConfigField("String", "ADJUST_KEY", '"o6vg7idmdb7k"')
 
             buildConfigField("String", "FACEBOOK_APP_ID", "\"196990194298653\"")
             resValue "string", "facebook_app_id", "196990194298653"

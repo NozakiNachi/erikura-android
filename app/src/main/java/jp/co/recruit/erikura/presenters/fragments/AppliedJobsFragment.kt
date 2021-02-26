@@ -29,7 +29,9 @@ import jp.co.recruit.erikura.presenters.activities.job.JobListAdapter
 import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 import okhttp3.internal.wait
 
-
+/**
+ * 未実施の仕事一覧
+ */
 class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
     private val viewModel: AppliedJobsViewModel by lazy {
         ViewModelProvider(this).get(AppliedJobsViewModel::class.java)
@@ -38,8 +40,8 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
     private val monitor = Object()
     private var entriedJobFetched = false
     private var startedJobFetched = false
-    private lateinit var jobListView: RecyclerView
-    private lateinit var jobListAdapter: JobListAdapter
+    private var jobListView: RecyclerView? = null
+    private var jobListAdapter: JobListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,12 +65,19 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
             }
         }
         jobListView = binding.root.findViewById(R.id.applied_jobs_recycler_view)
-        jobListView.setHasFixedSize(true)
-        jobListView.adapter = jobListAdapter
-        jobListView.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
-        jobListView.addItemDecoration(JobListItemDecorator())
+        jobListView?.setHasFixedSize(true)
+        jobListView?.adapter = jobListAdapter
+        jobListView?.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
+        jobListView?.addItemDecoration(JobListItemDecorator())
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        jobListView?.adapter = null
+        jobListAdapter = null
+        jobListView = null
     }
 
     override fun onResume() {
@@ -112,8 +121,8 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
 
         api.ownJob(OwnJobQuery(status = OwnJobQuery.Status.ENTRIED), onError = errorHandler) { jobs ->
             viewModel.entriedJobs.value = jobs.filter { !it.isExpired }
-            jobListAdapter.jobs = viewModel.appliedJobs
-            jobListAdapter.notifyDataSetChanged()
+            jobListAdapter?.jobs = viewModel.appliedJobs
+            jobListAdapter?.notifyDataSetChanged()
 
             synchronized(monitor) {
                 entriedJobFetched = true
@@ -133,8 +142,8 @@ class AppliedJobsFragment : Fragment(), AppliedJobsHandlers {
         }
         api.ownJob(OwnJobQuery(status = OwnJobQuery.Status.STARTED), onError = errorHandler) { jobs ->
             viewModel.startedJobs.value = jobs.filter { !it.isExpired }
-            jobListAdapter.jobs = viewModel.appliedJobs
-            jobListAdapter.notifyDataSetChanged()
+            jobListAdapter?.jobs = viewModel.appliedJobs
+            jobListAdapter?.notifyDataSetChanged()
 
             synchronized(monitor) {
                 startedJobFetched = true

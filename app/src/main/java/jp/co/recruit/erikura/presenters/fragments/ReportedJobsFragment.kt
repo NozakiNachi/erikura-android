@@ -30,13 +30,16 @@ import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * 報告済みの仕事一覧
+ */
 class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
     private val viewModel: ReportedJobsViewModel by lazy {
         ViewModelProvider(this).get(ReportedJobsViewModel::class.java)
     }
 
-    private lateinit var jobListView: RecyclerView
-    private lateinit var jobListAdapter: JobListAdapter
+    private var jobListView: RecyclerView? = null
+    private var jobListAdapter: JobListAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,12 +63,20 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
             }
         }
         jobListView = binding.root.findViewById(R.id.applied_jobs_recycler_view)
-        jobListView.setHasFixedSize(true)
-        jobListView.adapter = jobListAdapter
-        jobListView.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
-        jobListView.addItemDecoration(JobListItemDecorator())
+        jobListView?.setHasFixedSize(true)
+        jobListView?.adapter = jobListAdapter
+        jobListView?.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
+        jobListView?.addItemDecoration(JobListItemDecorator())
 
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        jobListView?.adapter = null
+        jobListView = null
+        jobListAdapter = null
     }
 
     override fun onResume() {
@@ -104,8 +115,8 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
                 }
             }
             viewModel.reportedJobs.value = rejectedJobs + otherJobs
-            jobListAdapter.jobs = viewModel.reportedJobs.value ?: listOf()
-            jobListAdapter.notifyDataSetChanged()
+            jobListAdapter?.jobs = viewModel.reportedJobs.value ?: listOf()
+            jobListAdapter?.notifyDataSetChanged()
 
             (activity as? OwnJobsActivity)?.let { ownJobsActivity ->
                 if (endDate > rejectCheckStartDate) {
@@ -121,7 +132,7 @@ class ReportedJobsFragment : Fragment(), ReportedJobsHandler{
 
             // ページ参照のトラッキングの送出
             Tracking.logEvent(event= "view_entried_job_list_reported", params= bundleOf())
-            Tracking.viewJobs(name= "/jobs/own/reported", title= "応募した仕事画面（報告済み）", jobId= jobListAdapter.jobs.map { it.id })
+            Tracking.viewJobs(name= "/jobs/own/reported", title= "応募した仕事画面（報告済み）", jobId= jobListAdapter?.jobs?.map { it.id } ?: listOf())
         }
     }
 }
