@@ -128,7 +128,8 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             }
 
             fun animateCamera() {
-                val layoutManager: LinearLayoutManager = carouselView?.layoutManager as LinearLayoutManager
+                val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
+                val layoutManager: LinearLayoutManager = carouselView.layoutManager as LinearLayoutManager
                 val position = layoutManager.findFirstCompletelyVisibleItemPosition()
 
                 Log.v("ERIKURA", "Position: ${position}, length: ${adapter?.data?.size ?: 0}, FV=${layoutManager.findFirstVisibleItemPosition()}, LV=${layoutManager.findLastVisibleItemPosition()}, LC=${layoutManager.findLastCompletelyVisibleItemPosition()}")
