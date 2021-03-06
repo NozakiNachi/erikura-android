@@ -20,6 +20,7 @@ import android.widget.ToggleButton
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -99,6 +100,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         ErikuraApplication.instance.currentJob?.let {
             job = it
         }
+        viewModel.job.value = job
 
         if(ErikuraApplication.instance.hasStoragePermission(this)) {
             displayImagePicker()
@@ -244,10 +246,19 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 }
 
 class ReportImagePickerViewModel: ViewModel() {
+    val job: MutableLiveData<Job> = MutableLiveData()
     val imageMap: MutableMap<Long, MediaItem> = HashMap()
     val selectedCount: MutableLiveData<Int> = MutableLiveData(0)
     val isNextButtonEnabled: MutableLiveData<Boolean> = MutableLiveData(false)
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
+    val summaryTitlesLabel = MediatorLiveData<String>().also { result ->
+        result.addSource(job) {
+            result.value = (job.value?.summaryTitles ?: listOf()).mapIndexed { i, title ->
+                "(${i + 1}) ${title}"
+            }.joinToString(" / ")
+        }
+    }
 
     fun check(item: MediaItem) {
         this.imageMap.put(item.id, item)
