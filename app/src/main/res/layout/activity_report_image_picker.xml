@@ -5,7 +5,6 @@
     tools:context=".presenters.activities.report.ReportImagePickerActivity">
 
     <data>
-
         <variable
             name="viewModel"
             type="jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerViewModel" />
@@ -34,7 +33,7 @@
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_marginTop="106dp">
+                    android:layout_marginTop="65dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -134,11 +133,26 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginTop="10dp"
                     android:text="@string/report_image_picker_note"
                     android:textColor="@color/black"
                     android:textSize="14dp" />
+                
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="55dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{viewModel.summaryTitlesLabel}"
+                        android:textColor="@color/black"
+                        android:textSize="14dp" />
+                </ScrollView>
             </LinearLayout>
 
             <ImageView
@@ -167,7 +181,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:layout_marginRight="0dp"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="25dp"
             android:enabled="@{viewModel.isNextButtonEnabled()}"
             app:onSafeClick="@{handlers::onClickNext}" />
 
