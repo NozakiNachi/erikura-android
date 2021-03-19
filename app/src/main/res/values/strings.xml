@@ -445,7 +445,7 @@
     <string name="please_select">選択してください</string>
     <string name="register_city_hint">例）千代田区外神田</string>
     <string name="register_street_hint">例）1-2-3</string>
-    <string name="register_phone_hint">例）08046015529</string>
+    <string name="register_phone_hint">例）09012345678</string>
     <string name="register_passcode_hint">例）12345678</string>
     <string name="cancel_reason_hint">例）急用が入りお仕事が完了できなくなった</string>
     <string name="other_hint">その他(自由記入)</string>
