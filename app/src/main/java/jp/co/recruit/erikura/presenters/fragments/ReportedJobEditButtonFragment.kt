@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.ktx.Firebase
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
@@ -15,8 +17,9 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobEditButtonBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportConfirmActivity
+import org.apache.commons.lang.builder.ToStringBuilder
+import java.lang.RuntimeException
 import java.util.*
-
 
 class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButtonFragmentEventHandlers {
     companion object {
@@ -39,10 +42,23 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
         super.refresh(job, user)
 
         job?.let { job ->
-            if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
-                viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_rejected_report)
-            }else {
+            job.entry?.let { entry ->
+                entry.limitAt?.let { limitAt ->
+                    viewModel.enabled.value = true
+                    if (limitAt <= Date() && job.report?.isRejected?: false) {
+                        viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_rejected_report)
+                    }else {
+                        viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                    }
+                } ?: run {
+                    viewModel.enabled.value = false
+                    viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                    FirebaseCrashlytics.getInstance().recordException(RuntimeException("limitAt is null: job = ${ToStringBuilder.reflectionToString(job)}, entry=${ToStringBuilder.reflectionToString(entry)}"))
+                }
+            } ?: run {
+                viewModel.enabled.value = false
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                FirebaseCrashlytics.getInstance().recordException(RuntimeException("job entry is null: ${ToStringBuilder.reflectionToString(job)}"))
             }
         }
     }
@@ -57,10 +73,23 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
         binding.handler = this
 
         job?.let { job ->
-            if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
-                viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_rejected_report)
-            }else {
+            job.entry?.let { entry ->
+                entry.limitAt?.let { limitAt ->
+                    viewModel.enabled.value = true
+                    if (job.entry!!.limitAt!! <= Date() && job.report?.isRejected?: false) {
+                        viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_rejected_report)
+                    }else {
+                        viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                    }
+                } ?: run {
+                    viewModel.enabled.value = false
+                    viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                    FirebaseCrashlytics.getInstance().recordException(RuntimeException("limitAt is null: job = ${ToStringBuilder.reflectionToString(job)}, entry=${ToStringBuilder.reflectionToString(entry)}"))
+                }
+            } ?: run {
+                viewModel.enabled.value = false
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                FirebaseCrashlytics.getInstance().recordException(RuntimeException("job entry is null: ${ToStringBuilder.reflectionToString(job)}"))
             }
         }
 
@@ -81,6 +110,7 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
 
 class ReportedJobEditButtonViewModel: ViewModel() {
     val buttonText: MutableLiveData<String> = MutableLiveData()
+    val enabled: MutableLiveData<Boolean> = MutableLiveData(true)
 }
 
 interface ReportedJobEditButtonFragmentEventHandlers {
