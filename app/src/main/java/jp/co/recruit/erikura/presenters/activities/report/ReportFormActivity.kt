@@ -31,6 +31,8 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import kotlinx.android.synthetic.main.activity_report_form.*
+import org.apache.commons.lang.builder.ToStringBuilder
+import java.lang.RuntimeException
 
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -95,8 +97,14 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         ErikuraApplication.instance.currentJob?.let {
             job = it
         }
-        outputSummaryList = job.report?.outputSummaries?.toMutableList()?: mutableListOf()
+        outputSummaryList = job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
 
+        if (outputSummaryList.isEmpty()) {
+            // 実施箇所の選択ができていない状態
+            FirebaseCrashlytics.getInstance().recordException(RuntimeException("summaryList is blank: job=${ToStringBuilder.reflectionToString(job)}, report=${ToStringBuilder.reflectionToString(job?.report)}"))
+            finish()
+            return
+        }
         // 戻ってきた場合に、該当の場所詳細が削除されていれば処理をスキップします
         if (outputSummaryList[pictureIndex].willDelete) {
             finish()
