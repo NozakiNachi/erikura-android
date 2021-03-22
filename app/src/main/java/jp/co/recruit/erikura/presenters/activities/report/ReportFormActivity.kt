@@ -101,6 +101,8 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
         if (outputSummaryList.isEmpty()) {
             // 実施箇所の選択ができていない状態
+            FirebaseCrashlytics.getInstance().setCustomKey("job", ToStringBuilder.reflectionToString(job))
+            FirebaseCrashlytics.getInstance().setCustomKey("report", ToStringBuilder.reflectionToString(job?.report))
             FirebaseCrashlytics.getInstance().recordException(RuntimeException("summaryList is blank: job=${ToStringBuilder.reflectionToString(job)}, report=${ToStringBuilder.reflectionToString(job?.report)}"))
             finish()
             return
