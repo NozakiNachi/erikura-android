@@ -53,11 +53,14 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
                 } ?: run {
                     viewModel.enabled.value = false
                     viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                    FirebaseCrashlytics.getInstance().setCustomKey("job", ToStringBuilder.reflectionToString(job))
+                    FirebaseCrashlytics.getInstance().setCustomKey("entry", ToStringBuilder.reflectionToString(entry))
                     FirebaseCrashlytics.getInstance().recordException(RuntimeException("limitAt is null: job = ${ToStringBuilder.reflectionToString(job)}, entry=${ToStringBuilder.reflectionToString(entry)}"))
                 }
             } ?: run {
                 viewModel.enabled.value = false
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                FirebaseCrashlytics.getInstance().setCustomKey("job", ToStringBuilder.reflectionToString(job))
                 FirebaseCrashlytics.getInstance().recordException(RuntimeException("job entry is null: ${ToStringBuilder.reflectionToString(job)}"))
             }
         }
@@ -84,11 +87,14 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
                 } ?: run {
                     viewModel.enabled.value = false
                     viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                    FirebaseCrashlytics.getInstance().setCustomKey("job", ToStringBuilder.reflectionToString(job))
+                    FirebaseCrashlytics.getInstance().setCustomKey("entry", ToStringBuilder.reflectionToString(entry))
                     FirebaseCrashlytics.getInstance().recordException(RuntimeException("limitAt is null: job = ${ToStringBuilder.reflectionToString(job)}, entry=${ToStringBuilder.reflectionToString(entry)}"))
                 }
             } ?: run {
                 viewModel.enabled.value = false
                 viewModel.buttonText.value = ErikuraApplication.instance.getString(R.string.edit_report)
+                FirebaseCrashlytics.getInstance().setCustomKey("job", ToStringBuilder.reflectionToString(job))
                 FirebaseCrashlytics.getInstance().recordException(RuntimeException("job entry is null: ${ToStringBuilder.reflectionToString(job)}"))
             }
         }
