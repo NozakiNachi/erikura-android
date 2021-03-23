@@ -125,7 +125,8 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
                     // 応募のトラッキングの送出
                     Tracking.logEvent(event= "job_entry", params= bundleOf())
                     Tracking.jobEntry(name= "job_entry", title= "", job= job)
-                    Tracking.logEventFB(event= "EntryJob")
+                    //Tracking.logEventFB(event= "EntryJob")
+                    Tracking.logSubmitApplicationFB()
 
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
