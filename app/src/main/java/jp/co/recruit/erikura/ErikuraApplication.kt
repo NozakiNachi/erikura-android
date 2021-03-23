@@ -46,6 +46,7 @@ import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
+import java.math.BigDecimal
 import java.util.*
 
 class ErikuraApplication : Application() {
@@ -545,6 +546,22 @@ object Tracking {
             appEventsLogger.logEvent(event)
         } catch (e: Exception) {
             Log.e("ERIKURA", "Facebook LogEvent Failed", e)
+        }
+    }
+
+    fun logSubmitApplicationFB() {
+        try {
+            appEventsLogger.logEvent(AppEventsConstants.EVENT_NAME_SUBMIT_APPLICATION)
+        } catch (e: Exception) {
+            Log.e("ERIKKURAR", "Facebook logSubmitApplication Failed", e)
+        }
+    }
+
+    fun logPurchaseFB(fee: Int) {
+        try {
+            appEventsLogger.logPurchase(BigDecimal(fee), Currency.getInstance(Locale.JAPAN))
+        } catch (e: Exception) {
+            Log.e("ERIKKURAR", "Facebook logSubmitApplication Failed", e)
         }
     }
 

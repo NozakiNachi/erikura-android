@@ -539,7 +539,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             // 作業報告のトラッキングの送出
             Tracking.logEvent(event= "job_report", params= bundleOf())
             Tracking.jobEntry(name= "job_report", title= "", job= job)
-            Tracking.logEventFB(event= "ReportJob")
+            //Tracking.logEventFB(event= "ReportJob")
+            Tracking.logPurchaseFB(job.fee)
 
             Intent(this, OwnJobsActivity::class.java).let { intent ->
 //                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
