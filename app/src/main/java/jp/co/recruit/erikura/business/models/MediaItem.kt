@@ -236,6 +236,22 @@ data class MediaItem(
         }
     }
 
+    fun isExists(context: Context): Boolean {
+        return context.contentResolver?.let { contentResolver ->
+            contentUri?.let { contentUri ->
+                contentResolver.query(contentUri, arrayOf(MediaStore.MediaColumns._ID), null, null, null)?.let { cursor ->
+                    try {
+                        // URIに合致するものが存在する場合は、moveToFirst が true を返却します
+                        cursor.moveToFirst()
+                    }
+                    finally {
+                        cursor.close()
+                    }
+                } ?: false
+            } ?: false
+        } ?: false
+    }
+
     fun loadImage(context: Context, imageView: ImageView) {
         Glide.with(context).load(contentUri).into(imageView)
     }
