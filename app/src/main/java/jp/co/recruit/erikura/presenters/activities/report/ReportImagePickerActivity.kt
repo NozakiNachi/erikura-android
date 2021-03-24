@@ -166,6 +166,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
             editComplete = false
         }
+        // 写真の存在確認をおこないます
+        checkPhotoExistence()
     }
 
     fun onImageSelected(item: MediaItem, isChecked: Boolean) {
@@ -208,6 +210,12 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
     }
 
     override fun onClickNext(view: View) {
+        // 写真の存在確認をおこないます
+        checkPhotoExistence()
+        if (viewModel.imageMap.isEmpty()) {
+            return
+        }
+
         val outputSummaryList: MutableList<OutputSummary> = mutableListOf()
         viewModel.imageMap.forEach { (k, v) ->
             val summary = OutputSummary()
@@ -243,6 +251,22 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
     }
 
+    /**
+     * 写真が残っているかのチェックを行います
+     */
+    private fun checkPhotoExistence() {
+        // 削除されている写真を imaveMap から削除します
+        var removedIds: MutableList<Long> = mutableListOf()
+        viewModel.imageMap.forEach { (itemId, item) ->
+            if (!item.isExists(this)) {
+                // ファイルが削除されている
+                removedIds.add(itemId)
+            }
+        }
+        removedIds.forEach { id -> viewModel.imageMap.remove(id) }
+        // 写真数のカウントをクリアします
+        viewModel.selectedCount.value = viewModel.imageMap.keys.size
+    }
 }
 
 class ReportImagePickerViewModel: ViewModel() {
