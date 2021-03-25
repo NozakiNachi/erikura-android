@@ -155,6 +155,9 @@ data class Job(
 
     val latLng: LatLng get() = LatLng(latitude?: LocationManager.defaultLatLng.latitude, longitude?: LocationManager.defaultLatLng.longitude)
 
+    var manualChecked: Boolean = false
+    var cautionsChecked: Boolean = false
+
     /**
      * 案件の募集している性別と一致しているかを判定します
      */
