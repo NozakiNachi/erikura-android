@@ -1,8 +1,10 @@
 package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.ActivityOptions
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
@@ -24,6 +26,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
+import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.Information
 import jp.co.recruit.erikura.business.models.OwnJobQuery
 import jp.co.recruit.erikura.business.util.DateUtils
@@ -77,6 +80,22 @@ class MypageActivity : BaseTabbedActivity(R.id.tab_menu_mypage), MypageEventHand
             val intent = Intent(this, ConfigurationActivity::class.java)
             intent.putExtra(FROM_MYPAGE_KEY, true)
             startActivity(intent)
+        },
+        MypageItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
+            val frequentlyQuestionsURLString = ErikuraConfig.frequentlyQuestionsURLString
+            Uri.parse(frequentlyQuestionsURLString)?.let { uri ->
+                try {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        intent.setPackage("com.android.chrome")
+                        startActivity(intent)
+                    }
+                }
+                catch (e: ActivityNotFoundException) {
+                    Intent(Intent.ACTION_VIEW, uri).let { intent ->
+                        startActivity(intent)
+                    }
+                }
+            }
         }
     )
 

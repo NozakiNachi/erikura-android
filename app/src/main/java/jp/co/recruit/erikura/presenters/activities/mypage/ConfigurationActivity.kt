@@ -64,6 +64,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             val intent = Intent(this, AboutAppActivity::class.java)
             startActivity(intent)
         },
+        /*
         MenuItem(4, "よくある質問", R.drawable.icon_hatena_15, false) {
             val frequentlyQuestionsURLString = ErikuraConfig.frequentlyQuestionsURLString
             Uri.parse(frequentlyQuestionsURLString)?.let { uri ->
@@ -80,6 +81,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
                 }
             }
         },
+         */
         MenuItem(5, "ログアウト", R.drawable.icon_exit_15, true) {
             onClickLogoutLink()
         }
