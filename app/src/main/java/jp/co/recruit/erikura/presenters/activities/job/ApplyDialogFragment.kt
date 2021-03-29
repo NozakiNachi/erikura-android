@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -34,6 +35,8 @@ import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
 class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
     companion object {
         const val JOB_ARGUMENT = "job"
+        const val CHECK_MANUAL_KEY = "checkManual"
+        const val CHECK_CAUTIONS_KEY = "checkCautions"
 
         fun newInstance(job: Job?): ApplyDialogFragment {
             return ApplyDialogFragment().also {
@@ -54,6 +57,14 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
         arguments?.let { args ->
             job = args.getParcelable(JOB_ARGUMENT)
         }
+        viewModel.checkManualEnabled.value = savedInstanceState?.getBoolean(CHECK_MANUAL_KEY) ?: false
+        viewModel.checkCautionsEnabled.value = savedInstanceState?.getBoolean(CHECK_CAUTIONS_KEY) ?: false
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(CHECK_MANUAL_KEY, viewModel.checkManualEnabled.value ?: false)
+        outState.putBoolean(CHECK_CAUTIONS_KEY, viewModel.checkCautionsEnabled.value ?: false)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -142,6 +153,8 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
 
     override fun onClickManual(view: View) {
         job?.let { job ->
+            viewModel.checkManualEnabled.value = true
+
             job.manualUrl?.let { manualUrl ->
                 activity?.let { activity ->
                     JobUtil.openManual(activity, job)
@@ -156,11 +169,41 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
             Tracking.logEvent(event= "view_cautions", params= bundleOf())
             Tracking.viewCautions(name= "/places/cautions", title= "物件注意事項画面表示", jobId= job.id, placeId=job.placeId)
 
+            viewModel.checkCautionsEnabled.value = true
+
             val intent = Intent(activity, jp.co.recruit.erikura.presenters.activities.job.PropertyNotesActivity::class.java)
             intent.putExtra("job_id", job.id)
             intent.putExtra("place_id", job.placeId)
             intent.putExtra("job_kind_id", job.jobKind?.id)
             startActivity(intent)
+        }
+    }
+
+    override fun onClickManualCheck(view: View) {
+        if (!(viewModel.checkManualEnabled.value ?: false)) {
+            viewModel.checkManual.value = false
+            activity?.let { activity ->
+                val alertDialog = androidx.appcompat.app.AlertDialog.Builder(activity)
+                    .apply {
+                        setMessage("マニュアルをご確認ください")
+                        setPositiveButton(R.string.common_buttons_close) { _, _ -> }
+                    }.create()
+                alertDialog.show()
+            }
+        }
+    }
+
+    override fun onClickCautionsCheck(view: View) {
+        if (!(viewModel.checkCautionsEnabled.value ?: false)) {
+            viewModel.checkCautions.value = false
+            activity?.let { activity ->
+                val alertDialog = androidx.appcompat.app.AlertDialog.Builder(activity)
+                    .apply {
+                        setMessage("注意事項をご確認ください")
+                        setPositiveButton(R.string.common_buttons_close) { _, _ -> }
+                    }.create()
+                alertDialog.show()
+            }
         }
     }
 }
@@ -172,6 +215,8 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val entryQuestion: MutableLiveData<String> = MutableLiveData()
     val entryQuestionVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val entryQuestionAnswer: MutableLiveData<String> = MutableLiveData()
+    val checkManualEnabled = MutableLiveData<Boolean>(false)
+    val checkCautionsEnabled = MutableLiveData<Boolean>(false)
     val checkManual = MutableLiveData<Boolean>()
     val checkCautions = MutableLiveData<Boolean>()
     val checkSummaryTitles = MutableLiveData<Boolean>()
@@ -285,4 +330,7 @@ interface ApplyDialogFragmentEventHandlers {
     fun onClickEntryButton(view: View)
     fun onClickManual(view: View)
     fun onClickCautions(view: View)
+
+    fun onClickManualCheck(view: View)
+    fun onClickCautionsCheck(view: View)
 }
