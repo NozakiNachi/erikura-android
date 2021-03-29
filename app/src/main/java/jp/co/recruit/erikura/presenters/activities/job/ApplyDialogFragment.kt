@@ -185,7 +185,7 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
             activity?.let { activity ->
                 val alertDialog = androidx.appcompat.app.AlertDialog.Builder(activity)
                     .apply {
-                        setMessage("マニュアルをご確認ください")
+                        setMessage("リンクをタップしてマニュアルを確認してください")
                         setPositiveButton(R.string.common_buttons_close) { _, _ -> }
                     }.create()
                 alertDialog.show()
@@ -199,7 +199,7 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
             activity?.let { activity ->
                 val alertDialog = androidx.appcompat.app.AlertDialog.Builder(activity)
                     .apply {
-                        setMessage("注意事項をご確認ください")
+                        setMessage("リンクをタップして注意事項を確認してください")
                         setPositiveButton(R.string.common_buttons_close) { _, _ -> }
                     }.create()
                 alertDialog.show()
