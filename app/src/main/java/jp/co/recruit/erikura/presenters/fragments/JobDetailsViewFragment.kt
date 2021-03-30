@@ -2,10 +2,7 @@ package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.AlertDialog
 import android.app.DownloadManager
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Canvas
@@ -123,6 +120,26 @@ class JobDetailsViewFragment : BaseJobDetailFragment, JobDetailsViewFragmentEven
     override fun onClickOpenMap(view: View) {
         val uri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${job?.latitude?:0},${job?.longitude?:0}")
         startActivity(Intent(Intent.ACTION_VIEW, uri))
+    }
+
+    override fun onClickCopyAddress(view: View) {
+        (activity?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager)?.let { clipboard ->
+            if ((job?.place?.hasEntries ?: false) || (job?.place?.workingPlaceShort?.isNullOrBlank() ?: true)) {
+                var address: String = job?.place?.workingPlace ?: ""
+                if (!(job?.place?.workingBuilding ?: "").isNullOrBlank()) {
+                    address += job?.place?.workingBuilding ?: ""
+                }
+                val clip = ClipData.newPlainText("住所", address)
+                clipboard.setPrimaryClip(clip)
+            }
+            else {
+                var address = job?.place?.workingPlaceShort ?: ""
+                val clip = ClipData.newPlainText("住所", address)
+                clipboard.setPrimaryClip(clip)
+            }
+        }
+
+        Toast.makeText(activity, "住所をコピーしました", Toast.LENGTH_LONG).show()
     }
 
     private fun setupPlaceLabel() {
@@ -346,6 +363,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
 
 interface JobDetailsViewFragmentEventHandlers {
     fun onClickOpenMap(view: View)
+    fun onClickCopyAddress(view: View)
 }
 
 class IconImageSpan(drawable: Drawable, verticalAlignment: Int): ImageSpan(drawable, verticalAlignment) {
