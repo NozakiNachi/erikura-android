@@ -425,9 +425,9 @@ class ReportFormViewModel: ViewModel() {
         if (valid && summary.value.isNullOrBlank()) {
             valid = false
             summaryError.message.value = null
-        }else if (valid && summary.value?.length?: 0 > 50) {
+        }else if (valid && summary.value?.length?: 0 > ErikuraConst.maxOutputSummaryTitleLength) {
             valid = false
-            summaryError.message.value = ErikuraApplication.instance.getString(R.string.summary_count_error)
+            summaryError.message.value = ErikuraApplication.instance.getString(R.string.summary_count_error, ErikuraConst.maxOutputSummaryTitleLength)
         }else {
             valid = true
             summaryError.message.value = null
