@@ -332,7 +332,7 @@
     <string name="phone_pattern_error">電話番号はハイフンを含めずに入力してください。</string>
     <string name="phone_pattern2_error">電話番号は携帯番号形式で入力してください。</string>
     <string name="phone_count_error">電話番号は11桁で入力してください。</string>
-    <string name="summary_count_error">箇所は50文字以内で入力してください。</string>
+    <string name="summary_count_error">箇所は%1$d文字以内で入力してください。</string>
     <string name="comment_count_error">コメントは%1$d文字以内で入力してください。</string>
     <string name="password_verificationPassword_match_error">パスワードと同じものを入力してください。</string>
     <string name="passcode_pattern_error">パスコードは数字で入力してください。</string>
