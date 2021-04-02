@@ -155,7 +155,7 @@ data class MediaItem(
         }
 
         private fun createFromMediaStore(context: Context, uri: Uri): MediaItem? {
-            val documentId = DocumentsContract.getDocumentId(uri)
+//            val documentId = DocumentsContract.getDocumentId(uri)
             val cursor = context.contentResolver.query(
                 uri,
                 arrayOf(
@@ -168,7 +168,7 @@ data class MediaItem(
             try {
                 return cursor?.let { cursor ->
                     if (cursor.moveToFirst()) {
-                        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID))
+                        val id = cursor.getLongOrNull(cursor.getColumnIndex(MediaStore.Files.FileColumns._ID)) ?: 0
                         val size = cursor.getLong(cursor.getColumnIndex(MediaStore.Files.FileColumns.SIZE))
                         val dateAdded = cursor.getLongOrNull(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATE_ADDED))
 
