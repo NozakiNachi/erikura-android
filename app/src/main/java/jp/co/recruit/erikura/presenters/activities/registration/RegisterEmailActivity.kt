@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.registration
 
 import android.app.ActivityOptions
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -80,21 +81,33 @@ class RegisterEmailActivity : BaseActivity(),
     }
 
     override fun onClickTermsOfService(view: View) {
-        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(termsOfServiceURLString)
+        try {
+            val termsOfServiceURLString =
+                BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(termsOfServiceURLString)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        catch (e: ActivityNotFoundException) {
+            Api(this).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+        }
     }
 
     override fun onClickPrivacyPolicy(view: View) {
-        val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(privacyPolicyURLString)
+        try {
+            val privacyPolicyURLString =
+                BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(privacyPolicyURLString)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        catch (e: ActivityNotFoundException) {
+            Api(this).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+        }
     }
 }
 

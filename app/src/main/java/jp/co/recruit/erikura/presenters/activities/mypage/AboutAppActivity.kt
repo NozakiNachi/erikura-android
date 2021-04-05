@@ -20,6 +20,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConfig
 import jp.co.recruit.erikura.business.models.RequiredClientVersion
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityAboutAppBinding
 import jp.co.recruit.erikura.databinding.FragmentAboutAppCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
@@ -39,21 +40,33 @@ class AboutAppActivity : BaseActivity(), AboutAppEventHandlers {
 
     var menuItems: ArrayList<MenuItem> = arrayListOf(
         MenuItem(0, "利用規約") {
-            val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(termsOfServiceURLString)
+            try {
+                val termsOfServiceURLString =
+                    BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
+                val intent = Intent(this, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(termsOfServiceURLString)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
+            catch (e: ActivityNotFoundException) {
+                Api(this).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+            }
         },
         MenuItem(1, "プライバシーポリシー"
         ) {
-            val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
-            val intent = Intent(this, WebViewActivity::class.java).apply {
-                action = Intent.ACTION_VIEW
-                data = Uri.parse(privacyPolicyURLString)
+            try {
+                val privacyPolicyURLString =
+                    BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
+                val intent = Intent(this, WebViewActivity::class.java).apply {
+                    action = Intent.ACTION_VIEW
+                    data = Uri.parse(privacyPolicyURLString)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
+            catch (e: ActivityNotFoundException) {
+                Api(this).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+            }
         },
         MenuItem(2, "推奨環境") {
             val recommendedEnvironmentURLString = ErikuraConfig.recommendedEnvironmentURLString

@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.mypage
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -330,21 +331,33 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickTermsOfService(view: View) {
-        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(termsOfServiceURLString)
+        try {
+            val termsOfServiceURLString =
+                BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(termsOfServiceURLString)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        catch (e: ActivityNotFoundException) {
+            Api(this).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+        }
     }
 
     override fun onClickPrivacyPolicy(view: View) {
-        val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
-        val intent = Intent(this, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(privacyPolicyURLString)
+        try {
+            val privacyPolicyURLString =
+                BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
+            val intent = Intent(this, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(privacyPolicyURLString)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        catch (e: ActivityNotFoundException) {
+            Api(this).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+        }
     }
 
     override fun onClickUploadIdImage(view: View) {

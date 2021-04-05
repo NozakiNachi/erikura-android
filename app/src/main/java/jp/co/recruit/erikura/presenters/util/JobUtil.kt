@@ -1,3 +1,4 @@
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.text.Spannable
@@ -169,11 +170,23 @@ object JobUtil {
             out.closeQuietly()
             input.closeQuietly()
 
-            val uri = FileProvider.getUriForFile(activity!!, BuildConfig.APPLICATION_ID+ ".fileprovider", pdfFile)
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.setDataAndType(uri, MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf"))
-            intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            activity.startActivity(intent)
+            try {
+                val uri = FileProvider.getUriForFile(
+                    activity!!,
+                    BuildConfig.APPLICATION_ID + ".fileprovider",
+                    pdfFile
+                )
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.setDataAndType(
+                    uri,
+                    MimeTypeMap.getSingleton().getMimeTypeFromExtension("pdf")
+                )
+                intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+                activity.startActivity(intent)
+            }
+            catch (e: ActivityNotFoundException) {
+                Api(activity).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+            }
         }
     }
 

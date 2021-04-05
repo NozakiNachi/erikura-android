@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.presenters.activities.job
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -101,21 +102,37 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
     }
 
     override fun onClickTermsOfService(view: View) {
-        val termsOfServiceURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
-        val intent = Intent(activity, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(termsOfServiceURLString)
+        try {
+            val termsOfServiceURLString =
+                BuildConfig.SERVER_BASE_URL + BuildConfig.TERMS_OF_SERVICE_PATH
+            val intent = Intent(activity, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(termsOfServiceURLString)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        catch (e: ActivityNotFoundException) {
+            activity?.let { activity ->
+                Api(activity).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+            }
+        }
     }
 
     override fun onClickPrivacyPolicy(view: View) {
-        val privacyPolicyURLString = BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
-        val intent = Intent(activity, WebViewActivity::class.java).apply {
-            action = Intent.ACTION_VIEW
-            data = Uri.parse(privacyPolicyURLString)
+        try {
+            val privacyPolicyURLString =
+                BuildConfig.SERVER_BASE_URL + BuildConfig.PRIVACY_POLICY_PATH
+            val intent = Intent(activity, WebViewActivity::class.java).apply {
+                action = Intent.ACTION_VIEW
+                data = Uri.parse(privacyPolicyURLString)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        catch (e: ActivityNotFoundException) {
+            activity?.let { activity ->
+                Api(activity).displayErrorAlert(listOf("PDFビューワーが見つかりません。\nPDFビューワーアプリをインストールしてください。"))
+            }
+        }
     }
 
     override fun onClickEntryButton(view: View) {
