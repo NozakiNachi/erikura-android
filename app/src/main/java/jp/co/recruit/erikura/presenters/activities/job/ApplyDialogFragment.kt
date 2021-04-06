@@ -32,6 +32,7 @@ import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogApplyBinding
 import jp.co.recruit.erikura.presenters.activities.WebViewActivity
 import jp.co.recruit.erikura.presenters.activities.errors.LoginRequiredActivity
+import java.util.*
 
 class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
     companion object {
@@ -237,6 +238,27 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val checkManual = MutableLiveData<Boolean>()
     val checkCautions = MutableLiveData<Boolean>()
     val checkSummaryTitles = MutableLiveData<Boolean>()
+    val dialogCaptions = MediatorLiveData<String>().also { result ->
+        result.addSource(job) {
+            val now = Date()
+            if (it.preEntryStartAt != null && it.preEntryStartAt!! <= now) {
+                result.value = ErikuraApplication.instance.resources.getString(R.string.preEntryDialog_warning)
+            } else {
+                result.value = ErikuraApplication.instance.resources.getString(R.string.applyDialog_warning)
+            }
+        }
+    }
+    val applyButtonName = MediatorLiveData<String>().also { result ->
+        result.addSource(job) {
+            val now = Date()
+            if (it.preEntryStartAt != null && it.preEntryStartAt!! <= now) {
+                result.value = ErikuraApplication.instance.resources.getString(R.string.preEntry)
+            } else {
+                result.value = ErikuraApplication.instance.resources.getString(R.string.entry)
+            }
+
+        }
+    }
     val checkManualVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val checkCautionsVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val checkSummaryTitlesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
