@@ -67,7 +67,9 @@ data class Job(
     var goodExamplesCount: Int? = null,
     var inAdvanceEntryPeriod: Boolean = false,
     var closeToHome: Boolean = false,
-    var jobAttachments: List<JobAttachment> = listOf()
+    var jobAttachments: List<JobAttachment> = listOf(),
+    var allowPreEntry: Boolean = false,
+    var preEntryStartAt: Date? = null
 ): Parcelable {
     var uninitialized: Boolean = false
     val reportId: Int? get() = report?.id

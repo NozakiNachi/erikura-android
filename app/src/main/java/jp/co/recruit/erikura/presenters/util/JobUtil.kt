@@ -29,6 +29,7 @@ import org.apache.commons.io.IOUtils
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.math.min
 
@@ -75,29 +76,37 @@ object JobUtil {
             else if (job.isFuture) {
                 color = ContextCompat.getColor(context, R.color.waterBlue)
                 val now = Date()
-                val workingStartAt = job.workingStartAt ?: now
-                val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingStartAt)
+                if (job.preEntryStartAt != null && job?.preEntryStartAt!! <= now ) {
+                    //先行応募の場合
+                    val workingStartAt = job.workingStartAt ?: now
+                    val sdf = SimpleDateFormat("MM/dd")
+                    val sb = SpannableStringBuilder()
+                    sb.append("先行応募可　作業日：${sdf.format(workingStartAt)}")
+                    text = sb
+                } else {
+                    val workingStartAt = job.workingStartAt ?: now
+                    val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingStartAt)
 
-                val sb = SpannableStringBuilder()
-                sb.append("募集開始まで")
-                if (days > 0) {
-                    appendStringAsLarge(sb, days.toString())
-                    appendStringAsNormal(sb, "日")
+                    val sb = SpannableStringBuilder()
+                    sb.append("募集開始まで")
+                    if (days > 0) {
+                        appendStringAsLarge(sb, days.toString())
+                        appendStringAsNormal(sb, "日")
+                    }
+                    if (days > 0 && hours > 0) {
+                        appendStringAsNormal(sb, "と")
+                    }
+                    if (hours > 0) {
+                        appendStringAsLarge(sb, hours.toString())
+                        appendStringAsNormal(sb, "時間")
+                    }
+                    else {
+                        appendStringAsLarge(sb, minutes.toString())
+                        appendStringAsNormal(sb, "分")
+                    }
+                    text = sb
                 }
-                if (days > 0 && hours > 0) {
-                    appendStringAsNormal(sb, "と")
-                }
-                if (hours > 0) {
-                    appendStringAsLarge(sb, hours.toString())
-                    appendStringAsNormal(sb, "時間")
-                }
-                else {
-                    appendStringAsLarge(sb, minutes.toString())
-                    appendStringAsNormal(sb, "分")
-                }
-                text = sb
-            }
-            else {
+            } else {
                 when(job.status) {
                     JobStatus.Working -> {
                         color = ContextCompat.getColor(context, R.color.vibrantGreen)
