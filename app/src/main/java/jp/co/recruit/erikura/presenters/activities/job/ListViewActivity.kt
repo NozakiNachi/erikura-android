@@ -67,7 +67,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
                 when {
                     job.isActive -> activeJobs.add(job)
                     job.isPreEntry  -> preEntryJobs.add(job)
-                    job.isFuture -> futureJobs.add(job)
+                    job.isFuture && !(job.isPastOrInactive) -> futureJobs.add(job)
                     job.isPastOrInactive -> pastJobs.add(job)
                 }
             }
