@@ -479,7 +479,6 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 // 表示順
                 marker.zIndex = ErikuraMarkerView.BASE_ZINDEX - i
                 if (job.isStartSoon) {
-                    val now = Date()
                     if (job.isPreEntry) {
                         // 先行応募中の場合
                         marker.zIndex += ErikuraMarkerView.PRE_ENTRING_OFFSET
