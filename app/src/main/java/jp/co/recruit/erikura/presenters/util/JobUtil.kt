@@ -73,7 +73,7 @@ object JobUtil {
                     }
                 }
             }
-            else if (job.isFuture) {
+            else if (job.isFuture && !(job.isPastOrInactive)) {
                 color = ContextCompat.getColor(context, R.color.waterBlue)
                 val now = Date()
                 if (job.isPreEntry) {

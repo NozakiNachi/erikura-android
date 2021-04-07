@@ -113,7 +113,13 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         updateTimeLimit()
         binding.viewModel = viewModel
         binding.handlers = this
-        return binding.root
+
+//        if (job?.isPreEntried == true) {
+//            viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButtonByPreEntry)
+//        } else {
+//            viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButton)
+//        }
+            return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -364,28 +370,43 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             
             if (diffDates == 0L) {
                 if (diffHours == 0L) {
-                    str.append("あと${diffMinutes}分以内\n")
+                    str.append("あと${diffMinutes}分")
                 } else if (diffMinutes == 0L) {
-                    str.append("あと${diffHours}時間以内\n")
+                    str.append("あと${diffHours}時間")
                 } else {
-                    str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+                    str.append("あと${diffHours}時間${diffMinutes}分")
                 }
             } else {
                 if (diffHours == 0L) {
-                    str.append("あと${diffDates}日${diffMinutes}分以内\n")
+                    str.append("あと${diffDates}日${diffMinutes}分")
                 } else if (diffMinutes == 0L) {
-                    str.append("あと${diffDates}日${diffHours}時間以内\n")
+                    str.append("あと${diffDates}日${diffHours}時間")
                 } else {
-                    str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分以内\n")
+                    str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分")
                 }
             }
-            str.setSpan(
-                ForegroundColorSpan(Color.RED),
-                0,
-                str.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorking))
+            if (job?.isPreEntried == true) {
+                //　先行応募からの応募の場合
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_endOfWord_after))
+                str.setSpan(
+                    ForegroundColorSpan(Color.RED),
+                    0,
+                    str.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorkingByPreEntry))
+                viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButtonByPreEntry)
+            } else {
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_endOfWord_limit))
+                str.setSpan(
+                    ForegroundColorSpan(Color.RED),
+                    0,
+                    str.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorking))
+                viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButton)
+            }
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.VISIBLE
             viewModel.startButtonVisibility.value = View.VISIBLE
@@ -393,6 +414,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
             str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             viewModel.timeLimit.value = str
+            viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButton)
             viewModel.msgVisibility.value = View.GONE
             viewModel.startButtonVisibility.value = View.INVISIBLE
         }
@@ -503,6 +525,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
 class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
+    var timeLimitWarningMessage: MutableLiveData<String> =  MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
@@ -513,6 +536,11 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
         result.addSource(reason) { result.value = isValid() }
     }
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val isEnabledStartButton = MediatorLiveData<Boolean>().also { result ->
+        result.addSource(job) {
+            result.value = !(it.isFuture || it.isPast)
+        }
+    }
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job
