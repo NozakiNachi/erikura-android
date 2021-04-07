@@ -87,7 +87,7 @@ data class Job(
     }
     /** 募集期間前のタスクか? */
     val isFuture: Boolean get() {
-        return (workingStartAt?.let { Date() < it } ?: false)
+        return !(isPastOrInactive) && (workingStartAt?.let { Date() < it } ?: false)
     }
     /** 作業期間切れのタスクか? */
     val isExpired: Boolean get() {
@@ -98,7 +98,7 @@ data class Job(
         val now = Date()
         var preEntryFlag = false
         preEntryStartAt?.let {
-            preEntryFlag = (it <= now)  && (now < workingStartAt)
+            preEntryFlag = !(isPastOrInactive) && (it <= now)  && (now < workingStartAt)
         }
        return preEntryFlag
     }

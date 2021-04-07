@@ -213,6 +213,9 @@
     <string name="applyCompleted_caption">応募が完了しました！</string>
     <string name="applyCompleted_note">現地に向かい、作業を行いましょう！\n(24時間以内に報告必須)</string>
     <string name="applyCompleted_recommend">お近くのお仕事</string>
+    <!-- 先行応募完了画面 -->
+    <string name="preEntryCompleted_caption">先行応募が完了しました！</string>
+    <string name="preEntryCompleted_note">作業日になりましたら現地に向かい作業を行いましょう！\n(作業日から24時間以内に報告必須)</string>
 
     <!-- 応募キャンセルモーダル -->
     <string name="cancel_caption">このお仕事をキャンセルしますか？</string>

@@ -7,10 +7,12 @@ import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -50,6 +52,13 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         jobList.adapter = recommendedJobsAdapter
         jobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         jobList.addItemDecoration(JobListItemDecorator())
+        if (job.isPreEntry) {
+            viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.applyCompleted_caption)
+            viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.applyCompleted_note)
+        } else {
+            viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.applyCompleted_caption)
+            viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.applyCompleted_note)
+        }
     }
 
     override fun onStart() {
@@ -105,6 +114,8 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
 
 class ApplyCompletedViewModel: ViewModel() {
     var recommendedJobs: List<Job> = listOf()
+    var applyCompletedTitle = MutableLiveData<String>()
+    var applyCompletedCaption = MutableLiveData<String>()
 }
 
 interface ApplyCompletedEventHandlers {
