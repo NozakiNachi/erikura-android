@@ -1,17 +1,15 @@
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
-import android.text.Spannable
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.ClickableSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.TextAppearanceSpan
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.text.*
+import android.text.style.*
 import android.view.View
 import android.webkit.MimeTypeMap
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import jp.co.recruit.erikura.BuildConfig
@@ -31,7 +29,6 @@ import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.min
 
 object JobUtil {
     enum class TimeLabelType {
@@ -106,7 +103,8 @@ object JobUtil {
                     }
                     text = sb
                 }
-            } else {
+            }
+            else {
                 when(job.status) {
                     JobStatus.Working -> {
                         color = ContextCompat.getColor(context, R.color.vibrantGreen)
@@ -127,29 +125,49 @@ object JobUtil {
                         }
                     }
                     else -> {
-                        color = ContextCompat.getColor(context, R.color.coral)
-                        val now = Date()
-                        val workingFinishAt = if (job.status == JobStatus.Applied) { job.entry?.limitAt ?: now } else { job.workingFinishAt ?: now }
-                        val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingFinishAt)
-
-                        val sb = SpannableStringBuilder()
-                        sb.append("作業終了報告まで")
-                        if (days > 0) {
-                            appendStringAsLarge(sb, days.toString())
-                            appendStringAsNormal(sb, "日")
-                        }
-                        if (days > 0 && hours > 0) {
-                            appendStringAsNormal(sb, "と")
-                        }
-                        if (hours > 0) {
-                            appendStringAsLarge(sb, hours.toString())
-                            appendStringAsNormal(sb, "時間")
+                        if (type == TimeLabelType.OWNED && job.isPreEntried) {
+                            color = ContextCompat.getColor(context, R.color.waterBlue)
+                            text = SpannableStringBuilder().apply {
+                                ResourcesCompat.getFont(context, R.font.fa_solid_900)?.let { fasFont ->
+                                    appendStringWithFont(this, "\uf058 ", "fas", fasFont)
+                                }
+                                val sdfDate = SimpleDateFormat("MM/dd")
+                                val sdfTime = SimpleDateFormat("HH:mm")
+                                append("先行応募済 作業日: ")
+                                appendStringAsLarge(this, job?.workingStartAt?.let { sdfDate.format(it) } ?: "")
+                                append(" ")
+                                appendStringAsLarge(this, job?.workingStartAt?.let { sdfTime.format(it) } ?: "")
+                                append("〜")
+                                appendStringAsLarge(this, job?.entry?.limitAt?.let { sdfDate.format(it) } ?: "")
+                                append(" ")
+                                appendStringAsLarge(this, job?.entry?.limitAt?.let { sdfTime.format(it) } ?: "")
+                            }
                         }
                         else {
-                            appendStringAsLarge(sb, minutes.toString())
-                            appendStringAsNormal(sb, "分")
+                            color = ContextCompat.getColor(context, R.color.coral)
+                            val now = Date()
+                            val workingFinishAt = if (job.status == JobStatus.Applied) { job.entry?.limitAt ?: now } else { job.workingFinishAt ?: now }
+                            val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingFinishAt)
+
+                            val sb = SpannableStringBuilder()
+                            sb.append("作業終了報告まで")
+                            if (days > 0) {
+                                appendStringAsLarge(sb, days.toString())
+                                appendStringAsNormal(sb, "日")
+                            }
+                            if (days > 0 && hours > 0) {
+                                appendStringAsNormal(sb, "と")
+                            }
+                            if (hours > 0) {
+                                appendStringAsLarge(sb, hours.toString())
+                                appendStringAsNormal(sb, "時間")
+                            }
+                            else {
+                                appendStringAsLarge(sb, minutes.toString())
+                                appendStringAsNormal(sb, "分")
+                            }
+                            text = sb
                         }
-                        text = sb
                     }
                 }
             }
@@ -258,6 +276,12 @@ object JobUtil {
         sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
+    private fun appendStringWithFont(sb: SpannableStringBuilder, str: String, family: String, tf: Typeface) {
+        val start = sb.length
+        sb.append(str)
+        sb.setSpan(CustomTypefaceSpan(family, tf), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+
     fun appendLinkSpan(spannableString: SpannableStringBuilder, string: String, style: Int, handler: (view: View) -> Unit) {
         val start = spannableString.length
         spannableString.append(string)
@@ -269,5 +293,35 @@ object JobUtil {
                 handler(widget)
             }
         }, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+}
+
+class CustomTypefaceSpan(family: String, val customTypeface: Typeface) : TypefaceSpan(family) {
+    override fun updateDrawState(ds: TextPaint) {
+        applyCustomTypeface(ds, customTypeface)
+    }
+
+    override fun updateMeasureState(paint: TextPaint) {
+        applyCustomTypeface(paint, customTypeface)
+    }
+
+    private fun applyCustomTypeface(paint: Paint, tf: Typeface) {
+        var oldStyle: Int = 0
+        val old = paint.typeface
+        if (old == null) {
+            oldStyle = 0
+        }
+        else {
+            oldStyle = old.style
+        }
+
+        val fake = oldStyle and tf.style.inv()
+        if ((fake and Typeface.BOLD) != 0) {
+            paint.isFakeBoldText = true
+        }
+        if ((fake and Typeface.ITALIC) != 0) {
+            paint.textSkewX = -0.25f
+        }
+        paint.setTypeface(tf)
     }
 }
