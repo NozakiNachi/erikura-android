@@ -41,6 +41,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
     private val locationManager = ErikuraApplication.locationManager
     private var firstFetchRequested: Boolean = false
     private lateinit var activeJobsAdapter: JobListAdapter
+    private lateinit var preEntryJobsAdapter: JobListAdapter
     private lateinit var futureJobsAdapter: JobListAdapter
     private lateinit var pastJobsAdapter: JobListAdapter
 
@@ -51,6 +52,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
     fun fetchJobs(query: JobQuery) {
         viewModel.activeListVisible.value = View.GONE
+        viewModel.preEntryListVisible.value = View.GONE
         viewModel.futureListVisible.value = View.GONE
         viewModel.pastListVisible.value = View.GONE
 
@@ -58,11 +60,13 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
             Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
 
             val activeJobs = mutableListOf<Job>()
+            val preEntryJobs = mutableListOf<Job>()
             val futureJobs = mutableListOf<Job>()
             val pastJobs = mutableListOf<Job>()
             jobs.forEach { job ->
                 when {
                     job.isActive -> activeJobs.add(job)
+                    job.isPreEntry  -> preEntryJobs.add(job)
                     job.isFuture -> futureJobs.add(job)
                     job.isPastOrInactive -> pastJobs.add(job)
                 }
@@ -70,6 +74,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 
             AndroidSchedulers.mainThread().scheduleDirect {
                 viewModel.activeJobs = activeJobs
+                viewModel.preEntryJobs = preEntryJobs
                 viewModel.futureJobs = futureJobs
                 viewModel.pastJobs = pastJobs
 
@@ -79,6 +84,11 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
                 activeJobsAdapter.currentPosition = position
                 activeJobsAdapter.notifyDataSetChanged()
                 viewModel.activeListVisible.value = if (viewModel.activeJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
+
+                preEntryJobsAdapter.jobs = viewModel.preEntryJobs
+                preEntryJobsAdapter.currentPosition = position
+                preEntryJobsAdapter.notifyDataSetChanged()
+                viewModel.preEntryListVisible.value = if (viewModel.preEntryJobs.isEmpty()) { View.GONE } else { View.VISIBLE }
 
                 futureJobsAdapter.jobs = viewModel.futureJobs
                 futureJobsAdapter.currentPosition = position
@@ -126,6 +136,16 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
                 }
             }
         }
+
+        preEntryJobsAdapter = JobListAdapter(this, listOf(), null).also {
+            it.setHasStableIds(true)
+            it.onClickListner = object : JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    onJobSelected(job)
+                }
+            }
+        }
+
         futureJobsAdapter = JobListAdapter(this, listOf(), null).also {
             it.setHasStableIds(true)
             it.onClickListner =  object: JobListAdapter.OnClickListener {
@@ -154,6 +174,17 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         activeJobList.adapter = activeJobsAdapter
         activeJobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         activeJobList.addItemDecoration(JobListItemDecorator())
+
+        val preEntryJobList: RecyclerView = findViewById(R.id.list_view_pre_entry_job_list)
+        preEntryJobList.setRecycledViewPool(pool)
+        preEntryJobList.itemAnimator?.addDuration = 0
+        preEntryJobList.itemAnimator?.moveDuration = 0
+        preEntryJobList.itemAnimator?.removeDuration = 0
+        preEntryJobList.itemAnimator?.changeDuration = 0
+        preEntryJobList.setHasFixedSize(true)
+        preEntryJobList.adapter = preEntryJobsAdapter
+        preEntryJobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        preEntryJobList.addItemDecoration(JobListItemDecorator())
 
         val futureJobList: RecyclerView = findViewById(R.id.list_view_future_job_list)
         futureJobList.setRecycledViewPool(pool)
@@ -345,6 +376,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
 class ListViewViewModel : BaseJobQueryViewModel() {
     val resources: Resources get() = ErikuraApplication.instance.applicationContext.resources
     var activeJobs: List<Job> = listOf()
+    var preEntryJobs: List<Job> = listOf()
     var futureJobs: List<Job> = listOf()
     var pastJobs: List<Job> = listOf()
 
@@ -356,6 +388,7 @@ class ListViewViewModel : BaseJobQueryViewModel() {
     }
 
     val activeListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val preEntryListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val futureListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val pastListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 

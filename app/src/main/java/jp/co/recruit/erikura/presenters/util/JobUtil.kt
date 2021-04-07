@@ -76,7 +76,7 @@ object JobUtil {
             else if (job.isFuture) {
                 color = ContextCompat.getColor(context, R.color.waterBlue)
                 val now = Date()
-                if (job.preEntryStartAt != null && job?.preEntryStartAt!! <= now ) {
+                if (job.isPreEntry) {
                     //先行応募の場合
                     val workingStartAt = job.workingStartAt ?: now
                     val sdf = SimpleDateFormat("MM/dd")

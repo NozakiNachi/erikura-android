@@ -45,7 +45,7 @@
                         android:layout_marginLeft="10dp"
                         android:src="@drawable/cross_3x"
                         android:background="#00000000"
-                        app:onSafeClick="@{handler::onClickClose}"
+                        app:onSafeClick="@{handlers::onClickClose}"
                         />
 
                     <TextView

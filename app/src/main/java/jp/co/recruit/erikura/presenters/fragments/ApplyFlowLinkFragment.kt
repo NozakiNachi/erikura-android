@@ -41,7 +41,7 @@ class ApplyFlowLinkFragment : BaseJobDetailFragment, ApplyFlowLinkFragmentEventH
         Tracking.logEvent(event= "view_job_guideline", params= bundleOf())
         Tracking.viewJobDetails(name= "/jobs/guideline", title= "応募後の流れを確認画面", jobId= job?.id ?: 0)
         val now = Date()
-        if (job?.preEntryStartAt != null && job?.preEntryStartAt!! <= now ) {
+        if (job?.isPreEntry == true) {
             val dialog = PreEntryFlowDialogFragment()
             dialog.show(childFragmentManager, "PreEntryFlow")
         } else {

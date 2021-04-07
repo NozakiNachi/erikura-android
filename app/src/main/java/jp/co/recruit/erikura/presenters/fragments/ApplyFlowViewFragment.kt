@@ -47,20 +47,3 @@ class ApplyFlowViewFragment : BaseJobDetailFragment {
         transaction.commitAllowingStateLoss()
     }
 }
-
-class ApplyFlowViewFragmentViewModel: BaseJobDetailViewModel() {
-    val displayApplyFlowVisibility = MediatorLiveData<Int>().also { result ->
-        result.value = View.GONE
-        val now = Date()
-        result.addSource(job) {
-            result.value = if (it.preEntryStartAt != null && it.preEntryStartAt!! <= now) { View.GONE } else { View.VISIBLE }
-        }
-    }
-    val displayPreEntryFlowVisibility = MediatorLiveData<Int>().also { result ->
-        result.value = View.GONE
-        val now = Date()
-        result.addSource(job) {
-            result.value = if (it.preEntryStartAt != null && it.preEntryStartAt!! <= now) { View.VISIBLE } else { View.GONE }
-        }
-    }
-}

@@ -241,7 +241,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val dialogCaptions = MediatorLiveData<String>().also { result ->
         result.addSource(job) {
             val now = Date()
-            if (it.preEntryStartAt != null && it.preEntryStartAt!! <= now) {
+            if (it.isPreEntry) {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.preEntryDialog_warning)
             } else {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.applyDialog_warning)
@@ -251,7 +251,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val applyButtonName = MediatorLiveData<String>().also { result ->
         result.addSource(job) {
             val now = Date()
-            if (it.preEntryStartAt != null && it.preEntryStartAt!! <= now) {
+            if (it.isPreEntry) {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.preEntry)
             } else {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.entry)

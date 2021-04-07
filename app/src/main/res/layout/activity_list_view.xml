@@ -135,6 +135,37 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:visibility="@{viewModel.preEntryListVisible}"
+                        >
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                            android:textColor="@color/black"
+                            android:textSize="20dp"
+                            android:firstBaselineToTopHeight="0dp"
+                            android:lastBaselineToBottomHeight="0dp"
+                            android:includeFontPadding="false"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:layout_marginRight="20dp"
+                            android:text="先行応募中のお仕事"
+                            />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/list_view_pre_entry_job_list"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            android:orientation="vertical"
+                            android:padding="20dp"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
                         android:visibility="@{viewModel.futureListVisible}"
                         >
                         <TextView
