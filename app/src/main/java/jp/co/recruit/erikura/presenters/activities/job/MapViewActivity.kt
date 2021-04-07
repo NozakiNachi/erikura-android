@@ -241,6 +241,14 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             val dialog = ChangeUserInformationOnlyPhoneFragment()
             dialog.show(supportFragmentManager, "ChangeUserInformationOnlyPhone")
         }
+
+        // カルーセルの位置を ActiveMarker の位置で更新します
+        viewModel.activeMaker?.let { marker ->
+            val index: Int = marker.marker.tag as Int
+            Log.v(ErikuraApplication.LOG_TAG, "Marker index: ${index}")
+            val layoutManager = carouselView?.layoutManager as LinearLayoutManager
+            layoutManager.scrollToPosition(index)
+        }
     }
 
     override fun onStop() {
