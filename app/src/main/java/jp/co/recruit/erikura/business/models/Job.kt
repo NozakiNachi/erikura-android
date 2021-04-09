@@ -202,8 +202,8 @@ data class Job(
      */
     fun notApplicableReason(user: User?): String? {
         return when {
-            // 未来、もしくは過去案件の場合
-            (isFuture || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
+            // 未来(先行応募中は除く)、もしくは過去案件の場合
+            ((isFuture && !(isPreEntry)) || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
             // すでに応募済みの場合
             (isEntried) -> ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
             // Ban された案件の場合

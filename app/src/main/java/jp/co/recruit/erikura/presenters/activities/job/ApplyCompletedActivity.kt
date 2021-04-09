@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
@@ -29,6 +30,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
     var fromPreEntry: Boolean = false
     private lateinit var recommendedJobsAdapter: JobListAdapter
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)

@@ -304,9 +304,12 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
      */
     private fun setupLimit(job: Job) {
         if (job.entry != null && (job.entry?.owner ?: false)) {
-            // FIXME 先行応募の場合は作業開始の時間をstartAtとする
             // 自身が応募したタスクの場合は、エントリ時刻と、24時間のリミット時刻を表示します
-            val startAt = JobUtils.DateFormats.simple.format(job.entry?.createdAt ?: Date())
+            var startAt = JobUtils.DateFormats.simple.format(job.entry?.createdAt ?: Date())
+            if (job.isPreEntried) {
+                // 先行応募の場合は作業開始の時間をstartAtとする
+                startAt =JobUtils.DateFormats.simple.format( job.workingStartAt ?: Date())
+            }
             val finishAt = JobUtils.DateFormats.simple.format(job.entry?.limitAt ?: Date())
             limit.value = "${startAt} 〜 ${finishAt}"
             job.entry?.limitAt?.also { limitAt ->

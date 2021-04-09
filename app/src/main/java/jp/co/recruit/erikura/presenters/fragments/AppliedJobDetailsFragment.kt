@@ -114,11 +114,10 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         binding.viewModel = viewModel
         binding.handlers = this
 
-//        if (job?.isPreEntried == true) {
-//            viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButtonByPreEntry)
-//        } else {
-//            viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButton)
-//        }
+        if (job?.isPreEntried == true) {
+            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.color.paleGrey)
+        } else {
+            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.drawable.primary_button)        }
             return binding.root
     }
 
@@ -256,13 +255,21 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 
     override fun onClickStart(view: View) {
-        //明確に歩数取得することを説明するダイアログに許可したか
-        if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
-            //許可していない場合ダイアログを表示
-            displayExplainGetPedometer()
+        if (job?.isPreEntried == true) {
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_disabled_start_working_button)
+                .setCancelable(true)
+                .create()
+            dialog.show()
         } else {
-            //許可してた場合
-            startJobWithPermissionCheck()
+            //明確に歩数取得することを説明するダイアログに許可したか
+            if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+                //許可していない場合ダイアログを表示
+                displayExplainGetPedometer()
+            } else {
+                //許可してた場合
+                startJobWithPermissionCheck()
+            }
         }
     }
 
@@ -532,15 +539,12 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val reason: MutableLiveData<String> = MutableLiveData()
     var message: MutableLiveData<String> = MutableLiveData()
 
+    var buttonStyle = MutableLiveData<Int>()
+
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
     }
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
-    val isEnabledStartButton = MediatorLiveData<Boolean>().also { result ->
-        result.addSource(job) {
-            result.value = !(it.isFuture || it.isPast)
-        }
-    }
 
     fun setup(activity: Activity, job: Job?, user: User?) {
         this.job.value = job

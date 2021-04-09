@@ -233,8 +233,8 @@
                         android:layout_marginRight="0dp"
                         android:layout_weight="20"
                         style="@style/primaryButton"
+                        android:background="@{viewModel.buttonStyle}"
                         android:text="@string/startJob"
-                        android:enabled="@{viewModel.isEnabledStartButton}"
                         app:onSafeClick="@{handlers::onClickStart}"
                         android:visibility="@{viewModel.startButtonVisibility}"/>
                     <ToggleButton
