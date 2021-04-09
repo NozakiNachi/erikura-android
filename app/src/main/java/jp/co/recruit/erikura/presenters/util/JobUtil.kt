@@ -266,17 +266,17 @@ object JobUtil {
             minutes = minDiff.toInt(), seconds = secDiff.toInt())
     }
 
-    private fun appendStringAsNormal(sb: SpannableStringBuilder, str: String) {
+    fun appendStringAsNormal(sb: SpannableStringBuilder, str: String) {
         sb.append(str)
     }
 
-    private fun appendStringAsLarge(sb: SpannableStringBuilder, str: String) {
+    fun appendStringAsLarge(sb: SpannableStringBuilder, str: String) {
         val start = sb.length
         sb.append(str)
         sb.setSpan(RelativeSizeSpan(16.0f / 12.0f), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
-    private fun appendStringWithFont(sb: SpannableStringBuilder, str: String, family: String, tf: Typeface) {
+    fun appendStringWithFont(sb: SpannableStringBuilder, str: String, family: String, tf: Typeface) {
         val start = sb.length
         sb.append(str)
         sb.setSpan(CustomTypefaceSpan(family, tf), start, sb.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)

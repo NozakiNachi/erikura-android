@@ -145,6 +145,26 @@
             android:visibility="@{viewModel.futureVisibility}"
             />
         <TextView
+            android:id="@+id/marker_pre_entry"
+            android:layout_width="wrap_content"
+            android:layout_height="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintRight_toRightOf="@id/marker_body"
+            android:text="@{viewModel.preEntryText}"
+            android:fontFamily="@font/hirakakupron_w6_alphanbum_01"
+            android:textSize="10dp"
+            android:firstBaselineToTopHeight="0dp"
+            android:lastBaselineToBottomHeight="0dp"
+            android:includeFontPadding="false"
+            android:textColor="@color/waterBlue"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:background="@drawable/background_roundrect_water_blue"
+            android:visibility="@{viewModel.preEntryVisibility}"
+            />
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="16dp"
             app:layout_constraintTop_toTopOf="parent"
