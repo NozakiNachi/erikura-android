@@ -93,6 +93,16 @@ data class Job(
     val isExpired: Boolean get() {
         return (this.limitAt?.let { Date() > it } ?: false)
     }
+    /** 先行応募開始前のタスクか? */
+    val isBeforePreEntry: Boolean get() {
+        val now = Date()
+        var preEntryFlag = false
+        preEntryStartAt?.let {
+            preEntryFlag = !(isPastOrInactive) && (it > now)  && (now < workingStartAt)
+        }
+        return preEntryFlag
+    }
+
     /** 先行応募中のタスクか? */
     val isPreEntry: Boolean get() {
         val now = Date()

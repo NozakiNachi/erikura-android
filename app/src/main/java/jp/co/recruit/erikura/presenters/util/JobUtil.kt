@@ -81,27 +81,53 @@ object JobUtil {
                     sb.append("先行応募可　作業日：${sdf.format(workingStartAt)}")
                     text = sb
                 } else {
-                    val workingStartAt = job.workingStartAt ?: now
-                    val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingStartAt)
+                    if (job.isBeforePreEntry) {
+                        // 先行応募予定の場合
+                        val preEntryStartAt = job.preEntryStartAt ?: now
+                        val (days, hours, minutes, seconds) = timeDiff(from= now, to= preEntryStartAt)
 
-                    val sb = SpannableStringBuilder()
-                    sb.append("募集開始まで")
-                    if (days > 0) {
-                        appendStringAsLarge(sb, days.toString())
-                        appendStringAsNormal(sb, "日")
+                        val sb = SpannableStringBuilder()
+                        sb.append("先行応募開始まで")
+                        if (days > 0) {
+                            appendStringAsLarge(sb, days.toString())
+                            appendStringAsNormal(sb, "日")
+                        }
+                        if (days > 0 && hours > 0) {
+                            appendStringAsNormal(sb, "と")
+                        }
+                        if (hours > 0) {
+                            appendStringAsLarge(sb, hours.toString())
+                            appendStringAsNormal(sb, "時間")
+                        }
+                        else {
+                            appendStringAsLarge(sb, minutes.toString())
+                            appendStringAsNormal(sb, "分")
+                        }
+                        text = sb
+                    } else {
+                        // 募集予定の場合
+                        val workingStartAt = job.workingStartAt ?: now
+                        val (days, hours, minutes, seconds) = timeDiff(from= now, to= workingStartAt)
+
+                        val sb = SpannableStringBuilder()
+                        sb.append("募集開始まで")
+                        if (days > 0) {
+                            appendStringAsLarge(sb, days.toString())
+                            appendStringAsNormal(sb, "日")
+                        }
+                        if (days > 0 && hours > 0) {
+                            appendStringAsNormal(sb, "と")
+                        }
+                        if (hours > 0) {
+                            appendStringAsLarge(sb, hours.toString())
+                            appendStringAsNormal(sb, "時間")
+                        }
+                        else {
+                            appendStringAsLarge(sb, minutes.toString())
+                            appendStringAsNormal(sb, "分")
+                        }
+                        text = sb
                     }
-                    if (days > 0 && hours > 0) {
-                        appendStringAsNormal(sb, "と")
-                    }
-                    if (hours > 0) {
-                        appendStringAsLarge(sb, hours.toString())
-                        appendStringAsNormal(sb, "時間")
-                    }
-                    else {
-                        appendStringAsLarge(sb, minutes.toString())
-                        appendStringAsNormal(sb, "分")
-                    }
-                    text = sb
                 }
             }
             else {
