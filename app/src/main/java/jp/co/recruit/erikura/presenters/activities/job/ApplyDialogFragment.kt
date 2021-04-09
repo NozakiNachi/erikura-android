@@ -139,7 +139,6 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
     override fun onClickEntryButton(view: View) {
         if (Api.isLogin) {
             job?.let { job ->
-                val fromPreEntry = job.isPreEntry
                 Api(activity!!).entry(job, viewModel.entryQuestionAnswer.value?: "", onError = {
                     Log.v("DEBUG", "応募失敗")
                     // 詳細画面のリロード
@@ -160,7 +159,6 @@ class ApplyDialogFragment: DialogFragment(), ApplyDialogFragmentEventHandlers {
 
                     val intent= Intent(activity, ApplyCompletedActivity::class.java)
                     intent.putExtra("job", job)
-                    intent.putExtra("fromPreEntry", fromPreEntry)
                     startActivity(intent)
                 }
             }

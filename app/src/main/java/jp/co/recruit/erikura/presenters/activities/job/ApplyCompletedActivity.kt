@@ -27,7 +27,6 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
     }
 
     var job: Job = Job()
-    var fromPreEntry: Boolean = false
     private lateinit var recommendedJobsAdapter: JobListAdapter
 
     @SuppressLint("ResourceType")
@@ -36,7 +35,6 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         super.onCreate(savedInstanceState)
 
         job = intent.getParcelableExtra<Job>("job")
-        fromPreEntry = intent.getBooleanExtra("fromPreEntry", false)
         Log.v("DEBUG", job.toString())
 
         val binding: ActivityApplyCompletedBinding = DataBindingUtil.setContentView(this, R.layout.activity_apply_completed)
@@ -56,7 +54,8 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         jobList.adapter = recommendedJobsAdapter
         jobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         jobList.addItemDecoration(JobListItemDecorator())
-        if (fromPreEntry) {
+        if (job.isPreEntry) {
+            // 先行応募経由の場合
             viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.preEntryCompleted_caption)
             viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.preEntryCompleted_note)
         } else {
