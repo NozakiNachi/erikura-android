@@ -138,9 +138,6 @@ object JobUtil {
                                 append(" ")
                                 appendStringAsLarge(this, job?.workingStartAt?.let { sdfTime.format(it) } ?: "")
                                 append("〜")
-                                appendStringAsLarge(this, job?.entry?.limitAt?.let { sdfDate.format(it) } ?: "")
-                                append(" ")
-                                appendStringAsLarge(this, job?.entry?.limitAt?.let { sdfTime.format(it) } ?: "")
                             }
                         }
                         else {
