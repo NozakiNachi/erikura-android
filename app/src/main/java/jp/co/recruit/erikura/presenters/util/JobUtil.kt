@@ -75,35 +75,45 @@ object JobUtil {
                 val now = Date()
                 if (job.isPreEntry) {
                     //先行応募の場合
-                    val workingStartAt = job.workingStartAt ?: now
-                    val sdf = SimpleDateFormat("MM/dd")
-                    val sb = SpannableStringBuilder()
-                    sb.append("先行応募可　作業日：${sdf.format(workingStartAt)}")
-                    text = sb
+                    text = SpannableStringBuilder().apply {
+                        ResourcesCompat.getFont(context, R.font.fa_regular_400)?.let { fasFont ->
+                            appendStringWithFont(this, "\uf058 ", "fas", fasFont)
+                        }
+
+                        val workingStartAt = job.workingStartAt ?: now
+                        val sdf = SimpleDateFormat("MM/dd")
+                        append("先行応募可　作業日：")
+                        appendStringAsLarge(this, sdf.format(workingStartAt) ?: "")
+                    }
                 } else {
                     if (job.isBeforePreEntry) {
                         // 先行応募予定の場合
-                        val preEntryStartAt = job.preEntryStartAt ?: now
-                        val (days, hours, minutes, seconds) = timeDiff(from= now, to= preEntryStartAt)
+                        text = SpannableStringBuilder().apply {
+                            ResourcesCompat.getFont(context, R.font.fa_solid_900)?.let { fasFont ->
+                                appendStringWithFont(this, "\uf058 ", "fas", fasFont)
+                            }
+                            val preEntryStartAt = job.preEntryStartAt ?: now
+                            val (days, hours, minutes, seconds) = timeDiff(
+                                from = now,
+                                to = preEntryStartAt
+                            )
 
-                        val sb = SpannableStringBuilder()
-                        sb.append("先行応募開始まで")
-                        if (days > 0) {
-                            appendStringAsLarge(sb, days.toString())
-                            appendStringAsNormal(sb, "日")
+                            append("先行応募開始まで")
+                            if (days > 0) {
+                                appendStringAsLarge(this, days.toString())
+                                appendStringAsNormal(this, "日")
+                            }
+                            if (days > 0 && hours > 0) {
+                                appendStringAsNormal(this, "と")
+                            }
+                            if (hours > 0) {
+                                appendStringAsLarge(this, hours.toString())
+                                appendStringAsNormal(this, "時間")
+                            } else {
+                                appendStringAsLarge(this, minutes.toString())
+                                appendStringAsNormal(this, "分")
+                            }
                         }
-                        if (days > 0 && hours > 0) {
-                            appendStringAsNormal(sb, "と")
-                        }
-                        if (hours > 0) {
-                            appendStringAsLarge(sb, hours.toString())
-                            appendStringAsNormal(sb, "時間")
-                        }
-                        else {
-                            appendStringAsLarge(sb, minutes.toString())
-                            appendStringAsNormal(sb, "分")
-                        }
-                        text = sb
                     } else {
                         // 募集予定の場合
                         val workingStartAt = job.workingStartAt ?: now

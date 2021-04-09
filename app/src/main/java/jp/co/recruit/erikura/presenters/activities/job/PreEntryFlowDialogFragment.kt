@@ -37,15 +37,11 @@ class PreEntryFlowDialogFragment: DialogFragment(), PreEntryFlowDialogFragmentEv
         return builder.create()
     }
 
-    override fun onTouch(view: View) {
-        dismiss()
-    }
     override fun onClickClose(view: View) {
         dialog?.dismiss()
     }
 }
 
 interface PreEntryFlowDialogFragmentEventHandlers {
-    fun onTouch(view: View)
     fun onClickClose(view: View)
 }

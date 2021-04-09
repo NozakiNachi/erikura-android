@@ -115,9 +115,10 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         binding.handlers = this
 
         if (job?.isPreEntried == true) {
-            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.color.paleGrey)
+            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.color.silver)
         } else {
-            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.drawable.primary_button)        }
+            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.color.pumpkinOrange)
+        }
             return binding.root
     }
 
@@ -368,32 +369,35 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         val str = SpannableStringBuilder()
         val today = Date().time
         val limit = job?.entry?.limitAt?.time ?: 0
+        val startAt = job?.workingStartAt?.time ?: 0
         val diff: Long = limit - today
+        val startAtDiff = startAt -today
 
         if (diff >= 0) {
-            val diffDates = diff / (1000 * 60 * 60 * 24)
-            val diffHours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            val diffMinutes = (diff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
-            
-            if (diffDates == 0L) {
-                if (diffHours == 0L) {
-                    str.append("あと${diffMinutes}分")
-                } else if (diffMinutes == 0L) {
-                    str.append("あと${diffHours}時間")
-                } else {
-                    str.append("あと${diffHours}時間${diffMinutes}分")
-                }
-            } else {
-                if (diffHours == 0L) {
-                    str.append("あと${diffDates}日${diffMinutes}分")
-                } else if (diffMinutes == 0L) {
-                    str.append("あと${diffDates}日${diffHours}時間")
-                } else {
-                    str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分")
-                }
-            }
-            if (job?.isPreEntried == true) {
+            if (job?.isPreEntried == true && startAtDiff >= 0) {
                 //　先行応募からの応募の場合
+                val startAtDiffDates = startAtDiff / (1000 * 60 * 60 * 24)
+                val startAtDiffHours = (startAtDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                val startAtDiffMinutes = (startAtDiff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
+
+                if (startAtDiffDates == 0L) {
+                    if (startAtDiffHours == 0L) {
+                        str.append("あと${startAtDiffMinutes}分")
+                    } else if (startAtDiffMinutes == 0L) {
+                        str.append("あと${startAtDiffHours}時間")
+                    } else {
+                        str.append("あと${startAtDiffHours}時間${startAtDiffMinutes}分")
+                    }
+                } else {
+                    if (startAtDiffHours == 0L) {
+                        str.append("あと${startAtDiffDates}日${startAtDiffMinutes}分")
+                    } else if (startAtDiffMinutes == 0L) {
+                        str.append("あと${startAtDiffDates}日${startAtDiffHours}時間")
+                    } else {
+                        str.append("あと${startAtDiffDates}日${startAtDiffHours}時間${startAtDiffMinutes}分")
+                    }
+                }
+
                 str.append(ErikuraApplication.instance.getString(R.string.jobDetails_endOfWord_after))
                 str.setSpan(
                     ForegroundColorSpan(Color.RED),
@@ -404,6 +408,28 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
                 str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorkingByPreEntry))
                 viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButtonByPreEntry)
             } else {
+                val diffDates = diff / (1000 * 60 * 60 * 24)
+                val diffHours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                val diffMinutes = (diff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
+
+                if (diffDates == 0L) {
+                    if (diffHours == 0L) {
+                        str.append("あと${diffMinutes}分")
+                    } else if (diffMinutes == 0L) {
+                        str.append("あと${diffHours}時間")
+                    } else {
+                        str.append("あと${diffHours}時間${diffMinutes}分")
+                    }
+                } else {
+                    if (diffHours == 0L) {
+                        str.append("あと${diffDates}日${diffMinutes}分")
+                    } else if (diffMinutes == 0L) {
+                        str.append("あと${diffDates}日${diffHours}時間")
+                    } else {
+                        str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分")
+                    }
+                }
+
                 str.append(ErikuraApplication.instance.getString(R.string.jobDetails_endOfWord_limit))
                 str.setSpan(
                     ForegroundColorSpan(Color.RED),

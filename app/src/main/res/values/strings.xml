@@ -186,10 +186,12 @@
     <string name="preEntryFlowDialog_caption">こちらは先行応募です</string>
     <string name="preEntryFlowDialog_step1">マニュアルをチェックする</string>
     <string name="preEntryFlowDialog_step1Explain">作業内容に加え、「持ち物」「報告箇所」を必ず確認しましょう。</string>
-    <string name="preEntryFlowDialog_step2">作業日が来たら作業開始する</string>
-    <string name="preEntryFlowDialog_step2Explain">作業日になりましたら、実際に現地に行き作業を実施し、作業報告まで行いましょう。\n注意１：作業日から24時間以内に「作業報告まで実施」してください。\n注意２：時間内に作業できない場合は「速やかにキャンセル」してください。</string>
-    <string name="preEntryFlowDialog_step3">作業報告をする</string>
-    <string name="preEntryFlowDialog_step3Explain">作業箇所の写真を撮影し、コメントを添えて、作業報告をしましょう。</string>
+    <string name="preEntryFlowDialog_step2">このお仕事の注意事項をチェックする</string>
+    <string name="preEntryFlowDialog_step2Explain">作業時の注意事項がある場合があります。注意事項がある場合は、必ず確認しましょう。</string>
+    <string name="preEntryFlowDialog_step3">作業日が来たら作業開始する</string>
+    <string name="preEntryFlowDialog_step3Explain">作業日になりましたら、実際に現地に行き作業を実施し、作業報告まで行いましょう。\n注意１：作業日から24時間以内に「作業報告まで実施」してください。\n注意２：時間内に作業できない場合は「速やかにキャンセル」してください。</string>
+    <string name="preEntryFlowDialog_step4">作業報告をする</string>
+    <string name="preEntryFlowDialog_step4Explain">作業箇所の写真を撮影し、コメントを添えて、作業報告をしましょう。</string>
     <string name="preEntryFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
     <!-- 先行応募確認モーダル -->
     <string name="preEntryDialog_warning">※作業報告締切は、作業日から24時間以内となります。\n時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。\n※作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>

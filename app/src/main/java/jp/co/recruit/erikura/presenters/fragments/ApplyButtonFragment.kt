@@ -165,9 +165,6 @@ class ApplyButtonFragmentViewModel: ViewModel() {
                 applyButtonVisibility.value = if (job.isApplicable(user)) {
                     View.VISIBLE
                 }
-                else if (job.isPreEntry) {
-                    View.VISIBLE
-                }
                 else {
                     View.INVISIBLE
                 }
