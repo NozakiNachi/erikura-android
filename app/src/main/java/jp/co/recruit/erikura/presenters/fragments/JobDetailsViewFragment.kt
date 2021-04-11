@@ -307,7 +307,8 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             var startAt = JobUtils.DateFormats.simple.format(job.entry?.createdAt ?: Date())
             var finishAt = JobUtils.DateFormats.simple.format(job.entry?.limitAt ?: Date())
 
-            if (job.isPreEntried) {
+            if (job.entry?.fromPreEntry == true) {
+                // 先行応募で応募されていた場合
                 val calendar = Calendar.getInstance()
                 calendar.time = job.workingStartAt ?: Date()
                 calendar.add(Calendar.DATE, 1)
