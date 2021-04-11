@@ -8,11 +8,12 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.style.*
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -113,13 +114,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         updateTimeLimit()
         binding.viewModel = viewModel
         binding.handlers = this
-
-        if (job?.isPreEntried == true) {
-            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.color.silver)
-        } else {
-            viewModel.buttonStyle.value = ErikuraApplication.instance.getColor(R.color.pumpkinOrange)
-        }
-            return binding.root
+        return binding.root
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -565,7 +560,18 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val reason: MutableLiveData<String> = MutableLiveData()
     var message: MutableLiveData<String> = MutableLiveData()
 
-    var buttonStyle = MutableLiveData<Int>()
+    var buttonStyle = MediatorLiveData<Drawable>().also { result ->
+        result.addSource(job) {
+            if (it.isPreEntried) {
+                val drawable: Drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
+                result.value = drawable
+            } else {
+                val drawable: Drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.pumpkinOrange)
+                result.value = drawable
+            }
+        }
+    }
+//    var buttonStyle: MutableLiveData<Int> = MutableLiveData()
 
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
@@ -609,6 +615,13 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
                     reportExamplesButtonVisibility.value = View.GONE
                 }
             }
+            // 作業開始ボタンのカラー
+            if (job.isPreEntried) {
+                buttonStyle.value = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
+            } else {
+                buttonStyle.value = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.pumpkinOrange)
+            }
+
         }
     }
 
