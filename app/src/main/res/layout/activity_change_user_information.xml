@@ -94,16 +94,35 @@
 
                 </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="40dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
 
                 <!--ログインID(登録メールアドレスを表示する。)-->
                 <TextView
                     style="@style/fieldLabel"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="40dp"
+                    android:layout_marginLeft="0dp"
                     android:drawableLeft="@drawable/icon_required_18"
                     android:drawablePadding="10dp"
                     android:text="ログインID(メールアドレス)" />
+
+                <TextView
+                    style="@style/linkText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:gravity="right|center_vertical"
+                    android:text="@string/change"
+                    android:textSize="12dp"
+                    app:onSafeClick="@{handlers.onClickChangeEmail}" />
+            </LinearLayout>
 
                 <TextView
                     android:id="@+id/register_mail_address"
