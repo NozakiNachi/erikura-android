@@ -3,7 +3,9 @@ package jp.co.recruit.erikura.presenters.view_models
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.text.SpannableStringBuilder
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import jp.co.recruit.erikura.ErikuraApplication
@@ -49,20 +51,18 @@ open class MarkerViewModel(val job: Job): ViewModel() {
     }
 
     open val soonVisibility: Int get() {
-        if (job.isStartSoon) {
-            return View.VISIBLE
-        }
-        else {
-            return View.GONE
+        return when {
+            job.isEntried -> View.GONE
+            job.isStartSoon && !job.isPreEntry -> View.VISIBLE
+            else -> View.GONE
         }
     }
 
     open val futureVisibility: Int get() {
-        if (job.isFuture && !job.isStartSoon) {
-            return View.VISIBLE
-        }
-        else {
-            return View.GONE
+        return when {
+            job.isEntried -> View.GONE
+            job.isFuture && !job.isStartSoon && !job.isPreEntry -> View.VISIBLE
+            else -> View.GONE
         }
     }
 
@@ -71,6 +71,22 @@ open class MarkerViewModel(val job: Job): ViewModel() {
             val sdf = SimpleDateFormat("MM/dd")
             return String.format("%s開始", sdf.format(it))
         } ?: ""
+    }
+
+    open val preEntryVisibility: Int get() {
+        return when {
+            job.isPreEntry -> View.VISIBLE
+            else -> View.GONE
+        }
+    }
+
+    open val preEntryText: CharSequence get() {
+        return SpannableStringBuilder().apply {
+            ResourcesCompat.getFont(ErikuraApplication.applicationContext, R.font.fa_solid_900)?.let { fasFont ->
+                JobUtil.appendStringWithFont(this, "\uf058 ", "fas", fasFont)
+            }
+            append("先行応募可")
+        }
     }
 
     open val ownerVisibility: Int get() {
@@ -142,13 +158,18 @@ open class MarkerViewModel(val job: Job): ViewModel() {
             job.isEntried   -> "true"
             else            -> "false"
         }
+        if (job.isPreEntry) {
+            return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/preEntry/${iconPath}/"
+        }
         if (job.isStartSoon) {
             return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/comingSoon/${iconPath}/"
-        } else if (job.isFuture) {
+        }
+        else if (job.isFuture) {
             val df = SimpleDateFormat("YYYYMMdd")
             val time = df.format(job.workingStartAt ?: Date())
             return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/${time}/${iconPath}/"
-        } else {
+        }
+        else {
             return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/current/${iconPath}/"
         }
     }

@@ -20,8 +20,10 @@ import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
+import jp.co.recruit.erikura.presenters.activities.job.PreEntryFlowDialogFragment
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import kotlinx.android.synthetic.main.activity_upload_id_image.*
+import java.util.*
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
@@ -46,14 +48,25 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     private var jobDetailsView: JobDetailsViewFragment? = null
     private var mapView: MapViewFragment? = null
     private var applyFlowView: ApplyFlowViewFragment? = null
+    private var preEntryFlowView: PreEntryFlowViewFragment? = null
     private var applyButton: ApplyButtonFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
     private var reportExamplesButton: ReportExamplesButtonFragment? = null
+    private var isShowPreEntryFlowModal: Boolean = false
 
     constructor() : super()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        isShowPreEntryFlowModal = job?.isPreEntry == true
+
+        if (isShowPreEntryFlowModal) {
+            //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
+            val dialog = PreEntryFlowDialogFragment.newInstance()
+            dialog.show(childFragmentManager, "PreEntryFlow")
+
+        }
     }
 
     override fun refresh(job: Job?, user: User?) {
@@ -69,6 +82,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
                 jobDetailsView?.refresh(job, user)
                 mapView?.refresh(job, user)
                 applyFlowView?.refresh(job, user)
+                preEntryFlowView?.refresh(job, user)
                 applyButton?.refresh(job, user)
                 propertyNotesButton?.refresh(job, user)
                 reportExamplesButton?.refresh(job, user)
@@ -103,6 +117,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         jobDetailsView = JobDetailsViewFragment.newInstance(user)
         mapView = MapViewFragment.newInstance(user)
         applyFlowView = ApplyFlowViewFragment.newInstance(user)
+        preEntryFlowView = PreEntryFlowViewFragment.newInstance(user)
         applyButton = ApplyButtonFragment.newInstance(user)
         propertyNotesButton = PropertyNotesButtonFragment.newInstance(user)
         reportExamplesButton = ReportExamplesButtonFragment.newInstance(user)
@@ -113,7 +128,11 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
         transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
-        transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
+        if (job != null && job!!.isPreEntry){
+            transaction.add(R.id.jobDetails_applyFlowViewFragment, preEntryFlowView!!, "preEntryFlowView")
+        } else {
+            transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
+        }
         transaction.add(R.id.jobDetails_applyButtonFragment, applyButton!!, "applyButton")
         transaction.add(R.id.jobDetails_propertyNotesButtonFragment, propertyNotesButton!!, "propertyNotesButton")
         transaction.add(R.id.jobDetails_reportExamplesButtonFragment, reportExamplesButton!!, "reportExamplesButton")

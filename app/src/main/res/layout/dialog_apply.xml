@@ -40,7 +40,7 @@
                 style="@style/label_w2"
                 android:textSize="14dp"
                 android:textColor="@color/black"
-                android:text="@string/applyDialog_warning"
+                android:text="@{viewModel.dialogCaptions}"
                 />
 
             <TextView
@@ -229,7 +229,7 @@
                 android:layout_marginLeft="0dp"
                 android:layout_marginRight="0dp"
                 style="@style/primaryButton"
-                android:text="@string/entry"
+                android:text="@{viewModel.applyButtonName}"
                 android:enabled="@{viewModel.isEntryButtonEnabled()}"
                 app:onSafeClick="@{handlers::onClickEntryButton}"
                 />

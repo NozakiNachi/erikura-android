@@ -46,7 +46,6 @@ import jp.co.recruit.erikura.presenters.activities.job.PlaceDetailActivity
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import java.lang.ref.WeakReference
 import java.util.*
-import java.util.jar.Manifest
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
@@ -305,8 +304,18 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
     private fun setupLimit(job: Job) {
         if (job.entry != null && (job.entry?.owner ?: false)) {
             // 自身が応募したタスクの場合は、エントリ時刻と、24時間のリミット時刻を表示します
-            val startAt = JobUtils.DateFormats.simple.format(job.entry?.createdAt ?: Date())
-            val finishAt = JobUtils.DateFormats.simple.format(job.entry?.limitAt ?: Date())
+            var startAt = JobUtils.DateFormats.simple.format(job.entry?.createdAt ?: Date())
+            var finishAt = JobUtils.DateFormats.simple.format(job.entry?.limitAt ?: Date())
+
+            if (job.entry?.fromPreEntry == true) {
+                // 先行応募で応募されていた場合
+                val calendar = Calendar.getInstance()
+                calendar.time = job.workingStartAt ?: Date()
+                calendar.add(Calendar.DATE, 1)
+                // 先行応募の場合は納期の始まりを作業開始の時間、納期の締め切りを作業開始から24時間後の時刻とする
+                startAt = JobUtils.DateFormats.simple.format( job.workingStartAt ?: Date())
+                finishAt = JobUtils.DateFormats.simple.format( calendar.time ?: Date())
+            }
             limit.value = "${startAt} 〜 ${finishAt}"
             job.entry?.limitAt?.also { limitAt ->
                 if (!job.isReported && limitAt < Date()) {

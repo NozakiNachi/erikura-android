@@ -57,6 +57,11 @@ class ApplyButtonFragment : BaseJobDetailFragment, ApplyButtonFragmentEventHandl
         viewModel.setup(activity!!, job, user)
         binding.viewModel = viewModel
         binding.handlers = this
+        if (job?.isPreEntry == true) {
+            viewModel.applyButtonText.value = ErikuraApplication.instance.getString(R.string.preEntry)
+        } else {
+            viewModel.applyButtonText.value = ErikuraApplication.instance.getString(R.string.entry)
+        }
         return binding.root
     }
 
@@ -140,7 +145,7 @@ class ApplyButtonFragmentViewModel: ViewModel() {
     val closeToHome: Boolean get() = job.value?.closeToHome ?: false
 
     val applyButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
-    val applyButtonText = MutableLiveData<String>(ErikuraApplication.instance.getString(R.string.entry))
+    val applyButtonText = MutableLiveData<String>()
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
 
     val applyButtonEnabled = MediatorLiveData<Boolean>().also { result ->
@@ -178,6 +183,10 @@ class ApplyButtonFragmentViewModel: ViewModel() {
         if (Api.isLogin && inAdvancePeriod && !closeToHome) {
             applyButtonEnabled.value = false
             applyButtonText.value = ErikuraApplication.instance.getString(R.string.advanceEntry)
+        }
+        else if (job.value?.isPreEntry == true) {
+            applyButtonEnabled.value = true
+            applyButtonText.value = ErikuraApplication.instance.getString(R.string.preEntry)
         }
         else {
             applyButtonEnabled.value = true

@@ -49,9 +49,10 @@ object JobUtils {
         return when {
             job.isEntried && job.isOwner && !job.isReported -> 0
             job.isActive -> 1
-            job.isFuture -> 2
-            job.isEntried && job.isOwner -> 3
-            else -> 4
+            job.isPreEntry -> 2
+            job.isFuture -> 3
+            job.isEntried && job.isOwner -> 4
+            else -> 5
         }
     }
 

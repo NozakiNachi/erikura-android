@@ -10,6 +10,8 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.databinding.FragmentApplyFlowLinkBinding
 import jp.co.recruit.erikura.presenters.activities.job.ApplyFlowDialogFragment
+import jp.co.recruit.erikura.presenters.activities.job.PreEntryFlowDialogFragment
+import java.util.*
 
 class ApplyFlowLinkFragment : BaseJobDetailFragment, ApplyFlowLinkFragmentEventHandlers {
     companion object {
@@ -38,9 +40,13 @@ class ApplyFlowLinkFragment : BaseJobDetailFragment, ApplyFlowLinkFragmentEventH
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_job_guideline", params= bundleOf())
         Tracking.viewJobDetails(name= "/jobs/guideline", title= "応募後の流れを確認画面", jobId= job?.id ?: 0)
-
-        val dialog = ApplyFlowDialogFragment()
-        dialog.show(childFragmentManager, "ApplyFlow")
+        if (job?.isPreEntry == true) {
+            val dialog = PreEntryFlowDialogFragment()
+            dialog.show(childFragmentManager, "PreEntryFlow")
+        } else {
+            val dialog = ApplyFlowDialogFragment()
+            dialog.show(childFragmentManager, "ApplyFlow")
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.annotation.SuppressLint
 import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Bundle
@@ -7,10 +8,12 @@ import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
@@ -26,6 +29,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
     var job: Job = Job()
     private lateinit var recommendedJobsAdapter: JobListAdapter
 
+    @SuppressLint("ResourceType")
     override fun onCreate(savedInstanceState: Bundle?) {
         setTheme(R.style.AppTheme)
         super.onCreate(savedInstanceState)
@@ -50,6 +54,14 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         jobList.adapter = recommendedJobsAdapter
         jobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         jobList.addItemDecoration(JobListItemDecorator())
+        if (job.isPreEntry) {
+            // 先行応募経由の場合
+            viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.preEntryCompleted_caption)
+            viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.preEntryCompleted_note)
+        } else {
+            viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.applyCompleted_caption)
+            viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.applyCompleted_note)
+        }
     }
 
     override fun onStart() {
@@ -105,6 +117,8 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
 
 class ApplyCompletedViewModel: ViewModel() {
     var recommendedJobs: List<Job> = listOf()
+    var applyCompletedTitle = MutableLiveData<String>()
+    var applyCompletedCaption = MutableLiveData<String>()
 }
 
 interface ApplyCompletedEventHandlers {

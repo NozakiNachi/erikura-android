@@ -46,7 +46,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="40dp"
                         android:gravity="center"
-                        android:text="@string/applyCompleted_caption" />
+                        android:text="@{viewModel.applyCompletedTitle}" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                         android:layout_marginTop="20dp"
                         android:gravity="center"
                         android:lineSpacingExtra="10dp"
-                        android:text="@string/applyCompleted_note"
+                        android:text="@{viewModel.applyCompletedCaption}"
                         android:textColor="@color/blackTwo" />
 
                     <ImageView

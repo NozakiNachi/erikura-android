@@ -8,11 +8,12 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.text.SpannableStringBuilder
 import android.text.Spanned
-import android.text.style.*
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -250,13 +251,21 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 
     override fun onClickStart(view: View) {
-        //明確に歩数取得することを説明するダイアログに許可したか
-        if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
-            //許可していない場合ダイアログを表示
-            displayExplainGetPedometer()
+        if (job?.isPreEntried == true) {
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_disabled_start_working_button)
+                .setCancelable(true)
+                .create()
+            dialog.show()
         } else {
-            //許可してた場合
-            startJobWithPermissionCheck()
+            //明確に歩数取得することを説明するダイアログに許可したか
+            if (!ErikuraApplication.instance.isAcceptedExplainGetPedometer()) {
+                //許可していない場合ダイアログを表示
+                displayExplainGetPedometer()
+            } else {
+                //許可してた場合
+                startJobWithPermissionCheck()
+            }
         }
     }
 
@@ -355,37 +364,77 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         val str = SpannableStringBuilder()
         val today = Date().time
         val limit = job?.entry?.limitAt?.time ?: 0
+        val startAt = job?.workingStartAt?.time ?: 0
         val diff: Long = limit - today
+        val startAtDiff = startAt -today
 
         if (diff >= 0) {
-            val diffDates = diff / (1000 * 60 * 60 * 24)
-            val diffHours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-            val diffMinutes = (diff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
-            
-            if (diffDates == 0L) {
-                if (diffHours == 0L) {
-                    str.append("あと${diffMinutes}分以内\n")
-                } else if (diffMinutes == 0L) {
-                    str.append("あと${diffHours}時間以内\n")
+            if (job?.isPreEntried == true && startAtDiff >= 0) {
+                //　先行応募からの応募の場合
+                val startAtDiffDates = startAtDiff / (1000 * 60 * 60 * 24)
+                val startAtDiffHours = (startAtDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                val startAtDiffMinutes = (startAtDiff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
+
+                if (startAtDiffDates == 0L) {
+                    if (startAtDiffHours == 0L) {
+                        str.append("あと${startAtDiffMinutes}分")
+                    } else if (startAtDiffMinutes == 0L) {
+                        str.append("あと${startAtDiffHours}時間")
+                    } else {
+                        str.append("あと${startAtDiffHours}時間${startAtDiffMinutes}分")
+                    }
                 } else {
-                    str.append("あと${diffHours}時間${diffMinutes}分以内\n")
+                    if (startAtDiffHours == 0L) {
+                        str.append("あと${startAtDiffDates}日${startAtDiffMinutes}分")
+                    } else if (startAtDiffMinutes == 0L) {
+                        str.append("あと${startAtDiffDates}日${startAtDiffHours}時間")
+                    } else {
+                        str.append("あと${startAtDiffDates}日${startAtDiffHours}時間${startAtDiffMinutes}分")
+                    }
                 }
+
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_endOfWord_after))
+                str.setSpan(
+                    ForegroundColorSpan(Color.RED),
+                    0,
+                    str.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorkingByPreEntry))
+                viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButtonByPreEntry)
             } else {
-                if (diffHours == 0L) {
-                    str.append("あと${diffDates}日${diffMinutes}分以内\n")
-                } else if (diffMinutes == 0L) {
-                    str.append("あと${diffDates}日${diffHours}時間以内\n")
+                val diffDates = diff / (1000 * 60 * 60 * 24)
+                val diffHours = (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                val diffMinutes = (diff % (1000 * 60 * 60 * 24) % (1000 * 60 * 60)) / (1000 * 60)
+
+                if (diffDates == 0L) {
+                    if (diffHours == 0L) {
+                        str.append("あと${diffMinutes}分")
+                    } else if (diffMinutes == 0L) {
+                        str.append("あと${diffHours}時間")
+                    } else {
+                        str.append("あと${diffHours}時間${diffMinutes}分")
+                    }
                 } else {
-                    str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分以内\n")
+                    if (diffHours == 0L) {
+                        str.append("あと${diffDates}日${diffMinutes}分")
+                    } else if (diffMinutes == 0L) {
+                        str.append("あと${diffDates}日${diffHours}時間")
+                    } else {
+                        str.append("あと${diffDates}日${diffHours}時間${diffMinutes}分")
+                    }
                 }
+
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_endOfWord_limit))
+                str.setSpan(
+                    ForegroundColorSpan(Color.RED),
+                    0,
+                    str.length,
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorking))
+                viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButton)
             }
-            str.setSpan(
-                ForegroundColorSpan(Color.RED),
-                0,
-                str.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorking))
             viewModel.timeLimit.value = str
             viewModel.msgVisibility.value = View.VISIBLE
             viewModel.startButtonVisibility.value = View.VISIBLE
@@ -393,6 +442,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             str.append(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
             str.setSpan(ForegroundColorSpan(Color.RED), 0, str.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
             viewModel.timeLimit.value = str
+            viewModel.timeLimitWarningMessage.value = ErikuraApplication.instance.getString(R.string.jobDetails_pressButton)
             viewModel.msgVisibility.value = View.GONE
             viewModel.startButtonVisibility.value = View.INVISIBLE
         }
@@ -503,11 +553,25 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
 class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val bitmapDrawable: MutableLiveData<BitmapDrawable> = MutableLiveData()
     val timeLimit: MutableLiveData<SpannableStringBuilder> = MutableLiveData()
+    var timeLimitWarningMessage: MutableLiveData<String> =  MutableLiveData()
     val msgVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val favorited: MutableLiveData<Boolean> = MutableLiveData(false)
     val startButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val reason: MutableLiveData<String> = MutableLiveData()
     var message: MutableLiveData<String> = MutableLiveData()
+
+    var buttonStyle = MediatorLiveData<Drawable>().also { result ->
+        result.addSource(job) {
+            if (it.isPreEntried) {
+                val drawable: Drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
+                result.value = drawable
+            } else {
+                val drawable: Drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.pumpkinOrange)
+                result.value = drawable
+            }
+        }
+    }
+//    var buttonStyle: MutableLiveData<Int> = MutableLiveData()
 
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
@@ -551,6 +615,13 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
                     reportExamplesButtonVisibility.value = View.GONE
                 }
             }
+            // 作業開始ボタンのカラー
+            if (job.isPreEntried) {
+                buttonStyle.value = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
+            } else {
+                buttonStyle.value = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.pumpkinOrange)
+            }
+
         }
     }
 

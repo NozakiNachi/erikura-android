@@ -27,7 +27,8 @@ data class Entry(
     var finishedFloorAsc: Int? = 0,
     var finishedFloorDesc: Int? = 0,
     var createdAt: Date? = null,
-    var owner: Boolean = false
+    var owner: Boolean = false,
+    var fromPreEntry: Boolean = false
 ): Parcelable {
     // 開始・終了APIのチェック状態
     enum class CheckStatus(value: Int) {

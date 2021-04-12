@@ -67,7 +67,9 @@ data class Job(
     var goodExamplesCount: Int? = null,
     var inAdvanceEntryPeriod: Boolean = false,
     var closeToHome: Boolean = false,
-    var jobAttachments: List<JobAttachment> = listOf()
+    var jobAttachments: List<JobAttachment> = listOf(),
+    var allowPreEntry: Boolean = false,
+    var preEntryStartAt: Date? = null
 ): Parcelable {
     var uninitialized: Boolean = false
     val reportId: Int? get() = report?.id
@@ -90,6 +92,34 @@ data class Job(
     /** 作業期間切れのタスクか? */
     val isExpired: Boolean get() {
         return (this.limitAt?.let { Date() > it } ?: false)
+    }
+    /** 先行応募開始前のタスクか? */
+    val isBeforePreEntry: Boolean get() {
+        val now = Date()
+        var preEntryFlag = false
+        preEntryStartAt?.let {
+            preEntryFlag = !(isPastOrInactive) && (it > now)  && (now < workingStartAt)
+        }
+        return preEntryFlag
+    }
+
+    /** 先行応募中のタスクか? */
+    val isPreEntry: Boolean get() {
+        val now = Date()
+        var preEntryFlag = false
+        preEntryStartAt?.let {
+            preEntryFlag = !(isPastOrInactive) && (it <= now)  && (now < workingStartAt)
+        }
+       return preEntryFlag
+    }
+    /** 先行応募済みのタスクか? */
+    val isPreEntried: Boolean get() {
+        val now = Date()
+        var preEntryFlag = false
+        preEntryStartAt?.let {
+            preEntryFlag = isEntried && (it <= now)  && (now < workingStartAt)
+        }
+        return preEntryFlag
     }
     /** 応募済みの場合の作業リミット時間 */
     val limitAt: Date? get() = entry?.limitAt
@@ -182,8 +212,8 @@ data class Job(
      */
     fun notApplicableReason(user: User?): String? {
         return when {
-            // 未来、もしくは過去案件の場合
-            (isFuture || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
+            // 未来(先行応募中は除く)、もしくは過去案件の場合
+            ((isFuture && !(isPreEntry)) || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
             // すでに応募済みの場合
             (isEntried) -> ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
             // Ban された案件の場合

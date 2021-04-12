@@ -33,8 +33,10 @@ class ErikuraMarkerView(private val activity: FragmentActivity, private val map:
         const val BASE_ZINDEX: Float            = 999f
         const val ACTIVE_ZINDEX_OFFSET: Float   = 100000f
         const val OWN_JOB_ZINDEX_OFFSET: Float  = 10000f
+        const val PRE_ENTRIED_OFFSET: Float     = 5000f
         const val BOOST_ZINDEX_OFFSET: Float    = 1000f
         const val WANTED_ZINDEX_OFFSET: Float   = 2000f
+        const val PRE_ENTRING_OFFSET: Float       = -10000f
         const val SOON_ZINDEX_OFFSET: Float     = -20000f
         const val FUTURE_ZINDEX_OFFSET: Float   = -30000f
         const val ENTRIED_ZINDEX_OFFSET: Float  = -60000f

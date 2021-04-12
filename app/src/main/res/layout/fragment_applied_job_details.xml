@@ -76,7 +76,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="20dp"
                             style="@style/smallCaption"
-                            android:text="@string/jobDetails_pressButton"
+                            android:text="@{viewModel.timeLimitWarningMessage}"
                             android:visibility="@{viewModel.msgVisibility}"/>
 
                     </LinearLayout>
@@ -233,6 +233,7 @@
                         android:layout_marginRight="0dp"
                         android:layout_weight="20"
                         style="@style/primaryButton"
+                        android:background="@{viewModel.buttonStyle}"
                         android:text="@string/startJob"
                         app:onSafeClick="@{handlers::onClickStart}"
                         android:visibility="@{viewModel.startButtonVisibility}"/>

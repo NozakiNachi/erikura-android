@@ -46,6 +46,8 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.abs
 
 class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
@@ -485,21 +487,36 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
                 // 表示順
                 marker.zIndex = ErikuraMarkerView.BASE_ZINDEX - i
                 if (job.isStartSoon) {
-                    marker.zIndex += ErikuraMarkerView.SOON_ZINDEX_OFFSET
+                    if (job.isPreEntry) {
+                        // 先行応募中の場合
+                        marker.zIndex += ErikuraMarkerView.PRE_ENTRING_OFFSET
+                    } else {
+                        // 募集予定
+                        marker.zIndex += ErikuraMarkerView.SOON_ZINDEX_OFFSET
+                    }
                 }
                 else if (job.isFuture) {
+                    // 募集予定
                     marker.zIndex += ErikuraMarkerView.FUTURE_ZINDEX_OFFSET
                 }
 
                 if (job.isEntried) {
                     if (!job.isReported && job.isOwner) {
-                        marker.zIndex += ErikuraMarkerView.OWN_JOB_ZINDEX_OFFSET
+                        if (job.preEntryStartAt != null) {
+                            // 自分が先行応募した場合
+                            marker.zIndex += ErikuraMarkerView.PRE_ENTRIED_OFFSET
+                        } else {
+                            //　自分が応募したタスク（未報告）
+                            marker.zIndex += ErikuraMarkerView.OWN_JOB_ZINDEX_OFFSET
+                        }
                     }
                     else {
+                        //　自分が応募したタスク（報告済）
                         marker.zIndex += ErikuraMarkerView.ENTRIED_ZINDEX_OFFSET
                     }
                 }
                 else if (job.isPastOrInactive) {
+                    // 応募済み(他人)
                     marker.zIndex += ErikuraMarkerView.ENTRIED_ZINDEX_OFFSET
                 }
 
