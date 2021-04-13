@@ -149,7 +149,7 @@
                             android:layout_marginTop="20dp"
                             android:layout_marginLeft="20dp"
                             android:layout_marginRight="20dp"
-                            android:text="先行応募中のお仕事"
+                            android:text="先行応募可能なお仕事"
                             />
 
                         <androidx.recyclerview.widget.RecyclerView
