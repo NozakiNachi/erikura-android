@@ -37,6 +37,7 @@ class SendResetEmailActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
         val binding: ActivitySendResetEmailBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_send_reset_email)
+        user = intent.getParcelableExtra("user")?: User()
         binding.lifecycleOwner = this
         binding.handlers = this
         viewModel.currentEmail.value = user.email

@@ -390,6 +390,7 @@ class ChangeUserInformationActivity :
     override fun onClickChangeEmail(view: View) {
         // メールアドレス変更画面を表示する
         val intent = Intent(this, SendResetEmailActivity::class.java)
+        intent.putExtra("user", user)
         startActivity(intent)
     }
 
