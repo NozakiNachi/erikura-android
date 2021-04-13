@@ -186,7 +186,7 @@ interface IErikuraApiService {
     @PATCH("users/password_update")
     fun updateResetPassword(@Body request: UpdatePasswordRequest): ApiObservable<UpdatePasswordResponse>
 
-    @POST("users/email_reset")
+    @POST("users/mail_update")
     fun sendEmailReset(@Body request: RegisterEmailRequest): ApiObservable<ResultResponse>
 }
 
