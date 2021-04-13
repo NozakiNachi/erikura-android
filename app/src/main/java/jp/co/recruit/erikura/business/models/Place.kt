@@ -7,6 +7,8 @@ import kotlinx.android.parcel.Parcelize
 enum class PlaceJobType(val value: String) {
     @SerializedName("active")
     ACTIVE("active"),
+    @SerializedName("pre_entry")
+    PRE_ENTRY("pre_entry"),
     @SerializedName("future")
     FUTURE("future"),
     @SerializedName("past")
