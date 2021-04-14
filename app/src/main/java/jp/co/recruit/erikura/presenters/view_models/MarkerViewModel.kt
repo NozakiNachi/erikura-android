@@ -20,7 +20,7 @@ open class MarkerViewModel(val job: Job): ViewModel() {
     val icon: MutableLiveData<Bitmap> = MutableLiveData()
 
     val fee: String get() = String.format("%,d円", job.fee)
-    open val isDisabled: Boolean get() = (job.isEntried || job.isFuture) && !isOwnerMarker
+    open val isDisabled: Boolean get() = (job.isEntried || (job.isFuture && !(job.isPreEntry))) && !isOwnerMarker
     val iconUrl: URL? get () {
         if (isDisabled) {
             return job.jobKind?.inactiveIconUrl
