@@ -309,12 +309,9 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
 
             if (job.entry?.fromPreEntry == true) {
                 // 先行応募で応募されていた場合
-                val calendar = Calendar.getInstance()
-                calendar.time = job.workingStartAt ?: Date()
-                calendar.add(Calendar.DATE, 1)
                 // 先行応募の場合は納期の始まりを作業開始の時間、納期の締め切りを作業開始から24時間後の時刻とする
                 startAt = JobUtils.DateFormats.simple.format( job.workingStartAt ?: Date())
-                finishAt = JobUtils.DateFormats.simple.format( calendar.time ?: Date())
+                finishAt = JobUtils.DateFormats.simple.format( ErikuraApplication.instance.preEntryFinishAt(job.workingStartAt ?: Date()))
             }
             limit.value = "${startAt} 〜 ${finishAt}"
             job.entry?.limitAt?.also { limitAt ->
@@ -324,10 +321,19 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             }
         }
         else {
-            val startAt = JobUtils.DateFormats.simple.format(job.workingStartAt ?: Date())
-            val finishAt = JobUtils.DateFormats.simple.format(job.workingFinishAt ?: Date())
             // 自分が応募していないタスクについて募集期間を表示します
-            limit.value = "${startAt} 〜 ${finishAt}"
+            if (job.isPreEntry) {
+                // 先行応募中の場合 納期の締め切りを作業開始から24時間後の時刻とする
+                val startAt = JobUtils.DateFormats.simple.format(job.workingStartAt ?: Date())
+                val finishAt = JobUtils.DateFormats.simple.format( ErikuraApplication.instance.preEntryFinishAt(job.workingStartAt ?: Date()))
+                limit.value = "${startAt} 〜 ${finishAt}"
+
+            } else {
+                val startAt = JobUtils.DateFormats.simple.format(job.workingStartAt ?: Date())
+                val finishAt = JobUtils.DateFormats.simple.format(job.workingFinishAt ?: Date())
+                limit.value = "${startAt} 〜 ${finishAt}"
+
+            }
         }
     }
 

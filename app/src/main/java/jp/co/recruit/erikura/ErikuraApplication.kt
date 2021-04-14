@@ -47,6 +47,7 @@ import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ErikuraApplication : Application() {
@@ -112,6 +113,8 @@ class ErikuraApplication : Application() {
         const val ID_IMAGE_MAX_SIZE = 2592
         // 身分証確認圧縮する画像のquality
         const val ID_IMAGE_QUALITY = 90
+
+        val WEEK_DAYS: Array<String> = arrayOf("日", "月", "火", "水", "木", "金", "土")
     }
 
     //    var userSession: UserSession? = null
@@ -291,6 +294,37 @@ class ErikuraApplication : Application() {
     // Activityが存在することを確認
     fun isEnableActivity(activity: Activity): Boolean {
         return !(activity.isDestroyed)
+    }
+
+    fun preEntryFinishAt(workingStartAt: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = workingStartAt
+        calendar.add(Calendar.DATE, 1)
+        return calendar.time
+    }
+
+    fun getWeekDay(date: Date): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        return WEEK_DAYS[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+    }
+
+    fun getWorkingDay(date: Date): String {
+        val workingDay = "作業日(%s)"
+        val sdfDate = SimpleDateFormat("MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= getWeekDay(date)
+        val dateFormat = sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
+        return String.format(workingDay, dateFormat)
+    }
+
+    fun getFormattedDate(date: Date): String {
+        val sdfDate = SimpleDateFormat("MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= getWeekDay(date)
+        return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
     }
 }
 

@@ -150,7 +150,7 @@
     <string name="jobDetails_workingPlaceLink">この場所のお仕事全て</string>
     <string name="jobDetails_applyFlowCaption">応募後の流れ</string>
     <string name="jobDetails_preEntryFlowCaption">先行応募後の流れ</string>
-    <string name="jobDetails_preEntryFlowCaption1">作業日までお待ちください\nマニュアルをお読みいただき、事前に必要な道具の用意をお願いします</string>
+    <string name="jobDetails_preEntryFlowCaption1">までお待ちください\nマニュアルをお読みいただき、事前に必要な道具の用意をお願いします</string>
     <string name="jobDetails_preEntryFlowCaption2">❷ 作業当日</string>
     <string name="jobDetails_outOfEntryExpire">応募受付期間外のため応募できません</string>
     <string name="jobDetails_entryFinished">受付が終了いたしました</string>
@@ -158,10 +158,10 @@
     <string name="jobDetails_maxEntry">未報告のお仕事が%1$d件以上あるため応募できません</string>
     <string name="jobDetails_advanceEntry">このお仕事は近隣在住の方のみ応募可能です</string>
     <string name="jobDetails_goWorking">に現地で作業後、\n作業報告しましょう！</string>
-    <string name="jobDetails_goWorkingByPreEntry">に作業開始です</string>
+    <string name="jobDetails_goWorkingByPreEntry">\nに作業を実施してください。</string>
     <string name="jobDetails_overLimit">納期を超過しています</string>
     <string name="jobDetails_pressButton">※現地に着いて、作業開始する時に「作業を開始」ボタンを押してください。</string>
-    <string name="jobDetails_pressButtonByPreEntry">※作業日になるまで作業開始することができません。作業日までしばらくお待ちください。</string>
+    <string name="jobDetails_pressButtonByPreEntry">※%sになるまで作業開始することができません。\n作業日までしばらくお待ちください。</string>
     <string name="jobDetails_manualImageURL">https://s3-ap-northeast-1.amazonaws.com/assets.prd.erikura.net/manual_pdfs/manual_thumbnail.png</string>
     <string name="jobDetails_working">作業実施中</string>
     <string name="jobDetails_startTo">開始から</string>
@@ -189,12 +189,15 @@
     <string name="preEntryFlowDialog_step2">このお仕事の注意事項をチェックする</string>
     <string name="preEntryFlowDialog_step2Explain">作業時の注意事項がある場合があります。注意事項がある場合は、必ず確認しましょう。</string>
     <string name="preEntryFlowDialog_step3">作業日が来たら作業開始する</string>
-    <string name="preEntryFlowDialog_step3Explain">作業日になりましたら、実際に現地に行き作業を実施し、作業報告まで行いましょう。\n注意１：作業日から24時間以内に「作業報告まで実施」してください。\n注意２：時間内に作業できない場合は「速やかにキャンセル」してください。</string>
+    <string name="preEntryFlowDialog_step3Explain1">から作業を実施できます。\n現地に行き作業を実施し、作業報告まで行いましょう。</string>
+    <string name="preEntryFlowDialog_step3Explain2">注意１：%sから24時間以内に「作業報告まで実施」してください。</string>
+    <string name="preEntryFlowDialog_step3Explain3">注意２：時間内に作業できない場合は「速やかにキャンセル」してください。</string>
     <string name="preEntryFlowDialog_step4">作業報告をする</string>
     <string name="preEntryFlowDialog_step4Explain">作業箇所の写真を撮影し、コメントを添えて、作業報告をしましょう。</string>
     <string name="preEntryFlowDialog_completed">これでお仕事は完了です！\n報酬は翌月末に指定口座にお振込み致します。</string>
     <!-- 先行応募確認モーダル -->
-    <string name="preEntryDialog_warning">※作業報告締切は、作業日から24時間以内となります。\n時間以内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。\n※作業箇所の写真は横向きに撮影してください。\n作業報告は横向きの写真のみ使用できます。</string>
+    <string name="applyDialog_pre_entry_warning1">※作業報告締切は、%sから24時間以内となります。</string>
+    <string name="applyDialog_pre_entry_warning2">時間内に報告が完了しない場合、キャンセル扱いとなり報酬は支払われませんのでご注意ください。\n※作業箇所の写真は横向きに撮影してください。作業報告は横向きの写真のみ使用できます。</string>
 
     <!-- 応募後の流れ確認モーダル -->
     <string name="applyFlowDialog_caption">応募後は即確定となります。</string>
@@ -223,8 +226,7 @@
     <string name="applyCompleted_note">現地に向かい、作業を行いましょう！\n(24時間以内に報告必須)</string>
     <string name="applyCompleted_recommend">お近くのお仕事</string>
     <!-- 先行応募完了画面 -->
-    <string name="preEntryCompleted_caption">先行応募が完了しました！</string>
-    <string name="preEntryCompleted_note">作業日になりましたら現地に向かい作業を行いましょう！\n(作業日から24時間以内に報告必須)</string>
+    <string name="preEntryCompleted_note">こちらは先行応募のお仕事になります。\n%sになりましたら24時間以内に「作業報告」まで実施しましょう！</string>
 
     <!-- 応募キャンセルモーダル -->
     <string name="cancel_caption">このお仕事をキャンセルしますか？</string>

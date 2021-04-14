@@ -55,7 +55,18 @@
                         android:gravity="center"
                         android:lineSpacingExtra="10dp"
                         android:text="@{viewModel.applyCompletedCaption}"
-                        android:textColor="@color/blackTwo" />
+                        android:textColor="@color/blackTwo"
+                        android:visibility="@{viewModel.applyCompletedCaptionVisibility}" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/errorField"
+                        android:layout_marginTop="20dp"
+                        android:lineSpacingExtra="10dp"
+                        android:text="@{viewModel.applyCompletedPreEntryCaption}"
+                        android:textColor="@color/coral"
+                        android:visibility="@{viewModel.applyCompletedPreEntryCaptionVisibility}" />
 
                     <ImageView
                         android:layout_width="300dp"

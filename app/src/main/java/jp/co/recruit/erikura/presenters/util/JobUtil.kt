@@ -36,7 +36,7 @@ object JobUtil {
         OWNED,
     }
 
-    fun setupTimeLabel(context: Context, job: Job?, type: TimeLabelType = TimeLabelType.SEARCH): Pair<SpannableStringBuilder, Int> {
+    fun setupTimeLabel(context: Context, job: Job?, type: TimeLabelType = TimeLabelType.SEARCH, fromJobList: Boolean = false): Pair<SpannableStringBuilder, Int> {
         // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
         // 作業実施中: working 状態の場合, green, 12pt
         // 実施済み(未報告): finished の場合, green, 12pt
@@ -81,9 +81,15 @@ object JobUtil {
                         }
 
                         val workingStartAt = job.workingStartAt ?: now
+                        val finishAt = ErikuraApplication.instance.preEntryFinishAt(workingStartAt)
+
                         val sdf = SimpleDateFormat("MM/dd")
-                        append("先行応募可　作業日：")
-                        appendStringAsLarge(this, sdf.format(workingStartAt) ?: "")
+                        if (fromJobList) {
+                            append("作業日：")
+                        } else {
+                            append("先行応募可　作業日：")
+                        }
+                        appendStringAsLarge(this, "${sdf.format(workingStartAt)} 〜 ${sdf.format(finishAt)}" ?: "")
                     }
                 } else {
                     if (job.isBeforePreEntry) {
@@ -168,12 +174,14 @@ object JobUtil {
                                     appendStringWithFont(this, "\uf058 ", "fas", fasFont)
                                 }
                                 val sdfDate = SimpleDateFormat("MM/dd")
-                                val sdfTime = SimpleDateFormat("HH:mm")
+                                val sdfWeekDay = "(%s) "
                                 append("先行応募済 作業日: ")
                                 appendStringAsLarge(this, job?.workingStartAt?.let { sdfDate.format(it) } ?: "")
-                                append(" ")
-                                appendStringAsLarge(this, job?.workingStartAt?.let { sdfTime.format(it) } ?: "")
-                                append("〜")
+                                appendStringAsLarge(this, ErikuraApplication.instance.getWeekDay(job?.workingStartAt?: Date())?.let { String.format(sdfWeekDay, it) } ?: "")
+                                append(" 〜 ")
+                                val finishAt = ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
+                                appendStringAsLarge(this, finishAt.let { sdfDate.format(it) } ?: "")
+                                appendStringAsLarge(this, ErikuraApplication.instance.getWeekDay(finishAt)?.let { String.format(sdfWeekDay, it) } ?: "")
                             }
                         }
                         else {

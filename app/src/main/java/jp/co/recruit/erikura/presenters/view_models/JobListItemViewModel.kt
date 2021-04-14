@@ -15,15 +15,28 @@ import com.google.maps.android.SphericalUtil
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.util.JobUtils
+import java.util.*
 
 class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition: LatLng? = null, val timeLabelType: JobUtil.TimeLabelType): ViewModel() {
     val assetsManager = ErikuraApplication.assetsManager
 
     val reward: String get() = String.format("%,d円", job.fee)
     val workingTime: String get() = String.format("%d分", job.workingTime)
+    val workingStartAt: String get() {
+        return JobUtils.DateFormats.simple.format(job?.workingStartAt?: Date())
+    }
     val workingFinishAt: String get() {
         val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
-            job?.entry?.limitAt ?: job.workingFinishAt
+            if (job?.isPreEntried) {
+                // 先行応募済みの場合、作業開始の24時間後を返す
+                ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
+            } else {
+                job?.entry?.limitAt ?: job.workingFinishAt
+            }
+        }
+        else if(job?.isPreEntry) {
+            // 先行応募中の場合、作業開始の24時間後を返す
+            ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
         }
         else {
             job.workingFinishAt
@@ -57,7 +70,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     }
 
     init {
-        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType)
+        val (timeLimitText, timeLimitColor) = JobUtil.setupTimeLabel(ErikuraApplication.instance.applicationContext, job, timeLabelType, true)
         textColor.value = timeLimitColor
         timeLimit.value = timeLimitText
 

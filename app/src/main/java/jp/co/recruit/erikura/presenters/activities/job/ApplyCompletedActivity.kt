@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +21,7 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.ActivityApplyCompletedBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import java.util.*
 
 class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
     private val viewModel: ApplyCompletedViewModel by lazy {
@@ -35,6 +37,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         super.onCreate(savedInstanceState)
 
         job = intent.getParcelableExtra<Job>("job")
+        viewModel.job.value = job
         Log.v("DEBUG", job.toString())
 
         val binding: ActivityApplyCompletedBinding = DataBindingUtil.setContentView(this, R.layout.activity_apply_completed)
@@ -54,12 +57,14 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
         jobList.adapter = recommendedJobsAdapter
         jobList.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         jobList.addItemDecoration(JobListItemDecorator())
+        viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.applyCompleted_caption)
         if (job.isPreEntry) {
             // 先行応募経由の場合
-            viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.preEntryCompleted_caption)
-            viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.preEntryCompleted_note)
+            viewModel.applyCompletedPreEntryCaption.value = String.format(
+                ErikuraApplication.instance.getString(R.string.preEntryCompleted_note),
+                ErikuraApplication.instance.getWorkingDay(job.workingStartAt?: Date())
+            )
         } else {
-            viewModel.applyCompletedTitle.value = ErikuraApplication.instance.getString(R.string.applyCompleted_caption)
             viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.applyCompleted_note)
         }
     }
@@ -119,6 +124,28 @@ class ApplyCompletedViewModel: ViewModel() {
     var recommendedJobs: List<Job> = listOf()
     var applyCompletedTitle = MutableLiveData<String>()
     var applyCompletedCaption = MutableLiveData<String>()
+    var applyCompletedPreEntryCaption = MutableLiveData<String>()
+    val job: MutableLiveData<Job> = MutableLiveData()
+    val applyCompletedCaptionVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            result.value =
+                if (it.isPreEntry) {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
+        }
+    }
+    val applyCompletedPreEntryCaptionVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            result.value =
+                if (it.isPreEntry) {
+                    View.VISIBLE
+                } else {
+                    View.INVISIBLE
+                }
+        }
+    }
 }
 
 interface ApplyCompletedEventHandlers {

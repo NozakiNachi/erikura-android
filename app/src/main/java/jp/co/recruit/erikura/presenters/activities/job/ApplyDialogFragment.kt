@@ -238,10 +238,17 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val checkManual = MutableLiveData<Boolean>()
     val checkCautions = MutableLiveData<Boolean>()
     val checkSummaryTitles = MutableLiveData<Boolean>()
+    val dialogWarningCaptions = MediatorLiveData<String>().also { result ->
+        result.addSource(job) {
+            result.value = String.format(
+                ErikuraApplication.instance.resources.getString(R.string.applyDialog_pre_entry_warning1),
+                ErikuraApplication.instance.getWorkingDay(it.workingStartAt?: Date()))
+        }
+    }
     val dialogCaptions = MediatorLiveData<String>().also { result ->
         result.addSource(job) {
             if (it.isPreEntry) {
-                result.value = ErikuraApplication.instance.resources.getString(R.string.preEntryDialog_warning)
+                result.value = ErikuraApplication.instance.resources.getString(R.string.applyDialog_pre_entry_warning2)
             } else {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.applyDialog_warning)
             }
@@ -261,6 +268,16 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val checkManualVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val checkCautionsVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val checkSummaryTitlesVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val displayWarningCaptionVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            result.value =
+            if (it.isPreEntry) {
+                 View.VISIBLE
+            } else {
+                View.GONE
+            }
+        }
+    }
 
     val isEntryButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(entryQuestionVisibility) { result.value = isValid() }
