@@ -76,19 +76,16 @@ object JobUtil {
                 if (job.isPreEntry) {
                     //先行応募の場合
                     text = SpannableStringBuilder().apply {
-                        ResourcesCompat.getFont(context, R.font.fa_regular_400)?.let { fasFont ->
-                            appendStringWithFont(this, "\uf058 ", "fas", fasFont)
-                        }
-
                         val workingStartAt = job.workingStartAt ?: now
                         val finishAt = preEntryWorkingLimitAt(workingStartAt)
-
                         val sdf = SimpleDateFormat("MM/dd")
-                        if (fromJobList) {
-                            append("作業日：")
-                        } else {
-                            append("先行応募可　作業日：")
+                        if (!(fromJobList)) {
+                            ResourcesCompat.getFont(context, R.font.fa_regular_400)?.let { fasFont ->
+                                appendStringWithFont(this, "\uf058 ", "fas", fasFont)
+                            }
+                            append("先行応募可　")
                         }
+                        append("作業日：")
                         appendStringAsLarge(this, "${sdf.format(workingStartAt)} 〜 ${sdf.format(finishAt)}" ?: "")
                     }
                 } else {
