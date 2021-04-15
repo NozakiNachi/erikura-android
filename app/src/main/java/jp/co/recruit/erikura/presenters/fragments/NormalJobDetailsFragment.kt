@@ -56,7 +56,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isShowPreEntryFlowModal = job?.isPreEntry == true
+        isShowPreEntryFlowModal = (job?.isPreEntry == true)
 
         if (isShowPreEntryFlowModal) {
             //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
