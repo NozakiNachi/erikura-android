@@ -131,14 +131,40 @@
                         android:textSize="18dp" />
 
                     <TextView
+                        android:id="@+id/preEntryFlowDialog_step3Explain1"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginRight="20dp"
                         android:lineSpacingExtra="10dp"
-                        android:text="@string/preEntryFlowDialog_step3Explain"
+                        android:text="@string/preEntryFlowDialog_step3Explain1"
                         android:textColor="@color/black"
+                        android:textSize="14dp" />
+
+                    <TextView
+                        android:id="@+id/preEntryFlowDialog_step3Explain2"
+                        style="@style/errorField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="20dp"
+                        android:textColor="@color/coral"
+                        android:lineSpacingExtra="10dp"
+                        android:text="@string/preEntryFlowDialog_step3Explain2"
+                        android:textSize="14dp" />
+
+                    <TextView
+                        style="@style/errorField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginRight="20dp"
+                        android:textColor="@color/coral"
+                        android:lineSpacingExtra="10dp"
+                        android:text="@string/preEntryFlowDialog_step3Explain3"
                         android:textSize="14dp" />
 
                     <ImageView

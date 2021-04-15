@@ -19,11 +19,8 @@ import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentNormalJobDetailsBinding
-import jp.co.recruit.erikura.presenters.activities.job.ApplyDialogFragment
 import jp.co.recruit.erikura.presenters.activities.job.PreEntryFlowDialogFragment
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
-import kotlinx.android.synthetic.main.activity_upload_id_image.*
-import java.util.*
 
 class NormalJobDetailsFragment : BaseJobDetailFragment {
     companion object {
@@ -63,7 +60,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
 
         if (isShowPreEntryFlowModal) {
             //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
-            val dialog = PreEntryFlowDialogFragment.newInstance()
+            val dialog = PreEntryFlowDialogFragment.newInstance(job)
             dialog.show(childFragmentManager, "PreEntryFlow")
 
         }
@@ -128,7 +125,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
         transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
-        if (job != null && job!!.isPreEntry){
+        if (job != null && job?.isPreEntry == true){
             transaction.add(R.id.jobDetails_applyFlowViewFragment, preEntryFlowView!!, "preEntryFlowView")
         } else {
             transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")

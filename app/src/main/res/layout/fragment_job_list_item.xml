@@ -266,6 +266,22 @@
                 </LinearLayout>
 
                 <TextView
+                    android:id="@+id/carousel_cell_working_start_at"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="9dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:textSize="12dp"
+                    android:firstBaselineToTopHeight="0dp"
+                    android:lastBaselineToBottomHeight="0dp"
+                    android:includeFontPadding="false"
+                    android:textColor="@color/black"
+                    android:text="@{viewModel.workingStartAt}"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    />
+
+                <TextView
                     android:id="@+id/carousel_cell_working_finish_at"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
