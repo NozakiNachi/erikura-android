@@ -22,7 +22,7 @@ open class MarkerViewModel(val job: Job): ViewModel() {
     val fee: String get() = String.format("%,d円", job.fee)
     open val isDisabled: Boolean get() = (job.isEntried || job.isFuture && !isOwnerMarker)
     val iconUrl: URL? get () {
-        if (job.isPreEntry) {
+        if (job.isPreEntry || job.isBeforePreEntry) {
             return job.jobKind?.activeIconUrl
         }
         else if (isDisabled) {
