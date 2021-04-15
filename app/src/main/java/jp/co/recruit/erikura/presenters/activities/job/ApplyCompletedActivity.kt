@@ -62,7 +62,7 @@ class ApplyCompletedActivity : BaseActivity(), ApplyCompletedEventHandlers {
             // 先行応募経由の場合
             viewModel.applyCompletedPreEntryCaption.value = String.format(
                 ErikuraApplication.instance.getString(R.string.preEntryCompleted_note),
-                ErikuraApplication.instance.getWorkingDay(job.workingStartAt?: Date())
+                JobUtil.getWorkingDay(job.workingStartAt?: Date())
             )
         } else {
             viewModel.applyCompletedCaption.value = ErikuraApplication.instance.getString(R.string.applyCompleted_note)

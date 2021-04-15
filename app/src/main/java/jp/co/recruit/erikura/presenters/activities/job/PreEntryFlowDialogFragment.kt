@@ -33,7 +33,7 @@ class PreEntryFlowDialogFragment: DialogFragment(), PreEntryFlowDialogFragmentEv
         arguments?.let { args ->
             job = args.getParcelable(JOB_ARGUMENT)
         }
-        val workingDay = ErikuraApplication.instance.getWorkingDay(job?.workingStartAt?: Date())
+        val workingDay = JobUtil.getWorkingDay(job?.workingStartAt?: Date())
         val binding = DataBindingUtil.inflate<DialogPreEntryFlowBinding>(
             LayoutInflater.from(activity),
             R.layout.dialog_pre_entry_flow,

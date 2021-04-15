@@ -27,16 +27,24 @@ class PreEntryFlowViewFragment() : BaseJobDetailFragment() {
         }
     }
 
+    private val viewModel: PreEntryFlowViewFragmentViewModel by lazy {
+        ViewModelProvider(this).get(PreEntryFlowViewFragmentViewModel::class.java)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val preEntryFlowView: View = inflater.inflate(R.layout.fragment_pre_entry_flow_view, container, false)
+        val binding = FragmentPreEntryFlowViewBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = activity
+        binding.viewModel = viewModel
         job?.workingStartAt?.let { startAt ->
-            // Inflate the layout for this fragment
-            val caption1 = preEntryFlowView.findViewById<TextView>(R.id.preEntryFlowCaption1)
-            caption1?.text = (ErikuraApplication.instance.getWorkingDay(startAt) + ErikuraApplication.instance.getString(R.string.jobDetails_preEntryFlowCaption1))
+            viewModel.workingDay.value = (JobUtil.getWorkingDay(startAt) + ErikuraApplication.instance.getString(R.string.jobDetails_preEntryFlowCaption1))
         }
-        return preEntryFlowView
+        return binding.root
     }
+}
+
+class PreEntryFlowViewFragmentViewModel: ViewModel() {
+    val workingDay: MutableLiveData<String> = MutableLiveData()
 }

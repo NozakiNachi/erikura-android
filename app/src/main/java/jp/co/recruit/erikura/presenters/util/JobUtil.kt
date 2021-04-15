@@ -81,7 +81,7 @@ object JobUtil {
                         }
 
                         val workingStartAt = job.workingStartAt ?: now
-                        val finishAt = ErikuraApplication.instance.preEntryFinishAt(workingStartAt)
+                        val finishAt = preEntryWorkingLimitAt(workingStartAt)
 
                         val sdf = SimpleDateFormat("MM/dd")
                         if (fromJobList) {
@@ -177,11 +177,11 @@ object JobUtil {
                                 val sdfWeekDay = "(%s) "
                                 append("先行応募済 作業日: ")
                                 appendStringAsLarge(this, job?.workingStartAt?.let { sdfDate.format(it) } ?: "")
-                                appendStringAsLarge(this, ErikuraApplication.instance.getWeekDay(job?.workingStartAt?: Date())?.let { String.format(sdfWeekDay, it) } ?: "")
+                                appendStringAsLarge(this, formatWeekDay(job?.workingStartAt?: Date())?.let { String.format(sdfWeekDay, it) } ?: "")
                                 append(" 〜 ")
-                                val finishAt = ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
+                                val finishAt = preEntryWorkingLimitAt(job?.workingStartAt?: Date())
                                 appendStringAsLarge(this, finishAt.let { sdfDate.format(it) } ?: "")
-                                appendStringAsLarge(this, ErikuraApplication.instance.getWeekDay(finishAt)?.let { String.format(sdfWeekDay, it) } ?: "")
+                                appendStringAsLarge(this, formatWeekDay(finishAt)?.let { String.format(sdfWeekDay, it) } ?: "")
                             }
                         }
                         else {
@@ -334,6 +334,37 @@ object JobUtil {
                 handler(widget)
             }
         }, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+
+    fun preEntryWorkingLimitAt(workingStartAt: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = workingStartAt
+        calendar.add(Calendar.DATE, 1)
+        return calendar.time
+    }
+
+    fun formatWeekDay(date: Date): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        return ErikuraApplication.WEEK_DAYS[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+    }
+
+    fun getWorkingDay(date: Date): String {
+        val workingDay = "作業日(%s)"
+        val sdfDate = SimpleDateFormat("MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= formatWeekDay(date)
+        val dateFormat = sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
+        return String.format(workingDay, dateFormat)
+    }
+
+    fun getFormattedDate(date: Date): String {
+        val sdfDate = SimpleDateFormat("MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= JobUtil.formatWeekDay(date)
+        return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
     }
 }
 

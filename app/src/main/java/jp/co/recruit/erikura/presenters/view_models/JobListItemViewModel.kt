@@ -7,7 +7,6 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.RelativeSizeSpan
 import android.view.View
-import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -29,14 +28,14 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
         val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
             if (job?.isPreEntried) {
                 // 先行応募済みの場合、作業開始の24時間後を返す
-                ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
+                JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
             } else {
                 job?.entry?.limitAt ?: job.workingFinishAt
             }
         }
         else if(job?.isPreEntry) {
             // 先行応募中の場合、作業開始の24時間後を返す
-            ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
+            JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
         }
         else {
             job.workingFinishAt

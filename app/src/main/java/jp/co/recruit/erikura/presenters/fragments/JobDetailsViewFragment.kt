@@ -311,7 +311,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
                 // 先行応募で応募されていた場合
                 // 先行応募の場合は納期の始まりを作業開始の時間、納期の締め切りを作業開始から24時間後の時刻とする
                 startAt = JobUtils.DateFormats.simple.format( job.workingStartAt ?: Date())
-                finishAt = JobUtils.DateFormats.simple.format( ErikuraApplication.instance.preEntryFinishAt(job.workingStartAt ?: Date()))
+                finishAt = JobUtils.DateFormats.simple.format( JobUtil.preEntryWorkingLimitAt(job.workingStartAt ?: Date()))
             }
             limit.value = "${startAt} 〜 ${finishAt}"
             job.entry?.limitAt?.also { limitAt ->
@@ -325,7 +325,7 @@ class JobDetailsViewFragmentViewModel: ViewModel() {
             if (job.isPreEntry) {
                 // 先行応募中の場合 納期の締め切りを作業開始から24時間後の時刻とする
                 val startAt = JobUtils.DateFormats.simple.format(job.workingStartAt ?: Date())
-                val finishAt = JobUtils.DateFormats.simple.format( ErikuraApplication.instance.preEntryFinishAt(job.workingStartAt ?: Date()))
+                val finishAt = JobUtils.DateFormats.simple.format( JobUtil.preEntryWorkingLimitAt(job.workingStartAt ?: Date()))
                 limit.value = "${startAt} 〜 ${finishAt}"
 
             } else {

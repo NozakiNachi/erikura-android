@@ -5,6 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".presenters.fragments.PreEntryFlowViewFragment">
 
+    <data>
+    <variable
+        name="viewModel"
+        type="jp.co.recruit.erikura.presenters.fragments.PreEntryFlowViewFragmentViewModel" />
+    </data>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -50,10 +56,10 @@
                         android:textSize="18dp" />
 
                     <TextView
-                        android:id="@+id/preEntryFlowCaption1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
+                        android:text="@{viewModel.workingDay}"
                         android:textColor="@color/blackTwo"
                         android:textSize="18dp" />
                 </LinearLayout>

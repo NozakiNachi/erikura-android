@@ -372,12 +372,12 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             if (job?.isPreEntried == true && startAtDiff >= 0) {
                 //　先行応募からの応募の場合
                 str.append(
-                    ErikuraApplication.instance.getFormattedDate(job?.workingStartAt?: Date())
+                    JobUtil.getFormattedDate(job?.workingStartAt?: Date())
                 )
                 str.append(
                     ("\n〜 " +
-                    ErikuraApplication.instance.getFormattedDate(
-                        ErikuraApplication.instance.preEntryFinishAt(job?.workingStartAt?: Date())
+                    JobUtil.getFormattedDate(
+                        JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
                     ))
                 )
                 str.setSpan(
@@ -389,7 +389,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
                 str.append(ErikuraApplication.instance.getString(R.string.jobDetails_goWorkingByPreEntry))
                 viewModel.timeLimitWarningPreEntryMessage.value = String.format(
                     ErikuraApplication.instance.getString(R.string.jobDetails_pressButtonByPreEntry),
-                    ErikuraApplication.instance.getWorkingDay(job?.workingStartAt?: Date())
+                    JobUtil.getWorkingDay(job?.workingStartAt?: Date())
                     )
                 viewModel.preEntryTimeLimit.value = str
                 viewModel.msgVisibility.value = View.GONE

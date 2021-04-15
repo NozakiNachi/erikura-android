@@ -295,37 +295,6 @@ class ErikuraApplication : Application() {
     fun isEnableActivity(activity: Activity): Boolean {
         return !(activity.isDestroyed)
     }
-
-    fun preEntryFinishAt(workingStartAt: Date): Date {
-        val calendar = Calendar.getInstance()
-        calendar.time = workingStartAt
-        calendar.add(Calendar.DATE, 1)
-        return calendar.time
-    }
-
-    fun getWeekDay(date: Date): String {
-        val calendar = Calendar.getInstance()
-        calendar.time = date
-        return WEEK_DAYS[calendar.get(Calendar.DAY_OF_WEEK) - 1]
-    }
-
-    fun getWorkingDay(date: Date): String {
-        val workingDay = "作業日(%s)"
-        val sdfDate = SimpleDateFormat("MM/dd")
-        val sdfWeekDay = "(%s) "
-        val sdfTime = SimpleDateFormat("HH:mm")
-        val weekday= getWeekDay(date)
-        val dateFormat = sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
-        return String.format(workingDay, dateFormat)
-    }
-
-    fun getFormattedDate(date: Date): String {
-        val sdfDate = SimpleDateFormat("MM/dd")
-        val sdfWeekDay = "(%s) "
-        val sdfTime = SimpleDateFormat("HH:mm")
-        val weekday= getWeekDay(date)
-        return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
-    }
 }
 
 class AppLifecycle: LifecycleObserver {

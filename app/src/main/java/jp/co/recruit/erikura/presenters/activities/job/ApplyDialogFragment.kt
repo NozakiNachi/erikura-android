@@ -242,7 +242,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
         result.addSource(job) {
             result.value = String.format(
                 ErikuraApplication.instance.resources.getString(R.string.applyDialog_pre_entry_warning1),
-                ErikuraApplication.instance.getWorkingDay(it.workingStartAt?: Date()))
+                JobUtil.getWorkingDay(it.workingStartAt?: Date()))
         }
     }
     val dialogCaptions = MediatorLiveData<String>().also { result ->
