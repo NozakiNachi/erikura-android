@@ -17,7 +17,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
-import jp.co.recruit.erikura.MemoryTraceException
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
@@ -92,7 +91,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
             }
         }
 
-        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
+//        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

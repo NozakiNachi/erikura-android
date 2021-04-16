@@ -19,7 +19,6 @@ import androidx.lifecycle.*
 import com.bumptech.glide.Glide
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
-import jp.co.recruit.erikura.MemoryTraceException
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
@@ -132,7 +131,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             Tracking.viewJobDetails(name= "/reports/edit/detail/${job.id}", title= "作業報告編集画面（箇所）", jobId= job.id)
         }
 
-        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
+//        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
     override fun onStop() {

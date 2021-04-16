@@ -4,7 +4,6 @@ import JobUtil
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.graphics.Color
 import android.graphics.Rect
 import android.media.ExifInterface
 import android.os.Bundle
@@ -26,9 +25,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
-import jp.co.recruit.erikura.MemoryTraceException
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
@@ -40,7 +37,6 @@ import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
-import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
     private val viewModel by lazy {
@@ -126,7 +122,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
 
-        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
+//        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
     override fun onStop() {
