@@ -816,6 +816,16 @@ class Api(var context: Context) {
         }
     }
 
+    fun sendEmailReset(email: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (result: Boolean) -> Unit) {
+        executeObservable(
+            erikuraApiService.sendEmailReset(RegisterEmailRequest(email = email)),
+            onError = onError
+        ) { body ->
+            val result = body.result
+            onComplete(result)
+        }
+    }
+
     fun updateResetPassword(passwordResetToken: String, password: String, passwordConfirmation: String, onError: ((messages: List<String>?) -> Unit)?=null, onComplete: (session: UserSession) -> Unit) {
         executeObservable(
             erikuraApiService.updateResetPassword(UpdatePasswordRequest(resetPasswordToken = passwordResetToken, password = password, passwordConfirmation = passwordConfirmation)),

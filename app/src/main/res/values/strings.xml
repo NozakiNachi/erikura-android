@@ -82,10 +82,22 @@
     <string name="sended_reset_password_limit">※メールに記載された登録URLの有効期限は10分間です。\n有効期限が切れた場合は再度パスワード再設定を実施してください。</string>
     <string name="sended_reset_password_accept">※迷惑メールフォルダに振り分けられていることもありますのでご確認ください。\nまた、「@erikura.net」ドメインからの受信を可能に設定してください。</string>
 
+    <!-- メールアドレス変更送信画面 -->
+    <string name="send_reset_email_title">メールアドレス変更</string>
+    <string name="send_reset_email_caption">新しいメールアドレスを入力してください。\n入力したメールアドレス宛に認証用のURLが記載されたメールを送信します。\nURLをクリックするとメールアドレスの変更が完了します。</string>
+    <string name="send_reset_email_button">確認メールを送信する</string>
+
+    <!-- メールアドレス変更送信完了画面 -->
+    <string name="sended_reset_email_caption">まだメールアドレス変更は\n完了しておりません</string>
+    <string name="sended_reset_email_sendEmail">ご入力いただいたメールアドレス宛に確認メールをお送りしました。</string>
+    <string name="sended_reset_email_clickEmailLink">お届けしたメール内の\nURLをクリックして\nメールアドレスを更新させてください。</string>
+    <string name="sended_reset_email_limit">※メールに記載された登録URLの有効期限は10分間です。\n有効期限が切れた場合は再度メールアドレスの変更を実施してください。</string>
+
     <!-- パスワード再設定画面 -->
     <string name="reset_password_title">パスワード再設定</string>
     <string name="reset_password_caption">新しく設定するパスワードを入力してください。</string>
     <string name="reset_password_button">パスワードを変更する</string>
+
 
     <!-- 会員登録完了画面 -->
     <string name="registerFinished_caption">会員登録が完了しました！</string>
