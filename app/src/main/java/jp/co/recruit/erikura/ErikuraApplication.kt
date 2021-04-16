@@ -656,5 +656,5 @@ class AdjustLifecycleCallbacks() : Application.ActivityLifecycleCallbacks {
     }
 }
 
-class MemoryTraceException(klassName: String, memoryInfo: ActivityManager.MemoryInfo) : Exception("class=${klassName}, total=${memoryInfo.totalMem / 1024.0 / 1024.0}, avail=${memoryInfo.availMem / 1024.0 / 1024.0},threshold=${memoryInfo.threshold / 1024.0 / 1024.0},lowMemory=${memoryInfo.lowMemory}") {
-}
+//class MemoryTraceException(klassName: String, memoryInfo: ActivityManager.MemoryInfo) : Exception("class=${klassName}, total=${memoryInfo.totalMem / 1024.0 / 1024.0}, avail=${memoryInfo.availMem / 1024.0 / 1024.0},threshold=${memoryInfo.threshold / 1024.0 / 1024.0},lowMemory=${memoryInfo.lowMemory}") {
+//}
