@@ -7,11 +7,11 @@
 
         <variable
             name="viewModel"
-            type="jp.co.recruit.erikura.presenters.activities.SendResetEmailViewModel" />
+            type="jp.co.recruit.erikura.presenters.activities.SendChangeEmailViewModel" />
 
         <variable
             name="handlers"
-            type="jp.co.recruit.erikura.presenters.activities.SendResetEmailEventHandlers" />
+            type="jp.co.recruit.erikura.presenters.activities.SendChangeEmailEventHandlers" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -110,7 +110,7 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
                     android:enabled="@{viewModel.isSendButtonEnabled()}"
-                    android:onClick="@{handlers::onClickSendResetEmail}"
+                    android:onClick="@{handlers::onClickSendChangeEmail}"
                     android:text="@string/send_reset_email_button" />
 
             </LinearLayout>

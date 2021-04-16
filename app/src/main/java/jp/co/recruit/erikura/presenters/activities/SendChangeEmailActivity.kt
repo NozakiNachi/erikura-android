@@ -20,23 +20,23 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.ActivitySendResetEmailBinding
+import jp.co.recruit.erikura.databinding.ActivitySendChangeEmailBinding
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import org.apache.commons.lang.StringUtils
 
 
-class SendResetEmailActivity : BaseActivity(),
-    SendResetEmailEventHandlers {
+class SendChangeEmailActivity : BaseActivity(),
+    SendChangeEmailEventHandlers {
     var user: User = User()
 
-    private val viewModel: SendResetEmailViewModel by lazy {
-        ViewModelProvider(this).get(SendResetEmailViewModel::class.java)
+    private val viewModel: SendChangeEmailViewModel by lazy {
+        ViewModelProvider(this).get(SendChangeEmailViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivitySendResetEmailBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_send_reset_email)
+        val binding: ActivitySendChangeEmailBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_send_change_email)
         user = intent.getParcelableExtra("user")?: User()
         binding.lifecycleOwner = this
         binding.handlers = this
@@ -51,7 +51,7 @@ class SendResetEmailActivity : BaseActivity(),
         }
     }
 
-    override fun onClickSendResetEmail(view: View) {
+    override fun onClickSendChangeEmail(view: View) {
         Api(this).sendEmailReset(viewModel.email.value ?:"") {
             Tracking.logEvent(event = "view_email_edit", params = bundleOf())
             Tracking.view(
@@ -59,7 +59,7 @@ class SendResetEmailActivity : BaseActivity(),
                 title = "メールアドレス再設定通知完了画面"
             )
             // 常にrespons　trueなので送信完了画面へ遷移します
-            var intent = Intent(this, SendedResetEmailActivity::class.java)
+            var intent = Intent(this, SendedChangeEmailActivity::class.java)
             startActivity(intent)
         }
     }
@@ -77,7 +77,7 @@ class SendResetEmailActivity : BaseActivity(),
     }
 }
 
-class SendResetEmailViewModel : ViewModel() {
+class SendChangeEmailViewModel : ViewModel() {
 
     // バリデーションルール
     private val emailPattern = ErikuraConst.emailPattern
@@ -108,6 +108,6 @@ class SendResetEmailViewModel : ViewModel() {
 
 }
 
-interface SendResetEmailEventHandlers {
-    fun onClickSendResetEmail(view: View)
+interface SendChangeEmailEventHandlers {
+    fun onClickSendChangeEmail(view: View)
 }

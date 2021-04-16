@@ -29,7 +29,7 @@ import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
-import jp.co.recruit.erikura.presenters.activities.SendResetEmailActivity
+import jp.co.recruit.erikura.presenters.activities.SendChangeEmailActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import kotlinx.android.synthetic.main.activity_change_user_information.*
@@ -389,7 +389,7 @@ class ChangeUserInformationActivity :
 
     override fun onClickChangeEmail(view: View) {
         // メールアドレス変更画面を表示する
-        val intent = Intent(this, SendResetEmailActivity::class.java)
+        val intent = Intent(this, SendChangeEmailActivity::class.java)
         intent.putExtra("user", user)
         startActivity(intent)
     }

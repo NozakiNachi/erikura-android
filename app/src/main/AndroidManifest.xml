@@ -418,12 +418,12 @@
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <!-- メールアドレス変更メール-->
         <activity
-            android:name=".presenters.activities.SendResetEmailActivity"
+            android:name=".presenters.activities.SendChangeEmailActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <!-- メールアドレス変更メール送信完了-->
         <activity
-            android:name=".presenters.activities.SendedResetEmailActivity"
+            android:name=".presenters.activities.SendedChangeEmailActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateAlwaysHidden"/>
         <!-- パスワード再設定-->
