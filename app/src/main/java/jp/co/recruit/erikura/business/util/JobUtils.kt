@@ -13,6 +13,7 @@ import kotlin.collections.HashMap
 object JobUtils {
     object DateFormats {
         val simple: SimpleDateFormat = SimpleDateFormat("yyyy/MM/dd H:mm")
+        val simple_MMddHmm: SimpleDateFormat = SimpleDateFormat("MM/dd H:mm")
     }
 
     /**

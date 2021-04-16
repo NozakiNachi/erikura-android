@@ -70,7 +70,16 @@
                             style="@style/titleLabel"
                             android:gravity="center"
                             android:textAllCaps="false"
-                            android:text="@{viewModel.timeLimit}" />
+                            android:text="@{viewModel.timeLimit}"
+                            android:visibility="@{viewModel.msgVisibility}" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            style="@style/titleLabel"
+                            android:gravity="center"
+                            android:textAllCaps="false"
+                            android:text="@{viewModel.preEntryTimeLimit}"
+                            android:visibility="@{viewModel.msgPreEntryVisibility}" />
                         <TextView
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -78,6 +87,17 @@
                             style="@style/smallCaption"
                             android:text="@{viewModel.timeLimitWarningMessage}"
                             android:visibility="@{viewModel.msgVisibility}"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            style="@style/errorField"
+                            android:layout_marginLeft="0dp"
+                            android:layout_marginRight="0dp"
+                            android:textColor="@color/coral"
+                            android:text="@{viewModel.timeLimitWarningPreEntryMessage}"
+                            android:visibility="@{viewModel.msgPreEntryVisibility}"/>
 
                     </LinearLayout>
 

@@ -36,7 +36,7 @@ object JobUtil {
         OWNED,
     }
 
-    fun setupTimeLabel(context: Context, job: Job?, type: TimeLabelType = TimeLabelType.SEARCH): Pair<SpannableStringBuilder, Int> {
+    fun setupTimeLabel(context: Context, job: Job?, type: TimeLabelType = TimeLabelType.SEARCH, fromJobList: Boolean = false): Pair<SpannableStringBuilder, Int> {
         // 受付終了：応募済みの場合、now > working_finish_at の場合, gray, 12pt
         // 作業実施中: working 状態の場合, green, 12pt
         // 実施済み(未報告): finished の場合, green, 12pt
@@ -76,14 +76,17 @@ object JobUtil {
                 if (job.isPreEntry) {
                     //先行応募の場合
                     text = SpannableStringBuilder().apply {
-                        ResourcesCompat.getFont(context, R.font.fa_regular_400)?.let { fasFont ->
-                            appendStringWithFont(this, "\uf058 ", "fas", fasFont)
-                        }
-
                         val workingStartAt = job.workingStartAt ?: now
+                        val finishAt = preEntryWorkingLimitAt(workingStartAt)
                         val sdf = SimpleDateFormat("MM/dd")
-                        append("先行応募可　作業日：")
-                        appendStringAsLarge(this, sdf.format(workingStartAt) ?: "")
+                        if (!(fromJobList)) {
+                            ResourcesCompat.getFont(context, R.font.fa_regular_400)?.let { fasFont ->
+                                appendStringWithFont(this, "\uf058 ", "fas", fasFont)
+                            }
+                            append("先行応募可　")
+                        }
+                        append("作業日：")
+                        appendStringAsLarge(this, "${sdf.format(workingStartAt)} 〜 ${sdf.format(finishAt)}" ?: "")
                     }
                 } else {
                     if (job.isBeforePreEntry) {
@@ -168,12 +171,14 @@ object JobUtil {
                                     appendStringWithFont(this, "\uf058 ", "fas", fasFont)
                                 }
                                 val sdfDate = SimpleDateFormat("MM/dd")
-                                val sdfTime = SimpleDateFormat("HH:mm")
+                                val sdfWeekDay = "(%s) "
                                 append("先行応募済 作業日: ")
                                 appendStringAsLarge(this, job?.workingStartAt?.let { sdfDate.format(it) } ?: "")
-                                append(" ")
-                                appendStringAsLarge(this, job?.workingStartAt?.let { sdfTime.format(it) } ?: "")
-                                append("〜")
+                                appendStringAsLarge(this, formatWeekDay(job?.workingStartAt?: Date())?.let { String.format(sdfWeekDay, it) } ?: "")
+                                append(" 〜 ")
+                                val finishAt = preEntryWorkingLimitAt(job?.workingStartAt?: Date())
+                                appendStringAsLarge(this, finishAt.let { sdfDate.format(it) } ?: "")
+                                appendStringAsLarge(this, formatWeekDay(finishAt)?.let { String.format(sdfWeekDay, it) } ?: "")
                             }
                         }
                         else {
@@ -326,6 +331,37 @@ object JobUtil {
                 handler(widget)
             }
         }, start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+
+    fun preEntryWorkingLimitAt(workingStartAt: Date): Date {
+        val calendar = Calendar.getInstance()
+        calendar.time = workingStartAt
+        calendar.add(Calendar.DATE, 1)
+        return calendar.time
+    }
+
+    fun formatWeekDay(date: Date): String {
+        val calendar = Calendar.getInstance()
+        calendar.time = date
+        return ErikuraApplication.WEEK_DAYS[calendar.get(Calendar.DAY_OF_WEEK) - 1]
+    }
+
+    fun getWorkingDay(date: Date): String {
+        val workingDay = "作業日(%s)"
+        val sdfDate = SimpleDateFormat("MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= formatWeekDay(date)
+        val dateFormat = sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
+        return String.format(workingDay, dateFormat)
+    }
+
+    fun getFormattedDate(date: Date): String {
+        val sdfDate = SimpleDateFormat("MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= JobUtil.formatWeekDay(date)
+        return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
     }
 }
 

@@ -40,6 +40,9 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
     var workingTime: TextView = itemView.findViewById(
         R.id.carousel_cell_working_time
     )
+    var workingStartAt: TextView = itemView.findViewById(
+        R.id.carousel_cell_working_start_at
+    )
     var workingFinishAt: TextView = itemView.findViewById(
         R.id.carousel_cell_working_finish_at
     )
@@ -56,7 +59,13 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         title.text = job.title
         reward.text = job.fee.toString() + "円"
         workingTime.text = job.workingTime.toString() + "分"
-        workingFinishAt.text = job.workingFinishAt?.let { "〜" + JobUtils.DateFormats.simple.format(it) } ?: ""
+        workingStartAt.text = job.workingStartAt?.let { JobUtils.DateFormats.simple_MMddHmm.format(it) } ?: ""
+        if (job.isPreEntry) {
+            //　先行応募中の場合作業開始日時の1日後
+            workingFinishAt.text = job.workingStartAt?.let { " 〜 " + JobUtils.DateFormats.simple_MMddHmm.format(JobUtil.preEntryWorkingLimitAt(it)) } ?: ""
+        } else {
+            workingFinishAt.text = job.workingFinishAt?.let { " 〜 " + JobUtils.DateFormats.simple_MMddHmm.format(it) } ?: ""
+        }
         workingPlace.text = job.workingPlace
 
         // ダウンロード

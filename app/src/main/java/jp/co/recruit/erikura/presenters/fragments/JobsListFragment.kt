@@ -22,6 +22,7 @@ import jp.co.recruit.erikura.presenters.activities.job.JobListItemDecorator
 class JobsListFragment : Fragment() {
     companion object {
         const val ACTIVE_JOBS_ARGUMENT = "activeJobs"
+        const val PRE_ENTRY_JOBS_ARGUMENT = "preEntryJobs"
         const val FUTURE_JOBS_ARGUMENTS = "futureJobs"
         const val PAST_JOBS_ARGUMENTS = "pastJobs"
 
@@ -29,6 +30,7 @@ class JobsListFragment : Fragment() {
             return JobsListFragment().also {
                 it.arguments = Bundle().also { args ->
                     args.putParcelableArrayList(ACTIVE_JOBS_ARGUMENT, ArrayList(jobs[PlaceJobType.ACTIVE] ?: listOf()))
+                    args.putParcelableArrayList(PRE_ENTRY_JOBS_ARGUMENT, ArrayList(jobs[PlaceJobType.PRE_ENTRY] ?: listOf()))
                     args.putParcelableArrayList(FUTURE_JOBS_ARGUMENTS, ArrayList(jobs[PlaceJobType.FUTURE] ?: listOf()))
                     args.putParcelableArrayList(PAST_JOBS_ARGUMENTS, ArrayList(jobs[PlaceJobType.PAST] ?: listOf()))
                 }
@@ -42,6 +44,7 @@ class JobsListFragment : Fragment() {
 
     private lateinit var jobs: Map<PlaceJobType, List<Job>>
     private lateinit var activeJobsAdapter: JobListAdapter
+    private lateinit var preEntryJobsAdapter: JobListAdapter
     private lateinit var futureJobsAdapter: JobListAdapter
     private lateinit var pastJobsAdapter: JobListAdapter
 
@@ -50,10 +53,12 @@ class JobsListFragment : Fragment() {
 
         arguments?.also { args ->
             val activeJobs: List<Job> = args.getParcelableArrayList<Job>(ACTIVE_JOBS_ARGUMENT)?.toList() ?: listOf()
+            val preEntryJobs: List<Job> = args.getParcelableArrayList<Job>(PRE_ENTRY_JOBS_ARGUMENT)?.toList() ?: listOf()
             val futureJobs: List<Job> = args.getParcelableArrayList<Job>(FUTURE_JOBS_ARGUMENTS)?.toList() ?: listOf()
             val pastJobs: List<Job> = args.getParcelableArrayList<Job>(PAST_JOBS_ARGUMENTS)?.toList() ?: listOf()
             jobs = mapOf(
                 PlaceJobType.ACTIVE to activeJobs,
+                PlaceJobType.PRE_ENTRY to preEntryJobs,
                 PlaceJobType.FUTURE to futureJobs,
                 PlaceJobType.PAST   to pastJobs
             )
@@ -70,6 +75,7 @@ class JobsListFragment : Fragment() {
         val binding = FragmentJobsListBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = activity
         viewModel.activeJobs = jobs[PlaceJobType.ACTIVE]?: listOf()
+        viewModel.preEntryJobs = jobs[PlaceJobType.PRE_ENTRY]?: listOf()
         viewModel.futureJobs = jobs[PlaceJobType.FUTURE]?: listOf()
         viewModel.pastJobs = jobs[PlaceJobType.PAST]?: listOf()
         binding.viewModel = viewModel
@@ -88,6 +94,16 @@ class JobsListFragment : Fragment() {
         }
         activeJobsAdapter.jobs = viewModel.activeJobs
         activeJobsAdapter.notifyDataSetChanged()
+
+        preEntryJobsAdapter = JobListAdapter(activity!!, listOf(), null).also {
+            it.onClickListner =  object: JobListAdapter.OnClickListener {
+                override fun onClick(job: Job) {
+                    onJobSelected(job)
+                }
+            }
+        }
+        preEntryJobsAdapter.jobs = viewModel.preEntryJobs
+        preEntryJobsAdapter.notifyDataSetChanged()
 
         futureJobsAdapter = JobListAdapter(activity!!, listOf(), null).also {
             it.onClickListner =  object: JobListAdapter.OnClickListener {
@@ -114,6 +130,12 @@ class JobsListFragment : Fragment() {
         activeJobList.adapter = activeJobsAdapter
         activeJobList.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
         activeJobList.addItemDecoration(JobListItemDecorator())
+
+        val preEntryJobList: RecyclerView = activity!!.findViewById(R.id.jobsList_preEntryJobs)
+        preEntryJobList.setHasFixedSize(true)
+        preEntryJobList.adapter = preEntryJobsAdapter
+        preEntryJobList.addItemDecoration(DividerItemDecoration(activity!!, DividerItemDecoration.VERTICAL))
+        preEntryJobList.addItemDecoration(JobListItemDecorator())
 
         val futureJobList: RecyclerView = activity!!.findViewById(R.id.jobsList_futureJobs)
         futureJobList.setHasFixedSize(true)
@@ -143,6 +165,11 @@ class JobsListFragmentViewModel: ViewModel() {
             field = value
             activeListVisible.value = if(field.isEmpty()) { View.GONE } else { View.VISIBLE }
         }
+    var preEntryJobs: List<Job> = listOf()
+        set(value) {
+            field = value
+            preEntryListVisible.value = if(field.isEmpty()) { View.GONE } else { View.VISIBLE }
+        }
     var futureJobs: List<Job> = listOf()
         set(value) {
             field = value
@@ -155,6 +182,7 @@ class JobsListFragmentViewModel: ViewModel() {
         }
 
     val activeListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
+    val preEntryListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val futureListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val pastListVisible: MutableLiveData<Int> = MutableLiveData(View.GONE)
 }

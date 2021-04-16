@@ -47,6 +47,7 @@ import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
 import java.math.BigDecimal
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ErikuraApplication : Application() {
@@ -112,6 +113,8 @@ class ErikuraApplication : Application() {
         const val ID_IMAGE_MAX_SIZE = 2592
         // 身分証確認圧縮する画像のquality
         const val ID_IMAGE_QUALITY = 90
+
+        val WEEK_DAYS: Array<String> = arrayOf("日", "月", "火", "水", "木", "金", "土")
     }
 
     //    var userSession: UserSession? = null
