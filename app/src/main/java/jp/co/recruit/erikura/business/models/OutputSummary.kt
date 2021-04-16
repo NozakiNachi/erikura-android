@@ -86,10 +86,8 @@ data class OutputSummary(
         try {
             val input = activity.contentResolver.openInputStream(photoAsset?.contentUri ?: Uri.EMPTY)
             val exifInterface = ExifInterface(input)
-            val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-            val takenAt = takenAtString?.let {
-                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
-            } ?: photoAsset?.dateTaken?.let {
+            // 撮影日時を取得します
+            val takenAt = getTakenAt(exifInterface) ?: photoAsset?.dateTaken?.let {
                 Date(it)
             } ?: photoAsset?.dateAdded?.let {
                 Date(it * 1000) // 秒単位のための、x1000してミリ秒単位とする
@@ -122,4 +120,34 @@ data class OutputSummary(
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
+
+    private fun getTakenAt(exifInterface: ExifInterface): Date? {
+        // 規格書にのっているフォーマット
+        val standardFormatStr = """\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2}"""
+        val standardFormatPattern = Regex(standardFormatStr)
+        val standardFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
+        // Galaxy A30 でのフォーマット?
+        val timeInMillisFormatStr = """\d{13,}"""
+        val timeInMillisFormatPattern = Regex(timeInMillisFormatStr)
+
+
+        return exifInterface.getAttribute(ExifInterface.TAG_DATETIME)?.let { takenAtString ->
+            when {
+                standardFormatPattern.matches(takenAtString) -> {
+                    standardFormat.parse(takenAtString)
+                }
+                timeInMillisFormatPattern.matches(takenAtString) -> {
+                    val timeInMillis = takenAtString.toLong()
+                    Date(timeInMillis)
+                }
+                else -> {
+                    FirebaseCrashlytics.getInstance()
+                        .recordException(UnknownDatetimeFormat("Unknown datetime format: $takenAtString"))
+                    null
+                }
+            }
+        }
+    }
+
+    class UnknownDatetimeFormat(msg: String): Exception(msg) {}
 }
