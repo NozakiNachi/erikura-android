@@ -22,7 +22,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     val reward: String get() = String.format("%,d円", job.fee)
     val workingTime: String get() = String.format("%d分", job.workingTime)
     val workingStartAt: String get() {
-        return JobUtils.DateFormats.simple.format(job?.workingStartAt?: Date())
+        return JobUtil.getFormattedDate(job?.workingStartAt?: Date())
     }
     val workingFinishAt: String get() {
         val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
@@ -40,7 +40,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
         else {
             job.workingFinishAt
         }
-        return String.format("〜%s", JobUtils.DateFormats.simple.format(finishAt))
+        return String.format(" 〜 %s", (finishAt)?.let { JobUtil.getFormattedDate(it)})
     }
     val tools: String get() = String.format("持ち物: %s", job.tools ?: "")
 
