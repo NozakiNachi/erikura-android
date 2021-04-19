@@ -125,7 +125,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
         transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
-        if (job != null && job?.isPreEntry == true){
+        if (job != null && ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true))){
             transaction.add(R.id.jobDetails_applyFlowViewFragment, preEntryFlowView!!, "preEntryFlowView")
         } else {
             transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")
