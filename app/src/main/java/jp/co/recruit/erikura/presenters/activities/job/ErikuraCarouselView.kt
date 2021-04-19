@@ -59,9 +59,9 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         reward.text = job.fee.toString() + "円"
         workingTime.text = job.workingTime.toString() + "分"
         if (job.isPreEntry) {
-            workingStartAt.text = job.workingStartAt?.let { JobUtil.getFormattedDateWithoutYear(it) } ?: ""
+            workingStartAt.text = job.workingStartAt?.let { JobUtil.getFormattedDate(it) } ?: ""
             //　先行応募中の場合作業開始日時の1日後
-            workingFinishAt.text = job.workingStartAt?.let { " 〜 " + JobUtil.getFormattedDateWithoutYear(JobUtil.preEntryWorkingLimitAt(it)) } ?: ""
+            workingFinishAt.text = job.workingStartAt?.let { " 〜 " + JobUtil.getFormattedDate(JobUtil.preEntryWorkingLimitAt(it)) } ?: ""
         } else {
             workingStartAt.text = job.workingStartAt?.let { JobUtil.getFormattedDate(it) } ?: ""
             workingFinishAt.text = job.workingFinishAt?.let { " 〜 " + JobUtil.getFormattedDate(it) } ?: ""
