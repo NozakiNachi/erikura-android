@@ -372,11 +372,11 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             if (job?.isPreEntried == true && startAtDiff >= 0) {
                 //　先行応募からの応募の場合
                 str.append(
-                    JobUtil.getFormattedDateRejectYear(job?.workingStartAt?: Date())
+                    JobUtil.getFormattedDateWithoutYear(job?.workingStartAt?: Date())
                 )
                 str.append(
                     ("\n〜 " +
-                    JobUtil.getFormattedDateRejectYear(
+                    JobUtil.getFormattedDateWithoutYear(
                         JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
                     ))
                 )

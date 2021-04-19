@@ -19,7 +19,6 @@ import com.google.android.gms.maps.model.LatLng
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.databinding.FragmentCarouselItemBinding
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import java.io.File
@@ -60,9 +59,9 @@ class ErikuraCarouselViewHolder(private val activity: Activity, val binding: Fra
         reward.text = job.fee.toString() + "円"
         workingTime.text = job.workingTime.toString() + "分"
         if (job.isPreEntry) {
-            workingStartAt.text = job.workingStartAt?.let { JobUtil.getFormattedDateRejectYear(it) } ?: ""
+            workingStartAt.text = job.workingStartAt?.let { JobUtil.getFormattedDateWithoutYear(it) } ?: ""
             //　先行応募中の場合作業開始日時の1日後
-            workingFinishAt.text = job.workingStartAt?.let { " 〜 " + JobUtil.getFormattedDateRejectYear(JobUtil.preEntryWorkingLimitAt(it)) } ?: ""
+            workingFinishAt.text = job.workingStartAt?.let { " 〜 " + JobUtil.getFormattedDateWithoutYear(JobUtil.preEntryWorkingLimitAt(it)) } ?: ""
         } else {
             workingStartAt.text = job.workingStartAt?.let { JobUtil.getFormattedDate(it) } ?: ""
             workingFinishAt.text = job.workingFinishAt?.let { " 〜 " + JobUtil.getFormattedDate(it) } ?: ""

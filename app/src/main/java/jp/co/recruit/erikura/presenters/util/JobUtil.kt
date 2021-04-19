@@ -365,7 +365,7 @@ object JobUtil {
     }
 
 
-    fun getFormattedDateRejectYear(date: Date): String {
+    fun getFormattedDateWithoutYear(date: Date): String {
         val sdfDate = SimpleDateFormat("MM/dd")
         val sdfWeekDay = "(%s) "
         val sdfTime = SimpleDateFormat("HH:mm")
