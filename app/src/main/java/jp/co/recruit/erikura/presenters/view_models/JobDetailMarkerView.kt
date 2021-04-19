@@ -14,6 +14,8 @@ class JobDetailMarkerView(job: Job): MarkerViewModel(job) {
         get() {return View.GONE}
     override val soonVisibility: Int
         get() {return View.GONE}
+    override val preEntryVisibility: Int
+        get() {return View.GONE}
     override val markerUrl: String
         get() {
             val iconPath = job.jobKind?.activeIconUrl?.path ?: "EMPTY_PATH"
