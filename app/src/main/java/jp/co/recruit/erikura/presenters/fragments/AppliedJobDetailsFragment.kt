@@ -41,6 +41,7 @@ import jp.co.recruit.erikura.databinding.DialogNotAbleStartBinding
 import jp.co.recruit.erikura.databinding.FragmentAppliedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.job.PreEntryFlowDialogFragment
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
@@ -80,8 +81,21 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     private var mapView: MapViewFragment? = null
     private var propertyNotesButton: PropertyNotesButtonFragment? = null
     private var reportExamplesButton: ReportExamplesButtonFragment? = null
+    private var isShowPreEntryFlowModal: Boolean = false
 
     constructor(): super()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        isShowPreEntryFlowModal = (job?.entry?.fromPreEntry == true)
+        if (isShowPreEntryFlowModal) {
+            //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
+            val dialog = PreEntryFlowDialogFragment.newInstance(job)
+            dialog.show(childFragmentManager, "PreEntryFlow")
+
+        }
+    }
 
     override fun refresh(job: Job?, user: User?) {
         super.refresh(job, user)
@@ -372,11 +386,11 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
             if (job?.isPreEntried == true && startAtDiff >= 0) {
                 //　先行応募からの応募の場合
                 str.append(
-                    JobUtil.getFormattedDate(job?.workingStartAt?: Date())
+                    JobUtil.getFormattedDateWithoutYear(job?.workingStartAt?: Date())
                 )
                 str.append(
                     ("\n〜 " +
-                    JobUtil.getFormattedDate(
+                    JobUtil.getFormattedDateWithoutYear(
                         JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
                     ))
                 )

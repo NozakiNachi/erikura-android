@@ -28,7 +28,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import jp.co.recruit.erikura.ErikuraApplication
-import jp.co.recruit.erikura.MemoryTraceException
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
@@ -133,7 +132,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             Tracking.logEvent(event= "view_edit_job_report_confirm", params= bundleOf())
             Tracking.viewJobDetails(name= "/reports/edit/confirm/${job.id}", title= "作業報告編集確認画面", jobId= job.id)
         }
-        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
+//        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
     override fun onStop() {

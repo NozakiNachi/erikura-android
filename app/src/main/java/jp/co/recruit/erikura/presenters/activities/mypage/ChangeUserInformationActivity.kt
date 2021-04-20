@@ -29,6 +29,7 @@ import jp.co.recruit.erikura.business.util.DateUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.Api.Companion.userSession
 import jp.co.recruit.erikura.databinding.ActivityChangeUserInformationBinding
+import jp.co.recruit.erikura.presenters.activities.SendChangeEmailActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobTitleDialogFragment
 import jp.co.recruit.erikura.presenters.activities.registration.SmsVerifyActivity
 import kotlinx.android.synthetic.main.activity_change_user_information.*
@@ -383,6 +384,13 @@ class ChangeUserInformationActivity :
             ErikuraApplication.FROM_WHERE,
             ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO
         )
+        startActivity(intent)
+    }
+
+    override fun onClickChangeEmail(view: View) {
+        // メールアドレス変更画面を表示する
+        val intent = Intent(this, SendChangeEmailActivity::class.java)
+        intent.putExtra("user", user)
         startActivity(intent)
     }
 
@@ -887,4 +895,5 @@ interface ChangeUserInformationEventHandlers {
     fun onCLickPrefecture(view: View)
     fun onClickCity(view: View)
     fun onCLickStreet(view: View)
+    fun onClickChangeEmail(view: View)
 }

@@ -357,6 +357,15 @@ object JobUtil {
     }
 
     fun getFormattedDate(date: Date): String {
+        val sdfDate = SimpleDateFormat("yyyy/MM/dd")
+        val sdfWeekDay = "(%s) "
+        val sdfTime = SimpleDateFormat("HH:mm")
+        val weekday= JobUtil.formatWeekDay(date)
+        return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
+    }
+
+
+    fun getFormattedDateWithoutYear(date: Date): String {
         val sdfDate = SimpleDateFormat("MM/dd")
         val sdfWeekDay = "(%s) "
         val sdfTime = SimpleDateFormat("HH:mm")

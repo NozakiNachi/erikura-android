@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.junit.Assert.*
 import org.junit.Test
+import java.util.*
 import java.util.regex.Pattern
 
 /**
@@ -14,6 +15,13 @@ import java.util.regex.Pattern
  * See [testing documentation](http://d.android.com/tools/testing).
  */
 class ExampleUnitTest {
+    @Test
+    fun parseTimeTest() {
+        val timeInMillisStr = "1612683468463"
+        val timeInMillis = timeInMillisStr.toLong()
+        print(Date(timeInMillis))
+    }
+
     @Test
     fun addition_isCorrect() {
         assertEquals(4, 2 + 2)

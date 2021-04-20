@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="jp.co.recruit.erikura.presenters.activities.SendChangeEmailViewModel" />
+
+        <variable
+            name="handlers"
+            type="jp.co.recruit.erikura.presenters.activities.SendChangeEmailEventHandlers" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/reset_in_constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true">
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/paleGrey"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center_horizontal"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:text="@string/send_reset_email_title"
+                    android:textColor="@color/black"
+                    android:textSize="22dp" />
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="29dp"
+                    android:fontFamily="@font/hirakakupron_w2_alphanum_01"
+                    android:text="@string/send_reset_email_caption"
+                    android:textColor="@color/black"
+                    android:textSize="18dp" />
+
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:text="現在のメールアドレス" />
+
+                <TextView
+                    android:id="@+id/register_mail_address"
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={viewModel.currentEmail}" />
+
+                <!--ログインID(登録メールアドレスを表示する。)-->
+                <TextView
+                    style="@style/fieldLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="40dp"
+                    android:drawableLeft="@drawable/icon_required_18"
+                    android:drawablePadding="10dp"
+                    android:text="新しいメールアドレス" />
+
+
+                <EditText
+                    style="@style/textField"
+                    android:layout_width="match_parent"
+                    android:layout_height="62dp"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/register_email_hint"
+                    android:inputType="textEmailAddress"
+                    android:text="@={viewModel.email}" />
+
+                <TextView
+                    style="@style/errorField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@={viewModel.Error.message}"
+                    android:visibility="@{viewModel.Error.visibility}" />
+                <!-- ログインフォームへ遷移　遷移する際文言を表示する-->
+                <!--「パスワードのリセット方法を数分以内にメールでご連絡します。」-->
+                <Button
+                    style="@style/primaryButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginBottom="30dp"
+                    android:enabled="@{viewModel.isSendButtonEnabled()}"
+                    android:onClick="@{handlers::onClickSendChangeEmail}"
+                    android:text="@string/send_reset_email_button" />
+
+            </LinearLayout>
+
+        </ScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

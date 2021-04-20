@@ -2,9 +2,11 @@ package jp.co.recruit.erikura.presenters.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -18,25 +20,27 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.User
 import jp.co.recruit.erikura.data.network.Api
-import jp.co.recruit.erikura.databinding.ActivitySendResetPasswordBinding
+import jp.co.recruit.erikura.databinding.ActivitySendChangeEmailBinding
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import org.apache.commons.lang.StringUtils
 
 
-class SendResetPasswordActivity : BaseActivity(),
-    SendResetPasswordEventHandlers {
+class SendChangeEmailActivity : BaseActivity(),
+    SendChangeEmailEventHandlers {
     var user: User = User()
 
-    private val viewModel: SendResetPasswordViewModel by lazy {
-        ViewModelProvider(this).get(SendResetPasswordViewModel::class.java)
+    private val viewModel: SendChangeEmailViewModel by lazy {
+        ViewModelProvider(this).get(SendChangeEmailViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding: ActivitySendResetPasswordBinding =
-            DataBindingUtil.setContentView(this, R.layout.activity_send_reset_password)
+        val binding: ActivitySendChangeEmailBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_send_change_email)
+        user = intent.getParcelableExtra("user")?: User()
         binding.lifecycleOwner = this
         binding.handlers = this
+        viewModel.currentEmail.value = user.email
         binding.viewModel = viewModel
         viewModel.error.message.value = null
 
@@ -47,15 +51,15 @@ class SendResetPasswordActivity : BaseActivity(),
         }
     }
 
-    override fun onClickSendResetPassword(view: View) {
-        Api(this).sendPasswordReset(viewModel.email.value ?:"") {
-            Tracking.logEvent(event = "view_password_edit", params = bundleOf())
+    override fun onClickSendChangeEmail(view: View) {
+        Api(this).sendEmailReset(viewModel.email.value ?:"") {
+            Tracking.logEvent(event = "view_email_edit", params = bundleOf())
             Tracking.view(
-                name = "/user/password/edit",
-                title = "パスワード再設定通知完了画面"
+                name = "/user/email/edit",
+                title = "メールアドレス再設定通知完了画面"
             )
             // 常にrespons　trueなので送信完了画面へ遷移します
-            var intent = Intent(this, SendedResetPasswordActivity::class.java)
+            var intent = Intent(this, SendedChangeEmailActivity::class.java)
             startActivity(intent)
         }
     }
@@ -73,11 +77,11 @@ class SendResetPasswordActivity : BaseActivity(),
     }
 }
 
-class SendResetPasswordViewModel : ViewModel() {
+class SendChangeEmailViewModel : ViewModel() {
 
     // バリデーションルール
     private val emailPattern = ErikuraConst.emailPattern
-
+    val currentEmail: MutableLiveData<String> = MutableLiveData()
     val email: MutableLiveData<String> = MutableLiveData()
     val error: ErrorMessageViewModel = ErrorMessageViewModel()
 
@@ -104,20 +108,6 @@ class SendResetPasswordViewModel : ViewModel() {
 
 }
 
-class ErrorMessageViewModel {
-    val message: MutableLiveData<String> = MutableLiveData()
-    val visibility = MediatorLiveData<Int>().also { result ->
-        result.addSource(message) {
-            result.value = if (message.value == null || StringUtils.isBlank(message.value)) {
-                View.GONE
-            }
-            else {
-                View.VISIBLE
-            }
-        }
-    }
-}
-
-interface SendResetPasswordEventHandlers {
-    fun onClickSendResetPassword(view: View)
+interface SendChangeEmailEventHandlers {
+    fun onClickSendChangeEmail(view: View)
 }
