@@ -129,7 +129,7 @@ class ApplyCompletedViewModel: ViewModel() {
     val applyCompletedCaptionVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
             result.value =
-                if (it.isPreEntry) {
+                if (job.value?.isPreEntry == true) {
                     View.GONE
                 } else {
                     View.VISIBLE
@@ -139,7 +139,7 @@ class ApplyCompletedViewModel: ViewModel() {
     val applyCompletedPreEntryCaptionVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
             result.value =
-                if (it.isPreEntry) {
+                if (job.value?.isPreEntry == true) {
                     View.VISIBLE
                 } else {
                     View.INVISIBLE

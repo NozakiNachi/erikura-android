@@ -566,18 +566,18 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     var timeLimitWarningPreEntryMessage: MutableLiveData<String> =  MutableLiveData()
     val msgVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
-            result.value =
-                if (it.isPreEntried) {
-                    View.GONE
-                } else {
-                    View.VISIBLE
-                }
+            result.value = if (job.value?.isPreEntried == true) {
+                View.GONE
+            }
+            else {
+                View.VISIBLE
+            }
         }
     }
     val msgPreEntryVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
             result.value =
-                if (it.isPreEntried) {
+                if (job.value?.isPreEntried == true) {
                     View.VISIBLE
                 } else {
                     View.INVISIBLE
@@ -591,7 +591,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
 
     var buttonStyle = MediatorLiveData<Drawable>().also { result ->
         result.addSource(job) {
-            if (it.isPreEntried) {
+            if (job.value?.isPreEntried == true) {
                 val drawable: Drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
                 result.value = drawable
             } else {
@@ -600,7 +600,6 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
             }
         }
     }
-//    var buttonStyle: MutableLiveData<Int> = MutableLiveData()
 
     val isEnabledButton = MediatorLiveData<Boolean>().also { result ->
         result.addSource(reason) { result.value = isValid() }
