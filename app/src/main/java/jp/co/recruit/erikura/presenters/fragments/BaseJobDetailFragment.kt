@@ -23,8 +23,8 @@ abstract class BaseJobDetailFragment : Fragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        this.job = ErikuraApplication.instance.currentJob
         arguments?.let { args ->
-            this.job = ErikuraApplication.instance.currentJob
             this.user = args.getParcelable(USER_ARGUMENT)
         }
     }
