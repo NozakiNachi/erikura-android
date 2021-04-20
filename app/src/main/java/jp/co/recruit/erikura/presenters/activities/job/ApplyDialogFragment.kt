@@ -242,12 +242,12 @@ class ApplyDialogFragmentViewModel: ViewModel() {
         result.addSource(job) {
             result.value = String.format(
                 ErikuraApplication.instance.resources.getString(R.string.applyDialog_pre_entry_warning1),
-                JobUtil.getWorkingDay(it.workingStartAt?: Date()))
+                JobUtil.getWorkingDay(job.value?.workingStartAt ?: Date()))
         }
     }
     val dialogCaptions = MediatorLiveData<String>().also { result ->
         result.addSource(job) {
-            if (it.isPreEntry) {
+            if (job.value?.isPreEntry == true) {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.applyDialog_pre_entry_warning2)
             } else {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.applyDialog_warning)
@@ -256,7 +256,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     }
     val applyButtonName = MediatorLiveData<String>().also { result ->
         result.addSource(job) {
-            if (it.isPreEntry) {
+            if (job.value?.isPreEntry == false) {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.preEntry)
             }
             else {
@@ -271,11 +271,11 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     val displayWarningCaptionVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
             result.value =
-            if (it.isPreEntry) {
-                 View.VISIBLE
-            } else {
-                View.GONE
-            }
+                if (job.value?.isPreEntry == true) {
+                    View.VISIBLE
+                } else {
+                    View.GONE
+                }
         }
     }
 
