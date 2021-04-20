@@ -90,7 +90,7 @@
     <!-- メールアドレス変更送信完了画面 -->
     <string name="sended_reset_email_caption">まだメールアドレス変更は\n完了しておりません</string>
     <string name="sended_reset_email_sendEmail">ご入力いただいたメールアドレス宛に確認メールをお送りしました。</string>
-    <string name="sended_reset_email_clickEmailLink">お届けしたメール内の\nURLをクリックして\nメールアドレスを更新させてください。</string>
+    <string name="sended_reset_email_clickEmailLink">お届けしたメール内の\nURLをクリックして\nメールアドレスを更新してください。</string>
     <string name="sended_reset_email_limit">※メールに記載された登録URLの有効期限は10分間です。\n有効期限が切れた場合は再度メールアドレスの変更を実施してください。</string>
 
     <!-- パスワード再設定画面 -->
