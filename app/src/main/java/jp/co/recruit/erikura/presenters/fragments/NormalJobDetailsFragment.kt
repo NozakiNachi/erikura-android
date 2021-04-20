@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -56,8 +57,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isShowPreEntryFlowModal = (job?.isPreEntry == true)
-
+        isShowPreEntryFlowModal = ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true))
         if (isShowPreEntryFlowModal) {
             //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
             val dialog = PreEntryFlowDialogFragment.newInstance(job)
