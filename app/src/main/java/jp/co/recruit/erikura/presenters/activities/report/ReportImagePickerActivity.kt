@@ -326,13 +326,25 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
     fun forEach(callback: (item: MediaItem) -> Unit) {
         // 選択済み画像の対応を行います
         this.cursor?.let { cursor ->
-            cursor.moveToFirst()
-            while(!cursor.isAfterLast) {
-                val item = MediaItem.from(cursor)
-                callback(item)
-                cursor.moveToNext()
+            var processed = 0
+            try {
+                cursor.moveToFirst()
+                while (!cursor.isAfterLast) {
+                    val item = MediaItem.from(cursor)
+                    callback(item)
+                    processed++
+                    cursor.moveToNext()
+                }
+                cursor.moveToFirst()
             }
-            cursor.moveToFirst()
+            catch (e: Exception) {
+                Tracking.logEvent(event = "image_picker_each", params = bundleOf(
+                    Pair("processed", processed)
+                ))
+                Thread.sleep(500)
+                // 例外を再送します
+                throw e
+            }
         }
     }
 
@@ -356,43 +368,58 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
     }
 
     override fun onBindViewHolder(viewHolder: ImagePickerViewHolder, position: Int, cursor: Cursor) {
-        val binding = viewHolder.binding
-        viewHolder.binding.lifecycleOwner = activity
-        viewHolder.binding.viewModel = ImagePickerCellViewModel()
+        try {
+            val binding = viewHolder.binding
+            viewHolder.binding.lifecycleOwner = activity
+            viewHolder.binding.viewModel = ImagePickerCellViewModel()
 
-        // もしくは画像のロード処理を実施する
-        val view = binding.root
-        val item = MediaItem.from(cursor)
+            // もしくは画像のロード処理を実施する
+            val view = binding.root
+            val item = MediaItem.from(cursor)
 
-        val cellView: ImagePickerCellView = view.findViewById(R.id.report_image_picker_cell)
-        cellView.toggleClickListener = object: ImagePickerCellView.ToggleClickListener {
-            override fun onClick(button: ToggleButton, isChecked: Boolean) {
-                var isChecked = isChecked
-                if (isChecked && (viewModel.selectedCount.value ?: 0) >= ErikuraConst.maxOutputSummaries) {
-                    isChecked = false
-                    button.isChecked = false
-                    MessageUtils.displayAlert(activity, listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません"))
-                }else {
-                    val cr = item.contentUri?.let { activity.contentResolver.openInputStream(it) }
-                    if (cr != null) {
-                        // exif情報取得
-                        val exifInterface = ExifInterface(cr)
-                        val (width, height) = item.getWidthAndHeight(activity, exifInterface)
-                        // 横より縦の方が長い時アラートを表示します
-                        if (height > width) {
-                            isChecked = false
-                            button.isChecked = false
-                            MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
+            val cellView: ImagePickerCellView = view.findViewById(R.id.report_image_picker_cell)
+            cellView.toggleClickListener = object : ImagePickerCellView.ToggleClickListener {
+                override fun onClick(button: ToggleButton, isChecked: Boolean) {
+                    var isChecked = isChecked
+                    if (isChecked && (viewModel.selectedCount.value
+                            ?: 0) >= ErikuraConst.maxOutputSummaries
+                    ) {
+                        isChecked = false
+                        button.isChecked = false
+                        MessageUtils.displayAlert(
+                            activity,
+                            listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません")
+                        )
+                    } else {
+                        val cr =
+                            item.contentUri?.let { activity.contentResolver.openInputStream(it) }
+                        if (cr != null) {
+                            // exif情報取得
+                            val exifInterface = ExifInterface(cr)
+                            val (width, height) = item.getWidthAndHeight(activity, exifInterface)
+                            // 横より縦の方が長い時アラートを表示します
+                            if (height > width) {
+                                isChecked = false
+                                button.isChecked = false
+                                MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
+                            }
                         }
                     }
-                }
-                onClickListener?.apply {
-                    onClick(item, isChecked)
+                    onClickListener?.apply {
+                        onClick(item, isChecked)
+                    }
                 }
             }
+            item.loadImage(activity, cellView.imageView, viewHolder.width, viewHolder.height)
+            binding.viewModel!!.loadData(job, item, viewModel)
+        } catch (e: Exception) {
+            Tracking.logEvent(event = "image_picker_bind_viewholder", params = bundleOf(
+                Pair("position", position)
+            ))
+            Thread.sleep(500)
+            // 例外を再送します
+            throw e
         }
-        item.loadImage(activity, cellView.imageView, viewHolder.width, viewHolder.height)
-        binding.viewModel!!.loadData(job, item, viewModel)
     }
 
     override fun onViewRecycled(holder: ImagePickerViewHolder) {
