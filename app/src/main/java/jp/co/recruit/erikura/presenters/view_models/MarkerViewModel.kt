@@ -70,10 +70,16 @@ open class MarkerViewModel(val job: Job): ViewModel() {
     }
 
     open val futureText: String get() {
-        return job.workingStartAt?.let {
+        if (job?.preEntryStartAt != null) {
+            //　先行応募の場合
             val sdf = SimpleDateFormat("MM/dd")
-            return String.format("%s開始", sdf.format(it))
-        } ?: ""
+            return String.format("%s開始", sdf.format(job?.preEntryStartAt))
+        } else {
+            return job.workingStartAt?.let {
+                val sdf = SimpleDateFormat("MM/dd")
+                return String.format("%s開始", sdf.format(it))
+            } ?: ""
+        }
     }
 
     open val preEntryVisibility: Int get() {
