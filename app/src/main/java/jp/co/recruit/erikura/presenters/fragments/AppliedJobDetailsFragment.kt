@@ -265,7 +265,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     }
 
     override fun onClickStart(view: View) {
-        if (job?.isPreEntried == true) {
+        if (job?.isPreEntriedWithinnPreEntryPeriod == true) {
             val dialog = AlertDialog.Builder(activity)
                 .setView(R.layout.dialog_disabled_start_working_button)
                 .setCancelable(true)
@@ -383,8 +383,8 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
         val startAtDiff = startAt -today
 
         if (diff >= 0) {
-            if (job?.isPreEntried == true && startAtDiff >= 0) {
-                //　先行応募からの応募の場合
+            if (job?.isPreEntriedWithinnPreEntryPeriod == true && startAtDiff >= 0) {
+                //　先行応募からの応募で作業開始前の場合
                 str.append(
                     JobUtil.getFormattedDateWithoutYear(job?.workingStartAt?: Date())
                 )
@@ -566,7 +566,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     var timeLimitWarningPreEntryMessage: MutableLiveData<String> =  MutableLiveData()
     val msgVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
-            result.value = if (job.value?.isPreEntried == true) {
+            result.value = if (job.value?.isPreEntriedWithinnPreEntryPeriod == true) {
                 View.GONE
             }
             else {
@@ -577,7 +577,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
     val msgPreEntryVisibility = MediatorLiveData<Int>().also { result ->
         result.addSource(job) {
             result.value =
-                if (job.value?.isPreEntried == true) {
+                if (job.value?.isPreEntriedWithinnPreEntryPeriod == true) {
                     View.VISIBLE
                 } else {
                     View.INVISIBLE
@@ -591,7 +591,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
 
     var buttonStyle = MediatorLiveData<Drawable>().also { result ->
         result.addSource(job) {
-            if (job.value?.isPreEntried == true) {
+            if (job.value?.isPreEntriedWithinnPreEntryPeriod == true) {
                 val drawable: Drawable = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
                 result.value = drawable
             } else {
@@ -644,7 +644,7 @@ class AppliedJobDetailsFragmentViewModel : BaseJobDetailViewModel() {
                 }
             }
             // 作業開始ボタンのカラー
-            if (job.isPreEntried) {
+            if (job.isPreEntriedWithinnPreEntryPeriod) {
                 buttonStyle.value = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.silver)
             } else {
                 buttonStyle.value = ErikuraApplication.instance.applicationContext.resources.getDrawable(R.color.pumpkinOrange)

@@ -105,21 +105,28 @@ data class Job(
 
     /** 先行応募中のタスクか? */
     val isPreEntry: Boolean get() {
-        val now = Date()
         var preEntryFlag = false
         preEntryStartAt?.let {
-            preEntryFlag = !(isPastOrInactive) && (it <= now)  && (now < workingStartAt)
+            preEntryFlag = !(isPastOrInactive) && isPreEntryPeriod
         }
        return preEntryFlag
     }
-    /** 先行応募済みのタスクか? */
-    val isPreEntried: Boolean get() {
-        val now = Date()
+    /** 作業開始前の先行応募済みのタスクか?(作業開始期間になると先行応募済みの判定が取れない（その場合、job.entry.fromPreEntryのフラグを用いること）） */
+    val isPreEntriedWithinnPreEntryPeriod: Boolean get() {
         var preEntryFlag = false
         preEntryStartAt?.let {
-            preEntryFlag = isEntried && (it <= now)  && (now < workingStartAt)
+            preEntryFlag = isEntried && isPreEntryPeriod
         }
         return preEntryFlag
+    }
+    /** 先行応募期間か */
+    val isPreEntryPeriod: Boolean get () {
+        val now = Date()
+        var isPreEntryFlag = false
+        preEntryStartAt?.let {
+            isPreEntryFlag = (it <= now)  && (now < workingStartAt)
+        }
+        return isPreEntryFlag
     }
     /** 応募済みの場合の作業リミット時間 */
     val limitAt: Date? get() = entry?.limitAt
@@ -212,8 +219,8 @@ data class Job(
      */
     fun notApplicableReason(user: User?): String? {
         return when {
-            // 未来(先行応募中と先行応募済みは除く)、もしくは過去案件の場合
-            ((isFuture && !(isPreEntry) && !(isPreEntried)) || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
+            // 未来(先行応募中と作業開始前の先行応募済みは除く)、もしくは過去案件の場合
+            ((isFuture && !(isPreEntry) && !(isPreEntriedWithinnPreEntryPeriod)) || isPast) -> ErikuraApplication.instance.getString(R.string.jobDetails_outOfEntryExpire)
             // すでに応募済みの場合
             (isEntried) -> ErikuraApplication.instance.getString(R.string.jobDetails_entryFinished)
             // Ban された案件の場合
