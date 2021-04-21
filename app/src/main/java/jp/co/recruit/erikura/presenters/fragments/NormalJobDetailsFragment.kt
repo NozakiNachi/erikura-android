@@ -57,7 +57,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isShowPreEntryFlowModal = ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true))
+        isShowPreEntryFlowModal = ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true) || (job?.isBeforePreEntry == true))
         if (isShowPreEntryFlowModal) {
             //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
             val dialog = PreEntryFlowDialogFragment.newInstance(job)
@@ -125,7 +125,7 @@ class NormalJobDetailsFragment : BaseJobDetailFragment {
         transaction.add(R.id.jobDetails_applyFlowLinkFragment, applyFlowLink!!, "applyFlowLink")
         transaction.add(R.id.jobDetails_jobDetailsViewFragment, jobDetailsView!!, "jobDetailsView")
         transaction.add(R.id.jobDetails_mapViewFragment, mapView!!, "mapView")
-        if (job != null && ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true))){
+        if (job != null && ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true) ||  (job?.isBeforePreEntry == true))){
             transaction.add(R.id.jobDetails_applyFlowViewFragment, preEntryFlowView!!, "preEntryFlowView")
         } else {
             transaction.add(R.id.jobDetails_applyFlowViewFragment, applyFlowView!!, "applyFlowView")

@@ -40,7 +40,7 @@ class ApplyFlowLinkFragment : BaseJobDetailFragment, ApplyFlowLinkFragmentEventH
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_job_guideline", params= bundleOf())
         Tracking.viewJobDetails(name= "/jobs/guideline", title= "応募後の流れを確認画面", jobId= job?.id ?: 0)
-        if ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true)) {
+        if ((job?.isPreEntry == true) || (job?.entry?.fromPreEntry == true) || (job?.isBeforePreEntry == true)) {
             val dialog = PreEntryFlowDialogFragment.newInstance(job)
             dialog.show(childFragmentManager, "PreEntryFlow")
         } else {
