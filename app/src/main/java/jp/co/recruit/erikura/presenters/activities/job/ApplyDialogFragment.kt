@@ -256,7 +256,7 @@ class ApplyDialogFragmentViewModel: ViewModel() {
     }
     val applyButtonName = MediatorLiveData<String>().also { result ->
         result.addSource(job) {
-            if (job.value?.isPreEntry == false) {
+            if (job.value?.isPreEntry == true) {
                 result.value = ErikuraApplication.instance.resources.getString(R.string.preEntry)
             }
             else {
