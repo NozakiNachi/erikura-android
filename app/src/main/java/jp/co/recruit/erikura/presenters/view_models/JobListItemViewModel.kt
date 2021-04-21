@@ -22,7 +22,11 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     val reward: String get() = String.format("%,d円", job.fee)
     val workingTime: String get() = String.format("%d分", job.workingTime)
     val workingStartAt: String get() {
-        return JobUtil.getFormattedDate(job?.workingStartAt?: Date())
+        if ((timeLabelType == JobUtil.TimeLabelType.OWNED) && !(job?.isPreEntried)) {
+            return JobUtil.getFormattedDate(job.entry?.createdAt?: Date())
+        } else {
+            return JobUtil.getFormattedDate(job?.workingStartAt?: Date())
+        }
     }
     val workingFinishAt: String get() {
         val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
@@ -30,6 +34,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
                 // 先行応募済みの場合、作業開始の24時間後を返す
                 JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
             } else {
+                // 応募済みの場合、リミットを表示　そうでない場合作業終了日時を表示
                 job?.entry?.limitAt ?: job.workingFinishAt
             }
         }
