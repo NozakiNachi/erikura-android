@@ -164,7 +164,7 @@ object JobUtil {
                         }
                     }
                     else -> {
-                        if (type == TimeLabelType.OWNED && job.isPreEntried) {
+                        if (type == TimeLabelType.OWNED && job.isPreEntriedWithinnPreEntryPeriod) {
                             color = ContextCompat.getColor(context, R.color.waterBlue)
                             text = SpannableStringBuilder().apply {
                                 ResourcesCompat.getFont(context, R.font.fa_solid_900)?.let { fasFont ->
