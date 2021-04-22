@@ -88,7 +88,7 @@ class AppliedJobDetailsFragment : BaseJobDetailFragment, AppliedJobDetailsFragme
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isShowPreEntryFlowModal = (job?.entry?.fromPreEntry == true)
+        isShowPreEntryFlowModal = (job?.entry?.fromPreEntry == true && job?.isPreEntryPeriod == true)
         if (isShowPreEntryFlowModal) {
             //　先行応募のタスク詳細を開く場合、先行応募後の流れを確認モーダルを開く
             val dialog = PreEntryFlowDialogFragment.newInstance(job)
