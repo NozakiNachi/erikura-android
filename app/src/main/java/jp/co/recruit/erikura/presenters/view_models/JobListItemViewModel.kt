@@ -30,13 +30,8 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
     }
     val workingFinishAt: String get() {
         val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
-            if (job?.entry?.fromPreEntry == true) {
-                // 先行応募済みの場合、作業開始の24時間後を返す
-                JobUtil.preEntryWorkingLimitAt(job?.workingStartAt?: Date())
-            } else {
-                // 応募済みの場合、リミットを表示　そうでない場合作業終了日時を表示
-                job?.entry?.limitAt ?: job.workingFinishAt
-            }
+            // 先行応募、応募済みの場合リミットを返す
+             job?.entry?.limitAt ?: job.workingFinishAt
         }
         else if(job?.isPreEntry) {
             // 先行応募中の場合、作業開始の24時間後を返す
