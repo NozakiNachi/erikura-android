@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -110,6 +111,15 @@ class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, Lis
                 else {
                     ErikuraApplication.applicationContext.resources.getDrawable(R.drawable.background_carousel_body, null)
                 }
+            }
+        }
+    val fromDateVisibility: Int
+        get() {
+            return if (job.isPreEntry || job.isBeforePreEntry) {
+                View.VISIBLE
+            }
+            else {
+                View.GONE
             }
         }
 }
