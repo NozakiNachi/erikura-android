@@ -175,7 +175,11 @@ open class MarkerViewModel(val job: Job): ViewModel() {
         }
         else if (job.isFuture) {
             val df = SimpleDateFormat("YYYYMMdd")
-            val time = df.format(job.workingStartAt ?: Date())
+            val time = if (job.preEntryStartAt != null) {
+                df.format(job.preEntryStartAt ?: Date())
+            } else {
+                df.format(job.workingStartAt ?: Date())
+            }
             return "eriukra-marker://v2/${job.fee}/$entry/${job.wanted}/${job.boost}/${active.value}/${job.isFuture}/${time}/${iconPath}/"
         }
         else {
