@@ -109,7 +109,10 @@ open class MarkerViewModel(val job: Job): ViewModel() {
 
     val bodyBackground: Drawable
         get() {
-            val drawableId = if (isDisabled) {
+            val drawableId = if (job.isPreEntry) {
+                R.drawable.background_pre_entry_marker
+            }
+            else if (isDisabled) {
                 if (active.value ?: false) {
                     R.drawable.background_disabled_marker_active
                 }
@@ -130,7 +133,10 @@ open class MarkerViewModel(val job: Job): ViewModel() {
 
     val triangleBackground: Drawable
         get() {
-            val drawableId = if (isDisabled) {
+            val drawableId = if (job.isPreEntry) {
+                R.drawable.background_marker_triangle
+            }
+            else if (isDisabled) {
                 if (active.value ?: false) {
                     R.drawable.background_marker_disabled_triangle_active
                 }
@@ -152,6 +158,8 @@ open class MarkerViewModel(val job: Job): ViewModel() {
     val color: Int get() {
         val colorId = if (active.value ?: false) {
             R.color.pumpkinOrange
+        } else if(job.isPreEntry) {
+            R.color.warmGrey
         } else if (isDisabled) {
             R.color.pinkishGrey
         } else {
