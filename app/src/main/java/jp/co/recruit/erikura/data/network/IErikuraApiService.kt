@@ -429,7 +429,8 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
                 Pair(ErikuraConfig.FAQ_URL_KEY, { json -> deserializeString(json, context) }),
                 Pair(ErikuraConfig.INQUIRY_URL_KEY, { json -> deserializeString(json, context) }),
                 Pair(ErikuraConfig.RECOMMENDED_URL_KEY, { json -> deserializeString(json, context) }),
-                Pair(ErikuraConfig.PP_TERMS_TITLE, { json -> deserializeString(json, context) })
+                Pair(ErikuraConfig.PP_TERMS_TITLE, { json -> deserializeString(json, context) }),
+                Pair(ErikuraConfig.IDENTIFICATION_REQUIRED, { json -> deserializeString(json, context) })
             )
             deserializerMap[entry.key]?.let { deserializer ->
                 result.put(entry.key, deserializer(entry.value))

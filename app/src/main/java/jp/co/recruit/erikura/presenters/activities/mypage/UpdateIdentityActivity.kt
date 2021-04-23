@@ -99,6 +99,9 @@ class UpdateIdentityActivity :
             job = intent.getParcelableExtra("job")
         }
 
+        // 応募の際身分証確認が必須かのフラグ
+        viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
+
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
             if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
                 previousPostalCode = viewModel.postalCode.value
@@ -144,6 +147,19 @@ class UpdateIdentityActivity :
     override fun onStart() {
         super.onStart()
         this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
+
+        // 身分証確認必須フラグを取得
+        ErikuraConfig.loaded = false
+        ErikuraConfig.load(this, onError = { messages ->
+            viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
+        })
+        // viewModelの値変更でvisibilityが変わらないので実値入力で切り替える
+        if ( (fromWhere == ErikuraApplication.FROM_ENTRY) && (ErikuraConfig.identificationRequired == 1) ){
+            viewModel.skipButtonVisibility.value = View.GONE
+        } else {
+            viewModel.skipButtonVisibility.value = View.VISIBLE
+        }
+
 
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event = "view_user_comparing_data", params = bundleOf())
@@ -393,6 +409,8 @@ class UpdateIdentityViewModel : ViewModel() {
 
     // 遷移元
     val fromWhere: MutableLiveData<Int> = MutableLiveData()
+    // 身分証確認必須フラグ
+    val identificationRequired: MutableLiveData<Int> = MutableLiveData()
 
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
@@ -464,6 +482,23 @@ class UpdateIdentityViewModel : ViewModel() {
 
     val cityWarningVisiblity: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val streetNumberWarningVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
+    var skipButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(fromWhere) {
+            if ((fromWhere.value == ErikuraApplication.FROM_ENTRY) && (identificationRequired.value == 1)) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
+            }
+        }
+        result.addSource(identificationRequired) {
+            if ((fromWhere.value == ErikuraApplication.FROM_ENTRY) && (identificationRequired.value == 1)) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
+            }
+        }
+    }
 
     fun isValidPostalCode(): Boolean {
         var valid = true

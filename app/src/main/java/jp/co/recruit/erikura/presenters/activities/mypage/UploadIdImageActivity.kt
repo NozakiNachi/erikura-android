@@ -80,6 +80,8 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         user = intent.getParcelableExtra("user")
         fromWhere =
             intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
+        viewModel.fromWhere.value = fromWhere
+        viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             job = intent.getParcelableExtra("job")
         }
@@ -95,10 +97,27 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         viewModel.driverLicenceElementNum.value = driverLicenceElementNum
         viewModel.passportElementNum.value = passportElementNum
         viewModel.myNumberElementNum.value = myNumberElementNum
+
+        // 応募の際身分証確認が必須かのフラグ
+        viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
+
     }
 
     override fun onStart() {
         super.onStart()
+
+        // 身分証確認必須フラグを取得
+        ErikuraConfig.loaded = false
+        ErikuraConfig.load(this, onError = { messages ->
+            viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
+        })
+        // viewModelの値変更でvisibilityが変わらないので実値入力で切り替える
+        if ( (fromWhere == ErikuraApplication.FROM_ENTRY) && (ErikuraConfig.identificationRequired == 1) ){
+            viewModel.skipButtonVisibility.value = View.GONE
+        } else {
+            viewModel.skipButtonVisibility.value = View.VISIBLE
+        }
+
         this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_user_verifications_id_document", params= bundleOf())
@@ -557,6 +576,11 @@ class UploadIdImageViewModel : ViewModel() {
     val passportElementNum = MutableLiveData<Int>()
     val myNumberElementNum = MutableLiveData<Int>()
 
+    // 遷移元
+    val fromWhere: MutableLiveData<Int> = MutableLiveData()
+    // 身分証確認必須フラグ
+    val identificationRequired: MutableLiveData<Int> = MutableLiveData()
+
     // 身分証の種別
     var type: MutableLiveData<String> = MutableLiveData<String>()
     var typeOfId: MutableLiveData<Int> = MutableLiveData<Int>()
@@ -614,6 +638,23 @@ class UploadIdImageViewModel : ViewModel() {
                 result.value = View.VISIBLE
             } else {
                 result.value = View.GONE
+            }
+        }
+    }
+
+    var skipButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(fromWhere) {
+            if ((fromWhere.value == ErikuraApplication.FROM_ENTRY) && (identificationRequired.value == 1)) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
+            }
+        }
+        result.addSource(identificationRequired) {
+            if ((fromWhere.value == ErikuraApplication.FROM_ENTRY) && (identificationRequired.value == 1)) {
+                result.value = View.GONE
+            } else {
+                result.value = View.VISIBLE
             }
         }
     }
