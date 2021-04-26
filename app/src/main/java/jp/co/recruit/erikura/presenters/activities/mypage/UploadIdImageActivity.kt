@@ -80,6 +80,8 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         user = intent.getParcelableExtra("user")
         fromWhere =
             intent.getIntExtra(ErikuraApplication.FROM_WHERE, ErikuraApplication.FROM_NOT_FOUND)
+        viewModel.fromWhere.value = fromWhere
+        viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
         if (fromWhere == ErikuraApplication.FROM_ENTRY) {
             job = intent.getParcelableExtra("job")
         }
@@ -95,10 +97,15 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
         viewModel.driverLicenceElementNum.value = driverLicenceElementNum
         viewModel.passportElementNum.value = passportElementNum
         viewModel.myNumberElementNum.value = myNumberElementNum
+
+        // 応募の際身分証確認が必須かのフラグ
+        viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
+
     }
 
     override fun onStart() {
         super.onStart()
+
         this.findViewById<TextView>(R.id.agreementLink)?.movementMethod = LinkMovementMethod.getInstance()
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_user_verifications_id_document", params= bundleOf())
@@ -246,46 +253,50 @@ class UploadIdImageActivity : BaseActivity(), UploadIdImageEventHandlers {
     }
 
     override fun onClickSkip(view: View) {
-        // ページ参照のトラッキングの送出
-        Tracking.logEvent(event= "skip_user_verifications_id_document", params= bundleOf())
-        Tracking.trackUserId( "skip_user_verifications_id_document",  user)
-        //遷移元によって遷移先を切り分ける
-        when (fromWhere) {
-            ErikuraApplication.FROM_REGISTER -> {
-                // 地図画面へ
-                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                    // 地図画面へ遷移
-                    val intent = Intent(this, MapViewActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    finish()
-                } else {
-                    // 位置情報の許諾、オンボーディングを表示します
-                    Intent(this, PermitLocationActivity::class.java).let { intent ->
+        if ((fromWhere == ErikuraApplication.FROM_ENTRY) && ErikuraConfig.identificationRequired) {
+            // 応募経由の身分証確認でかつ身分証確認必須の場合、スキップ処理はさせない
+        } else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event = "skip_user_verifications_id_document", params = bundleOf())
+            Tracking.trackUserId("skip_user_verifications_id_document", user)
+            //遷移元によって遷移先を切り分ける
+            when (fromWhere) {
+                ErikuraApplication.FROM_REGISTER -> {
+                    // 地図画面へ
+                    if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                        // 地図画面へ遷移
+                        val intent = Intent(this, MapViewActivity::class.java)
                         intent.flags =
                             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         finish()
+                    } else {
+                        // 位置情報の許諾、オンボーディングを表示します
+                        Intent(this, PermitLocationActivity::class.java).let { intent ->
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            finish()
+                        }
                     }
                 }
-            }
-            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
-                // 元の画面へ iOSでは乗っかってる画面を消して
-                // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                finish()
-            }
-            ErikuraApplication.FROM_ENTRY -> {
-                // 仕事詳細へ遷移し応募確認ダイアログへ
-                val intent = Intent()
-                intent.putExtra("displayApplyDialog", true)
-                setResult(RESULT_OK, intent)
-                finish()
+                ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+                    // 元の画面へ iOSでは乗っかってる画面を消して
+                    // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
+                    val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
+                }
+                ErikuraApplication.FROM_ENTRY -> {
+                    // 仕事詳細へ遷移し応募確認ダイアログへ
+                    val intent = Intent()
+                    intent.putExtra("displayApplyDialog", true)
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
             }
         }
-
     }
 
     // 画像削除イベント
@@ -557,6 +568,11 @@ class UploadIdImageViewModel : ViewModel() {
     val passportElementNum = MutableLiveData<Int>()
     val myNumberElementNum = MutableLiveData<Int>()
 
+    // 遷移元
+    val fromWhere: MutableLiveData<Int> = MutableLiveData()
+    // 身分証確認必須フラグ
+    val identificationRequired: MutableLiveData<Boolean> = MutableLiveData()
+
     // 身分証の種別
     var type: MutableLiveData<String> = MutableLiveData<String>()
     var typeOfId: MutableLiveData<Int> = MutableLiveData<Int>()
@@ -618,6 +634,15 @@ class UploadIdImageViewModel : ViewModel() {
         }
     }
 
+    var skipButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(fromWhere) {
+            result.value = skipButtonVisible()
+        }
+        result.addSource(identificationRequired) {
+            result.value = skipButtonVisible()
+        }
+    }
+
     //　送信ボタンの活性、非活性
     val isUploadIdImageButtonEnabled = MediatorLiveData<Boolean>().also { result ->
         result.addSource(typeOfId) { result.value = isValid() }
@@ -666,6 +691,14 @@ class UploadIdImageViewModel : ViewModel() {
             isNotPassportOrMyNumber = true
         }
         return isNotPassportOrMyNumber
+    }
+
+    private fun skipButtonVisible(): Int {
+        if ((fromWhere.value == ErikuraApplication.FROM_ENTRY) && (identificationRequired.value == true)) {
+            return View.GONE
+        } else {
+            return View.VISIBLE
+        }
     }
 
     fun setupHandler(handler: UploadIdImageEventHandlers?) {

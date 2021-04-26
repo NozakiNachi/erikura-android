@@ -328,7 +328,8 @@
                     android:layout_marginBottom="60dp"
                     android:onClick="@{handlers::onClickSkip}"
                     android:text="@string/after_identify"
-                    android:textSize="14dp" />
+                    android:textSize="14dp"
+                    android:visibility="@{viewModel.skipButtonVisibility}"/>
 
 
             </LinearLayout>

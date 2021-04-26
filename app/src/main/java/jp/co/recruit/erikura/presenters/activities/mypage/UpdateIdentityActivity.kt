@@ -99,6 +99,9 @@ class UpdateIdentityActivity :
             job = intent.getParcelableExtra("job")
         }
 
+        // 応募の際身分証確認が必須かのフラグ
+        viewModel.identificationRequired.value = ErikuraConfig.identificationRequired
+
         viewModel.postalCode.observe(this, androidx.lifecycle.Observer {
             if (viewModel.isValidPostalCode() && previousPostalCode != viewModel.postalCode.value) {
                 previousPostalCode = viewModel.postalCode.value
@@ -304,43 +307,47 @@ class UpdateIdentityActivity :
     }
 
     override fun onClickSkip(view: View) {
-        // ページ参照のトラッキングの送出
-        Tracking.logEvent(event = "skip_user_verifications_comparing_data", params = bundleOf())
-        Tracking.trackUserId("skip_user_verifications_comparing_data", user)
-        //遷移元によって遷移先を切り分ける
-        when (fromWhere) {
-            ErikuraApplication.FROM_REGISTER -> {
-                // 地図画面へ
-                if (ErikuraApplication.instance.isOnboardingDisplayed()) {
-                    // 地図画面へ遷移
-                    val intent = Intent(this, MapViewActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    finish()
-                } else {
-                    // 位置情報の許諾、オンボーディングを表示します
-                    Intent(this, PermitLocationActivity::class.java).let { intent ->
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        if ((fromWhere == ErikuraApplication.FROM_ENTRY) && ErikuraConfig.identificationRequired) {
+            // 応募経由の身分証確認でかつ身分証確認必須の場合、スキップ処理はさせない
+        } else {
+            // ページ参照のトラッキングの送出
+            Tracking.logEvent(event = "skip_user_verifications_comparing_data", params = bundleOf())
+            Tracking.trackUserId("skip_user_verifications_comparing_data", user)
+            //遷移元によって遷移先を切り分ける
+            when (fromWhere) {
+                ErikuraApplication.FROM_REGISTER -> {
+                    // 地図画面へ
+                    if (ErikuraApplication.instance.isOnboardingDisplayed()) {
+                        // 地図画面へ遷移
+                        val intent = Intent(this, MapViewActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
                         finish()
+                    } else {
+                        // 位置情報の許諾、オンボーディングを表示します
+                        Intent(this, PermitLocationActivity::class.java).let { intent ->
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            finish()
+                        }
                     }
                 }
-            }
-            ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
-                // 元の画面へ iOSでは乗っかってる画面を消して
-                // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
-                val intent = Intent(this, ChangeUserInformationActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                startActivity(intent)
-                finish()
-            }
-            ErikuraApplication.FROM_ENTRY -> {
-                // 仕事詳細へ遷移し応募確認ダイアログへ
-                val intent = Intent()
-                intent.putExtra("displayApplyDialog", true)
-                setResult(RESULT_OK, intent)
-                finish()
+                ErikuraApplication.FROM_CHANGE_USER, ErikuraApplication.FROM_CHANGE_USER_FOR_CHANGE_INFO -> {
+                    // 元の画面へ iOSでは乗っかってる画面を消して
+                    // 会員情報変更画面に戻る場合画面を更新するのでAndroidも更新するために画面を再生成
+                    val intent = Intent(this, ChangeUserInformationActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    startActivity(intent)
+                    finish()
+                }
+                ErikuraApplication.FROM_ENTRY -> {
+                    // 仕事詳細へ遷移し応募確認ダイアログへ
+                    val intent = Intent()
+                    intent.putExtra("displayApplyDialog", true)
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
             }
         }
     }
@@ -393,6 +400,8 @@ class UpdateIdentityViewModel : ViewModel() {
 
     // 遷移元
     val fromWhere: MutableLiveData<Int> = MutableLiveData()
+    // 身分証確認必須フラグ
+    val identificationRequired: MutableLiveData<Boolean> = MutableLiveData()
 
     // 氏名
     val lastName: MutableLiveData<String> = MutableLiveData()
@@ -464,6 +473,15 @@ class UpdateIdentityViewModel : ViewModel() {
 
     val cityWarningVisiblity: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val streetNumberWarningVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
+    var skipButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(fromWhere) {
+            result.value = skipButtonVisible()
+        }
+        result.addSource(identificationRequired) {
+            result.value = skipButtonVisible()
+        }
+    }
 
     fun isValidPostalCode(): Boolean {
         var valid = true
@@ -628,6 +646,14 @@ class UpdateIdentityViewModel : ViewModel() {
             streetNumberWarningVisibility.value = View.VISIBLE
             streetCaution.message.value =
                 ErikuraApplication.instance.getString(R.string.street_number_caution) + "\n" + ErikuraApplication.instance.getString(R.string.room_number_caution)
+        }
+    }
+
+    private fun skipButtonVisible(): Int {
+        if ((fromWhere.value == ErikuraApplication.FROM_ENTRY) && (identificationRequired.value == true)) {
+            return View.GONE
+        } else {
+            return View.VISIBLE
         }
     }
 

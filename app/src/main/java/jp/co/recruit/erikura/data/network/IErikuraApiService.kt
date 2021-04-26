@@ -409,6 +409,7 @@ sealed class ErikuraConfigValue {
     data class DoubleList(val values: List<Double>): ErikuraConfigValue()
     data class StringValue(val value: String?): ErikuraConfigValue()
     data class StringList(val values: List<String>): ErikuraConfigValue()
+    data class BooleanValue(val value: Boolean?): ErikuraConfigValue()
 }
 
 class ErikuraConfigMap: HashMap<String, ErikuraConfigValue>()
@@ -429,7 +430,8 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
                 Pair(ErikuraConfig.FAQ_URL_KEY, { json -> deserializeString(json, context) }),
                 Pair(ErikuraConfig.INQUIRY_URL_KEY, { json -> deserializeString(json, context) }),
                 Pair(ErikuraConfig.RECOMMENDED_URL_KEY, { json -> deserializeString(json, context) }),
-                Pair(ErikuraConfig.PP_TERMS_TITLE, { json -> deserializeString(json, context) })
+                Pair(ErikuraConfig.PP_TERMS_TITLE, { json -> deserializeString(json, context) }),
+                Pair(ErikuraConfig.IDENTIFICATION_REQUIRED, { json -> deserializeBoolean(json, context) })
             )
             deserializerMap[entry.key]?.let { deserializer ->
                 result.put(entry.key, deserializer(entry.value))
@@ -453,6 +455,12 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
     private fun deserializeStringList(json: JsonElement?, context: JsonDeserializationContext?): ErikuraConfigValue.StringList {
         return ErikuraConfigValue.StringList(
             context?.deserialize(json, List::class.java) ?: listOf()
+        )
+    }
+
+    private fun deserializeBoolean(json: JsonElement?, context: JsonDeserializationContext?): ErikuraConfigValue.BooleanValue {
+        return ErikuraConfigValue.BooleanValue(
+            context?.deserialize(json, Boolean::class.java)
         )
     }
 }
