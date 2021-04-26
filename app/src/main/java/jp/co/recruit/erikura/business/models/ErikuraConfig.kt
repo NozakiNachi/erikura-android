@@ -22,7 +22,7 @@ object ErikuraConfig {
     var recommendedEnvironmentURLString: String =
         "https://faq.erikura.net/hc/ja/articles/360020286793-%E3%82%B5%E3%82%A4%E3%83%88%E3%81%AE%E6%8E%A8%E5%A5%A8%E7%92%B0%E5%A2%83%E3%82%92%E6%95%99%E3%81%88%E3%81%A6%E3%81%8F%E3%81%A0%E3%81%95%E3%81%84"
     var ppTermsTitle: String = "プライバシーポリシー"
-    var identificationRequired: Int = 0
+    var identificationRequired: Boolean = false
 
     fun jobReportURLString(job_id: Int?, token: String?): String {
         return BuildConfig.SERVER_BASE_URL + "report_with_token?token="+ token + "&job_id=" + job_id
@@ -61,9 +61,9 @@ object ErikuraConfig {
                     }
                 }
                 result[IDENTIFICATION_REQUIRED]?.let { v ->
-                        (v as ErikuraConfigValue.StringValue)?.let {
+                        (v as ErikuraConfigValue.BooleanValue)?.let {
                             identificationRequired =
-                                it.value?.toInt() ?: identificationRequired }
+                                it.value ?: identificationRequired }
                 }
                 loaded = true
             }
