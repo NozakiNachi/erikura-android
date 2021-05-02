@@ -29,14 +29,19 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
+import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportImagePickerBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImagePickerCellBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
+import java.util.*
+import kotlin.collections.HashMap
 
 class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler {
     private val viewModel by lazy {
@@ -205,6 +210,14 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
     }
 
+    override fun onBackPressed() {
+        // 常に案件詳細に戻るようにします
+        val intent= Intent(this, JobDetailsActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.putExtra("job", job)
+        startActivity(intent)
+    }
+
     override fun onClickNext(view: View) {
         // 写真の存在確認をおこないます
         checkPhotoExistence()
@@ -234,6 +247,9 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
             }
         }
         editComplete = true
+
+        // 作業報告を保存します
+        JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.PictureSelectForm)
 
         val intent= Intent(this, ReportFormActivity::class.java)
         intent.putExtra("job", job)

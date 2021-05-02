@@ -26,7 +26,9 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
+import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportOtherFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -231,7 +233,35 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         fromGallery = true
     }
 
+    override fun onBackPressed() {
+        if (!fromConfirm) {
+            fillReport()
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.OtherForm)
+        }
+        super.onBackPressed()
+    }
+
     override fun onClickNext(view: View) {
+        job.report?.let {
+            fillReport()
+            editCompleted = true
+
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.OtherForm)
+
+            if (fromConfirm) {
+                val intent= Intent()
+                intent.putExtra("job", job)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            }else {
+                val intent= Intent(this, ReportEvaluationActivity::class.java)
+                intent.putExtra("job", job)
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun fillReport() {
         job.report?.let {
             it.additionalPhotoAsset = viewModel.otherPhoto
             it.additionalComment = viewModel.comment.value
@@ -249,20 +279,9 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             }else {
                 it.additionalReportPhotoWillDelete = true
             }
-            editCompleted = true
-
-            if (fromConfirm) {
-                val intent= Intent()
-                intent.putExtra("job", job)
-                setResult(Activity.RESULT_OK, intent)
-                finish()
-            }else {
-                val intent= Intent(this, ReportEvaluationActivity::class.java)
-                intent.putExtra("job", job)
-                startActivity(intent)
-            }
         }
     }
+
 
     override fun onClickReportExamples(view: View) {
         job?.let { job ->

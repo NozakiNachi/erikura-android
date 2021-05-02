@@ -17,6 +17,8 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.util.JobUtils
+import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportWorkingTimeBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -104,10 +106,22 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         }
     }
 
+    override fun onBackPressed() {
+        if (!fromConfirm) {
+            job.report?.let { report ->
+                report.workingMinute = viewModel.timeSelectedItem
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.WorkingTimeForm)
+            }
+        }
+        super.onBackPressed()
+    }
+
     override fun onClickNext(view: View) {
         job.report?.let {
             it.workingMinute = viewModel.timeSelectedItem
             editCompleted = true
+
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.WorkingTimeForm)
 
             if (fromConfirm) {
                 val intent= Intent()

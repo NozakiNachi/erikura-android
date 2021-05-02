@@ -21,6 +21,8 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.util.JobUtils
+import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportEvaluationBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
@@ -120,17 +122,21 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         }
     }
 
+    override fun onBackPressed() {
+        if(!fromConfirm) {
+            fillReport()
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.EvaluationForm)
+        }
+        super.onBackPressed()
+    }
+
     override fun onClickNext(view: View) {
         job.report?.let {
-            if (viewModel.good.value?: false) {
-                it.evaluation = "good"
-            }else if (viewModel.bad.value?: false) {
-                it.evaluation = "bad"
-            }else {
-                it.evaluation = null
-            }
-            it.comment = viewModel.comment.value
+            fillReport()
             editCompleted = true
+
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.EvaluationForm)
+
             if (fromConfirm) {
                 val intent= Intent()
                 intent.putExtra("job", job)
@@ -141,6 +147,19 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
                 intent.putExtra("job", job)
                 startActivity(intent)
             }
+        }
+    }
+
+    private fun fillReport() {
+        job.report?.let {
+            if (viewModel.good.value?: false) {
+                it.evaluation = "good"
+            }else if (viewModel.bad.value?: false) {
+                it.evaluation = "bad"
+            }else {
+                it.evaluation = null
+            }
+            it.comment = viewModel.comment.value
         }
     }
 

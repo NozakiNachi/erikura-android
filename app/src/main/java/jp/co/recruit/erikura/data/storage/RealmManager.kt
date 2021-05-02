@@ -6,7 +6,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 
 class RealmManager {
     companion object {
-        const val schemaVersion: Long = 1
+        const val schemaVersion: Long = 2
         val instance = RealmManager()
 
         val realm: Realm get() = instance.realm

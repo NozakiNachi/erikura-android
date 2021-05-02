@@ -2,17 +2,14 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.FrameLayout
-import android.widget.ImageView
+import android.widget.*
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
@@ -25,13 +22,14 @@ import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.EvaluateType
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.OutputSummary
+import jp.co.recruit.erikura.business.util.JobUtils
+import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import kotlinx.android.synthetic.main.activity_report_form.*
 import org.apache.commons.lang.builder.ToStringBuilder
-import java.lang.RuntimeException
 
 class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
     private val viewModel by lazy {
@@ -155,29 +153,64 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         return super.dispatchTouchEvent(ev)
     }
 
+    override fun onBackPressed() {
+        if (!fromConfirm) {
+            // 編集中の内容を保存します
+            fillSummary()
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = pictureIndex)
+
+            val summaries = job.report?.outputSummaries ?: listOf()
+            var prevIndex = pictureIndex - 1
+            while(prevIndex >= 0 && summaries[prevIndex].willDelete)
+                prevIndex--
+            if (prevIndex >= 0) {
+                // 写真が残っている場合
+                val intent= Intent(this, ReportFormActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("job", job)
+                intent.putExtra("pictureIndex", prevIndex)
+                startActivity(intent)
+            }
+            else {
+                val dialog = AlertDialog.Builder(this)
+                    .setView(R.layout.dialog_delete_report_draft)
+                    .setCancelable(true)
+                    .create()
+                dialog.show()
+
+                (dialog.findViewById(R.id.yes_button) as? Button)?.setOnClickListener {
+                    dialog.dismiss()
+
+                    JobUtils.removeReportDraft(job)
+
+                    val intent= Intent(this, ReportImagePickerActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.putExtra("job", job)
+                    startActivity(intent)
+                }
+                (dialog.findViewById(R.id.no_button) as? Button)?.setOnClickListener {
+                    dialog.dismiss()
+                }
+            }
+        }
+        else {
+            // 確認画面から遷移した場合は onBackPress のデフォルト動作を行います
+            super.onBackPressed()
+        }
+    }
+
     override fun onClickNext(view: View) {
         job.report?.let {
             val summaries = it.outputSummaries
 
-            val summary = summaries[pictureIndex]
-            if (viewModel.summarySelectedItem.value == ErikuraApplication.instance.getString(R.string.other_hint)) {
-                summary.place = viewModel.summary.value
-            }else {
-                summary.place = viewModel.summarySelectedItem.value
-            }
-            summary.evaluation = viewModel.evaluationSelectedItem.value.toString().toLowerCase()
-
-            if (viewModel.fixedPhraseSelectedItem.value == ErikuraApplication.instance.getString(R.string.other_hint)) {
-                summary.comment = viewModel.comment.value
-            }
-            else {
-                summary.comment = viewModel.fixedPhraseSelectedItem.value
-            }
+            fillSummary()
             editCompleted = true
 
             var nextIndex = pictureIndex + 1
             while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
                 nextIndex++
+
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = pictureIndex)
 
             if (fromConfirm) {
                 // 確認画面から来た場合は、確認画面に戻ります
@@ -196,6 +229,27 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                 val intent= Intent(this, ReportWorkingTimeActivity::class.java)
                 intent.putExtra("job", job)
                 startActivity(intent)
+            }
+        }
+    }
+
+    private fun fillSummary() {
+        job.report?.let {
+            val summaries = it.outputSummaries
+
+            val summary = summaries[pictureIndex]
+            if (viewModel.summarySelectedItem.value == ErikuraApplication.instance.getString(R.string.other_hint)) {
+                summary.place = viewModel.summary.value
+            }else {
+                summary.place = viewModel.summarySelectedItem.value
+            }
+            summary.evaluation = viewModel.evaluationSelectedItem.value.toString().toLowerCase()
+
+            if (viewModel.fixedPhraseSelectedItem.value == ErikuraApplication.instance.getString(R.string.other_hint)) {
+                summary.comment = viewModel.comment.value
+            }
+            else {
+                summary.comment = viewModel.fixedPhraseSelectedItem.value
             }
         }
     }

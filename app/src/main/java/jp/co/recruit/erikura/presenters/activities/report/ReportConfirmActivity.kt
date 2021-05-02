@@ -534,6 +534,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
             // アップロード用のトークンをクリアします
             PhotoTokenManager.clearToken(job)
+            // 下書きを削除します
+            JobUtils.removeReportDraft(job)
 
             // 作業報告のトラッキングの送出
             Tracking.logEvent(event= "job_report", params= bundleOf())

@@ -3,6 +3,7 @@ package jp.co.recruit.erikura.data.storage
 import io.realm.Realm
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
+import java.util.*
 
 
 object PhotoTokenManager {
@@ -13,14 +14,15 @@ object PhotoTokenManager {
             var photo = realm.createObject(PhotoToken::class.java, token)
             photo.url = url
             photo.jobId = job.id
+            photo.uploadedAt = Date()
         }
     }
-
 
     /**
      * URL に対応するトークンを取得します
      */
     fun getToken(job: Job, url: String): String? {
+        // FIXME: アップロード後に expire していないか確認が必要では
         var token: String? = null
         realm.executeTransaction { realm ->
             // トークンが Realm に登録されているか確認します

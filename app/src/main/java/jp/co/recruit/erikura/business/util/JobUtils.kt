@@ -1,7 +1,19 @@
 package jp.co.recruit.erikura.business.util
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import io.realm.Sort
+import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.data.network.MediaItemSerializer
+import jp.co.recruit.erikura.data.storage.Asset
+import jp.co.recruit.erikura.data.storage.AssetsManager
+import jp.co.recruit.erikura.data.storage.ReportDraft
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Comparator
@@ -125,4 +137,36 @@ object JobUtils {
     private val compareFee: Comparator<Job> = compareBy(Job::fee).reversed()
     private val compareCreatedAt: Comparator<Job> = compareBy(Job::createdAt)
     private val compareId: Comparator<Job> = compareBy(Job::id)
+
+    fun loadReportDraft(job: Job): ReportDraft? {
+        return ErikuraApplication.realm.let { realm ->
+            realm.where(ReportDraft::class.java).equalTo("jobId", job.id).findFirst()
+        }
+    }
+
+    fun saveReportDraft(job: Job, step: ReportDraft.ReportStep, summaryIndex: Int? = null) {
+        job.report?.let {
+            val realm = ErikuraApplication.realm
+            realm.executeTransaction {
+                val draft: ReportDraft =
+                    realm.where(ReportDraft::class.java).equalTo("jobId", job.id).findFirst()
+                        ?: realm.createObject(ReportDraft::class.java, job.id)
+                draft.lastModifiedAt = Date()
+                draft.step = step
+                summaryIndex?.let { draft.lastSummaryIndex = it }
+                job.report?.let { report ->
+                    draft.dumpReport(report)
+                }
+            }
+        }
+    }
+
+    /** 下書きを削除します */
+    fun removeReportDraft(job: Job) {
+        val realm = ErikuraApplication.realm
+        realm.executeTransaction {
+            val draft: ReportDraft? = realm.where(ReportDraft::class.java).equalTo("jobId", job.id).findFirst()
+            draft?.deleteFromRealm()
+        }
+    }
 }
