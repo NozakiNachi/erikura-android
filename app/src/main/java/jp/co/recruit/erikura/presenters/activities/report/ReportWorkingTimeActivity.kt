@@ -110,10 +110,24 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         if (!fromConfirm) {
             job.report?.let { report ->
                 report.workingMinute = viewModel.timeSelectedItem
-                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.WorkingTimeForm)
+
+                val summaries = job.report?.outputSummaries ?: listOf()
+                var pictureIndex = summaries.count() - 1
+                while(pictureIndex >= 0 && summaries[pictureIndex]?.willDelete == true) {
+                    pictureIndex--
+                }
+
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = pictureIndex)
+                val intent= Intent(this, ReportFormActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("job", job)
+                intent.putExtra("pictureIndex", pictureIndex)
+                startActivity(intent)
             }
         }
-        super.onBackPressed()
+        else {
+            super.onBackPressed()
+        }
     }
 
     override fun onClickNext(view: View) {
@@ -121,15 +135,17 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
             it.workingMinute = viewModel.timeSelectedItem
             editCompleted = true
 
-            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.WorkingTimeForm)
 
             if (fromConfirm) {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.Confirm)
                 val intent= Intent()
                 intent.putExtra("job", job)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             }else {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.OtherForm)
                 val intent= Intent(this, ReportOtherFormActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("job", job)
                 startActivity(intent)
             }

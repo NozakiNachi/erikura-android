@@ -236,9 +236,16 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     override fun onBackPressed() {
         if (!fromConfirm) {
             fillReport()
-            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.OtherForm)
+            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.WorkingTimeForm)
+
+            val intent= Intent(this, ReportWorkingTimeActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("job", job)
+            startActivity(intent)
         }
-        super.onBackPressed()
+        else {
+            super.onBackPressed()
+        }
     }
 
     override fun onClickNext(view: View) {
@@ -246,15 +253,18 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             fillReport()
             editCompleted = true
 
-            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.OtherForm)
 
             if (fromConfirm) {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.Confirm)
                 val intent= Intent()
                 intent.putExtra("job", job)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
-            }else {
+            }
+            else {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.EvaluationForm)
                 val intent= Intent(this, ReportEvaluationActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("job", job)
                 startActivity(intent)
             }

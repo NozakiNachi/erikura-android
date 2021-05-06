@@ -26,6 +26,7 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import kotlinx.android.synthetic.main.activity_report_form.*
@@ -157,13 +158,13 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         if (!fromConfirm) {
             // 編集中の内容を保存します
             fillSummary()
-            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = pictureIndex)
 
             val summaries = job.report?.outputSummaries ?: listOf()
             var prevIndex = pictureIndex - 1
             while(prevIndex >= 0 && summaries[prevIndex].willDelete)
                 prevIndex--
             if (prevIndex >= 0) {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = prevIndex)
                 // 写真が残っている場合
                 val intent= Intent(this, ReportFormActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -183,7 +184,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
 
                     JobUtils.removeReportDraft(job)
 
-                    val intent= Intent(this, ReportImagePickerActivity::class.java)
+                    val intent= Intent(this, JobDetailsActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("job", job)
                     startActivity(intent)
@@ -210,23 +211,27 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
             while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
                 nextIndex++
 
-            JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = pictureIndex)
 
             if (fromConfirm) {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.Confirm)
                 // 確認画面から来た場合は、確認画面に戻ります
                 val intent= Intent()
                 intent.putExtra("job", job)
                 setResult(Activity.RESULT_OK, intent)
                 finish()
             } else if (nextIndex < summaries.size) {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = nextIndex)
                 // 写真が残っている場合
                 val intent= Intent(this, ReportFormActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", nextIndex)
                 startActivity(intent)
             } else {
+                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.WorkingTimeForm)
                 // 写真が残っていない場合
                 val intent= Intent(this, ReportWorkingTimeActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 intent.putExtra("job", job)
                 startActivity(intent)
             }

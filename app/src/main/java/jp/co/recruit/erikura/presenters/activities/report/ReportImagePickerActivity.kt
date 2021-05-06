@@ -249,9 +249,10 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         editComplete = true
 
         // 作業報告を保存します
-        JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.PictureSelectForm)
+        JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = 0)
 
         val intent= Intent(this, ReportFormActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
         startActivity(intent)
