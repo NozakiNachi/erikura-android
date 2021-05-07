@@ -336,11 +336,11 @@
     <string name="upgrade_required_button">アップデート</string>
 
     <!-- 下書き利用確認モーダル -->
-    <string name="report_draft_message">報告途中の下書きが存在します。\n前回の続きから始めますか?</string>
-    <string name="report_draft_use_draft">途中から再開する</string>
-    <string name="report_draft_reset">最初から報告する</string>
+    <string name="report_draft_message">前回の途中から作業報告を行いますか？\nいいえを選択した場合、前回の入力内容は破棄されます。</string>
+    <string name="report_draft_use_draft">はい</string>
+    <string name="report_draft_reset">いいえ</string>
     <!-- 下書き破棄確認モーダル -->
-    <string name="report_draft_delete_confirm">入力内容を破棄しますか?</string>
+    <string name="report_draft_delete_confirm">写真選択に戻りますか？\n戻る場合は入力内容が破棄されます。</string>
 
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>

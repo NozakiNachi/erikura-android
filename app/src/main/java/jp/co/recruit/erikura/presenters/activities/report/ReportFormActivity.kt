@@ -183,8 +183,9 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                     dialog.dismiss()
 
                     JobUtils.removeReportDraft(job)
+                    job.report = null
 
-                    val intent= Intent(this, JobDetailsActivity::class.java)
+                    val intent= Intent(this, ReportImagePickerActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("job", job)
                     startActivity(intent)
