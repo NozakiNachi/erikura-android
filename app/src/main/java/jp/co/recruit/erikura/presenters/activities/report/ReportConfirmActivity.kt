@@ -271,6 +271,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             }
 //            outputSummaryList.removeAt(position)
             it.outputSummaries = outputSummaryList
+
+            JobUtils.saveReportDraft(job, ReportDraft.ReportStep.Confirm)
             loadData()
         }
     }
@@ -379,13 +381,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                                 it.uploadPhoto(this, job, summary.photoAsset){ token ->
                                     PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
                                 }
+
+                                JobUtils.saveReportDraft(job, ReportDraft.ReportStep.Confirm)
                             }
                         }
-
                     }
                 }
             }
-
         }
     }
 
