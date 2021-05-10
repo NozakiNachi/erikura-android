@@ -60,6 +60,8 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
 
     val boostVisibility: Int get() { return if (job.boost) { View.VISIBLE } else { View.GONE} }
     val wantedVisibility: Int get() { return if (job.wanted) { View.VISIBLE } else { View.GONE} }
+    // 先行応募中又は先行応募で応募済みのタスクの場合
+    val workingStartAtVisibility: Int get() { return if (job.isPreEntry || job.entry?.fromPreEntry == true) { View.VISIBLE } else { View.GONE} }
 
     val rejectedLabelVisibility: Int get() {
         if (timeLabelType == JobUtil.TimeLabelType.OWNED && job.isRejected)
