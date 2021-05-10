@@ -34,6 +34,7 @@ import jp.co.recruit.erikura.business.models.*
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
+import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportConfirmBinding
 import jp.co.recruit.erikura.databinding.FragmentReportImageItemBinding
 import jp.co.recruit.erikura.databinding.FragmentReportSummaryItemBinding
@@ -161,6 +162,22 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         handler.pause()
     }
 
+    override fun onBackPressed() {
+        JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.Confirm)
+
+        if (job?.isReported == true) {
+            // 作業報告済みなので、編集として確認画面が表示されている状態 => 通常の戻るボタンの処理を行います
+            super.onBackPressed()
+        }
+        else {
+            // 新規の報告書作成で確認画面に遷移しているので、評価画面に遷移させます
+            val intent= Intent(this, ReportEvaluationActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("job", job)
+            startActivity(intent)
+        }
+    }
+
     override fun onClickComplete(view: View) {
         if (job.isReportCreatable || job.isReportEditable) {
             val missingPlaces = missingPlaces()
@@ -254,6 +271,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             }
 //            outputSummaryList.removeAt(position)
             it.outputSummaries = outputSummaryList
+
+            JobUtils.saveReportDraft(job, ReportDraft.ReportStep.Confirm)
             loadData()
         }
     }
@@ -362,13 +381,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                                 it.uploadPhoto(this, job, summary.photoAsset){ token ->
                                     PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
                                 }
+
+                                JobUtils.saveReportDraft(job, ReportDraft.ReportStep.Confirm)
                             }
                         }
-
                     }
                 }
             }
-
         }
     }
 
@@ -534,6 +553,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
             // アップロード用のトークンをクリアします
             PhotoTokenManager.clearToken(job)
+            // 下書きを削除します
+            JobUtils.removeReportDraft(job)
 
             // 作業報告のトラッキングの送出
             Tracking.logEvent(event= "job_report", params= bundleOf())

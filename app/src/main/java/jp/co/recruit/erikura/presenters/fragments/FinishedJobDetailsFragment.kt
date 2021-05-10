@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.fragments
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -8,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ToggleButton
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.os.bundleOf
@@ -19,10 +21,12 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.TransitionWebModal
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentFinishedJobDetailsBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.report.ReportFormActivity
 import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 import jp.co.recruit.erikura.presenters.view_models.BaseJobDetailViewModel
 import java.util.*
@@ -167,14 +171,8 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
 
     override fun onClickReport(view: View) {
         job?.let { job ->
-            if (job.entry?.limitAt?: Date() > Date()) {
-                val intent = Intent(activity, ReportImagePickerActivity::class.java)
-                intent.putExtra("job", job)
-                startActivity(intent)
-            }else {
-                val errorMessages =
-                    mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-                Api(activity!!).displayErrorAlert(errorMessages)
+            activity?.let { activity ->
+                JobUtil.openCreateReport(activity, job)
             }
         }
     }
@@ -185,7 +183,6 @@ class FinishedJobDetailsFragment : BaseJobDetailFragment, FinishedJobDetailsFrag
             TransitionWebModal.transitionWebModal(view, activity, job, user)
         }
     }
-
 }
 
 class FinishedJobDetailsFragmentViewModel: BaseJobDetailViewModel() {

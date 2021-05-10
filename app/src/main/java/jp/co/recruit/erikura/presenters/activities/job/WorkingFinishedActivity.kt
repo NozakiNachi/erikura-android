@@ -107,22 +107,14 @@ class WorkingFinishedActivity : BaseActivity(), WorkingFinishedEventHandlers {
         Tracking.logEvent(event= "push_report_job", params= bundleOf())
         Tracking.track(name= "push_report_job")
 
-        if (job.entry?.limitAt ?: Date() > Date()) {
-            val intent = Intent(this, ReportImagePickerActivity::class.java)
-            intent.putExtra("job", job)
-            startActivity(intent)
-        }else {
-            val errorMessages =
-                mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
-            Api(this).displayErrorAlert(errorMessages)
-        }
+        JobUtil.openCreateReport(this, job)
     }
 
     override fun onClickAppliedJobs(view: View) {
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "push_display_job_list", params= bundleOf())
         Tracking.track(name= "push_display_job_list")
-
+1
         Intent(this, OwnJobsActivity::class.java).let { intent ->
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             intent.putExtra("fromWorkingFinished", true)

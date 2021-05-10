@@ -1,12 +1,16 @@
+import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Paint
 import android.graphics.Typeface
+import android.net.Uri
+import android.provider.MediaStore
 import android.text.*
 import android.text.style.*
 import android.view.View
 import android.webkit.MimeTypeMap
+import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
@@ -19,9 +23,11 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.JobStatus
 import jp.co.recruit.erikura.business.models.ReportExample
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
-import jp.co.recruit.erikura.presenters.activities.report.ReportExamplesActivity
+import jp.co.recruit.erikura.data.storage.ReportDraft
+import jp.co.recruit.erikura.presenters.activities.report.*
 import okhttp3.internal.closeQuietly
 import org.apache.commons.io.IOUtils
 import java.io.File
@@ -214,6 +220,86 @@ object JobUtil {
         return text to color
     }
 
+    fun openCreateReport(activity: FragmentActivity, job: Job) {
+        if (activity.isFinishing == true || activity.isDestroyed == true) {
+            // Activity が存在しない状態なので、何もせずに終了します
+            return
+        }
+
+        if (job.entry?.limitAt?: Date() > Date()) {
+            val draft = JobUtils.loadReportDraft(job)
+            if (draft != null) {
+                val dialog = AlertDialog.Builder(activity)
+                    .setView(R.layout.dialog_report_draft)
+                    .setCancelable(true)
+                    .create()
+                dialog.show()
+                // 再開ボタン
+                (dialog.findViewById(R.id.report_draft_restart) as? Button)?.apply {
+                    setOnClickListener {
+                        dialog.dismiss()
+                        job.report = draft.restoreReport()
+                        ErikuraApplication.instance.currentJob = job
+
+                        when(draft.step) {
+                            ReportDraft.ReportStep.PictureSelectForm -> {
+                                val intent= Intent(activity, ReportFormActivity::class.java)
+                                intent.putExtra("job", job)
+                                intent.putExtra("pictureIndex", 0)
+                                activity.startActivity(intent)
+                            }
+                            ReportDraft.ReportStep.SummaryForm -> {
+                                val intent= Intent(activity, ReportFormActivity::class.java)
+                                intent.putExtra("job", job)
+                                intent.putExtra("pictureIndex", draft.lastSummaryIndex)
+                                activity.startActivity(intent)
+                            }
+                            ReportDraft.ReportStep.WorkingTimeForm -> {
+                                val intent= Intent(activity, ReportWorkingTimeActivity::class.java)
+                                intent.putExtra("job", job)
+                                activity.startActivity(intent)
+                            }
+                            ReportDraft.ReportStep.OtherForm -> {
+                                val intent= Intent(activity, ReportOtherFormActivity::class.java)
+                                intent.putExtra("job", job)
+                                activity.startActivity(intent)
+                            }
+                            ReportDraft.ReportStep.EvaluationForm -> {
+                                val intent= Intent(activity, ReportEvaluationActivity::class.java)
+                                intent.putExtra("job", job)
+                                activity.startActivity(intent)
+                            }
+                            ReportDraft.ReportStep.Confirm -> {
+                                val intent= Intent(activity, ReportConfirmActivity::class.java)
+                                intent.putExtra("job", job)
+                                activity.startActivity(intent)
+                            }
+                        }
+                    }
+                }
+                // 最初からボタン
+                (dialog.findViewById(R.id.report_draft_reset) as? Button)?.apply {
+                    setOnClickListener {
+                        dialog.dismiss()
+                        JobUtils.removeReportDraft(job)
+                        val intent = Intent(activity, ReportImagePickerActivity::class.java)
+                        intent.putExtra("job", job)
+                        activity.startActivity(intent)
+                    }
+                }
+            }
+            else {
+                val intent = Intent(activity, ReportImagePickerActivity::class.java)
+                intent.putExtra("job", job)
+                activity.startActivity(intent)
+            }
+        } else {
+            val errorMessages =
+                mutableListOf(ErikuraApplication.instance.getString(R.string.jobDetails_overLimit))
+            Api(activity).displayErrorAlert(errorMessages)
+        }
+    }
+
     fun openManual(activity: FragmentActivity, job: Job) {
         // ページ参照のトラッキングの送出
         Tracking.logEvent(event= "view_job_manual", params= bundleOf())
@@ -363,7 +449,6 @@ object JobUtil {
         val weekday= JobUtil.formatWeekDay(date)
         return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
     }
-
 
     fun getFormattedDateWithoutYear(date: Date): String {
         val sdfDate = SimpleDateFormat("MM/dd")

@@ -335,6 +335,13 @@
     <string name="upgrade_required">最新版にアップデートして\nご利用ください</string>
     <string name="upgrade_required_button">アップデート</string>
 
+    <!-- 下書き利用確認モーダル -->
+    <string name="report_draft_message">前回の途中から作業報告を行いますか？\nいいえを選択した場合、前回の入力内容は破棄されます。</string>
+    <string name="report_draft_use_draft">はい</string>
+    <string name="report_draft_reset">いいえ</string>
+    <!-- 下書き破棄確認モーダル -->
+    <string name="report_draft_delete_confirm">写真選択に戻りますか？\n戻る場合は入力内容が破棄されます。</string>
+
     <!-- 入力フィールドのラベル -->
     <string name="email">メールアドレス</string>
     <string name="password">パスワード</string>
@@ -410,6 +417,8 @@
     <!--    <string name="password_verificationPassword_match_error">パスワードとパスワード(確認)の値が一致しません。</string>-->
 
     <!-- ボタンのラベル -->
+    <string name="yes">はい</string>
+    <string name="no">いいえ</string>
     <string name="registerFree">会員登録（無料）</string>
     <string name="send_email">仮登録メールを送信</string>
     <string name="next">次へ</string>

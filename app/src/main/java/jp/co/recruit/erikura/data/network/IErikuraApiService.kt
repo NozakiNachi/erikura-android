@@ -1,8 +1,7 @@
 package jp.co.recruit.erikura.data.network
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
+import android.net.Uri
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import io.reactivex.Observable
 import jp.co.recruit.erikura.business.models.*
@@ -11,7 +10,7 @@ import retrofit2.Response
 import retrofit2.http.*
 import java.lang.reflect.Type
 import java.util.*
-import kotlin.collections.HashMap
+
 
 interface IErikuraApiService {
     @POST("users")
@@ -462,5 +461,43 @@ class ErikuraConfigDeserializer: JsonDeserializer<ErikuraConfigMap> {
         return ErikuraConfigValue.BooleanValue(
             context?.deserialize(json, Boolean::class.java)
         )
+    }
+}
+
+class MediaItemSerializer: JsonSerializer<MediaItem>, JsonDeserializer<MediaItem> {
+    override fun serialize(
+        src: MediaItem?,
+        typeOfSrc: Type?,
+        context: JsonSerializationContext?
+    ): JsonElement {
+        return src?.let { src ->
+            JsonObject().apply {
+                src.id?.let { add("id", JsonPrimitive(it)) }
+                src.mimeType?.let { add("mime_type", JsonPrimitive(it)) }
+                src.size?.let { add("size", JsonPrimitive(it)) }
+                src.contentUri?.let { uri ->
+                    src.contentUri?.let { add("content_uri", JsonPrimitive(uri.toString())) }
+                }
+                src.dateAdded?.let { add("date_added", JsonPrimitive(it)) }
+                src.dateTaken?.let { add("date_taken", JsonPrimitive(it)) }
+            }
+        } ?: JsonNull.INSTANCE
+    }
+
+    override fun deserialize(
+        json: JsonElement?,
+        typeOfT: Type?,
+        context: JsonDeserializationContext?
+    ): MediaItem {
+        return (json as? JsonObject)?.run {
+            return MediaItem(
+                id= get("id")?.asLong ?: 0,
+                mimeType = get("mime_type")?.asString ?: "",
+                size= get("size")?.asLong ?: 0,
+                contentUri= get("content_uri")?.asString?.let { Uri.parse(it) },
+                dateAdded= get("date_added")?.asLong,
+                dateTaken= get("date_taken")?.asLong
+            )
+        } ?: MediaItem()
     }
 }
