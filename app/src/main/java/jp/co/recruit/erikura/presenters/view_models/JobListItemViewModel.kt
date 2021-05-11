@@ -29,7 +29,7 @@ class JobListItemViewModel(activity: Activity, val job: Job, val currentPosition
         }
     }
     val workingFinishAt: String get() {
-        val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED) {
+        val finishAt = if (timeLabelType == JobUtil.TimeLabelType.OWNED || job.isOwner) {
             // 先行応募、応募済みの場合リミットを返す
              job?.entry?.limitAt ?: job.workingFinishAt
         }
