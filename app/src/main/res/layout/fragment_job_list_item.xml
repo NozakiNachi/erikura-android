@@ -279,6 +279,7 @@
                     android:text="@{viewModel.workingStartAt}"
                     android:maxLines="1"
                     android:ellipsize="end"
+                    android:visibility="@{viewModel.workingStartAtVisibility}"
                     />
 
                 <TextView
