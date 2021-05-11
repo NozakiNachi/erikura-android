@@ -2,11 +2,13 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
+import android.widget.Button
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
@@ -117,12 +119,40 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
                     pictureIndex--
                 }
 
-                JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = pictureIndex)
-                val intent= Intent(this, ReportFormActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                intent.putExtra("job", job)
-                intent.putExtra("pictureIndex", pictureIndex)
-                startActivity(intent)
+                if (pictureIndex >= 0) {
+                    JobUtils.saveReportDraft(
+                        job,
+                        step = ReportDraft.ReportStep.SummaryForm,
+                        summaryIndex = pictureIndex
+                    )
+                    val intent = Intent(this, ReportFormActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.putExtra("job", job)
+                    intent.putExtra("pictureIndex", pictureIndex)
+                    startActivity(intent)
+                }
+                else {
+                    val dialog = AlertDialog.Builder(this)
+                        .setView(R.layout.dialog_delete_report_draft)
+                        .setCancelable(true)
+                        .create()
+                    dialog.show()
+
+                    (dialog.findViewById(R.id.yes_button) as? Button)?.setOnClickListener {
+                        dialog.dismiss()
+
+                        JobUtils.removeReportDraft(job)
+                        job.report = null
+
+                        val intent= Intent(this, ReportImagePickerActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                        intent.putExtra("job", job)
+                        startActivity(intent)
+                    }
+                    (dialog.findViewById(R.id.no_button) as? Button)?.setOnClickListener {
+                        dialog.dismiss()
+                    }
+                }
             }
         }
         else {
