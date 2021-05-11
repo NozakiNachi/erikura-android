@@ -170,8 +170,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             super.onBackPressed()
         }
         else {
-            JobUtils.saveReportDraft(job, ReportDraft.ReportStep.EvaluationForm)
-
             // 新規の報告書作成で確認画面に遷移しているので、評価画面に遷移させます
             val intent= Intent(this, ReportEvaluationActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
