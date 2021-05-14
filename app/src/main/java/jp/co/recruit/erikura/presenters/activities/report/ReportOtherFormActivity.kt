@@ -261,7 +261,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
 
                         val selectButton: Button = dialog.findViewById(R.id.select_button)
                         selectButton.setOnClickListener(View.OnClickListener {
-                            setOtherPicture(item)
+                            addOtherPicture(item)
                             dialog.dismiss()
                         })
                         val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
@@ -269,7 +269,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                             dialog.dismiss()
                         })
                     } else {
-                        setOtherPicture(item)
+                        addOtherPicture(item)
                     }
                 }
             }
@@ -277,7 +277,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         fromGallery = true
     }
 
-    private fun setOtherPicture(item: MediaItem) {
+    private fun addOtherPicture(item: MediaItem) {
         viewModel.addPhotoButtonVisibility.value = View.GONE
         viewModel.removePhotoButtonVisibility.value = View.VISIBLE
         val imageView: ImageView = findViewById(R.id.report_other_image)

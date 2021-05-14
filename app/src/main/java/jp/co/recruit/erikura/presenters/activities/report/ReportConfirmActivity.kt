@@ -388,7 +388,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             val selectButton: Button = dialog.findViewById(R.id.select_button)
                             selectButton.setOnClickListener(View.OnClickListener {
                                 dialog.dismiss()
-                                setConfirmPicture(exifInterface, summary, item)
+                                addSummaryPicture(exifInterface, summary, item)
                                 onStart()
                             })
                             val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
@@ -396,7 +396,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                                 dialog.dismiss()
                             })
                         } else {
-                            setConfirmPicture(exifInterface, summary, item)
+                            addSummaryPicture(exifInterface, summary, item)
                         }
                     }
                 }
@@ -404,7 +404,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         }
     }
 
-    private fun setConfirmPicture(
+    private fun addSummaryPicture(
         exifInterface: ExifInterface,
         summary: OutputSummary,
         item: MediaItem
