@@ -115,7 +115,7 @@ class ErikuraCarouselViewModel(val job: Job, val jobsByLocation: Map<LatLng, Lis
         }
     val fromDateVisibility: Int
         get() {
-            return if (job.isPreEntry || job.isBeforePreEntry || job.entry?.fromPreEntry == true) {
+            return if (job.isPreEntry  || job.entry?.fromPreEntry == true) {
                 View.VISIBLE
             }
             else {
