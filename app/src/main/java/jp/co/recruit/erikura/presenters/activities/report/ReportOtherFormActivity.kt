@@ -233,10 +233,15 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                     var takenAt: Date? = null
                     item.dateTaken?.let { dateTaken ->
                         takenAt = Date(dateTaken)
-                        job.entry?.createdAt?.let { entry_at ->
-                            // 撮影日時が応募日時より古い場合
-                            oldPictureFlag = takenAt!! < entry_at
+                        val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                            // 先行応募で応募済みの場合
+                            job.workingStartAt
+                        } else {
+                            // 通常案件の場合
+                            job.entry?.createdAt
                         }
+                        // 撮影日時が応募日時より古い場合
+                        oldPictureFlag = takenAt!! < entryAt
                     }
                     // 横より縦の方が長い時アラートを表示します
                     if (imageHeight > imageWidth) {

@@ -453,40 +453,45 @@ class ImagePickerAdapter(
                         if (isChecked) {
                             item.dateTaken?.let { dateTaken ->
                                 val takenAt = Date(dateTaken)
-                                job.entry?.createdAt?.let { entry_at ->
-                                    // 撮影日時が応募日時より古い場合
-                                    if (takenAt < entry_at) {
-                                        val dialog = AlertDialog.Builder(activity)
-                                            .setView(R.layout.dialog_notice_old_taken_picture)
-                                            .setCancelable(false)
-                                            .create()
-                                        dialog.show()
-                                        val warningCaption: TextView? =
-                                            dialog.findViewById(R.id.dialog_warning_caption)
-                                        warningCaption?.setText(
-                                            String.format(
-                                                ErikuraApplication.instance.getString(
-                                                    R.string.notice_old_taken_picture_caption
-                                                ), JobUtil.getFormattedDateJp(takenAt)
-                                            )
+                                val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                                    // 先行応募で応募済みの場合
+                                    job.workingStartAt
+                                } else {
+                                    // 通常案件の場合
+                                    job.entry?.createdAt
+                                }
+                                // 撮影日時が応募日時より古い場合
+                                if (takenAt < entryAt) {
+                                    val dialog = AlertDialog.Builder(activity)
+                                        .setView(R.layout.dialog_notice_old_taken_picture)
+                                        .setCancelable(false)
+                                        .create()
+                                    dialog.show()
+                                    val warningCaption: TextView? =
+                                        dialog.findViewById(R.id.dialog_warning_caption)
+                                    warningCaption?.setText(
+                                        String.format(
+                                            ErikuraApplication.instance.getString(
+                                                R.string.notice_old_taken_picture_caption
+                                            ), JobUtil.getFormattedDateJp(takenAt)
                                         )
+                                    )
 
-                                        val selectButton: Button =
-                                            dialog.findViewById(R.id.select_button)
-                                        selectButton.setOnClickListener(View.OnClickListener {
-                                            dialog.dismiss()
-                                        })
-                                        val cancelButton: Button =
-                                            dialog.findViewById(R.id.cancel_button)
-                                        cancelButton.setOnClickListener(View.OnClickListener {
-                                            isChecked = false
-                                            button.isChecked = false
-                                            onClickListener?.apply {
-                                                onClick(item, isChecked)
-                                            }
-                                            dialog.dismiss()
-                                        })
-                                    }
+                                    val selectButton: Button =
+                                        dialog.findViewById(R.id.select_button)
+                                    selectButton.setOnClickListener(View.OnClickListener {
+                                        dialog.dismiss()
+                                    })
+                                    val cancelButton: Button =
+                                        dialog.findViewById(R.id.cancel_button)
+                                    cancelButton.setOnClickListener(View.OnClickListener {
+                                        isChecked = false
+                                        button.isChecked = false
+                                        onClickListener?.apply {
+                                            onClick(item, isChecked)
+                                        }
+                                        dialog.dismiss()
+                                    })
                                 }
                             }
                         }
@@ -508,6 +513,10 @@ class ImagePickerAdapter(
             // 例外を再送します
             throw e
         }
+    }
+
+    private fun displayNoticeOldTakenPictureDialog(entry_at: Date, taken_at: Date) {
+
     }
 
 
