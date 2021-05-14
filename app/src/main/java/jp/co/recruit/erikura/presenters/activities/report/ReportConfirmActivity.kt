@@ -389,7 +389,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             selectButton.setOnClickListener(View.OnClickListener {
                                 dialog.dismiss()
                                 addSummaryPicture(exifInterface, summary, item)
-                                onStart()
+                                loadData()
                             })
                             val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
                             cancelButton.setOnClickListener(View.OnClickListener {
