@@ -660,4 +660,9 @@
     <string name="confirm_transition_web_open">開く</string>
     <string name="confirm_transition_web_cancel">キャンセル</string>
 
+    <!--作業実施報告（カメラロール過去日警告）ダイアログ-->
+    <string name="notice_old_taken_picture_title">撮影日時が古い写真が選択されています</string>
+    <string name="notice_old_taken_picture_caption">※%sに撮影された写真が選択されています。\n写真が古い場合、作業報告が差し戻される可能性があります。</string>
+    <string name="notice_old_taken_picture_select">この写真を選択する</string>
+
 </resources>

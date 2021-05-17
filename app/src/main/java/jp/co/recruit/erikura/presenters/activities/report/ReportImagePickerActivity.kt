@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
@@ -13,9 +14,7 @@ import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.ImageView
-import android.widget.ToggleButton
+import android.widget.*
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -61,7 +60,8 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         Log.v("DEBUG", job.toString())
         ErikuraApplication.instance.currentJob = job
 
-        val binding: ActivityReportImagePickerBinding = DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
+        val binding: ActivityReportImagePickerBinding =
+            DataBindingUtil.setContentView(this, R.layout.activity_report_image_picker)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
         binding.handlers = this
@@ -70,14 +70,18 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
         recyclerView.setHasFixedSize(true)
 
-        val decorator = object: RecyclerView.ItemDecoration() {
+        val decorator = object : RecyclerView.ItemDecoration() {
             override fun getItemOffsets(
                 outRect: Rect,
                 view: View,
                 parent: RecyclerView,
                 state: RecyclerView.State
             ) {
-                val space = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1.0f, resources.displayMetrics).toInt()
+                val space = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    1.0f,
+                    resources.displayMetrics
+                ).toInt()
                 outRect.left = space
                 outRect.right = space
                 outRect.top = space
@@ -86,7 +90,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
         recyclerView.addItemDecoration(decorator)
 
-        recyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
@@ -103,22 +107,28 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         }
         viewModel.job.value = job
 
-        if(ErikuraApplication.instance.hasStoragePermission(this)) {
+        if (ErikuraApplication.instance.hasStoragePermission(this)) {
             displayImagePicker()
-        }
-        else {
+        } else {
             ErikuraApplication.instance.requestStoragePermission(this)
         }
 
         if (job.reportId == null) {
             // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_job_report_photo", params= bundleOf())
-            Tracking.viewJobDetails(name= "/reports/register/photo/${job.id}", title= "作業報告画面（カメラロール）", jobId= job.id)
-        }
-        else {
+            Tracking.logEvent(event = "view_job_report_photo", params = bundleOf())
+            Tracking.viewJobDetails(
+                name = "/reports/register/photo/${job.id}",
+                title = "作業報告画面（カメラロール）",
+                jobId = job.id
+            )
+        } else {
             // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_edit_job_report_photo", params= bundleOf())
-            Tracking.viewJobDetails(name= "/reports/edit/photo/${job.id}", title= "作業報告編集画面（カメラロール）", jobId= job.id)
+            Tracking.logEvent(event = "view_edit_job_report_photo", params = bundleOf())
+            Tracking.viewJobDetails(
+                name = "/reports/edit/photo/${job.id}",
+                title = "作業報告編集画面（カメラロール）",
+                jobId = job.id
+            )
         }
         //お手本報告件数が0件の場合非表示
         job.goodExamplesCount?.let { reportExampleCount ->
@@ -144,7 +154,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     private fun displayImagePicker() {
         adapter = ImagePickerAdapter(this, job, viewModel).also {
-            it.onClickListener = object: ImagePickerAdapter.OnClickListener {
+            it.onClickListener = object : ImagePickerAdapter.OnClickListener {
                 override fun onClick(item: MediaItem, isChecked: Boolean) {
                     onImageSelected(item, isChecked)
                 }
@@ -173,13 +183,15 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
 
     fun onImageSelected(item: MediaItem, isChecked: Boolean) {
         val imageView: ImageView = findViewById(R.id.report_image_picker_preview)
-        val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
-        val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+        val width =
+            imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+        val height =
+            imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
         item.loadImage(this, imageView, width.toInt(), height.toInt())
 
         if (isChecked) {
             viewModel.check(item)
-        }else {
+        } else {
             viewModel.uncheck(item)
         }
         viewModel.isNextButtonEnabled.value = viewModel.imageMap.isNotEmpty()
@@ -192,11 +204,11 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when(requestCode) {
+        when (requestCode) {
             ErikuraApplication.REQUEST_EXTERNAL_STORAGE_PERMISSION_ID -> {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     displayImagePicker()
-                }else {
+                } else {
                     val dialog = StorageAccessConfirmDialogFragment()
                     dialog.show(supportFragmentManager, "confirm")
                 }
@@ -205,14 +217,14 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
     }
 
     override fun onClickManual(view: View) {
-        if(job?.manualUrl != null){
+        if (job?.manualUrl != null) {
             JobUtil.openManual(this, job!!)
         }
     }
 
     override fun onBackPressed() {
         // 常に案件詳細に戻るようにします
-        val intent= Intent(this, JobDetailsActivity::class.java)
+        val intent = Intent(this, JobDetailsActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         intent.putExtra("job", job)
         startActivity(intent)
@@ -241,8 +253,12 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         job.report?.let { report ->
             report.outputSummaries = outputSummaryList
             outputSummaryList.forEach { outputSummary ->
-                report.uploadPhoto(this, job, outputSummary.photoAsset){
-                    PhotoTokenManager.addToken(job, outputSummary.photoAsset?.contentUri.toString(), it)
+                report.uploadPhoto(this, job, outputSummary.photoAsset) {
+                    PhotoTokenManager.addToken(
+                        job,
+                        outputSummary.photoAsset?.contentUri.toString(),
+                        it
+                    )
                 }
             }
         }
@@ -251,7 +267,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
         // 作業報告を保存します
         JobUtils.saveReportDraft(job, step = ReportDraft.ReportStep.SummaryForm, summaryIndex = 0)
 
-        val intent= Intent(this, ReportFormActivity::class.java)
+        val intent = Intent(this, ReportFormActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         intent.putExtra("job", job)
         intent.putExtra("pictureIndex", 0)
@@ -282,7 +298,7 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
     }
 }
 
-class ReportImagePickerViewModel: ViewModel() {
+class ReportImagePickerViewModel : ViewModel() {
     val job: MutableLiveData<Job> = MutableLiveData()
     val imageMap: MutableMap<Long, MediaItem> = HashMap()
     val selectedCount: MutableLiveData<Int> = MutableLiveData(0)
@@ -308,7 +324,7 @@ class ReportImagePickerViewModel: ViewModel() {
     }
 }
 
-class ImagePickerCellViewModel: ViewModel() {
+class ImagePickerCellViewModel : ViewModel() {
     val checked = MutableLiveData<Boolean>(false)
 
     fun loadData(job: Job, item: MediaItem, viewModel: ReportImagePickerViewModel) {
@@ -316,9 +332,17 @@ class ImagePickerCellViewModel: ViewModel() {
     }
 }
 
-class ImagePickerViewHolder(val binding: FragmentReportImagePickerCellBinding, val width: Int, val height: Int): RecyclerView.ViewHolder(binding.root)
+class ImagePickerViewHolder(
+    val binding: FragmentReportImagePickerCellBinding,
+    val width: Int,
+    val height: Int
+) : RecyclerView.ViewHolder(binding.root)
 
-class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewModel: ReportImagePickerViewModel): RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
+class ImagePickerAdapter(
+    val activity: FragmentActivity,
+    val job: Job,
+    val viewModel: ReportImagePickerViewModel
+) : RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
 
     var onClickListener: OnClickListener? = null
 
@@ -353,11 +377,12 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                     cursor.moveToNext()
                 }
                 cursor.moveToFirst()
-            }
-            catch (e: Exception) {
-                Tracking.logEvent(event = "image_picker_each", params = bundleOf(
-                    Pair("processed", processed)
-                ))
+            } catch (e: Exception) {
+                Tracking.logEvent(
+                    event = "image_picker_each", params = bundleOf(
+                        Pair("processed", processed)
+                    )
+                )
                 Thread.sleep(500)
                 // 例外を再送します
                 throw e
@@ -384,7 +409,11 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
         return ImagePickerViewHolder(binding, height, height)
     }
 
-    override fun onBindViewHolder(viewHolder: ImagePickerViewHolder, position: Int, cursor: Cursor) {
+    override fun onBindViewHolder(
+        viewHolder: ImagePickerViewHolder,
+        position: Int,
+        cursor: Cursor
+    ) {
         try {
             val binding = viewHolder.binding
             viewHolder.binding.lifecycleOwner = activity
@@ -421,6 +450,51 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
                                 MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
                             }
                         }
+                        if (isChecked) {
+                            item.dateTaken?.let { dateTaken ->
+                                val takenAt = Date(dateTaken)
+                                val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                                    // 先行応募で応募済みの場合
+                                    job.workingStartAt
+                                } else {
+                                    // 通常案件の場合
+                                    job.entry?.createdAt
+                                }
+                                // 撮影日時が応募日時より古い場合
+                                if (takenAt < entryAt) {
+                                    val dialog = AlertDialog.Builder(activity)
+                                        .setView(R.layout.dialog_notice_old_taken_picture)
+                                        .setCancelable(false)
+                                        .create()
+                                    dialog.show()
+                                    val warningCaption: TextView? =
+                                        dialog.findViewById(R.id.dialog_warning_caption)
+                                    warningCaption?.setText(
+                                        String.format(
+                                            ErikuraApplication.instance.getString(
+                                                R.string.notice_old_taken_picture_caption
+                                            ), JobUtil.getFormattedDateJp(takenAt)
+                                        )
+                                    )
+
+                                    val selectButton: Button =
+                                        dialog.findViewById(R.id.select_button)
+                                    selectButton.setOnClickListener(View.OnClickListener {
+                                        dialog.dismiss()
+                                    })
+                                    val cancelButton: Button =
+                                        dialog.findViewById(R.id.cancel_button)
+                                    cancelButton.setOnClickListener(View.OnClickListener {
+                                        isChecked = false
+                                        button.isChecked = false
+                                        onClickListener?.apply {
+                                            onClick(item, isChecked)
+                                        }
+                                        dialog.dismiss()
+                                    })
+                                }
+                            }
+                        }
                     }
                     onClickListener?.apply {
                         onClick(item, isChecked)
@@ -430,14 +504,21 @@ class ImagePickerAdapter(val activity: FragmentActivity, val job: Job, val viewM
             item.loadImage(activity, cellView.imageView, viewHolder.width, viewHolder.height)
             binding.viewModel!!.loadData(job, item, viewModel)
         } catch (e: Exception) {
-            Tracking.logEvent(event = "image_picker_bind_viewholder", params = bundleOf(
-                Pair("position", position)
-            ))
+            Tracking.logEvent(
+                event = "image_picker_bind_viewholder", params = bundleOf(
+                    Pair("position", position)
+                )
+            )
             Thread.sleep(500)
             // 例外を再送します
             throw e
         }
     }
+
+    private fun displayNoticeOldTakenPictureDialog(entry_at: Date, taken_at: Date) {
+
+    }
+
 
     override fun onViewRecycled(holder: ImagePickerViewHolder) {
         super.onViewRecycled(holder)

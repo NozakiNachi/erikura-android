@@ -457,6 +457,11 @@ object JobUtil {
         val weekday= JobUtil.formatWeekDay(date)
         return sdfDate.format(date) + String.format(sdfWeekDay, weekday) + sdfTime.format(date)
     }
+
+    fun getFormattedDateJp (date: Date): String {
+        val sdfDate = SimpleDateFormat("yyyy年MM月dd日")
+        return sdfDate.format(date)
+    }
 }
 
 class CustomTypefaceSpan(family: String, val customTypeface: Typeface) : TypefaceSpan(family) {

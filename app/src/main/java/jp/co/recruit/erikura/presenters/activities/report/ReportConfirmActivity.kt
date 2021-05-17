@@ -4,6 +4,7 @@ import JobUtil
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityOptions
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.ExifInterface
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
@@ -72,8 +74,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
         if (ErikuraApplication.instance.currentJob != null) {
             job = ErikuraApplication.instance.currentJob!!
-        }
-        else {
+        } else {
             // 案件情報が取れない場合
             Intent(this, MapViewActivity::class.java).let {
                 it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -83,7 +84,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 )
                 this.startActivity(it)
             }
-            Log.v(ErikuraApplication.LOG_TAG,  "Cannot retrieve job")
+            Log.v(ErikuraApplication.LOG_TAG, "Cannot retrieve job")
             // FirebaseCrashlytics に案件がnull出会ったことを記録します
             val e = Throwable("ErikuraApplication.currentJob is null")
             FirebaseCrashlytics.getInstance().recordException(e)
@@ -126,12 +127,20 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
         if (job.reportId == null) {
             // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_job_report_confirm", params= bundleOf())
-            Tracking.viewJobDetails(name= "/reports/register/confirm/${job.id}", title= "作業報告確認画面", jobId= job.id)
-        }else {
+            Tracking.logEvent(event = "view_job_report_confirm", params = bundleOf())
+            Tracking.viewJobDetails(
+                name = "/reports/register/confirm/${job.id}",
+                title = "作業報告確認画面",
+                jobId = job.id
+            )
+        } else {
             // ページ参照のトラッキングの送出
-            Tracking.logEvent(event= "view_edit_job_report_confirm", params= bundleOf())
-            Tracking.viewJobDetails(name= "/reports/edit/confirm/${job.id}", title= "作業報告編集確認画面", jobId= job.id)
+            Tracking.logEvent(event = "view_edit_job_report_confirm", params = bundleOf())
+            Tracking.viewJobDetails(
+                name = "/reports/edit/confirm/${job.id}",
+                title = "作業報告編集確認画面",
+                jobId = job.id
+            )
         }
 //        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
@@ -168,12 +177,11 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         if (job?.isReported == true) {
             // 作業報告済みなので、編集として確認画面が表示されている状態 => 通常の戻るボタンの処理を行います
             super.onBackPressed()
-        }
-        else {
+        } else {
             JobUtils.saveReportDraft(job, ReportDraft.ReportStep.EvaluationForm)
 
             // 新規の報告書作成で確認画面に遷移しているので、評価画面に遷移させます
-            val intent= Intent(this, ReportEvaluationActivity::class.java)
+            val intent = Intent(this, ReportEvaluationActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             intent.putExtra("job", job)
             startActivity(intent)
@@ -221,11 +229,11 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        when(requestCode) {
+        when (requestCode) {
             ErikuraApplication.REQUEST_EXTERNAL_STORAGE_PERMISSION_ID -> {
                 if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                     moveToGallery()
-                }else {
+                } else {
                     val dialog = StorageAccessConfirmDialogFragment()
                     dialog.show(supportFragmentManager, "confirm")
                 }
@@ -346,50 +354,96 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         val cr = contentResolver.openInputStream(uri)
                         val exifInterface = ExifInterface(cr)
                         val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
+
+                        var oldPictureFlag = false
+                        var takenAt: Date? = null
+                        item.dateTaken?.let { dateTaken ->
+                            takenAt = Date(dateTaken)
+                            val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                                // 先行応募で応募済みの場合
+                                job.workingStartAt
+                            } else {
+                                // 通常案件の場合
+                                job.entry?.createdAt
+                            }
+                                // 撮影日時が応募日時より古い場合
+                            oldPictureFlag = takenAt!! < entryAt
+                        }
                         // 横より縦の方が長い時アラートを表示します
                         if (imageHeight > imageWidth) {
                             MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
-                        }else {
-                            val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-                            val takenAt = takenAtString?.let {
-                                SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
-                            } ?: item.dateTaken?.let {
-                                Date(item.dateTaken)
-                            } ?: item.dateAdded?.let {
-                                Date(item.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
-                            }
-                            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-                            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-                            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-                            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-                            summary.photoTakedAt = takenAt
-                            summary.latitude = latitude?.let { lat ->
-                                latitudeRef?.let { ref ->
-                                    MediaItem.exifLatitudeToDegrees(ref, lat)
-                                }
-                            }
-                            summary.longitude = longitude?.let { lon ->
-                                longitudeRef?.let { ref ->
-                                    MediaItem.exifLongitudeToDegrees(ref, lon)
-                                }
-                            }
+                        } else if (oldPictureFlag) {
+                            val dialog = AlertDialog.Builder(this)
+                                .setView(R.layout.dialog_notice_old_taken_picture)
+                                .setCancelable(false)
+                                .create()
+                            dialog.show()
+                            val warningCaption: TextView? =
+                                dialog.findViewById(R.id.dialog_warning_caption)
+                            warningCaption?.setText(
+                                String.format(ErikuraApplication.instance.getString(R.string.notice_old_taken_picture_caption),
+                                    takenAt?.let { it1 -> JobUtil.getFormattedDateJp(it1) })
+                            )
 
-                            var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
-                            outputSummaryList =
-                                job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
-                            outputSummaryList.add(summary)
-                            job.report?.let {
-                                it.outputSummaries = outputSummaryList
-                                it.uploadPhoto(this, job, summary.photoAsset){ token ->
-                                    PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
-                                }
-
-                                JobUtils.saveReportDraft(job, ReportDraft.ReportStep.Confirm)
-                            }
+                            val selectButton: Button = dialog.findViewById(R.id.select_button)
+                            selectButton.setOnClickListener(View.OnClickListener {
+                                dialog.dismiss()
+                                addSummaryPicture(exifInterface, summary, item)
+                                onStart()
+                            })
+                            val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+                            cancelButton.setOnClickListener(View.OnClickListener {
+                                dialog.dismiss()
+                            })
+                        } else {
+                            addSummaryPicture(exifInterface, summary, item)
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun addSummaryPicture(
+        exifInterface: ExifInterface,
+        summary: OutputSummary,
+        item: MediaItem
+    ) {
+        val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
+        val takenAt = takenAtString?.let {
+            SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
+        } ?: item.dateTaken?.let {
+            Date(item.dateTaken)
+        } ?: item.dateAdded?.let {
+            Date(item.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
+        }
+        val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
+        val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
+        val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
+        val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
+        summary.photoTakedAt = takenAt
+        summary.latitude = latitude?.let { lat ->
+            latitudeRef?.let { ref ->
+                MediaItem.exifLatitudeToDegrees(ref, lat)
+            }
+        }
+        summary.longitude = longitude?.let { lon ->
+            longitudeRef?.let { ref ->
+                MediaItem.exifLongitudeToDegrees(ref, lon)
+            }
+        }
+
+        var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
+        outputSummaryList =
+            job.report?.outputSummaries?.toMutableList() ?: mutableListOf()
+        outputSummaryList.add(summary)
+        job.report?.let {
+            it.outputSummaries = outputSummaryList
+            it.uploadPhoto(this, job, summary.photoAsset) { token ->
+                PhotoTokenManager.addToken(job, summary.photoAsset?.contentUri.toString(), token)
+            }
+
+            JobUtils.saveReportDraft(job, ReportDraft.ReportStep.Confirm)
         }
     }
 
@@ -435,8 +489,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 
                 it.onNext(count)
                 it.onComplete()
-            }
-            catch (e: IOException) {
+            } catch (e: IOException) {
                 Log.e("Error in waiting upload", e.message, e)
                 it.onError(e)
             }
@@ -482,18 +535,19 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         uploadingDialog.dismiss()
                         // 画像アップ不可モーダル表示
                         val failedDialog = UploadFailedDialogFragment().also {
-                            it.onClickListener = object : UploadFailedDialogFragment.OnClickListener {
-                                override fun onClickRetryButton() {
-                                    it.dismiss()
-                                    retry()
-                                }
+                            it.onClickListener =
+                                object : UploadFailedDialogFragment.OnClickListener {
+                                    override fun onClickRetryButton() {
+                                        it.dismiss()
+                                        retry()
+                                    }
 
-                                override fun onClickRemoveButton() {
-                                    it.dismiss()
-                                    // レポートを削除して案件詳細画面へ遷移します
-                                    removeAllContents()
+                                    override fun onClickRemoveButton() {
+                                        it.dismiss()
+                                        // レポートを削除して案件詳細画面へ遷移します
+                                        removeAllContents()
+                                    }
                                 }
-                            }
                         }
                         failedDialog.isCancelable = false
                         failedDialog.show(supportFragmentManager, "UploadFailed")
@@ -544,13 +598,20 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             // アップロード完了
             if (job.reportId != null) {
                 // ページ参照のトラッキングの送出
-                Tracking.logEvent(event= "view_edit_job_report_finish", params= bundleOf())
-                Tracking.viewJobDetails(name= "/reports/edit/completed/${job.id}", title= "作業報告編集完了画面", jobId= job.id)
-            }
-            else {
+                Tracking.logEvent(event = "view_edit_job_report_finish", params = bundleOf())
+                Tracking.viewJobDetails(
+                    name = "/reports/edit/completed/${job.id}",
+                    title = "作業報告編集完了画面",
+                    jobId = job.id
+                )
+            } else {
                 // ページ参照のトラッキングの送出
-                Tracking.logEvent(event= "view_job_report_finish", params= bundleOf())
-                Tracking.viewJobDetails(name= "/reports/register/completed/${job.id ?: 0}", title= "作業報告完了画面", jobId= job.id ?: 0)
+                Tracking.logEvent(event = "view_job_report_finish", params = bundleOf())
+                Tracking.viewJobDetails(
+                    name = "/reports/register/completed/${job.id ?: 0}",
+                    title = "作業報告完了画面",
+                    jobId = job.id ?: 0
+                )
             }
 
             // アップロード用のトークンをクリアします
@@ -559,8 +620,8 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             JobUtils.removeReportDraft(job)
 
             // 作業報告のトラッキングの送出
-            Tracking.logEvent(event= "job_report", params= bundleOf())
-            Tracking.jobEntry(name= "job_report", title= "", job= job)
+            Tracking.logEvent(event = "job_report", params = bundleOf())
+            Tracking.jobEntry(name = "job_report", title = "", job = job)
             //Tracking.logEventFB(event= "ReportJob")
             Tracking.logPurchaseFB(job.fee)
 
@@ -602,9 +663,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         job.report?.let {
             // 実施箇所の更新
             var summaries = mutableListOf<OutputSummary>()
-            positions = Array(it.outputSummaries.count(), {-1})
+            positions = Array(it.outputSummaries.count(), { -1 })
             var i = 0
-            it.outputSummaries.forEachIndexed {index, summary ->
+            it.outputSummaries.forEachIndexed { index, summary ->
                 if (!summary.willDelete) {
                     positions[index] = i
                     summaries.add(summary)
@@ -626,11 +687,13 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
             val item = it.additionalPhotoAsset ?: MediaItem()
             if (item.contentUri != null) {
                 val imageView: ImageView = findViewById(R.id.report_confirm_other_image)
-                val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
-                val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
-                if (it.additionalReportPhotoUrl!= null) {
+                val width =
+                    imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+                val height =
+                    imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+                if (it.additionalReportPhotoUrl != null) {
                     item.loadImageFromString(this, imageView, width.toInt(), height.toInt())
-                }else {
+                } else {
                     item.loadImage(this, imageView, width.toInt(), height.toInt())
                 }
                 viewModel.otherFormImageVisibility.value = View.VISIBLE
@@ -647,11 +710,12 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 "bad" ->
                     viewModel.evaluate.value = false
             }
-            viewModel.evaluateButtonVisibility.value = if (evaluation.isNullOrEmpty() || evaluation == "unanswered") {
-                View.GONE
-            } else {
-                View.VISIBLE
-            }
+            viewModel.evaluateButtonVisibility.value =
+                if (evaluation.isNullOrEmpty() || evaluation == "unanswered") {
+                    View.GONE
+                } else {
+                    View.VISIBLE
+                }
             val comment = it.comment ?: ""
             viewModel.evaluationComment.value = comment
 
@@ -788,7 +852,14 @@ interface ReportConfirmEventHandlers {
 }
 
 // 実施箇所の一覧
-class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaItem?, isUrlExist: Boolean, width: Int, height: Int) :
+class ReportImageItemViewModel(
+    activity: Activity,
+    view: View,
+    mediaItem: MediaItem?,
+    isUrlExist: Boolean,
+    width: Int,
+    height: Int
+) :
     ViewModel() {
     private val imageView: ImageView = view.findViewById(R.id.report_image_item)
     val imageVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
@@ -796,9 +867,9 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
 
     init {
         if (mediaItem != null) {
-            if(isUrlExist) {
+            if (isUrlExist) {
                 mediaItem.loadImageFromString(activity, imageView, width, height)
-            }else {
+            } else {
                 mediaItem.loadImage(activity, imageView, width, height)
             }
         } else {
@@ -808,10 +879,15 @@ class ReportImageItemViewModel(activity: Activity, view: View, mediaItem: MediaI
     }
 }
 
-class ReportImageViewHolder(val binding: FragmentReportImageItemBinding, val width: Int, val height: Int) :
+class ReportImageViewHolder(
+    val binding: FragmentReportImageItemBinding,
+    val width: Int,
+    val height: Int
+) :
     RecyclerView.ViewHolder(binding.root)
 
-class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>) : RecyclerView.Adapter<ReportImageViewHolder>() {
+class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<OutputSummary>) :
+    RecyclerView.Adapter<ReportImageViewHolder>() {
     var onClickListener: OnClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportImageViewHolder {
@@ -836,8 +912,7 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         val count = summaries.count()
         if (count < ErikuraConst.maxOutputSummaries) {
             return count + 1
-        }
-        else {
+        } else {
             return count
         }
     }
@@ -847,9 +922,17 @@ class ReportImageAdapter(val activity: FragmentActivity, var summaries: List<Out
         holder.binding.lifecycleOwner = activity
         if (position < summaries.count()) {
             holder.binding.viewModel =
-                ReportImageItemViewModel(activity, view, summaries[position].photoAsset, !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank(), holder.width, holder.height)
+                ReportImageItemViewModel(
+                    activity,
+                    view,
+                    summaries[position].photoAsset,
+                    !summaries[position].beforeCleaningPhotoUrl.isNullOrBlank(),
+                    holder.width,
+                    holder.height
+                )
         } else {
-            holder.binding.viewModel = ReportImageItemViewModel(activity, view, null, false, holder.width, holder.height)
+            holder.binding.viewModel =
+                ReportImageItemViewModel(activity, view, null, false, holder.width, holder.height)
             val button =
                 holder.binding.root.findViewById<Button>(R.id.report_image_add_photo_button)
             button.setOnSafeClickListener {
@@ -895,17 +978,20 @@ class ReportSummaryItemViewModel(
     val commentCount: MutableLiveData<String> = MutableLiveData()
     val goodCountVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val goodCount: MutableLiveData<String> = MutableLiveData()
+
     // 運営からのコメント
     val operatorComment: MutableLiveData<String> = MutableLiveData()
     val operatorCommentCreatedAt: MutableLiveData<String> = MutableLiveData()
 
     init {
         summary.photoAsset?.let {
-            val width = imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
-            val height = imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
-            if (summary.beforeCleaningPhotoUrl != null){
+            val width =
+                imageView.layoutParams.width / ErikuraApplication.instance.resources.displayMetrics.density
+            val height =
+                imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
+            if (summary.beforeCleaningPhotoUrl != null) {
                 it.loadImageFromString(activity, imageView, width.toInt(), height.toInt())
-            }else {
+            } else {
                 it.loadImage(activity, imageView, width.toInt(), height.toInt())
             }
         }
@@ -916,8 +1002,8 @@ class ReportSummaryItemViewModel(
             summariesCount
         )
         summaryName.value = summary.place
-        val evaluateType = EvaluateType.valueOf(summary.evaluation?.toUpperCase()?: "UNSELECTED")
-        when(evaluateType) {
+        val evaluateType = EvaluateType.valueOf(summary.evaluation?.toUpperCase() ?: "UNSELECTED")
+        when (evaluateType) {
             EvaluateType.UNSELECTED -> {
                 summaryStatus.value = ""
             }
@@ -938,7 +1024,8 @@ class ReportSummaryItemViewModel(
                 commentCountVisibility.value = View.VISIBLE
                 evaluationVisible.value = View.VISIBLE
                 operatorComment.value = summary.operatorComments.first().body
-                operatorCommentCreatedAt.value = JobUtils.DateFormats.simple.format(summary.operatorComments.first().createdAt)
+                operatorCommentCreatedAt.value =
+                    JobUtils.DateFormats.simple.format(summary.operatorComments.first().createdAt)
             }
             if (summary.operatorLikes) {
                 goodCount.value = "1件"
