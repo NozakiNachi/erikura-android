@@ -342,12 +342,17 @@ class SmsVerifyViewModel : ViewModel() {
 
     val skipButtonVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
         result.addSource(isCameThroughLogin) {
-            result.addSource(requestCode) {
-                if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
-                    result.value =View.VISIBLE
-                } else {
-                    result.value =View.GONE
-                }
+            if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
+                result.value = View.VISIBLE
+            } else {
+                result.value = View.GONE
+            }
+        }
+        result.addSource(requestCode) {
+            if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
+                result.value = View.VISIBLE
+            } else {
+                result.value = View.GONE
             }
         }
     }
