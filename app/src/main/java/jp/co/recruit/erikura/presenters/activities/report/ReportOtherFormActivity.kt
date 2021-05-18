@@ -278,6 +278,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     }
 
     private fun addOtherPicture(item: MediaItem) {
+        viewModel.otherPhoto = item
         viewModel.addPhotoButtonVisibility.value = View.GONE
         viewModel.removePhotoButtonVisibility.value = View.VISIBLE
         val imageView: ImageView = findViewById(R.id.report_other_image)
@@ -286,7 +287,6 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         val height =
             imageView.layoutParams.height / ErikuraApplication.instance.resources.displayMetrics.density
         item.loadImage(this, imageView, width.toInt(), height.toInt())
-        viewModel.otherPhoto = item
     }
 
     override fun onBackPressed() {
