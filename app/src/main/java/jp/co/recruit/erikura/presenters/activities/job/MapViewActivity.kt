@@ -1,5 +1,9 @@
 package jp.co.recruit.erikura.presenters.activities.job
 
+import android.animation.Animator
+import android.animation.AnimatorInflater
+import android.animation.AnimatorSet
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -14,9 +18,14 @@ import android.util.TypedValue
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
+import android.view.animation.DecelerateInterpolator
+import android.view.animation.LinearInterpolator
 import android.widget.FrameLayout
 import androidx.core.graphics.contains
 import androidx.core.os.bundleOf
+import androidx.core.view.marginRight
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
@@ -46,8 +55,6 @@ import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.view_models.BaseJobQueryViewModel
 import kotlinx.android.synthetic.main.activity_map_view.*
-import java.util.*
-import kotlin.collections.HashMap
 import kotlin.math.abs
 
 class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBackButton = true), OnMapReadyCallback, MapViewEventHandlers {
@@ -541,10 +548,73 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         cameraMoving = true
         // 案件取得によるカメラリセット以外の場合
         if (!resetCameraPosition) {
-            // 再検索ボタンを表示
-            viewModel.reSearchButtonVisible.value = View.VISIBLE
+            if (viewModel.reSearchButtonVisible.value != View.VISIBLE) {
+                // 再検索ボタンを表示
+
+                map_view_re_search_button.run {
+                    val animation = AnimationUtils.loadAnimation(this@MapViewActivity, R.anim.research_button_dropin)
+                    postDelayed({
+                        startAnimation(animation)
+                        viewModel.reSearchButtonVisible.value = View.VISIBLE
+                    }, 0)
+                }
+            }
             // 検索バーを非表示
-            viewModel.searchBarVisible.value = View.GONE
+            if (viewModel.searchBarVisible.value != View.GONE) {
+                val currentWidth = map_view_search_bar.measuredWidth
+                val currentMarginRight = map_view_search_bar.marginRight
+                val animator = ValueAnimator.ofInt(currentWidth, (66 * resources.displayMetrics.density).toInt())
+                animator.addUpdateListener { valueAnimator ->
+                    Log.v(ErikuraApplication.LOG_TAG, "ANIMATE: ${valueAnimator.animatedValue}")
+                    val mlp = map_view_search_bar.layoutParams as ViewGroup.MarginLayoutParams
+                    mlp.width = valueAnimator.animatedValue as Int
+                    mlp.rightMargin = currentMarginRight + (currentWidth -  mlp.width)
+                    map_view_search_bar.layoutParams = mlp
+                }
+                animator.addListener(object: Animator.AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        viewModel.searchBarVisible.value = View.GONE
+                        map_view_search_bar.postDelayed({
+                            val mlp = map_view_search_bar.layoutParams as ViewGroup.MarginLayoutParams
+                            mlp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                            mlp.rightMargin = currentMarginRight
+                            map_view_search_bar.layoutParams = mlp
+                        }, 10)
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {
+                        viewModel.searchBarVisible.value = View.GONE
+                        map_view_search_bar.postDelayed({
+                            val mlp = map_view_search_bar.layoutParams as ViewGroup.MarginLayoutParams
+                            mlp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                            mlp.rightMargin = currentMarginRight
+                            map_view_search_bar.layoutParams = mlp
+                        }, 10)
+                    }
+
+                    override fun onAnimationRepeat(animation: Animator?) {
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+                        viewModel.searchBarVisible.value = View.GONE
+                        map_view_search_bar.postDelayed({
+                            val mlp = map_view_search_bar.layoutParams as ViewGroup.MarginLayoutParams
+                            mlp.width = ViewGroup.LayoutParams.MATCH_PARENT
+                            mlp.rightMargin = currentMarginRight
+                            map_view_search_bar.layoutParams = mlp
+                        }, 10)
+                    }
+
+                    override fun onAnimationStart(animation: Animator?, isReverse: Boolean) {
+                    }
+                })
+                animator.duration = 300
+                animator.interpolator = LinearInterpolator()
+                animator.start()
+            }
         }
     }
 

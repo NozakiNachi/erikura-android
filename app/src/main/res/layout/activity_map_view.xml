@@ -83,6 +83,7 @@
                         />
                     <!-- この範囲で再検索ボタン -->
                     <Button
+                        android:id="@+id/map_view_re_search_button"
                         android:layout_width="160dp"
                         android:layout_height="44dp"
                         style="@style/tertiaryButton"
