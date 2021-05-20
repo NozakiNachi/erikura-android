@@ -145,16 +145,17 @@ object JobUtils {
     }
 
     fun saveReportDraft(job: Job, step: ReportDraft.ReportStep, summaryIndex: Int? = null) {
-        job.report?.let {
-            val realm = ErikuraApplication.realm
-            realm.executeTransaction {
-                val draft: ReportDraft =
-                    realm.where(ReportDraft::class.java).equalTo("jobId", job.id).findFirst()
-                        ?: realm.createObject(ReportDraft::class.java, job.id)
-                draft.lastModifiedAt = Date()
-                draft.step = step
-                summaryIndex?.let { draft.lastSummaryIndex = it }
-                job.report?.let { report ->
+        job.report?.let { report ->
+            report.id ?: run {
+                // 未報告の場合、下書き保存が行われる
+                val realm = ErikuraApplication.realm
+                realm.executeTransaction {
+                    val draft: ReportDraft =
+                        realm.where(ReportDraft::class.java).equalTo("jobId", job.id).findFirst()
+                            ?: realm.createObject(ReportDraft::class.java, job.id)
+                    draft.lastModifiedAt = Date()
+                    draft.step = step
+                    summaryIndex?.let { draft.lastSummaryIndex = it }
                     draft.dumpReport(report)
                 }
             }
