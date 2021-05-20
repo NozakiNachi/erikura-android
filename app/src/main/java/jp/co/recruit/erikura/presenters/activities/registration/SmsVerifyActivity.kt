@@ -342,18 +342,10 @@ class SmsVerifyViewModel : ViewModel() {
 
     val skipButtonVisible: MutableLiveData<Int> = MediatorLiveData<Int>().also { result ->
         result.addSource(isCameThroughLogin) {
-            if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
-                result.value = View.VISIBLE
-            } else {
-                result.value = View.GONE
-            }
+            result.value = skipButtonVisible()
         }
         result.addSource(requestCode) {
-            if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
-                result.value = View.VISIBLE
-            } else {
-                result.value = View.GONE
-            }
+            result.value = skipButtonVisible()
         }
     }
 
@@ -389,6 +381,14 @@ class SmsVerifyViewModel : ViewModel() {
             )
         } catch (e: NumberParseException) {
             Log.e("ERROR", e.message, e)
+        }
+    }
+
+    fun skipButtonVisible(): Int {
+        if (isCameThroughLogin.value == true || requestCode.value == ErikuraApplication.REQUEST_LOGIN_CODE || requestCode.value == ErikuraApplication.REQUEST_CHANGE_USER_INFORMATION) {
+            return View.VISIBLE
+        } else {
+            return View.GONE
         }
     }
 }
