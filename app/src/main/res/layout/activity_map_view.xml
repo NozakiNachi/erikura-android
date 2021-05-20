@@ -86,7 +86,7 @@
                         android:id="@+id/map_view_re_search_button"
                         android:layout_width="160dp"
                         android:layout_height="44dp"
-                        style="@style/tertiaryButton"
+                        style="@style/rTertiaryButton"
                         android:text="この範囲で再検索"
                         map:layout_constraintTop_toTopOf="parent"
                         map:layout_constraintLeft_toLeftOf="parent"
