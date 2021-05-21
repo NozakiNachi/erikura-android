@@ -297,6 +297,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             if (!firstFetchRequested && ::mMap.isInitialized && viewModel.keyword.value.isNullOrBlank()) {
                 val updateRequest = CameraUpdateFactory.newLatLngZoom(it, defaultZoom)
                 Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(resume): $updateRequest")
+                resetCameraPosition = true
                 mMap.moveCamera(updateRequest)
                 firstFetchRequested = true
                 val query = viewModel.query(viewModel.latLng.value ?: it)
@@ -337,11 +338,13 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
             // 保存済みの位置に移動します
             val updateRequest = CameraUpdateFactory.newCameraPosition(it)
             Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+            resetCameraPosition = true
             mMap.moveCamera(updateRequest)
         } ?: run {
             // 初期位置に移動させます
             val updateRequest = CameraUpdateFactory.newLatLngZoom(locationManager.latLngOrDefault, defaultZoom)
             Log.v(ErikuraApplication.LOG_TAG, "GMS: moveCamera(ready): $updateRequest")
+            resetCameraPosition = true
             mMap.moveCamera(updateRequest)
         }
 
