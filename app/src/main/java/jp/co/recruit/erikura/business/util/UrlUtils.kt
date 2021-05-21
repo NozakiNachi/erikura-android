@@ -9,6 +9,10 @@ import java.net.URL
 
 object UrlUtils {
     fun parse(urlString: String): URL? {
+        if (org.apache.commons.lang.StringUtils.isBlank(urlString)) {
+            return null
+        }
+
         try {
             return URL(urlString)
         }
