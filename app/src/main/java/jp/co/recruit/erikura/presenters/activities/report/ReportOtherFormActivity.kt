@@ -118,6 +118,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
+        viewModel.job.value = job
 //        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
@@ -356,9 +357,16 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         }
     }
 
+    override fun onClickClose(view: View) {
+        fillReport()
+
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.OtherForm, job, null)
+    }
+
 }
 
 class ReportOtherFormViewModel : ViewModel() {
+    val job: MutableLiveData<Job> = MutableLiveData()
     val addPhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
     val removePhotoButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val comment: MutableLiveData<String> = MutableLiveData()
@@ -374,6 +382,16 @@ class ReportOtherFormViewModel : ViewModel() {
         result.addSource(comment) { result.value = isValid() }
     }
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+
+    val closeButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            job.value?.report?.id?.also {
+                result.value = View.GONE
+            } ?: run{
+                result.value = View.VISIBLE
+            }
+        }
+    }
 
     private fun isValid(): Boolean {
         var valid = true
@@ -415,4 +433,5 @@ interface ReportOtherFormEventHandlers {
     fun onClickRemovePhoto(view: View)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
+    fun onClickClose(view: View)
 }

@@ -92,7 +92,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
-
+        viewModel.job.value = job
 //        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
@@ -157,6 +157,10 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
         }
     }
 
+    override fun onClickClose(view: View) {
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.EvaluationForm, job, null)
+    }
+
     private fun fillReport() {
         job.report?.let {
             if (viewModel.good.value?: false) {
@@ -200,6 +204,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
 }
 
 class ReportEvaluationViewModel: ViewModel() {
+    val job: MutableLiveData<Job> = MutableLiveData()
     val good: MutableLiveData<Boolean> = MutableLiveData()
     val bad: MutableLiveData<Boolean> = MutableLiveData()
     val comment: MutableLiveData<String> = MutableLiveData()
@@ -211,6 +216,15 @@ class ReportEvaluationViewModel: ViewModel() {
         }
     }
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val closeButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            job.value?.report?.id?.also {
+                result.value = View.GONE
+            } ?: run{
+                result.value = View.VISIBLE
+            }
+        }
+    }
 
     private fun isValid(): Boolean {
         var valid = true
@@ -231,4 +245,5 @@ interface ReportEvaluationEventHandler {
     fun onClickBad(view: View)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
+    fun onClickClose(view: View)
 }

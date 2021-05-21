@@ -1,19 +1,9 @@
 package jp.co.recruit.erikura.business.util
 
 import com.google.android.gms.maps.model.LatLng
-import com.google.gson.FieldNamingPolicy
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import io.realm.Sort
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.business.models.Job
-import jp.co.recruit.erikura.business.models.MediaItem
-import jp.co.recruit.erikura.business.models.Report
-import jp.co.recruit.erikura.data.network.MediaItemSerializer
-import jp.co.recruit.erikura.data.storage.Asset
-import jp.co.recruit.erikura.data.storage.AssetsManager
 import jp.co.recruit.erikura.data.storage.ReportDraft
-import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Comparator
