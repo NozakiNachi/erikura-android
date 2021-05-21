@@ -295,17 +295,8 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         // 編集中の内容を保存します
         fillSummary()
 
-        val summaries = job.report?.outputSummaries ?: listOf()
-        var nextIndex = pictureIndex + 1
-        while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
-            nextIndex++
-        if (nextIndex < summaries.size) {
-            // 写真が残っている場合 現在の実施箇所のインデックスを返す
-            JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, pictureIndex)
-        } else {
-            // 次の写真がない場合、実施箇所の最後のインデックスを返す
-            JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, summaries.size - 1)
-        }
+        // 現在表示している実施箇所のインデックスで下書き保存します
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, pictureIndex)
     }
 
     private fun setup() {

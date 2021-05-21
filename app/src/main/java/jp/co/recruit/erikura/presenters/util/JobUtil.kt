@@ -494,7 +494,7 @@ object JobUtil {
         discardButton.setOnClickListener(View.OnClickListener {
             //下書きを破棄して、画像選択画面へ遷移する
             dialog.dismiss()
-            job?.report = null
+            job.report = null
             JobUtils.removeReportDraft(job)
             val intent = Intent(activity, ReportImagePickerActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
