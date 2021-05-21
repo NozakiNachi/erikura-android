@@ -244,7 +244,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
     }
 
     override fun onClickClose(view: View) {
-        JobUtils.reportActivityRelatedOnClickBack(this, ReportDraft.ReportStep.Confirm, job, null)
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.Confirm, job, null)
     }
 
     fun editSummary(view: View, position: Int) {

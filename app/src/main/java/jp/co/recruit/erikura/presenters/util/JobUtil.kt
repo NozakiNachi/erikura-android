@@ -1,3 +1,4 @@
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -11,6 +12,7 @@ import android.text.style.*
 import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
@@ -27,6 +29,7 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.ReportDraft
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.report.*
 import okhttp3.internal.closeQuietly
 import org.apache.commons.io.IOUtils
@@ -461,6 +464,47 @@ object JobUtil {
     fun getFormattedDateJp (date: Date): String {
         val sdfDate = SimpleDateFormat("yyyy年MM月dd日")
         return sdfDate.format(date)
+    }
+
+    fun displaySuspendReportConfirmation(
+        activity: Activity,
+        step: ReportDraft.ReportStep,
+        job: Job,
+        summaryIndex: Int?
+    ) {
+        // ダイアログを表示し下書きを保存するか確認する
+        val dialog = AlertDialog.Builder(activity)
+            .setView(R.layout.dialog_suspend_report_confirmation)
+            .setCancelable(false)
+            .create()
+        dialog.show()
+        val saveButton: Button = dialog.findViewById(R.id.suspend_report_save_report_draft_button)
+        saveButton.setOnClickListener(View.OnClickListener {
+            //入力内容を保存してタスク詳細画面へ遷移する
+            dialog.dismiss()
+            // 作業報告を保存します
+            JobUtils.saveReportDraft(job, step = step, summaryIndex = summaryIndex)
+            val intent = Intent(activity, JobDetailsActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("job", job)
+            activity.startActivity(intent)
+        })
+        val discardButton: Button =
+            dialog.findViewById(R.id.suspend_report_discard_report_draft_button)
+        discardButton.setOnClickListener(View.OnClickListener {
+            //下書きを破棄して、画像選択画面へ遷移する
+            dialog.dismiss()
+            job?.report = null
+            JobUtils.removeReportDraft(job)
+            val intent = Intent(activity, ReportImagePickerActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+            intent.putExtra("job", job)
+            activity.startActivity(intent)
+        })
+        val closeButton: ImageButton = dialog.findViewById(R.id.close_button)
+        closeButton.setOnClickListener(View.OnClickListener {
+            dialog.dismiss()
+        })
     }
 }
 

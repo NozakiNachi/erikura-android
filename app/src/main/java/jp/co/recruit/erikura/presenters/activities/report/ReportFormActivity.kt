@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,7 +25,6 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import kotlinx.android.synthetic.main.activity_report_form.*
@@ -172,7 +170,7 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                 intent.putExtra("pictureIndex", prevIndex)
                 startActivity(intent)
             } else {
-                JobUtils.reportActivityRelatedOnClickBack(this, ReportDraft.ReportStep.SummaryForm, job, 0)
+                JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, 0)
             }
         }
         else {
@@ -302,10 +300,11 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         while(nextIndex < summaries.size && summaries[nextIndex].willDelete)
             nextIndex++
         if (nextIndex < summaries.size) {
-            // 写真が残っている場合
-            JobUtils.reportActivityRelatedOnClickBack(this, ReportDraft.ReportStep.SummaryForm, job, nextIndex - 1)
+            // 写真が残っている場合 現在の実施箇所のインデックスを返す
+            JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, pictureIndex)
         } else {
-            JobUtils.reportActivityRelatedOnClickBack(this, ReportDraft.ReportStep.SummaryForm, job, summaries.size - 1)
+            // 次の写真がない場合、実施箇所の最後のインデックスを返す
+            JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, summaries.size - 1)
         }
     }
 

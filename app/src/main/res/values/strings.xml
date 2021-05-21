@@ -661,9 +661,9 @@
     <string name="confirm_transition_web_cancel">キャンセル</string>
 
     <!--作業報告下書き保存確認ダイアログ-->
-    <string name="save_report_draft_question_title">作業報告を中断しますか?</string>
-    <string name="save_report_draft_question_yes">入力内容を保存して\nお仕事詳細に戻る</string>
-    <string name="save_report_draft_question_no">入力内容を破棄して\n写真選択に戻る</string>
+    <string name="suspend_report_title">作業報告を中断しますか?</string>
+    <string name="suspend_report_save_report_draft">入力内容を保存して\nお仕事詳細に戻る</string>
+    <string name="suspend_report_discard_report_draft">入力内容を破棄して\n写真選択に戻る</string>
 
     <!--作業実施報告（カメラロール過去日警告）ダイアログ-->
     <string name="notice_old_taken_picture_title">撮影日時が古い写真が選択されています</string>

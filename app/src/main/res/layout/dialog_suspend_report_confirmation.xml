@@ -34,27 +34,27 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="20dp"
-                    android:text="@string/save_report_draft_question_title" />
+                    android:text="@string/suspend_report_title" />
 
                 <Button
-                    android:id="@+id/save_report_draft_button"
+                    android:id="@+id/suspend_report_save_report_draft_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="0dp"
                     style="@style/primaryButton"
-                    android:text="@string/save_report_draft_question_yes" />
+                    android:text="@string/suspend_report_save_report_draft" />
 
                 <Button
-                    android:id="@+id/not_save_report_draft_button"
+                    android:id="@+id/suspend_report_discard_report_draft_button"
                     android:layout_width="match_parent"
                     android:layout_height="70dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginLeft="0dp"
                     android:layout_marginRight="0dp"
                     style="@style/secondaryButton"
-                    android:text="@string/save_report_draft_question_no"/>
+                    android:text="@string/suspend_report_discard_report_draft"/>
 
             </LinearLayout>
         </ScrollView>

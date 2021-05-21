@@ -360,7 +360,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
     override fun onClickClose(view: View) {
         fillReport()
 
-        JobUtils.reportActivityRelatedOnClickBack(this, ReportDraft.ReportStep.OtherForm, job, null)
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.OtherForm, job, null)
     }
 
 }
