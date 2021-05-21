@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.*
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.RelativeLayout
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
@@ -13,6 +15,7 @@ import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.JobQuery
 import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionItemBinding
 import jp.co.recruit.erikura.databinding.FragmentSearchBarConditionLabelBinding
+import kotlinx.android.synthetic.main.activity_map_view.*
 
 class SearchBarView : RelativeLayout {
     var adapter: SearchBarConditionsAdapter
