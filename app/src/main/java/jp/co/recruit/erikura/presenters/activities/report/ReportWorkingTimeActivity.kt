@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.Button
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -92,6 +93,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
                 viewModel.reportExamplesButtonVisibility.value = View.GONE
             }
         }
+        viewModel.job.value = job
 //        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
@@ -115,44 +117,20 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
 
                 val summaries = job.report?.outputSummaries ?: listOf()
                 var pictureIndex = summaries.count() - 1
-                while(pictureIndex >= 0 && summaries[pictureIndex]?.willDelete == true) {
+                while (pictureIndex >= 0 && summaries[pictureIndex]?.willDelete == true) {
                     pictureIndex--
                 }
 
-                if (pictureIndex >= 0) {
-                    JobUtils.saveReportDraft(
-                        job,
-                        step = ReportDraft.ReportStep.SummaryForm,
-                        summaryIndex = pictureIndex
-                    )
-                    val intent = Intent(this, ReportFormActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("job", job)
-                    intent.putExtra("pictureIndex", pictureIndex)
-                    startActivity(intent)
-                }
-                else {
-                    val dialog = AlertDialog.Builder(this)
-                        .setView(R.layout.dialog_delete_report_draft)
-                        .setCancelable(true)
-                        .create()
-                    dialog.show()
-
-                    (dialog.findViewById(R.id.yes_button) as? Button)?.setOnClickListener {
-                        dialog.dismiss()
-
-                        JobUtils.removeReportDraft(job)
-                        job.report = null
-
-                        val intent= Intent(this, ReportImagePickerActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                        intent.putExtra("job", job)
-                        startActivity(intent)
-                    }
-                    (dialog.findViewById(R.id.no_button) as? Button)?.setOnClickListener {
-                        dialog.dismiss()
-                    }
-                }
+                JobUtils.saveReportDraft(
+                    job,
+                    step = ReportDraft.ReportStep.SummaryForm,
+                    summaryIndex = pictureIndex
+                )
+                val intent = Intent(this, ReportFormActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("job", job)
+                intent.putExtra("pictureIndex", pictureIndex)
+                startActivity(intent)
             }
         }
         else {
@@ -192,6 +170,11 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
         }
     }
 
+    override fun onClickClose(view: View) {
+        job.report?.workingMinute = viewModel.timeSelectedItem
+        JobUtils.reportActivityRelatedOnClickBack(this, ReportDraft.ReportStep.WorkingTimeForm, job, null)
+    }
+
 
     private fun createTimeItems() {
         val times: MutableList<String> = mutableListOf()
@@ -210,10 +193,20 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
 }
 
 class ReportWorkingTimeViewModel: ViewModel() {
+    val job: MutableLiveData<Job> = MutableLiveData()
     val timeItems: MutableLiveData<List<String>> = MutableLiveData(listOf())
     val timeId: MutableLiveData<Int> = MutableLiveData()
     var timeSelectedItem: Int = 0
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val closeButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            job.value?.report?.id?.also {
+                result.value = View.GONE
+            } ?: run{
+                result.value = View.VISIBLE
+            }
+        }
+    }
 }
 
 interface ReportWorkingTimeEventHandlers {
@@ -221,4 +214,5 @@ interface ReportWorkingTimeEventHandlers {
     fun onTimeSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
+    fun onClickClose(view: View)
 }

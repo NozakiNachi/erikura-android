@@ -1,18 +1,32 @@
 package jp.co.recruit.erikura.business.util
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.view.View
+import android.widget.Button
+import android.widget.ImageButton
+import androidx.core.content.ContextCompat.startActivity
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import io.realm.Sort
 import jp.co.recruit.erikura.ErikuraApplication
+import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
 import jp.co.recruit.erikura.business.models.Report
+import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.network.MediaItemSerializer
 import jp.co.recruit.erikura.data.storage.Asset
 import jp.co.recruit.erikura.data.storage.AssetsManager
+import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.data.storage.ReportDraft
+import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
+import jp.co.recruit.erikura.presenters.activities.report.ReportConfirmActivity
+import jp.co.recruit.erikura.presenters.activities.report.ReportImagePickerActivity
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -168,5 +182,40 @@ object JobUtils {
             val draft: ReportDraft? = realm.where(ReportDraft::class.java).equalTo("jobId", job.id).findFirst()
             draft?.deleteFromRealm()
         }
+    }
+
+    fun reportActivityRelatedOnClickBack(activity: Activity, step: ReportDraft.ReportStep, job: Job, summaryIndex: Int?) {
+            // ダイアログを表示し下書きを保存するか確認する
+            val dialog = AlertDialog.Builder(activity)
+                .setView(R.layout.dialog_save_report_draft_question)
+                .setCancelable(false)
+                .create()
+            dialog.show()
+            val button: Button = dialog.findViewById(R.id.save_report_draft_button)
+            button.setOnClickListener(View.OnClickListener{
+                //入力内容を保存してタスク詳細画面へ遷移する
+                dialog.dismiss()
+                // 作業報告を保存します
+                JobUtils.saveReportDraft(job, step = step, summaryIndex = summaryIndex)
+                val intent= Intent(activity, JobDetailsActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("job", job)
+                activity.startActivity(intent)
+            })
+            val cancelButton: Button = dialog.findViewById(R.id.not_save_report_draft_button)
+            cancelButton.setOnClickListener(View.OnClickListener {
+                //下書きを破棄して、画像選択画面へ遷移する
+                dialog.dismiss()
+                job?.report = null
+                removeReportDraft(job)
+                val intent = Intent(activity, ReportImagePickerActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                intent.putExtra("job", job)
+                activity.startActivity(intent)
+            })
+            val closeButton: ImageButton = dialog.findViewById(R.id.close_button)
+            closeButton.setOnClickListener(View.OnClickListener{
+                dialog.dismiss()
+            })
     }
 }
