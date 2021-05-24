@@ -209,7 +209,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
         }
 
         // FDL経由でmapを表示した場合
-        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/map/")
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/map")
     }
 
     override fun onStart() {

@@ -236,7 +236,7 @@ class ListViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs), ListView
         }
 
         // FDL経由でmapを表示した場合
-        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/list/")
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/list")
     }
 
     override fun onPause() {
