@@ -144,17 +144,6 @@
                     android:pathPrefix="${erikura_relative_url_root}/link/user/login"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/user/login/"
-                    android:scheme="${erikura_protocol}" />
-            </intent-filter>
         </activity> <!-- スタート画面 -->
         <!-- ============================================================ -->
         <!-- 案件検索関連 -->
