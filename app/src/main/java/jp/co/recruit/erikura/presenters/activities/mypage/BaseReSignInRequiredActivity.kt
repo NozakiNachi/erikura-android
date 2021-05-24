@@ -39,7 +39,7 @@ abstract class BaseReSignInRequiredActivity(
         // 再認証が必要かどうか確認
         checkResignIn() { isResignIn ->
             // API実行後にFDLチェックを行い、pushUriを空にする
-            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/bank/edit/")
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/bank/edit")
             if (isResignIn) {
                 onCreateImpl(savedInstanceState)
             } else {

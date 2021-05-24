@@ -50,7 +50,7 @@ class NotificationSettingActivity : BaseActivity(),
 
 
             //API処理実行後に実施する
-            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/notification_settings/")
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/notification_settings")
         }
     }
 
