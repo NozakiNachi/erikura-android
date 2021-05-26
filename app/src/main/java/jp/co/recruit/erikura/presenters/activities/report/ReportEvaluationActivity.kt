@@ -158,6 +158,7 @@ class ReportEvaluationActivity : BaseActivity(), ReportEvaluationEventHandler {
     }
 
     override fun onClickClose(view: View) {
+        fillReport()
         JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.EvaluationForm, job, null)
     }
 
