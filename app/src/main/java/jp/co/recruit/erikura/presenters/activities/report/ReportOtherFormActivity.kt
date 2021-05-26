@@ -215,6 +215,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                 viewModel.addPhotoButtonVisibility.value = View.VISIBLE
                 viewModel.removePhotoButtonVisibility.value = View.GONE
                 viewModel.otherPhoto = MediaItem()
+                viewModel.comment.value = comment
             }
         }
         viewModel.commentError.message.value = null
