@@ -112,14 +112,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         reportSummaryAdapter = ReportSummaryAdapter(this, listOf()).also {
             it.onClickListener = object : ReportSummaryAdapter.OnClickListener {
                 override fun onClickEditButton(view: View, position: Int) {
-                    // 下書きを削除します
-                    JobUtils.removeReportDraft(job)
                     editSummary(view, position)
                 }
 
                 override fun onClickRemoveButton(view: View, position: Int) {
-                    // 下書きを削除します
-                    JobUtils.removeReportDraft(job)
                     showRemoveSummary(view, position)
                 }
             }
