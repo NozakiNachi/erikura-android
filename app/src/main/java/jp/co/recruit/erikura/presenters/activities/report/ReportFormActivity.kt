@@ -2,7 +2,6 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -26,7 +25,6 @@ import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.ReportDraft
 import jp.co.recruit.erikura.databinding.ActivityReportFormBinding
 import jp.co.recruit.erikura.presenters.activities.BaseActivity
-import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import kotlinx.android.synthetic.main.activity_report_form.*
@@ -171,28 +169,8 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
                 intent.putExtra("job", job)
                 intent.putExtra("pictureIndex", prevIndex)
                 startActivity(intent)
-            }
-            else {
-                val dialog = AlertDialog.Builder(this)
-                    .setView(R.layout.dialog_delete_report_draft)
-                    .setCancelable(true)
-                    .create()
-                dialog.show()
-
-                (dialog.findViewById(R.id.yes_button) as? Button)?.setOnClickListener {
-                    dialog.dismiss()
-
-                    JobUtils.removeReportDraft(job)
-                    job.report = null
-
-                    val intent= Intent(this, ReportImagePickerActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                    intent.putExtra("job", job)
-                    startActivity(intent)
-                }
-                (dialog.findViewById(R.id.no_button) as? Button)?.setOnClickListener {
-                    dialog.dismiss()
-                }
+            } else {
+                JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, 0)
             }
         }
         else {
@@ -311,6 +289,14 @@ class ReportFormActivity : BaseActivity(), ReportFormEventHandlers {
         job?.let { job ->
             JobUtil.openReportExample(this, job)
         }
+    }
+
+    override fun onClickClose(view: View) {
+        // 編集中の内容を保存します
+        fillSummary()
+
+        // 現在表示している実施箇所のインデックスで下書き保存します
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.SummaryForm, job, pictureIndex)
     }
 
     private fun setup() {
@@ -459,6 +445,16 @@ class ReportFormViewModel: ViewModel() {
     }
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
 
+    val closeButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            job.value?.report?.id?.also {
+                result.value = View.GONE
+            } ?: run{
+                result.value = View.VISIBLE
+            }
+        }
+    }
+
     private fun isValid(): Boolean {
         var valid = true
         if (summaryEditVisibility.value == View.VISIBLE) {
@@ -544,4 +540,5 @@ interface ReportFormEventHandlers {
     fun onFixedPhraseSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
+    fun onClickClose(view: View)
 }

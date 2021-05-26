@@ -17,6 +17,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
+    <!-- MEMO FDLのpathPrefixについて / 以降にパラメータがある場合は、パスの末尾が / とする 例）jobs/show/  ない場合は、パスの末尾に / なしとする 例）jobs/map -->
+    <!-- MEMO パスの末尾に / なしの場合、前方一致すると遷移してしまうので注意 例） jobs/map と jobs/mapping　が合った場合、FDLのjobs/mapping押下した場合　前方一致するjobs/mapの定義しているactivityに飛んでしまう-->
     <application
         android:name=".ErikuraApplication"
         android:largeHeap="true"
@@ -88,7 +90,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/payment_history/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/payment_history"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>
@@ -139,7 +141,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/user/login/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/user/login"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity> <!-- スタート画面 -->
@@ -159,7 +161,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/map/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/map"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- リスト画面 -->
@@ -176,7 +178,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/list/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/list"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 案件検索画面 -->
@@ -312,7 +314,7 @@
 
             <data
                 android:host="${erikura_host}"
-                android:pathPrefix="${erikura_relative_url_root}/link/mypage/show/"
+                android:pathPrefix="${erikura_relative_url_root}/link/mypage/show"
                 android:scheme="${erikura_protocol}" />
         </intent-filter>
         </activity>
@@ -335,7 +337,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/user/edit/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/user/edit"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 会員情報変更 -->
@@ -351,7 +353,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/bank/edit/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/bank/edit"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 口座情報登録更新 -->
@@ -368,7 +370,7 @@
 
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/notification_settings/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/mypage/notification_settings"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity><!-- 通知設定 -->
@@ -390,7 +392,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:host="${erikura_host}"
-                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/favorite/"
+                    android:pathPrefix="${erikura_relative_url_root}/link/jobs/favorite"
                     android:scheme="${erikura_protocol}" />
             </intent-filter>
         </activity>

@@ -159,6 +159,11 @@ class ReportImagePickerActivity : BaseActivity(), ReportImagePickerEventHandler 
                     onImageSelected(item, isChecked)
                 }
             }
+            it.onModifyDataListener = object : ImagePickerAdapter.OnClickListener {
+                override fun onClick(item: MediaItem, isChecked: Boolean) {
+                    adapter.notifyDataSetChanged()
+                }
+            }
         }
         val recyclerView: RecyclerView = findViewById(R.id.report_image_picker_selection)
         recyclerView.adapter = adapter
@@ -345,6 +350,7 @@ class ImagePickerAdapter(
 ) : RecyclerViewCursorAdapter<ImagePickerViewHolder>(null) {
 
     var onClickListener: OnClickListener? = null
+    var onModifyDataListener: OnClickListener? = null
 
     init {
         // cursor を作成して、それを this.cursor に設定する
@@ -462,6 +468,9 @@ class ImagePickerAdapter(
                                 }
                                 // 撮影日時が応募日時より古い場合
                                 if (takenAt < entryAt) {
+                                    isChecked = false
+                                    button.isChecked = false
+
                                     val dialog = AlertDialog.Builder(activity)
                                         .setView(R.layout.dialog_notice_old_taken_picture)
                                         .setCancelable(false)
@@ -480,16 +489,18 @@ class ImagePickerAdapter(
                                     val selectButton: Button =
                                         dialog.findViewById(R.id.select_button)
                                     selectButton.setOnClickListener(View.OnClickListener {
+                                        button.isChecked = true
+                                        onClickListener?.apply {
+                                            onClick(item, true)
+                                        }
+                                        onModifyDataListener?.apply {
+                                            onClick(item, true)
+                                        }
                                         dialog.dismiss()
                                     })
                                     val cancelButton: Button =
                                         dialog.findViewById(R.id.cancel_button)
                                     cancelButton.setOnClickListener(View.OnClickListener {
-                                        isChecked = false
-                                        button.isChecked = false
-                                        onClickListener?.apply {
-                                            onClick(item, isChecked)
-                                        }
                                         dialog.dismiss()
                                     })
                                 }

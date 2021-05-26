@@ -60,7 +60,7 @@ class FavoritePlacesActivity : BaseTabbedActivity(R.id.tab_menu_mypage), Favorit
             favoritePlaceAdapter.places = it
             favoritePlaceAdapter.notifyDataSetChanged()
             //　表示がFDL形式の場合の処理
-            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite/")
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/jobs/favorite")
         }
 
         Tracking.logEvent(event= "view_mypage_favorites", params= bundleOf())

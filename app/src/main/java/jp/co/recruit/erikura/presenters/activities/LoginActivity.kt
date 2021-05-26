@@ -47,7 +47,7 @@ class LoginActivity : BaseActivity(), LoginEventHandlers {
         binding.handlers = this
 
         // FDLで遷移した場合
-        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/user/login/")
+        ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/user/login")
 
         viewModel.email.value = ""
         viewModel.password.value = ""

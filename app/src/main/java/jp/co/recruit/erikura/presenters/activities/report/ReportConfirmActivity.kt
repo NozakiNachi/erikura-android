@@ -19,6 +19,7 @@ import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -142,6 +143,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 jobId = job.id
             )
         }
+        viewModel.job.value = job
 //        FirebaseCrashlytics.getInstance().recordException(MemoryTraceException(this.javaClass.name, getAvailableMemory()))
     }
 
@@ -239,6 +241,10 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 }
             }
         }
+    }
+
+    override fun onClickClose(view: View) {
+        JobUtil.displaySuspendReportConfirmation(this, ReportDraft.ReportStep.Confirm, job, null)
     }
 
     fun editSummary(view: View, position: Int) {
@@ -813,6 +819,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
 }
 
 class ReportConfirmViewModel : ViewModel() {
+    val job: MutableLiveData<Job> = MutableLiveData()
     val workingTime: MutableLiveData<String> = MutableLiveData()
     val otherFormImageVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
     val otherFormComment: MutableLiveData<String> = MutableLiveData()
@@ -822,6 +829,15 @@ class ReportConfirmViewModel : ViewModel() {
 
     val isCompleteButtonEnabled: MutableLiveData<Boolean> = MutableLiveData()
     val reportExamplesButtonVisibility: MutableLiveData<Int> = MutableLiveData(View.VISIBLE)
+    val closeButtonVisibility = MediatorLiveData<Int>().also { result ->
+        result.addSource(job) {
+            job.value?.report?.id?.also {
+                result.value = View.GONE
+            } ?: run{
+                result.value = View.VISIBLE
+            }
+        }
+    }
 
     fun isValid(report: Report): Boolean {
         var valid = true
@@ -849,6 +865,7 @@ interface ReportConfirmEventHandlers {
     fun onClickEditEvaluation(view: View)
     fun onClickManual(view: View)
     fun onClickReportExamples(view: View)
+    fun onClickClose(view: View)
 }
 
 // 実施箇所の一覧

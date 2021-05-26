@@ -18,6 +18,7 @@ data class JobKind(
     var reportFixedPhrasesC: List<String> = listOf()
 ): Parcelable {
     val activeIconUrl: URL? get() {
+
         return iconUrl?.let { UrlUtils.parse(it) }
     }
     val inactiveIconUrl: URL? get() {

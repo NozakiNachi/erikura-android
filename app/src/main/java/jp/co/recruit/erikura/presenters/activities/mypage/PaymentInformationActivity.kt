@@ -101,7 +101,7 @@ class PaymentInformationActivity : BaseActivity(), PaymentInformationHandlers {
             }
 
             //　API実行後、表示がFDL形式の場合の処理
-            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/payment_history/")
+            ErikuraApplication.instance.removePushUriFromFDL(intent, "/app/link/mypage/payment_history")
         }
 
         // 口座情報が登録済みであれば、口座情報登録ボタンは表示しない。

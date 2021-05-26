@@ -14,6 +14,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.User
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.FragmentReportedJobEditButtonBinding
 import jp.co.recruit.erikura.presenters.activities.report.ReportConfirmActivity
@@ -103,6 +104,8 @@ class ReportedJobEditButtonFragment : BaseJobDetailFragment, ReportedJobEditButt
     }
 
     override fun onClickReportedJobEditButton(view: View) {
+        // 下書きを削除します
+        job?.let { JobUtils.removeReportDraft(it) }
         if(job?.isReportEditable?: false) {
             val intent = Intent(activity,ReportConfirmActivity::class.java)
             ErikuraApplication.instance.currentJob = job
