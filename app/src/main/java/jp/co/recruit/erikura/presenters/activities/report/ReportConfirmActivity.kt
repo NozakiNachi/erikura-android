@@ -360,20 +360,24 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         val cr = contentResolver.openInputStream(uri)
                         val exifInterface = ExifInterface(cr)
                         val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
-
                         var oldPictureFlag = false
+                        val exifTakenAt = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
                         var takenAt: Date? = null
-                        item.dateTaken?.let { dateTaken ->
-                            takenAt = Date(dateTaken)
-                            val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
-                                // 先行応募で応募済みの場合
-                                job.workingStartAt
-                            } else {
-                                // 通常案件の場合
-                                job.entry?.createdAt
-                            }
+
+                        exifTakenAt?.let { exTakenAt ->
+                            val df = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
+                            takenAt = df.parse(exTakenAt)
+                            takenAt?.let { parseTakenAt ->
+                                val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                                    // 先行応募で応募済みの場合
+                                    job.workingStartAt
+                                } else {
+                                    // 通常案件の場合
+                                    job.entry?.createdAt
+                                }
                                 // 撮影日時が応募日時より古い場合
-                            oldPictureFlag = takenAt!! < entryAt
+                                oldPictureFlag = parseTakenAt < entryAt
+                            }
                         }
                         // 横より縦の方が長い時アラートを表示します
                         if (imageHeight > imageWidth) {
@@ -395,7 +399,7 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                             selectButton.setOnClickListener(View.OnClickListener {
                                 dialog.dismiss()
                                 addSummaryPicture(exifInterface, summary, item)
-                                onStart()
+                                loadData()
                             })
                             val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
                             cancelButton.setOnClickListener(View.OnClickListener {
