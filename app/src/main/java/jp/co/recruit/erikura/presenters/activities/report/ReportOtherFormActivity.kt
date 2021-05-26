@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -37,6 +38,7 @@ import jp.co.recruit.erikura.presenters.activities.BaseActivity
 import jp.co.recruit.erikura.presenters.activities.job.MapViewActivity
 import jp.co.recruit.erikura.presenters.activities.mypage.ErrorMessageViewModel
 import jp.co.recruit.erikura.presenters.util.MessageUtils
+import java.text.SimpleDateFormat
 import java.util.*
 
 class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
@@ -221,6 +223,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
         viewModel.commentError.message.value = null
     }
 
+    @SuppressLint("SimpleDateFormat")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -232,18 +235,23 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                     val exifInterface = ExifInterface(cr)
                     val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
                     var oldPictureFlag = false
+                    val exifTakenAt = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
                     var takenAt: Date? = null
-                    item.dateTaken?.let { dateTaken ->
-                        takenAt = Date(dateTaken)
-                        val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
-                            // 先行応募で応募済みの場合
-                            job.workingStartAt
-                        } else {
-                            // 通常案件の場合
-                            job.entry?.createdAt
+
+                    exifTakenAt?.let { exTakenAt ->
+                        val df = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
+                        takenAt = df.parse(exTakenAt)
+                        takenAt?.let { parseTakenAt ->
+                            val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                                // 先行応募で応募済みの場合
+                                job.workingStartAt
+                            } else {
+                                // 通常案件の場合
+                                job.entry?.createdAt
+                            }
+                            // 撮影日時が応募日時より古い場合
+                            oldPictureFlag = parseTakenAt < entryAt
                         }
-                        // 撮影日時が応募日時より古い場合
-                        oldPictureFlag = takenAt!! < entryAt
                     }
                     // 横より縦の方が長い時アラートを表示します
                     if (imageHeight > imageWidth) {

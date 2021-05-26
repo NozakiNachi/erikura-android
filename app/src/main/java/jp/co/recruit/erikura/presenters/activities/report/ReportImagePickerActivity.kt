@@ -1,6 +1,7 @@
 package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -39,6 +40,7 @@ import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -431,6 +433,7 @@ class ImagePickerAdapter(
 
             val cellView: ImagePickerCellView = view.findViewById(R.id.report_image_picker_cell)
             cellView.toggleClickListener = object : ImagePickerCellView.ToggleClickListener {
+                @SuppressLint("SimpleDateFormat")
                 override fun onClick(button: ToggleButton, isChecked: Boolean) {
                     var isChecked = isChecked
                     if (isChecked && (viewModel.selectedCount.value
@@ -445,9 +448,11 @@ class ImagePickerAdapter(
                     } else {
                         val cr =
                             item.contentUri?.let { activity.contentResolver.openInputStream(it) }
+                        var exifTakenAt: String? = null
                         if (cr != null) {
                             // exif情報取得
                             val exifInterface = ExifInterface(cr)
+                            exifTakenAt = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
                             val (width, height) = item.getWidthAndHeight(activity, exifInterface)
                             // 横より縦の方が長い時アラートを表示します
                             if (height > width) {
@@ -457,53 +462,60 @@ class ImagePickerAdapter(
                             }
                         }
                         if (isChecked) {
-                            item.dateTaken?.let { dateTaken ->
-                                val takenAt = Date(dateTaken)
-                                val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
-                                    // 先行応募で応募済みの場合
-                                    job.workingStartAt
-                                } else {
-                                    // 通常案件の場合
-                                    job.entry?.createdAt
+                            var oldPictureFlag = false
+                            var takenAt: Date? = null
+                            exifTakenAt?.let { exTakenAt ->
+                                val df = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
+                                takenAt = df.parse(exTakenAt)
+                                takenAt?.let { parseTakenAt ->
+                                    val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
+                                        // 先行応募で応募済みの場合
+                                        job.workingStartAt
+                                    } else {
+                                        // 通常案件の場合
+                                        job.entry?.createdAt
+                                    }
+                                    // 撮影日時が応募日時より古い場合
+                                    oldPictureFlag = parseTakenAt < entryAt
                                 }
-                                // 撮影日時が応募日時より古い場合
-                                if (takenAt < entryAt) {
-                                    isChecked = false
-                                    button.isChecked = false
+                            }
+                            // 撮影日時が応募日時より古い場合
+                            if (oldPictureFlag) {
+                                isChecked = false
+                                button.isChecked = false
 
-                                    val dialog = AlertDialog.Builder(activity)
-                                        .setView(R.layout.dialog_notice_old_taken_picture)
-                                        .setCancelable(false)
-                                        .create()
-                                    dialog.show()
-                                    val warningCaption: TextView? =
-                                        dialog.findViewById(R.id.dialog_warning_caption)
-                                    warningCaption?.setText(
-                                        String.format(
-                                            ErikuraApplication.instance.getString(
-                                                R.string.notice_old_taken_picture_caption
-                                            ), JobUtil.getFormattedDateJp(takenAt)
-                                        )
+                                val dialog = AlertDialog.Builder(activity)
+                                    .setView(R.layout.dialog_notice_old_taken_picture)
+                                    .setCancelable(false)
+                                    .create()
+                                dialog.show()
+                                val warningCaption: TextView? =
+                                    dialog.findViewById(R.id.dialog_warning_caption)
+                                warningCaption?.setText(
+                                    String.format(
+                                        ErikuraApplication.instance.getString(
+                                            R.string.notice_old_taken_picture_caption
+                                        ), takenAt?.let { JobUtil.getFormattedDateJp(it) }
                                     )
+                                )
 
-                                    val selectButton: Button =
-                                        dialog.findViewById(R.id.select_button)
-                                    selectButton.setOnClickListener(View.OnClickListener {
-                                        button.isChecked = true
-                                        onClickListener?.apply {
-                                            onClick(item, true)
-                                        }
-                                        onModifyDataListener?.apply {
-                                            onClick(item, true)
-                                        }
-                                        dialog.dismiss()
-                                    })
-                                    val cancelButton: Button =
-                                        dialog.findViewById(R.id.cancel_button)
-                                    cancelButton.setOnClickListener(View.OnClickListener {
-                                        dialog.dismiss()
-                                    })
-                                }
+                                val selectButton: Button =
+                                    dialog.findViewById(R.id.select_button)
+                                selectButton.setOnClickListener(View.OnClickListener {
+                                    button.isChecked = true
+                                    onClickListener?.apply {
+                                        onClick(item, true)
+                                    }
+                                    onModifyDataListener?.apply {
+                                        onClick(item, true)
+                                    }
+                                    dialog.dismiss()
+                                })
+                                val cancelButton: Button =
+                                    dialog.findViewById(R.id.cancel_button)
+                                cancelButton.setOnClickListener(View.OnClickListener {
+                                    dialog.dismiss()
+                                })
                             }
                         }
                     }
