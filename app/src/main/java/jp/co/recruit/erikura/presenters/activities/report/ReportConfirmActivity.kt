@@ -116,8 +116,6 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                 }
 
                 override fun onClickRemoveButton(view: View, position: Int) {
-                    // 下書きを削除します
-                    JobUtils.removeReportDraft(job)
                     showRemoveSummary(view, position)
                 }
             }

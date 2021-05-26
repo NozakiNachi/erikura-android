@@ -10,6 +10,7 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.business.models.Job
+import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.databinding.DialogReportedJobRemoveBinding
 import jp.co.recruit.erikura.presenters.activities.job.JobDetailsActivity
@@ -51,6 +52,8 @@ class ReportedJobRemoveDialogFragment : DialogFragment() , ReportedJobRemoveEven
     }
     override fun onClickRemoveButton(view: View) {
         job?.let { job ->
+            // 下書きを削除します
+            JobUtils.removeReportDraft(job)
             job.report?.let { report ->
                 Api(activity!!).deleteReport(job.id) {
                     report.deleted = true
