@@ -411,7 +411,7 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
             Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
-            synchronized(this) {
+            synchronized(this@MapViewActivity) {
                 if (jobs.isNotEmpty()) {
                     val summarizedJobs = JobUtils.summarizeJobsByLocation(jobs)
                     val nearestJob = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
