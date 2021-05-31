@@ -411,73 +411,75 @@ class MapViewActivity : BaseTabbedActivity(R.id.tab_menu_search_jobs, finishByBa
     private fun fetchJobs(query: JobQuery) {
         Api(this@MapViewActivity).searchJobs(query, runCompleteOnUIThread = false) { jobs ->
             Log.v(ErikuraApplication.LOG_TAG, "Fetched Jobs: ${jobs.size}, ${jobs.toString()}")
-            if (jobs.isNotEmpty()) {
-                val summarizedJobs = JobUtils.summarizeJobsByLocation(jobs)
-                val nearestJob = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
+            synchronized(this@MapViewActivity) {
+                if (jobs.isNotEmpty()) {
+                    val summarizedJobs = JobUtils.summarizeJobsByLocation(jobs)
+                    val nearestJob = jobs.sortedBy { SphericalUtil.computeDistanceBetween(it.latLng, query.latLng) }.first()
 
-                AndroidSchedulers.mainThread().scheduleDirect {
-                    // viewModel の案件情報を更新します
-                    viewModel.jobs.value = jobs
-                    viewModel.jobsByLocation.value = summarizedJobs
+                    AndroidSchedulers.mainThread().scheduleDirect {
+                        // viewModel の案件情報を更新します
+                        viewModel.jobs.value = jobs
+                        viewModel.jobsByLocation.value = summarizedJobs
 
-                    // カルーセルの更新を行います
-                    val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
-                    adapter?.data = jobs
-                    adapter?.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
-                    adapter?.notifyDataSetChanged()
-                    tutorialAdapter?.data = jobs
-                    tutorialAdapter?.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
-                    tutorialAdapter?.notifyDataSetChanged()
+                        // カルーセルの更新を行います
+                        val carouselView: RecyclerView = findViewById(R.id.map_view_carousel)
+                        adapter?.data = jobs
+                        adapter?.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
+                        adapter?.notifyDataSetChanged()
+                        tutorialAdapter?.data = jobs
+                        tutorialAdapter?.jobsByLocation = viewModel.jobsByLocation.value ?: mapOf()
+                        tutorialAdapter?.notifyDataSetChanged()
 
-                    try {
-                        // マーカを設定します
-                        rebuildMarkers(jobs)
-                    } catch(e: IllegalArgumentException) {
-                        // 設定する際にマーカーアイコン画像取得の遅延により
-                        // マーカの削除中に該当のマーカにアイコンをセットするとエラーになる
-                        // こちらのエラーは握り潰す
-                        Log.e("ERROR", e.message, e)
-                    }
-
-                    // 最も距離が近い案件を取得します
-                    val nearestMarker: ErikuraMarkerView = viewModel.markerMap[nearestJob.id]!!
-                    val nearestIndex: Int = nearestMarker.marker.tag as Int
-                    // マーカーをアクティブに変更します
-                    viewModel.activeMaker = nearestMarker
-                    // 最も近い案件に地図を移動します
-                    resetCameraPosition = true
-                    val updateRequest: CameraUpdate = CameraUpdateFactory.newLatLng(nearestJob.latLng)
-                    Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(fetchJob): $updateRequest")
-                    mMap.animateCamera(updateRequest)
-
-                    // カルーセルを最も近い案件に変更します
-                    val layoutManager = carouselView.layoutManager as LinearLayoutManager
-                    layoutManager.scrollToPosition(nearestIndex)
-
-                    // ページ参照のトラッキングの送出
-                    val jobId = jobs.map { it.id }
-
-                    Tracking.logEvent(event= "view_job_list_map", params= bundleOf())
-                    Tracking.viewJobs(name= "/jobs/map", title= "仕事一覧画面（地図）", jobId= jobId)
-                    // 仕事表示のトラッキングの送出
-                    Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
-                    Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（地図）", jobId= jobId)
-                }
-            }
-            else {
-                AndroidSchedulers.mainThread().scheduleDirect {
-                    val newQuery = JobQuery(
-                        latitude = locationManager.latLngOrDefault.latitude,
-                        longitude = locationManager.latLngOrDefault.longitude)
-                    if (query != newQuery) {
-                        MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つからなかったため、", "一番近くのお仕事を表示します")) {
-                            // クリアした検索条件での再検索を行います
-                            viewModel.apply(newQuery)
-                            fetchJobs(newQuery)
+                        try {
+                            // マーカを設定します
+                            rebuildMarkers(jobs)
+                        } catch(e: IllegalArgumentException) {
+                            // 設定する際にマーカーアイコン画像取得の遅延により
+                            // マーカの削除中に該当のマーカにアイコンをセットするとエラーになる
+                            // こちらのエラーは握り潰す
+                            Log.e("ERROR", e.message, e)
                         }
+
+                        // 最も距離が近い案件を取得します
+                        val nearestMarker: ErikuraMarkerView = viewModel.markerMap[nearestJob.id]!!
+                        val nearestIndex: Int = nearestMarker.marker.tag as Int
+                        // マーカーをアクティブに変更します
+                        viewModel.activeMaker = nearestMarker
+                        // 最も近い案件に地図を移動します
+                        resetCameraPosition = true
+                        val updateRequest: CameraUpdate = CameraUpdateFactory.newLatLng(nearestJob.latLng)
+                        Log.v(ErikuraApplication.LOG_TAG, "GMS: animateCamera(fetchJob): $updateRequest")
+                        mMap.animateCamera(updateRequest)
+
+                        // カルーセルを最も近い案件に変更します
+                        val layoutManager = carouselView.layoutManager as LinearLayoutManager
+                        layoutManager.scrollToPosition(nearestIndex)
+
+                        // ページ参照のトラッキングの送出
+                        val jobId = jobs.map { it.id }
+
+                        Tracking.logEvent(event= "view_job_list_map", params= bundleOf())
+                        Tracking.viewJobs(name= "/jobs/map", title= "仕事一覧画面（地図）", jobId= jobId)
+                        // 仕事表示のトラッキングの送出
+                        Tracking.logEvent(event= "dispaly_job_list", params= bundleOf())
+                        Tracking.viewJobs(name= "dispaly_job_list", title= "仕事一覧表示（地図）", jobId= jobId)
                     }
-                    else {
-                        MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つかりませんでした。"))
+                }
+                else {
+                    AndroidSchedulers.mainThread().scheduleDirect {
+                        val newQuery = JobQuery(
+                            latitude = locationManager.latLngOrDefault.latitude,
+                            longitude = locationManager.latLngOrDefault.longitude)
+                        if (query != newQuery) {
+                            MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つからなかったため、", "一番近くのお仕事を表示します")) {
+                                // クリアした検索条件での再検索を行います
+                                viewModel.apply(newQuery)
+                                fetchJobs(newQuery)
+                            }
+                        }
+                        else {
+                            MessageUtils.displayAlert(this, listOf("検索した地域で", "お仕事が見つかりませんでした。"))
+                        }
                     }
                 }
             }
