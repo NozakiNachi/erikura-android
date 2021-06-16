@@ -13,6 +13,7 @@ import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.Button
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.content.res.ResourcesCompat
@@ -503,6 +504,27 @@ object JobUtil {
         })
         val closeButton: ImageButton = dialog.findViewById(R.id.close_button)
         closeButton.setOnClickListener(View.OnClickListener {
+            dialog.dismiss()
+        })
+    }
+
+    fun displayOldPictureWarning(context: Context, takenAt: Date?, acceptHandler: (() -> Unit)) {
+        val takenAtString = takenAt?.let { getFormattedDateJp(it) }
+
+        val dialog = AlertDialog.Builder(context)
+            .setView(R.layout.dialog_notice_old_taken_picture)
+            .setCancelable(false)
+            .create()
+        dialog.show()
+        val warningCaption: TextView? = dialog.findViewById(R.id.dialog_warning_caption)
+        warningCaption?.text = ErikuraApplication.instance.getString(R.string.notice_old_taken_picture_caption, takenAtString)
+        val selectButton: Button = dialog.findViewById(R.id.select_button)
+        selectButton.setOnClickListener(View.OnClickListener {
+            acceptHandler()
+            dialog.dismiss()
+        })
+        val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
+        cancelButton.setOnClickListener(View.OnClickListener {
             dialog.dismiss()
         })
     }

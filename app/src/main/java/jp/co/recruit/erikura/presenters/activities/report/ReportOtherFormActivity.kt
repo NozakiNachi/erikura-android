@@ -30,6 +30,7 @@ import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.ErikuraConst
 import jp.co.recruit.erikura.business.models.Job
 import jp.co.recruit.erikura.business.models.MediaItem
+import jp.co.recruit.erikura.business.util.ExifUtils
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.data.storage.ReportDraft
@@ -231,55 +232,26 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
             val uri = data?.data
             uri?.let {
                 MediaItem.createFrom(this, uri)?.let { item ->
-                    val cr = this.contentResolver.openInputStream(uri)
-                    val exifInterface = ExifInterface(cr)
-                    val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
-                    var oldPictureFlag = false
-                    val exifTakenAt = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-                    var takenAt: Date? = null
+                    val exifInterface = ExifUtils.exifInterface(this, uri)
+                    val (imageWidth, imageHeight) = ExifUtils.size(this, uri, exifInterface)
+                    val takenAt = ExifUtils.takenAt(exifInterface)
 
-                    exifTakenAt?.let { exTakenAt ->
-                        val df = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
-                        takenAt = df.parse(exTakenAt)
-                        takenAt?.let { parseTakenAt ->
-                            val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
-                                // 先行応募で応募済みの場合
-                                job.workingStartAt
-                            } else {
-                                // 通常案件の場合
-                                job.entry?.createdAt
-                            }
-                            // 撮影日時が応募日時より古い場合
-                            oldPictureFlag = parseTakenAt < entryAt
+
+                    when {
+                        // 横より縦の方が長い時アラートを表示します
+                        (imageHeight > imageWidth) -> {
+                            MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
                         }
-                    }
-                    // 横より縦の方が長い時アラートを表示します
-                    if (imageHeight > imageWidth) {
-                        MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
-                    } else if (oldPictureFlag) {
-                        val dialog = AlertDialog.Builder(this)
-                            .setView(R.layout.dialog_notice_old_taken_picture)
-                            .setCancelable(false)
-                            .create()
-                        dialog.show()
-                        val warningCaption: TextView? =
-                            dialog.findViewById(R.id.dialog_warning_caption)
-                        warningCaption?.setText(
-                            String.format(ErikuraApplication.instance.getString(R.string.notice_old_taken_picture_caption),
-                                takenAt?.let { it1 -> JobUtil.getFormattedDateJp(it1) })
-                        )
-
-                        val selectButton: Button = dialog.findViewById(R.id.select_button)
-                        selectButton.setOnClickListener(View.OnClickListener {
+                        // 撮影日時が応募日時より古い場合はアラートを表示します
+                        (takenAt?.let { it < job.entryAt() } == true) -> {
+                            JobUtil.displayOldPictureWarning(this, takenAt) {
+                                addOtherPicture(item)
+                            }
+                        }
+                        else -> {
+                            // 問題がないので、マニュアル外画像の追加処理を行います
                             addOtherPicture(item)
-                            dialog.dismiss()
-                        })
-                        val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
-                        cancelButton.setOnClickListener(View.OnClickListener {
-                            dialog.dismiss()
-                        })
-                    } else {
-                        addOtherPicture(item)
+                        }
                     }
                 }
             }

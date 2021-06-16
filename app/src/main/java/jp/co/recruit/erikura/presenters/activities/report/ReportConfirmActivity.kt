@@ -34,6 +34,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.ExifUtils
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.network.Api
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
@@ -357,56 +358,26 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         val summary = OutputSummary()
                         summary.photoAsset = item
 
-                        val cr = contentResolver.openInputStream(uri)
-                        val exifInterface = ExifInterface(cr)
-                        val (imageWidth, imageHeight) = item.getWidthAndHeight(this, exifInterface)
-                        var oldPictureFlag = false
-                        val exifTakenAt = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-                        var takenAt: Date? = null
+                        val exifInterface = ExifUtils.exifInterface(this, uri)
+                        val (imageWidth, imageHeight) = ExifUtils.size(this, uri, exifInterface)
+                        val takenAt = ExifUtils.takenAt(exifInterface)
 
-                        exifTakenAt?.let { exTakenAt ->
-                            val df = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
-                            takenAt = df.parse(exTakenAt)
-                            takenAt?.let { parseTakenAt ->
-                                val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
-                                    // 先行応募で応募済みの場合
-                                    job.workingStartAt
-                                } else {
-                                    // 通常案件の場合
-                                    job.entry?.createdAt
-                                }
-                                // 撮影日時が応募日時より古い場合
-                                oldPictureFlag = parseTakenAt < entryAt
+                        when {
+                            // 横より縦の方が長い時アラートを表示します
+                            (imageHeight > imageWidth) -> {
+                                MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
                             }
-                        }
-                        // 横より縦の方が長い時アラートを表示します
-                        if (imageHeight > imageWidth) {
-                            MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
-                        } else if (oldPictureFlag) {
-                            val dialog = AlertDialog.Builder(this)
-                                .setView(R.layout.dialog_notice_old_taken_picture)
-                                .setCancelable(false)
-                                .create()
-                            dialog.show()
-                            val warningCaption: TextView? =
-                                dialog.findViewById(R.id.dialog_warning_caption)
-                            warningCaption?.setText(
-                                String.format(ErikuraApplication.instance.getString(R.string.notice_old_taken_picture_caption),
-                                    takenAt?.let { it1 -> JobUtil.getFormattedDateJp(it1) })
-                            )
-
-                            val selectButton: Button = dialog.findViewById(R.id.select_button)
-                            selectButton.setOnClickListener(View.OnClickListener {
-                                dialog.dismiss()
-                                addSummaryPicture(exifInterface, summary, item)
-                                loadData()
-                            })
-                            val cancelButton: Button = dialog.findViewById(R.id.cancel_button)
-                            cancelButton.setOnClickListener(View.OnClickListener {
-                                dialog.dismiss()
-                            })
-                        } else {
-                            addSummaryPicture(exifInterface, summary, item)
+                            // 撮影日時が応募日時より古い場合はアラートを表示します
+                            (takenAt?.let { it < job.entryAt() } == true) -> {
+                                JobUtil.displayOldPictureWarning(this, takenAt) {
+                                    addSummaryPicture(summary)
+                                    loadData()
+                                }
+                            }
+                            // その他の場合は画像の追加処理を行います
+                            else -> {
+                                addSummaryPicture(summary)
+                            }
                         }
                     }
                 }
@@ -414,34 +385,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
         }
     }
 
-    private fun addSummaryPicture(
-        exifInterface: ExifInterface,
-        summary: OutputSummary,
-        item: MediaItem
-    ) {
-        val takenAtString = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-        val takenAt = takenAtString?.let {
-            SimpleDateFormat("yyyy:MM:dd HH:mm").parse(it)
-        } ?: item.dateTaken?.let {
-            Date(item.dateTaken)
-        } ?: item.dateAdded?.let {
-            Date(item.dateAdded * 1000)    // 秒単位なので、x1000してミリ秒にする
-        }
-        val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-        val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-        val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-        val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-        summary.photoTakedAt = takenAt
-        summary.latitude = latitude?.let { lat ->
-            latitudeRef?.let { ref ->
-                MediaItem.exifLatitudeToDegrees(ref, lat)
-            }
-        }
-        summary.longitude = longitude?.let { lon ->
-            longitudeRef?.let { ref ->
-                MediaItem.exifLongitudeToDegrees(ref, lon)
-            }
-        }
+    private fun addSummaryPicture(summary: OutputSummary) {
+        // EXIFより撮影日時などの情報を取得して更新します
+        summary.retrieveImageProperties(this)
 
         var outputSummaryList: MutableList<OutputSummary> = mutableListOf()
         outputSummaryList =
