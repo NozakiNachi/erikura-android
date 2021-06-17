@@ -2,12 +2,11 @@ package jp.co.recruit.erikura.presenters.activities.report
 
 import JobUtil
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Rect
-import android.media.ExifInterface
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -29,6 +28,7 @@ import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.Tracking
 import jp.co.recruit.erikura.business.models.*
+import jp.co.recruit.erikura.business.util.ExifUtils
 import jp.co.recruit.erikura.business.util.JobUtils
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import jp.co.recruit.erikura.data.storage.ReportDraft
@@ -40,7 +40,6 @@ import jp.co.recruit.erikura.presenters.fragments.ImagePickerCellView
 import jp.co.recruit.erikura.presenters.util.LocationManager
 import jp.co.recruit.erikura.presenters.util.MessageUtils
 import jp.co.recruit.erikura.presenters.util.RecyclerViewCursorAdapter
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -436,72 +435,36 @@ class ImagePickerAdapter(
                 @SuppressLint("SimpleDateFormat")
                 override fun onClick(button: ToggleButton, isChecked: Boolean) {
                     var isChecked = isChecked
-                    if (isChecked && (viewModel.selectedCount.value
-                            ?: 0) >= ErikuraConst.maxOutputSummaries
-                    ) {
-                        isChecked = false
-                        button.isChecked = false
-                        MessageUtils.displayAlert(
-                            activity,
-                            listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません")
-                        )
-                    } else {
-                        val cr =
-                            item.contentUri?.let { activity.contentResolver.openInputStream(it) }
-                        var exifTakenAt: String? = null
-                        if (cr != null) {
-                            // exif情報取得
-                            val exifInterface = ExifInterface(cr)
-                            exifTakenAt = exifInterface.getAttribute(ExifInterface.TAG_DATETIME)
-                            val (width, height) = item.getWidthAndHeight(activity, exifInterface)
-                            // 横より縦の方が長い時アラートを表示します
-                            if (height > width) {
+                    if (isChecked) {
+                        // 画像が選択された場合には、件数チェック、アスペクト比チェック、撮影日時チェックを行います
+                        val uri = item.contentUri ?: Uri.EMPTY
+                        val exifInterface = ExifUtils.exifInterface(activity, uri)
+                        val takenAt = ExifUtils.takenAt(exifInterface)
+                        val (width, height) = ExifUtils.size(activity, uri, exifInterface)
+
+                        when {
+                            // 実施箇所件数
+                            (viewModel.selectedCount.value ?: 0) >= ErikuraConst.maxOutputSummaries -> {
+                                // 選択可能な実施箇所数を超えている場合の対応
+                                isChecked = false
+                                button.isChecked = false
+                                MessageUtils.displayAlert(
+                                    activity,
+                                    listOf("実施箇所は${ErikuraConst.maxOutputSummaries}箇所までしか選択できません")
+                                )
+                            }
+                            // アスペクト比のチェック
+                            height > width -> {
                                 isChecked = false
                                 button.isChecked = false
                                 MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
                             }
-                        }
-                        if (isChecked) {
-                            var oldPictureFlag = false
-                            var takenAt: Date? = null
-                            exifTakenAt?.let { exTakenAt ->
-                                val df = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
-                                takenAt = df.parse(exTakenAt)
-                                takenAt?.let { parseTakenAt ->
-                                    val entryAt: Date? = if (job.entry?.fromPreEntry == true) {
-                                        // 先行応募で応募済みの場合
-                                        job.workingStartAt
-                                    } else {
-                                        // 通常案件の場合
-                                        job.entry?.createdAt
-                                    }
-                                    // 撮影日時が応募日時より古い場合
-                                    oldPictureFlag = parseTakenAt < entryAt
-                                }
-                            }
-                            // 撮影日時が応募日時より古い場合
-                            if (oldPictureFlag) {
+                            // 撮影日時のチェック: 撮影日時 < 応募日時か? (撮影日時が取れない場合は常に false)
+                            takenAt?.let { takenAt -> takenAt < job.entryAt() } ?: false -> {
                                 isChecked = false
                                 button.isChecked = false
 
-                                val dialog = AlertDialog.Builder(activity)
-                                    .setView(R.layout.dialog_notice_old_taken_picture)
-                                    .setCancelable(false)
-                                    .create()
-                                dialog.show()
-                                val warningCaption: TextView? =
-                                    dialog.findViewById(R.id.dialog_warning_caption)
-                                warningCaption?.setText(
-                                    String.format(
-                                        ErikuraApplication.instance.getString(
-                                            R.string.notice_old_taken_picture_caption
-                                        ), takenAt?.let { JobUtil.getFormattedDateJp(it) }
-                                    )
-                                )
-
-                                val selectButton: Button =
-                                    dialog.findViewById(R.id.select_button)
-                                selectButton.setOnClickListener(View.OnClickListener {
+                                JobUtil.displayOldPictureWarning(activity, takenAt) {
                                     button.isChecked = true
                                     onClickListener?.apply {
                                         onClick(item, true)
@@ -509,16 +472,11 @@ class ImagePickerAdapter(
                                     onModifyDataListener?.apply {
                                         onClick(item, true)
                                     }
-                                    dialog.dismiss()
-                                })
-                                val cancelButton: Button =
-                                    dialog.findViewById(R.id.cancel_button)
-                                cancelButton.setOnClickListener(View.OnClickListener {
-                                    dialog.dismiss()
-                                })
+                                }
                             }
                         }
                     }
+
                     onClickListener?.apply {
                         onClick(item, isChecked)
                     }

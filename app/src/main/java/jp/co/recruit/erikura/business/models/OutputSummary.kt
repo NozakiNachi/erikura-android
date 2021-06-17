@@ -6,6 +6,7 @@ import android.os.Parcelable
 import androidx.fragment.app.FragmentActivity
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import jp.co.recruit.erikura.business.util.ExifUtils
 import jp.co.recruit.erikura.data.storage.PhotoTokenManager
 import kotlinx.android.parcel.Parcelize
 import java.io.IOException
@@ -84,29 +85,16 @@ data class OutputSummary(
         if (!isPhotoChanged) { return }
 
         try {
-            val input = activity.contentResolver.openInputStream(photoAsset?.contentUri ?: Uri.EMPTY)
-            val exifInterface = ExifInterface(input)
+            val exifInterface = ExifUtils.exifInterface(activity, photoAsset?.contentUri ?: Uri.EMPTY)
             // 撮影日時を取得します
-            val takenAt = getTakenAt(exifInterface) ?: photoAsset?.dateTaken?.let {
+            this.photoTakedAt = ExifUtils.takenAt(exifInterface) ?: photoAsset?.dateTaken?.let {
                 Date(it)
             } ?: photoAsset?.dateAdded?.let {
                 Date(it * 1000) // 秒単位のための、x1000してミリ秒単位とする
             }
-            val latitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE)
-            val latitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF)
-            val longitude = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE)
-            val longitudeRef = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF)
-
-            this.photoTakedAt = takenAt
-            this.latitude = latitude?.let { lat ->
-                latitudeRef?.let { ref ->
-                    MediaItem.exifLatitudeToDegrees(ref, lat)
-                }
-            }
-            this.longitude = longitude?.let { lon ->
-                longitudeRef?.let { ref ->
-                    MediaItem.exifLongitudeToDegrees(ref, lon)
-                }
+            ExifUtils.latLng(exifInterface)?.let { latLng ->
+                this.latitude = latLng.latitude
+                this.longitude = latLng.longitude
             }
         }
         catch (e: IOException) {
@@ -118,34 +106,6 @@ data class OutputSummary(
             }
             // Crashlytics に例外を通知しておきます
             FirebaseCrashlytics.getInstance().recordException(e)
-        }
-    }
-
-    private fun getTakenAt(exifInterface: ExifInterface): Date? {
-        // 規格書にのっているフォーマット
-        val standardFormatStr = """\d{4}:\d{2}:\d{2} \d{2}:\d{2}:\d{2}"""
-        val standardFormatPattern = Regex(standardFormatStr)
-        val standardFormat = SimpleDateFormat("yyyy:MM:dd HH:mm:ss")
-        // Galaxy A30 でのフォーマット?
-        val timeInMillisFormatStr = """\d{13,}"""
-        val timeInMillisFormatPattern = Regex(timeInMillisFormatStr)
-
-
-        return exifInterface.getAttribute(ExifInterface.TAG_DATETIME)?.let { takenAtString ->
-            when {
-                standardFormatPattern.matches(takenAtString) -> {
-                    standardFormat.parse(takenAtString)
-                }
-                timeInMillisFormatPattern.matches(takenAtString) -> {
-                    val timeInMillis = takenAtString.toLong()
-                    Date(timeInMillis)
-                }
-                else -> {
-                    FirebaseCrashlytics.getInstance()
-                        .recordException(UnknownDatetimeFormat("Unknown datetime format: $takenAtString"))
-                    null
-                }
-            }
         }
     }
 
