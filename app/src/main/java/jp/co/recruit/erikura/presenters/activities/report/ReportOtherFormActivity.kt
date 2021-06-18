@@ -236,6 +236,10 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                     val (imageWidth, imageHeight) = ExifUtils.size(this, uri, exifInterface)
                     val takenAt = ExifUtils.takenAt(exifInterface)
 
+                    val isOld = takenAt?.let { takenAt ->
+                        val entryAt = job.entryAt()
+                        takenAt < entryAt
+                    } ?: false
 
                     when {
                         // 横より縦の方が長い時アラートを表示します
@@ -243,7 +247,7 @@ class ReportOtherFormActivity : BaseActivity(), ReportOtherFormEventHandlers {
                             MessageUtils.displayAlert(this, listOf("横長の画像のみ選択できます"))
                         }
                         // 撮影日時が応募日時より古い場合はアラートを表示します
-                        (takenAt?.let { it < job.entryAt() } == true) -> {
+                        isOld -> {
                             JobUtil.displayOldPictureWarning(this, takenAt) {
                                 addOtherPicture(item)
                             }

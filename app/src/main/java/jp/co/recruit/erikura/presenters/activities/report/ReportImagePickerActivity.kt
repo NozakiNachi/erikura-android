@@ -442,6 +442,11 @@ class ImagePickerAdapter(
                         val takenAt = ExifUtils.takenAt(exifInterface)
                         val (width, height) = ExifUtils.size(activity, uri, exifInterface)
 
+                        val isOld = takenAt?.let { takenAt ->
+                            val entryAt = job.entryAt()
+                            takenAt < entryAt
+                        } ?: false
+
                         when {
                             // 実施箇所件数
                             (viewModel.selectedCount.value ?: 0) >= ErikuraConst.maxOutputSummaries -> {
@@ -460,7 +465,7 @@ class ImagePickerAdapter(
                                 MessageUtils.displayAlert(activity, listOf("横長の画像のみ選択できます"))
                             }
                             // 撮影日時のチェック: 撮影日時 < 応募日時か? (撮影日時が取れない場合は常に false)
-                            takenAt?.let { takenAt -> takenAt < job.entryAt() } ?: false -> {
+                            isOld -> {
                                 isChecked = false
                                 button.isChecked = false
 
