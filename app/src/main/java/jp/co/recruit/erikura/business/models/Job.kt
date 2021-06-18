@@ -2,6 +2,7 @@ package jp.co.recruit.erikura.business.models
 
 import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import jp.co.recruit.erikura.ErikuraApplication
 import jp.co.recruit.erikura.R
 import jp.co.recruit.erikura.presenters.util.LocationManager
@@ -253,6 +254,11 @@ data class Job(
             // 通常案件の場合はエントリの作成日時を取得する
             entry?.createdAt
         }
+        if (date == null) {
+            val e = Throwable("entryAt is null: jobId=${id}, entryId=${entryId}, fromPreEntry=${entry?.fromPreEntry}")
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
+
         // nil 対策として取得できない場合は現在日時を返す
         return date ?: Date()
     }
