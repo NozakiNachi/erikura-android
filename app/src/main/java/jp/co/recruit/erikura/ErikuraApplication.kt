@@ -46,6 +46,7 @@ import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import jp.co.recruit.erikura.services.ErikuraMessagingService
 import org.apache.commons.lang.builder.ToStringBuilder
 import org.json.JSONObject
+import java.lang.RuntimeException
 import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
@@ -127,6 +128,20 @@ class ErikuraApplication : Application() {
                 // FirebaseCrashlytics に案件がnullにされたことを通知しておきます
                 val e = Throwable("ErikuraApplication.currentJob : ${value.toString()}")
                 FirebaseCrashlytics.getInstance().recordException(e)
+            }
+            else {
+                try {
+                    throw RuntimeException()
+                }
+                catch (e: RuntimeException) {
+                    Tracking.logEvent(event = "current_job_assigned", params = bundleOf(
+                        Pair("stackTrace", e.stackTrace.joinToString("\n")),
+                        Pair("jobId", value.id),
+                        Pair("entryId", value.entryId),
+                        Pair("entryAt", value.entry?.createdAt),
+                        Pair("workingStartAt", value.workingStartAt)
+                    ))
+                }
             }
             field = value
         }
