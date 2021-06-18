@@ -51,7 +51,7 @@ class ReportWorkingTimeActivity : BaseActivity(), ReportWorkingTimeEventHandlers
                 it.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 it.putStringArrayListExtra(
                     ErikuraApplication.ERROR_MESSAGE_KEY,
-                    arrayListOf("お仕事の情報を取得できませんでした。予期せぬエラーによりアプリが終了した可能性ございます。お手数ですがもう一度はじめから操作してください。?")
+                    arrayListOf("お仕事の情報を取得できませんでした。予期せぬエラーによりアプリが終了した可能性ございます。お手数ですがもう一度はじめから操作してください。")
                 )
                 this.startActivity(it)
             }
