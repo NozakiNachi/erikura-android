@@ -367,6 +367,7 @@
 
     <!-- 会員情報入力フィールドのエラーメッセージ -->
     <string name="email_format_error">メールアドレスの形式が正しくありません。</string>
+    <string name="email_same_error">現在登録しているメールアドレスと同じです。</string>
     <string name="password_count_error">6文字以上の半角英数で入力してください。</string>
     <string name="password_count_over_error">128文字以内の半角英数で入力してください。</string>
     <string name="password_pattern_error">英字、数字をそれぞれ1文字以上入力してください。</string>

@@ -98,6 +98,9 @@ class SendChangeEmailViewModel : ViewModel() {
         }else if (valid && !(emailPattern.matches(email.value ?: ""))) {
             valid = false
             error.message.value = ErikuraApplication.instance.getString(R.string.email_format_error)
+        }else if (currentEmail.value == email.value) {
+            valid = false
+            error.message.value = ErikuraApplication.instance.getString(R.string.email_same_error)
         } else {
             valid = true
             error.message.value = null
