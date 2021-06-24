@@ -391,7 +391,7 @@ class AccountSettingViewModel: ViewModel() {
         if (valid && branchOfficeName.value?.isBlank() ?:true) {
             valid = false
             branchOfficeNameError.message.value = null
-        } else if (valid && !(bankName.value?.length ?: 0 <= 100)) {
+        } else if (valid && !(branchOfficeName.value?.length ?: 0 <= 100)) {
             valid = false
             branchOfficeNameError.message.value = ErikuraApplication.instance.getString(R.string.branch_official_name_count_error)
         } else {
