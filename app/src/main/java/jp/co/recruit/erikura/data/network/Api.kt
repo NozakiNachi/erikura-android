@@ -12,6 +12,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.FieldNamingPolicy
+import com.google.gson.GsonBuilder
 import io.reactivex.Observable
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -364,6 +366,16 @@ class Api(var context: Context) {
             erikuraApiService.reloadJob(job.id),
             onError = onError
         ) { job ->
+            // 状況の確認ように JSON データを Firebase に記録します
+            val gson = GsonBuilder()
+                .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .registerTypeAdapter(ErikuraConfigMap::class.java, ErikuraConfigDeserializer())
+                .serializeNulls()
+                .create()
+            Tracking.logEvent("reloadJob", params = bundleOf(
+                Pair("json", gson.toJson(job))
+            ))
+            // イベントハンドラを呼び出します
             onComplete(job)
         }
     }
