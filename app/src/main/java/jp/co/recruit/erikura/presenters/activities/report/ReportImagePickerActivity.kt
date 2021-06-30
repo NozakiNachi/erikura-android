@@ -443,8 +443,9 @@ class ImagePickerAdapter(
                         val (width, height) = ExifUtils.size(activity, uri, exifInterface)
 
                         val isOld = takenAt?.let { takenAt ->
-                            val entryAt = job.entryAt()
-                            takenAt < entryAt
+                            job.entryAt()?.let { entryAt ->
+                                takenAt < entryAt
+                            } ?: false
                         } ?: false
 
                         when {

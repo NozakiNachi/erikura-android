@@ -246,7 +246,7 @@ data class Job(
     /**
      * 案件への(実質的な)応募日時を取得します
      */
-    fun entryAt(): Date {
+    fun entryAt(): Date? {
         val date = if (entry?.fromPreEntry == true) {
             // 先行応募の場合は、募集開始日時を取得する
             workingStartAt
@@ -260,6 +260,6 @@ data class Job(
         }
 
         // nil 対策として取得できない場合は現在日時を返す
-        return date ?: Date()
+        return date
     }
 }

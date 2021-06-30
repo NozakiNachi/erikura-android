@@ -363,8 +363,9 @@ class ReportConfirmActivity : BaseActivity(), ReportConfirmEventHandlers {
                         val takenAt = ExifUtils.takenAt(exifInterface)
 
                         val isOld = takenAt?.let { takenAt ->
-                            val entryAt = job.entryAt()
-                            takenAt < entryAt
+                            job.entryAt()?.let { entryAt ->
+                                takenAt < entryAt
+                            } ?: false
                         } ?: false
 
                         when {
