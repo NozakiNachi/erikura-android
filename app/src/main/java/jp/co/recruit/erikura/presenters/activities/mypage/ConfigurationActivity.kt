@@ -31,6 +31,7 @@ import jp.co.recruit.erikura.presenters.activities.StartActivity
 import jp.co.recruit.erikura.presenters.activities.job.ChangeAccountSettingFragment
 import jp.co.recruit.erikura.presenters.activities.job.ChangeUserInformationFragment
 import jp.co.recruit.erikura.presenters.activities.job.RegisterAccountSettingFragment
+import jp.co.recruit.erikura.presenters.activities.job.SmsVerifyFragment
 import jp.co.recruit.erikura.presenters.util.setOnSafeClickListener
 import kotlinx.android.synthetic.main.activity_configuration.*
 
@@ -42,6 +43,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
     var fromChangeUserInformationFragment: Boolean = false
     var fromChangeAccountFragment: Boolean = false
     var fromRegisterAccountFragment: Boolean = false
+    var fromSmsVerifiedFragment: Boolean = false
 
     private val viewModel: ConfigurationViewModel by lazy {
         ViewModelProvider(this).get(ConfigurationViewModel::class.java)
@@ -124,6 +126,7 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
         fromChangeUserInformationFragment = intent.getBooleanExtra("onClickChangeUserInformationFragment", false)
         fromChangeAccountFragment = intent.getBooleanExtra("onClickChangeAccountFragment", false)
         fromRegisterAccountFragment = intent.getBooleanExtra("onClickRegisterAccountFragment", false)
+        fromSmsVerifiedFragment = intent.getBooleanExtra("onClickSmsVerifiedFragment", false)
     }
 
     class ConfigurationAdapter(private val menuItems: List<MenuItem>) : RecyclerView.Adapter<ConfigurationAdapter.ViewHolder>()
@@ -171,6 +174,10 @@ class ConfigurationActivity : BaseActivity(), ConfigurationEventHandlers {
             val dialog = ChangeAccountSettingFragment()
             dialog.show(supportFragmentManager, "ChangeAccountSetting")
             fromChangeAccountFragment = false
+        }else if(fromSmsVerifiedFragment) {
+            val dialog = SmsVerifyFragment()
+            dialog.show(supportFragmentManager, "SmsVerified")
+            fromSmsVerifiedFragment = false
         }
 
         Tracking.logEvent(event= "view_mypage_configuration", params= bundleOf())

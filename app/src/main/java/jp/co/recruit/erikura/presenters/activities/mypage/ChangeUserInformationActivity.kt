@@ -477,7 +477,7 @@ class ChangeUserInformationActivity :
                 } else if (data.getBooleanExtra("isSmsAuthenticate", false)) {
                     //会員情報経由でSMS認証した場合
                     val intent = Intent(this, ConfigurationActivity::class.java)
-                    intent.putExtra("onClickChangeUserInformationFragment", true)
+                    intent.putExtra("onClickSmsVerifiedFragment", true)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
                     finish()

@@ -71,6 +71,9 @@
     <string name="smsVerify_caption">エリクラを安全にご利用いただくために携帯電話番号認証をお願いしております。</string>
     <string name="smsVerify_not_mobilePhone_format">ご登録の電話番号が携帯電話番号ではないようです。”電話番号を編集する”リンクからご登録の電話番号を携帯電話番号（070、080、090から始まる番号）に変更してください。</string>
 
+    <!-- SMS認証確認成功モーダル（会員情報変更経由）-->
+    <string name="smsVerify_success_title">電話番号を更新しました</string>
+
     <!-- パスワード再設定送信画面 -->
     <string name="send_reset_password_caption">ご登録いただいたメールアドレスを入力してください。\nメールアドレス宛にパスワード変更ページのURLが記載されたメールを送信します。</string>
     <string name="send_reset_password_button">パスワード再設定メールを送信する</string>
