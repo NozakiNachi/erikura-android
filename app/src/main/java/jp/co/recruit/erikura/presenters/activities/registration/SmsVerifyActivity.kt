@@ -90,6 +90,12 @@ class SmsVerifyActivity : BaseActivity(),
                 sendSms(phoneNumber ?:"")
             }
         }
+
+        if (isChangeUserInformationOtherThanPhone) {
+            val dialog = ChangeUserInformationOtherThanPhoneFragment()
+            dialog.show(supportFragmentManager, "ChangeUserInformationOtherThanPhone")
+            isChangeUserInformationOtherThanPhone = false
+        }
     }
 
     fun sendSms(phoneNumber: String) {
