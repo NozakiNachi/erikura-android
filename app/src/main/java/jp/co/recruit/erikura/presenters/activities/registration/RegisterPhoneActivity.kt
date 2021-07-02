@@ -52,6 +52,10 @@ class RegisterPhoneActivity : BaseActivity(),
         binding.viewModel = viewModel
         binding.handlers = this
         viewModel.error.message.value = null
+        user.phoneNumber?.let {
+            // SMS認証画面の電話番号編集できた場合初期値を入れる
+            viewModel.phone.value = it
+        }
     }
 
     override fun onStart() {
